@@ -1,0 +1,25 @@
+{
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+    }
+  },
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "extends": ["prettier", "plugin:react/recommended"],
+  "plugins": ["react"],
+  "rules": {
+    "react/jsx-uses-react": "warn",
+    "react/jsx-uses-vars": "warn"
+  }
+}

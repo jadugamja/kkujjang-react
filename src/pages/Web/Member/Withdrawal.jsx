@@ -1,3 +1,5 @@
-const Withdrawal = () => {}
+import React from "react";
 
-export default Withdrawal
+const Withdrawal = () => {};
+
+export default Withdrawal;

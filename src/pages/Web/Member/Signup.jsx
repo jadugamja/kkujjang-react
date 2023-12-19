@@ -1,3 +1,5 @@
-const Signup = () => {}
+import React from "react";
 
-export default Signup
+const Signup = () => {};
+
+export default Signup;

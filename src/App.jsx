@@ -35,6 +35,10 @@ const App = () => {
             <Route path="notice/:noticeId" element={<NoticeDetail />} />
             <Route path="inquiry/list" element={<InquiryList />} />
             <Route path="inquiry/create" element={<InquiryCreate />} />
+            <Route path="notice/list" element={<NoticeList />} />
+            <Route path="notice/:noticeId" element={<NoticeDetail />} />
+            <Route path="inquiry/list" element={<InquiryList />} />
+            <Route path="inquiry/create" element={<InquiryCreate />} />
 
             <Route path="admin/notice" element={<NoticeManagement />} />
             <Route path="admin/inquiry" element={<InquiryManagement />} />

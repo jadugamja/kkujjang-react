@@ -21,10 +21,10 @@ const GameRoom = lazy(() => import("./pages/Game/GameRoom"));
 
 const App = () => {
   return (
-    <div className="content">
+    <>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path="/" element={<Home />}>
+          <Route exact path="/" element={<Home />}>
             <Route path="member/join" element={<Signup />} />
             <Route path="member/find" element={<Find />} />
             <Route path="member/change-pw" element={<ChangePw />} />
@@ -46,7 +46,7 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-    </div>
+    </>
   );
 };
 

@@ -13,6 +13,12 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 100 900;
   }
 
+  @font-face {
+    font-family: 'DNFBitBitv2';
+    src: url('/fonts/DNFBitBitv2.otf');
+    font-weight: 100 900;
+  }
+
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -22,11 +28,20 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     margin: 0;
-    background: ${(props) => props.theme.color.background}
+    background-color: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.text.main};
   }
 
   form {
     margin: 0;
+  }
+
+  input[type="text"], input[type="submit"], input[type="submit"] {
+    outline: 0;
+  }
+
+  button {
+    border-width: 0;
   }
 
   a:hover, button:hover, input[type="submit"] {

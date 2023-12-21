@@ -1,17 +1,19 @@
 export const sharedTheme = {
-  color: {
-    gray100: "#E5E5E5",
-    gray200: "#D6D6D6",
-    gray300: "#C9C9C9",
-    gray400: "#929292",
-    gray500: "#7D7D7D",
+  colors: {
+    gray100: "#E5E5E5", // 아주 옅은 회색
+    gray200: "#D6D6D6", // 옅은 회색
+    gray300: "#C9C9C9", // 회색
+    gray400: "#929292", // 짙은 회색
+    gray500: "#7D7D7D", // 조금 짙은 회색
+    gray600: "#4E4E4D", // 아주 짙은 회색
     error: "#FF6C6C", // 빨강
     success: "#486DFF", // 파랑
     kakao: "#FFDE00"
   },
   fontSize: {
-    xxs: "18px",
-    xs: "20px",
+    xxxs: "18px",
+    xxs: "20px",
+    xs: "21px",
     s: "22px",
     m: "24px",
     l: "28px",
@@ -23,14 +25,14 @@ export const sharedTheme = {
 
 export const webTheme = {
   ...sharedTheme,
-  color: {
-    ...sharedTheme.color,
+  colors: {
+    ...sharedTheme.colors,
     background: "#F1EFE9",
     content: "#FAF9F4",
     button: {
       main: {
         background: "#413014",
-        hover: "#947C54",
+        hover: "#554730",
         text: "#FFF"
       },
       sub: {
@@ -40,15 +42,16 @@ export const webTheme = {
       }
     },
     text: {
-      main: "#32250F"
+      main: "#32250F",
+      sub: "#363636"
     }
   }
 };
 
 export const gameTheme = {
   ...sharedTheme,
-  color: {
-    ...sharedTheme.color,
+  colors: {
+    ...sharedTheme.colors,
     background: "#1C1405",
     content: "#79ACEF"
   }

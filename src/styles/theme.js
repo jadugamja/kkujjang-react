@@ -3,14 +3,16 @@ export const sharedTheme = {
     gray100: "#E5E5E5", // 아주 옅은 회색
     gray200: "#D6D6D6", // 옅은 회색
     gray300: "#C9C9C9", // 회색
-    gray400: "#929292", // 짙은 회색
-    gray500: "#7D7D7D", // 조금 짙은 회색
-    gray600: "#4E4E4D", // 아주 짙은 회색
+    gray400: "#C1C1C1", // 조금 짙은 회색
+    gray500: "#929292", // 짙은 회색
+    gray600: "#7D7D7D", // 더 짙은 회색
+    gray700: "#4E4E4D", // 아주 짙은 회색
     error: "#FF6C6C", // 빨강
     success: "#486DFF", // 파랑
     kakao: "#FFDE00"
   },
   fontSize: {
+    xxxxs: "14px",
     xxxs: "18px",
     xxs: "20px",
     xs: "21px",

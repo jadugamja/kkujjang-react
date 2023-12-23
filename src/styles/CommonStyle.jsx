@@ -1,12 +1,25 @@
 import styled from "styled-components";
+import { FlexBox } from "./FlexStyle";
 
-export const FlexBox = styled.div`
-  display: flex;
-  ${(props) => setDirection(props.dir)}
-  ${(props) => setHorizontalAlign(props.row)}
-  ${(props) => setVerticalAlign(props.col)}
+// 숨겨진 요소
+export const Hidden = styled.div`
+  display: none;
 `;
 
+// 헤더
+export const Header = styled(FlexBox).attrs({ as: "header" })`
+  position: fixed;
+  top: 0;
+  width: inherit;
+  height: 7.5rem;
+  background-color: transparent;
+  z-index: 3;
+`;
+
+// 로고 이미지
+export const Logo = styled.img``;
+
+// 웹 페이지 그라데이션 영역
 export const Gradation = styled.div`
   position: absolute;
   top: 0;
@@ -16,6 +29,7 @@ export const Gradation = styled.div`
   z-index: -1;
 `;
 
+// 콘텐츠 영역 감싸는 태그
 export const ContentWrapper = styled(FlexBox)``;
 
 // 넓은 콘텐츠 영역 (width: 1200px)
@@ -30,13 +44,16 @@ export const NarrowContent = styled(FlexBox)`
   height: 100vh;
 `;
 
-export const MainLabel = styled.label`
+// 입력칸의 제목 역할
+export const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSize.xs};
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.gray500};
+  color: ${({ theme }) => theme.colors.gray600};
 `;
 
-export const MainInput = styled.input.attrs((props) => ({
+// 입력칸
+// type이 text, password, email인 경우에만 스타일 적용
+export const Input = styled.input.attrs((props) => ({
   type: props.type
 }))`
   ${({ type, theme }) =>
@@ -76,20 +93,28 @@ export const SecondaryButton = styled.button`
   width: 13.063rem;
   height: 3.625rem;
   background-color: ${({ theme }) => theme.colors.gray100};
-  border: 1px solid ${({ theme }) => theme.colors.gray400};
+  border: 1px solid ${({ theme }) => theme.colors.gray500};
   color: ${({ theme }) => theme.colors.gray600};
   font-size: ${({ theme }) => theme.fontSize.s};
   font-weight: 700;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray400};
+  }
 `;
 
-export const TransparentButton = styled.button`
-  width: 8.625rem;
+export const BigTransparentButton = styled.button`
+  width: 9rem;
   height: 4.3rem;
   background-color: transparent;
-  border: 2px solid ${({ theme }) => theme.colors.gray500};
+  border: 2px solid ${({ theme }) => theme.colors.gray600};
   color: ${({ theme }) => theme.colors.text.sub};
   font-size: ${({ theme }) => theme.fontSize.s};
   font-weight: 700;
+
+  &:hover {
+    background-color: #ffffff32;
+  }
 `;
 
 // 모달 안에서 창 닫을 때 쓰이는 작은 동그라미 버튼
@@ -98,6 +123,45 @@ export const ExitMiniCircle = styled.button`
   height: 1.125rem;
   background-color: ${({ theme }) => theme.colors.error};
   border-radius: 50%;
+
+  &:hover {
+    background-color: #cf5757;
+  }
+`;
+
+export const SmallButton = styled.button`
+  width: 6rem;
+  height: 3rem;
+  font-size: ${({ theme }) => theme.fontSize.xxxs};
+  font-weight: 700;
+`;
+
+export const SmallDarkButton = styled(SmallButton)`
+  background-color: #585858;
+  color: #fff;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray600};
+  }
+`;
+
+export const SmallTransparentButton = styled(SmallButton)`
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+
+  &:hover {
+    background-color: #ffffff32;
+  }
+`;
+
+export const SmallGrayButton = styled(SmallButton)`
+  background-color: #aaa;
+  color: #000;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray400};
+  }
 `;
 
 export const MiniButton = styled.button`
@@ -108,50 +172,14 @@ export const MiniButton = styled.button`
   font-weight: 700;
 `;
 
-export const UpdateButton = styled(MiniButton)`
+export const MiniBlueButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.success};
   color: ${({ theme }) => theme.colors.success};
 `;
 
-export const DeleteButton = styled(MiniButton)`
+export const MiniRedButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.error};
   color: ${({ theme }) => theme.colors.error};
 `;
 
-// flex-box의 flex-direction 설정
-const setDirection = (dir) => {
-  switch (dir) {
-    case "col":
-      return ` flex-direction: column; `;
-  }
-};
-
-// flex-box 안의 justify-content 값 설정
-const setHorizontalAlign = (row) => {
-  switch (row) {
-    case "center":
-      return ` justify-content: center; `;
-    case "start":
-      return ` justify-content: flex-start; `;
-    case "end":
-      return ` justify-content: flex-end; `;
-    case "between":
-      return ` justify-content: space-between; `;
-  }
-};
-
-// flex-box 안의 align-items 값 설정
-const setVerticalAlign = (col) => {
-  switch (col) {
-    case "center":
-      return ` align-items: center; `;
-    case "start":
-      return ` align-items: flex-start; `;
-    case "end":
-      return ` align-items: flex-end; `;
-    case "baseline":
-      return ` align-items: baseline; `;
-    case "stretch":
-      return ` align-items: stretch; `;
-  }
-};
+// export const FoldButton = styled.button``;

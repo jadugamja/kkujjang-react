@@ -1,20 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
-import { theme } from "./styles/theme";
+import { webTheme, gameTheme } from "./styles/theme";
 import GlobalStyle from "./styles/GlobalStyle";
 import App from "./App";
+
+const ThemedApp = () => {
+  const location = useLocation();
+  let isGame = location.pathname.startsWith("/game");
+
+  return (
+    <ThemeProvider theme={isGame ? gameTheme : webTheme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
+  );
+};
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RecoilRoot>
       <CookiesProvider>
-        <ThemeProvider theme={theme}>
-          <GlobalStyle />
-          <App />
-        </ThemeProvider>
+        <Router>
+          <ThemedApp />
+        </Router>
       </CookiesProvider>
     </RecoilRoot>
   </React.StrictMode>

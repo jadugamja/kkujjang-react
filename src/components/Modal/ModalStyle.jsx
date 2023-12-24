@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const ModalWrapper = styled.div`
   width: ${(props) => props.width || "36.375rem"};
   height: ${(props) => props.height || "20.0625rem"};
-  border-radius: ${(props) => props.borderRadius || "36.375rem"};
+  border-radius: ${(props) => props.borderRadius || null};
   position: fixed;
   top: 50%;
   left: 50%;

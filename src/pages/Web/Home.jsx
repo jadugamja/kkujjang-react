@@ -1,7 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-import { Gradation, ContentWrapper, WideContent, Header } from "../../styles/CommonStyle";
+import { Gradation, ContentWrapper, WideContent } from "@/styles/CommonStyle";
+import Header from "@/components/Shared/Header";
 
 const Home = () => {
   return (
@@ -17,7 +18,7 @@ const Home = () => {
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}
       <ContentWrapper row="center" col="center">
         <WideContent dir="col">
-          <Header></Header>
+          <Header />
         </WideContent>
       </ContentWrapper>
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}

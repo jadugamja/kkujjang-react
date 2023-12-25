@@ -7,7 +7,7 @@ export const Hidden = styled.div`
 `;
 
 // 헤더
-export const Header = styled(FlexBox).attrs({ as: "header" })`
+export const FixedHeader = styled(FlexBox).attrs({ as: "header" })`
   position: fixed;
   top: 0;
   width: inherit;
@@ -17,7 +17,14 @@ export const Header = styled(FlexBox).attrs({ as: "header" })`
 `;
 
 // 로고 이미지
-export const Logo = styled.img``;
+export const Logo = styled.img`
+  width: 30px;
+  height: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 // 웹 페이지 그라데이션 영역
 export const Gradation = styled.div`

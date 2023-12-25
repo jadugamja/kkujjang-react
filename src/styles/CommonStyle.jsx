@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { FlexBox } from "./FlexStyle";
+import { Link } from "react-router-dom";
 
 // 숨겨진 요소
 export const Hidden = styled.div`
@@ -7,23 +8,61 @@ export const Hidden = styled.div`
 `;
 
 // 헤더
-export const FixedHeader = styled(FlexBox).attrs({ as: "header" })`
+export const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
+  as: "header",
+  row: type === "big" ? "center" : "between",
+  col: "center"
+}))`
   position: fixed;
   top: 0;
   width: inherit;
-  height: 7.5rem;
+  height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
   background-color: transparent;
   z-index: 3;
 `;
 
 // 로고 이미지
 export const Logo = styled.img`
-  width: 30px;
-  height: 30px;
+  ${({ type }) => setLogoSize(type)}
 
   &:hover {
     cursor: pointer;
   }
+`;
+
+// 탭 버튼
+export const SpringTab = styled(FlexBox).attrs({ row: "center", col: "center" })`
+  width: 7rem;
+  height: ${(props) => (props.clicked ? "2.5rem" : "3.25rem")};
+  background-color: ${(props) => {
+    if (props.type === "detail") {
+      return props.clicked ? props.theme.colors.content : props.theme.colors.paleBlueGray;
+    } else {
+      return "transparent";
+    }
+  }};
+  border-radius: 15px 15px 0 0;
+  padding-top: 14px;
+  font-family: "Gugi";
+  font-size: 19px;
+  color: #4e4e4e;
+  align-self: flex-end;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${(props) => {
+      if (props.type === "detail") {
+        return props.clicked ? "#F2F2F2" : "#94a7c1";
+      } else {
+        return "transparent";
+      }
+    }};
+  }
+`;
+
+// 아래로 향하는 링크
+export const BottomLink = styled(Link)`
+  align-self: flex-end;
 `;
 
 // 웹 페이지 그라데이션 영역
@@ -32,7 +71,7 @@ export const Gradation = styled.div`
   top: 0;
   width: 100%;
   height: 42.25rem;
-  background-image: linear-gradient(#dbe1ed, #00000000);
+  background-image: linear-gradient(#dbe1ed, #ffffff00);
   z-index: -1;
 `;
 
@@ -49,6 +88,12 @@ export const WideContent = styled(FlexBox)`
 export const NarrowContent = styled(FlexBox)`
   width: 40.75rem;
   height: 100vh;
+`;
+
+// 작은 요소들을 감싸는 요소
+export const SmallWrapper = styled(FlexBox)`
+  flex-basis: ${(props) => props.width || auto};
+  align-self: ${(props) => props.align || auto};
 `;
 
 // 입력칸의 제목 역할
@@ -78,11 +123,13 @@ export const Input = styled.input.attrs((props) => ({
   `}
 `;
 
+// 메인 갈색 버튼
 export const PrimaryButtonWrapper = styled(FlexBox)`
   width: 100%;
   height: 4.5rem;
 `;
 
+// 메인 갈색 버튼
 export const PrimaryButton = styled.button`
   width: 100%;
   height: inherit;
@@ -96,6 +143,7 @@ export const PrimaryButton = styled.button`
   }
 `;
 
+// 서브 회색 버튼 (모달 등에서 사용)
 export const SecondaryButton = styled.button`
   width: 13.063rem;
   height: 3.625rem;
@@ -110,6 +158,7 @@ export const SecondaryButton = styled.button`
   }
 `;
 
+// 큰 투명 버튼
 export const BigTransparentButton = styled.button`
   width: 9rem;
   height: 4.3rem;
@@ -136,6 +185,7 @@ export const ExitMiniCircle = styled.button`
   }
 `;
 
+// 작은 버튼
 export const SmallButton = styled.button`
   width: 6rem;
   height: 3rem;
@@ -143,6 +193,7 @@ export const SmallButton = styled.button`
   font-weight: 700;
 `;
 
+// 짙은 회색 작은 버튼
 export const SmallDarkButton = styled(SmallButton)`
   background-color: #585858;
   color: #fff;
@@ -152,6 +203,7 @@ export const SmallDarkButton = styled(SmallButton)`
   }
 `;
 
+// 작은 투명 버튼
 export const SmallTransparentButton = styled(SmallButton)`
   background-color: transparent;
   color: #000;
@@ -162,6 +214,7 @@ export const SmallTransparentButton = styled(SmallButton)`
   }
 `;
 
+// 작은 옅은 회색 버튼
 export const SmallGrayButton = styled(SmallButton)`
   background-color: #aaa;
   color: #000;
@@ -171,6 +224,7 @@ export const SmallGrayButton = styled(SmallButton)`
   }
 `;
 
+// 미니 버튼 (관리자 페이지에서 주로 쓰임)
 export const MiniButton = styled.button`
   width: 2.875rem;
   height: 1.688rem;
@@ -179,14 +233,27 @@ export const MiniButton = styled.button`
   font-weight: 700;
 `;
 
+// 파랑 미니 버튼
 export const MiniBlueButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.success};
   color: ${({ theme }) => theme.colors.success};
 `;
 
+// 빨강 미니 버튼
 export const MiniRedButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.error};
   color: ${({ theme }) => theme.colors.error};
 `;
 
-// export const FoldButton = styled.button``;
+export const setLogoSize = (type) => {
+  switch (type) {
+    case "big":
+      return `
+        width: 6.75rem;
+      `;
+    default:
+      return `
+        width: 5rem;
+      `;
+  }
+};

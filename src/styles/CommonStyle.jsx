@@ -21,6 +21,20 @@ export const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
   z-index: 3;
 `;
 
+// 푸터
+export const FixedFooter = styled(FlexBox).attrs(({ type }) => ({
+  as: "footer",
+  row: "center",
+  col: "center"
+}))`
+  width: 100%;
+  height: 1.5rem;
+  position: fixed;
+  bottom: 0;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.gray500};
+`;
+
 // 로고 이미지
 export const Logo = styled.img`
   ${({ type }) => setLogoSize(type)}
@@ -74,6 +88,9 @@ export const Gradation = styled.div`
   background-image: linear-gradient(#dbe1ed, #ffffff00);
   z-index: -1;
 `;
+
+// 두루두루 쓰이는 감싸는 태그
+export const Wrapper = styled(FlexBox)``;
 
 // 콘텐츠 영역 감싸는 태그
 export const ContentWrapper = styled(FlexBox)``;

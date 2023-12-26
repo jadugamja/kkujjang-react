@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
-import Header from "@/components/Shared/Header";
+import Header from "@/components/Shared/Layout/Header/Header";
 import Pagination from "@/components/Shared/Pagination/Pagination";
 
 const NoticeList = () => {

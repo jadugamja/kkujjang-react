@@ -1,19 +1,19 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 
-import { SmallWrapper, BottomLink, SpringTab } from "@/styles/CommonStyle";
+import { TabWrapper, BottomLink, SpringTab } from "./HeaderStyle";
 
-const Tab = ({ type }) => {
+const HeaderTab = ({ type }) => {
   const [clickedTab, setClickedTab] = useState(false);
   const tabsRef = useRef([React.createRef(), React.createRef(), React.createRef()]);
 
   const handleClick = (e) => {
-    const idx = tabsRef.current.findIndex((tab) => tab.current === e.target);
-    setClickedTab(idx);
+    const tabIdx = tabsRef.current.findIndex((tab) => tab.current === e.target);
+    setClickedTab(tabIdx);
   };
 
   return (
-    <SmallWrapper align="flex-end" width="23rem" row="between" onClick={handleClick}>
+    <TabWrapper align="flex-end" width="23rem" row="between" onClick={handleClick}>
       <BottomLink to="/notice/list">
         <SpringTab type={type} ref={tabsRef.current[0]} clicked={clickedTab === 0}>
           공지
@@ -27,16 +27,16 @@ const Tab = ({ type }) => {
       <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
         내 정보
       </SpringTab>
-    </SmallWrapper>
+    </TabWrapper>
   );
 };
 
-Tab.propTypes = {
+HeaderTab.propTypes = {
   type: PropTypes.string
 };
 
-Tab.defaultProps = {
+HeaderTab.defaultProps = {
   type: "default"
 };
 
-export default Tab;
+export default HeaderTab;

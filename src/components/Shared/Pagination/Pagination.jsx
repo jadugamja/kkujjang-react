@@ -3,43 +3,66 @@ import PropTypes from "prop-types";
 import {
   PaginationWrapper,
   FirstButton,
-  PrevButton,
-  NextButton,
+  PrevListButton,
+  NextListButton,
   LastButton,
   PageList,
   PageItem
 } from "./PaginationStyle";
 
-const Pagination = ({ page, setPage, limit, lastPageIdx = 4 }) => {
-  // 마지막 페이지 번호를 통해 배열 초기화
-  const pageList = Array.from({ length: lastPageIdx }, (_, i) => i);
+const Pagination = ({ currPage, setCurrPage, totalPageIdx = 101 }) => {
+  // 페이지 그룹 크기
+  const size = 10;
 
-  let tempString = "<<";
-  useEffect(() => {}, [page]);
+  // 현재 페이지가 속한 페이지 그룹 (1 ~ 10)
+  const currentPageGroup = Math.floor((currPage - 1) / size);
 
-  // 
+  // 총 페이지 그룹
+  const totalPageGroup = Math.floor((totalPageIdx - 1) / size);
+
+  // 페이지 그룹의 시작 페이지 번호
+  const startPageIdx = currentPageGroup * size + 1;
+
+  // 현재 페이지에서 나타나는 페이지 목록
+  const pageListLength =
+    currentPageGroup === totalPageGroup && totalPageIdx % size !== 0
+      ? totalPageIdx % size
+      : size;
+  const pageList = Array.from({ length: pageListLength }, (_, i) => startPageIdx + i);
+
+  useEffect(() => {}, [currPage]);
+
   return (
     <PaginationWrapper row="center" col="center">
-      <FirstButton onClick={() => setPage(1)}>{tempString}</FirstButton>
-      <PrevButton>{tempString}</PrevButton>
+      <FirstButton onClick={() => setCurrPage(1)}>{"<<"}</FirstButton>
+      <PrevListButton onClick={() => setCurrPage(Math.max(1, startPageIdx - size))}>
+        {"<"}
+      </PrevListButton>
       <PageList>
-        {pageList.map((i) => (
-          <PageItem key={i + 1} onClick={() => setPage(i + 1)}>
-            {i + 1}
+        {pageList.map((page) => (
+          <PageItem
+            key={page}
+            onClick={() => setCurrPage(page)}
+            active={currPage === page}
+          >
+            {page}
           </PageItem>
         ))}
       </PageList>
-      <NextButton onClick={() => setPage(lastPageIdx)}>{tempString}</NextButton>
-      <LastButton onClick={() => setPage(lastPageIdx)}>{tempString}</LastButton>
+      <NextListButton
+        onClick={() => setCurrPage(Math.min(totalPageIdx, startPageIdx + size))}
+      >
+        {">"}
+      </NextListButton>
+      <LastButton onClick={() => setCurrPage(totalPageIdx)}>{">>"}</LastButton>
     </PaginationWrapper>
   );
 };
 
 Pagination.propTypes = {
-  page: PropTypes.number, // 현재 페이지 번호
-  setPage: PropTypes.func, // 현재 페이지 업데이트 함수
-  limit: PropTypes.number, // 
-  lastPageIdx: PropTypes.number // 마지막 페이지 번호
+  currPage: PropTypes.number, // 현재 페이지 번호
+  setCurrPage: PropTypes.func, // 현재 페이지 업데이트 함수
+  totalPageIdx: PropTypes.number // 마지막 페이지 번호
 };
 
 export default Pagination;

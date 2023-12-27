@@ -5,13 +5,13 @@ import Header from "@/components/Shared/Layout/Header/Header";
 import Pagination from "@/components/Shared/Pagination/Pagination";
 
 const NoticeList = () => {
-  const [page, setPage] = useState(1);
+  const [currPage, setCurrPage] = useState(1);
 
   return (
     <ContentWrapper row="center" col="center">
       <WideContent dir="col">
         <Header type="detail" />
-        <Pagination page={page} setPage={setPage}></Pagination>
+        <Pagination currPage={currPage} setCurrPage={setCurrPage}></Pagination>
       </WideContent>
     </ContentWrapper>
   );

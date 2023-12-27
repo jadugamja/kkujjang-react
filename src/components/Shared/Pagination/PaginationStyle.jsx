@@ -15,13 +15,13 @@ export const FirstButton = styled.button`
   content: "<<";
 `;
 
-export const PrevButton = styled.button`
+export const PrevListButton = styled.button`
   width: 30px;
   height: fit-content;
   content: "<";
 `;
 
-export const NextButton = styled.button`
+export const NextListButton = styled.button`
   width: 30px;
   height: fit-content;
   content: ">";
@@ -36,4 +36,6 @@ export const LastButton = styled.button`
 // 페이지 번호
 export const PageList = styled(FlexBox)``;
 
-export const PageItem = styled.button``;
+export const PageItem = styled.button`
+  color: ${({ active }) => (active ? "red" : "gray")};
+`;

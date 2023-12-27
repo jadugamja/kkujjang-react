@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import Header from "@/components/Shared/Layout/Header/Header";
@@ -6,6 +6,8 @@ import Pagination from "@/components/Shared/Pagination/Pagination";
 
 const NoticeList = () => {
   const [currPage, setCurrPage] = useState(1);
+
+  useEffect(() => {}, [currPage]);
 
   return (
     <ContentWrapper row="center" col="center">

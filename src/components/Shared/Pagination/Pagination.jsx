@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   PaginationWrapper,
@@ -9,8 +8,14 @@ import {
   PageList,
   PageItem
 } from "./PaginationStyle";
+import {
+  faAnglesLeft,
+  faAngleLeft,
+  faAngleRight,
+  faAnglesRight
+} from "@fortawesome/free-solid-svg-icons";
 
-const Pagination = ({ currPage, setCurrPage, totalPageIdx = 101 }) => {
+const Pagination = ({ currPage, setCurrPage, totalPageIdx }) => {
   // 페이지 그룹 크기
   const size = 10;
 
@@ -30,14 +35,13 @@ const Pagination = ({ currPage, setCurrPage, totalPageIdx = 101 }) => {
       : size;
   const pageList = Array.from({ length: pageListLength }, (_, i) => startPageIdx + i);
 
-  useEffect(() => {}, [currPage]);
-
   return (
     <PaginationWrapper row="center" col="center">
-      <FirstButton onClick={() => setCurrPage(1)}>{"<<"}</FirstButton>
-      <PrevListButton onClick={() => setCurrPage(Math.max(1, startPageIdx - size))}>
-        {"<"}
-      </PrevListButton>
+      <FirstButton icon={faAnglesLeft} onClick={() => setCurrPage(1)}></FirstButton>
+      <PrevListButton
+        icon={faAngleLeft}
+        onClick={() => setCurrPage(Math.max(1, startPageIdx - size))}
+      ></PrevListButton>
       <PageList>
         {pageList.map((page) => (
           <PageItem
@@ -50,19 +54,25 @@ const Pagination = ({ currPage, setCurrPage, totalPageIdx = 101 }) => {
         ))}
       </PageList>
       <NextListButton
+        icon={faAngleRight}
         onClick={() => setCurrPage(Math.min(totalPageIdx, startPageIdx + size))}
-      >
-        {">"}
-      </NextListButton>
-      <LastButton onClick={() => setCurrPage(totalPageIdx)}>{">>"}</LastButton>
+      ></NextListButton>
+      <LastButton
+        icon={faAnglesRight}
+        onClick={() => setCurrPage(totalPageIdx)}
+      ></LastButton>
     </PaginationWrapper>
   );
 };
 
 Pagination.propTypes = {
   currPage: PropTypes.number, // 현재 페이지 번호
-  setCurrPage: PropTypes.func, // 현재 페이지 업데이트 함수
+  setCurrPage: PropTypes.func, // 현재 페이지 번호 업데이트 함수
   totalPageIdx: PropTypes.number // 마지막 페이지 번호
+};
+
+Pagination.defaultProps = {
+  totalPageIdx: 1
 };
 
 export default Pagination;

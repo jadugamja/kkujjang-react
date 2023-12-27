@@ -22,11 +22,11 @@ export const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
 `;
 
 // 푸터
-export const FixedFooter = styled(FlexBox).attrs(({ type }) => ({
+export const FixedFooter = styled(FlexBox).attrs({
   as: "footer",
   row: "center",
   col: "center"
-}))`
+})`
   width: 100%;
   height: 1.5rem;
   position: fixed;

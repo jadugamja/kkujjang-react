@@ -56,7 +56,11 @@ export const gameTheme = {
   colors: {
     ...sharedTheme.colors,
     background: "#1C1405",
-    content: "#79ACEF"
+    content: "#79ACEF",
+    text: {
+      main: "#32250F",
+      sub: "#363636"
+    }
   }
 };
 

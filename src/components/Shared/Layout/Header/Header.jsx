@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-import Tab from "./Tab";
-import { FixedHeader, Logo } from "@/styles/CommonStyle";
+import HeaderTab from "./HeaderTab";
+import { FixedHeader, LogoImg } from "./HeaderStyle";
 import webLogo from "@/assets/images/logo.png";
 import gameLogo from "@/assets/images/logo-game.png";
 
@@ -24,9 +24,9 @@ const Header = ({ type }) => {
   return (
     <FixedHeader type={type}>
       <Link to="/" onClick={handleClick}>
-        <Logo src={logo} type={type} />
+        <LogoImg src={logo} type={type} />
       </Link>
-      {(type === "detail" || type === "clearTab") && <Tab type={type}></Tab>}
+      {(type === "detail" || type === "clearTab") && <HeaderTab type={type}></HeaderTab>}
     </FixedHeader>
   );
 };

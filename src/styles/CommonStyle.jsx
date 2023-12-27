@@ -1,82 +1,9 @@
 import styled from "styled-components";
 import { FlexBox } from "./FlexStyle";
-import { Link } from "react-router-dom";
 
 // 숨겨진 요소
 export const Hidden = styled.div`
   display: none;
-`;
-
-// 헤더
-export const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
-  as: "header",
-  row: type === "big" ? "center" : "between",
-  col: "center"
-}))`
-  position: fixed;
-  top: 0;
-  width: inherit;
-  height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
-  background-color: transparent;
-  z-index: 3;
-`;
-
-// 푸터
-export const FixedFooter = styled(FlexBox).attrs({
-  as: "footer",
-  row: "center",
-  col: "center"
-})`
-  width: 100%;
-  height: 1.5rem;
-  position: fixed;
-  bottom: 0;
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.gray500};
-`;
-
-// 로고 이미지
-export const Logo = styled.img`
-  ${({ type }) => setLogoSize(type)}
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-// 탭 버튼
-export const SpringTab = styled(FlexBox).attrs({ row: "center", col: "center" })`
-  width: 7rem;
-  height: ${(props) => (props.clicked ? "2.5rem" : "3.25rem")};
-  background-color: ${(props) => {
-    if (props.type === "detail") {
-      return props.clicked ? props.theme.colors.content : props.theme.colors.paleBlueGray;
-    } else {
-      return "transparent";
-    }
-  }};
-  border-radius: 15px 15px 0 0;
-  padding-top: 14px;
-  font-family: "Gugi";
-  font-size: 19px;
-  color: #4e4e4e;
-  align-self: flex-end;
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${(props) => {
-      if (props.type === "detail") {
-        return props.clicked ? "#F2F2F2" : "#94a7c1";
-      } else {
-        return "transparent";
-      }
-    }};
-  }
-`;
-
-// 아래로 향하는 링크
-export const BottomLink = styled(Link)`
-  align-self: flex-end;
 `;
 
 // 웹 페이지 그라데이션 영역
@@ -88,9 +15,6 @@ export const Gradation = styled.div`
   background-image: linear-gradient(#dbe1ed, #ffffff00);
   z-index: -1;
 `;
-
-// 두루두루 쓰이는 감싸는 태그
-export const Wrapper = styled(FlexBox)``;
 
 // 콘텐츠 영역 감싸는 태그
 export const ContentWrapper = styled(FlexBox)``;
@@ -261,16 +185,3 @@ export const MiniRedButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.error};
   color: ${({ theme }) => theme.colors.error};
 `;
-
-export const setLogoSize = (type) => {
-  switch (type) {
-    case "big":
-      return `
-        width: 6.75rem;
-      `;
-    default:
-      return `
-        width: 5rem;
-      `;
-  }
-};

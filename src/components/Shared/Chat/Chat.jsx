@@ -29,8 +29,8 @@ const Chat = ({ sessionId, roomId }) => {
     if (ws.current && toMessage) {
       const _chat = {
         type: "CHAT",
-        sessionId: 1234,
-        roomId: "dd",
+        sessionId: sessionId,
+        roomId: roomId,
         nickname: "테스트",
         message: toMessage
       };

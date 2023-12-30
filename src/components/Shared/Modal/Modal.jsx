@@ -16,15 +16,17 @@ useEffect(() => {
   setAlertMessage(data.alertMessage);
 });
 
-const Modal = (props) => {
-  const { onClick } = props;
-
+// type : confirm, alert, game, info, input, profile,
+const Modal = ({ type, onClick }) => {
   return (
-    <ModalWrapper onClick={onClick}>
-      <ModalHeader>
-        <ExitMiniCircle></ExitMiniCircle>
-      </ModalHeader>
-      <ModalMessage>{alertMessage}</ModalMessage>
+    <ModalWrapper type={type} onClick={onClick}>
+      <>
+        <ModalHeader>
+          <ExitMiniCircle></ExitMiniCircle>
+        </ModalHeader>
+        <ModalMessage>{alertMessage}</ModalMessage>
+      </>
+      {}
     </ModalWrapper>
   );
 };

@@ -114,18 +114,6 @@ export const BigTransparentButton = styled.button`
   }
 `;
 
-// 모달 안에서 창 닫을 때 쓰이는 작은 동그라미 버튼
-export const ExitMiniCircle = styled.button`
-  width: 1.125rem;
-  height: 1.125rem;
-  background-color: ${({ theme }) => theme.colors.error};
-  border-radius: 50%;
-
-  &:hover {
-    background-color: #cf5757;
-  }
-`;
-
 // 작은 버튼
 export const SmallButton = styled.button`
   width: 6rem;

@@ -39,7 +39,7 @@ export const SmallWrapper = styled(FlexBox)`
 
 // 입력칸의 제목 역할
 export const Label = styled.label`
-  font-size: ${({ theme }) => theme.fontSize.xs};
+  font-size: ${({ theme }) => theme.fontSize.xxs};
   font-weight: 700;
   color: ${({ theme }) => theme.colors.gray600};
 `;

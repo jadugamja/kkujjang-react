@@ -1,10 +1,14 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-import { Gradation, ContentWrapper, WideContent } from "@/styles/CommonStyle";
+import {
+  Gradation,
+  ContentWrapper,
+  WideContent,
+  NarrowContent
+} from "@/styles/CommonStyle";
 import Header from "@/components/Shared/Layout/Header/Header";
 import Footer from "@/components/Shared/Layout/Footer/Footer";
-import WebModal from "@/components/Shared/Modal/WebModal.jsx";
 
 const Home = () => {
   const location = useLocation();
@@ -23,10 +27,9 @@ const Home = () => {
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}
       {location.pathname === "/" && (
         <ContentWrapper row="center" col="center">
-          <WideContent dir="col">
+          <NarrowContent dir="col">
             <Header />
-            <WebModal type="input" message="안녕하세요." />
-          </WideContent>
+          </NarrowContent>
         </ContentWrapper>
       )}
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}

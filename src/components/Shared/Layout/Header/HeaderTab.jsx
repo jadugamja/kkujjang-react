@@ -13,7 +13,7 @@ const HeaderTab = ({ type }) => {
   };
 
   return (
-    <TabWrapper align="flex-end" width="23rem" row="between" onClick={handleClick}>
+    <TabWrapper align="flex-end" width="20rem" row="between" onClick={handleClick}>
       <BottomLink to="/notice/list">
         <SpringTab type={type} ref={tabsRef.current[0]} clicked={clickedTab === 0}>
           공지

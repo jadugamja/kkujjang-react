@@ -6,8 +6,6 @@ export const ChatWrapper = styled(FlexBox)`
   width: ${(props) => (props.width === "big" ? "inherit" : "71.75rem")};
   height: ${(props) => (props.height === "big" ? "inherit" : "12.25rem")};
   background-color: #eee;
-  margin-top: 400px;
-  border: 1px solid red;
 `;
 
 export const ChatHeader = styled.div`

@@ -1,12 +1,7 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-import {
-  Gradation,
-  ContentWrapper,
-  WideContent,
-  NarrowContent
-} from "@/styles/CommonStyle";
+import { Gradation, ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import Header from "@/components/Shared/Layout/Header/Header";
 import Footer from "@/components/Shared/Layout/Footer/Footer";
 
@@ -27,9 +22,9 @@ const Home = () => {
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}
       {location.pathname === "/" && (
         <ContentWrapper row="center" col="center">
-          <NarrowContent dir="col">
+          <WideContent dir="col">
             <Header />
-          </NarrowContent>
+          </WideContent>
         </ContentWrapper>
       )}
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}

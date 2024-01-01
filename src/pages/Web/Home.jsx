@@ -4,7 +4,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Gradation, ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import Header from "@/components/Shared/Layout/Header/Header";
 import Footer from "@/components/Shared/Layout/Footer/Footer";
-import WebModal from "@/components/Shared/Modal/WebModal.jsx";
 
 const Home = () => {
   const location = useLocation();
@@ -25,7 +24,6 @@ const Home = () => {
         <ContentWrapper row="center" col="center">
           <WideContent dir="col">
             <Header />
-            <WebModal type="input" message="안녕하세요." />
           </WideContent>
         </ContentWrapper>
       )}

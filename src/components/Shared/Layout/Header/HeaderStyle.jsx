@@ -33,9 +33,9 @@ export const LogoImg = styled.img`
 export const setLogoSize = (type) => {
   switch (type) {
     case "big":
-      return ` width: 6.75rem; `;
+      return ` width: 5.5rem; `;
     default:
-      return ` width: 5rem; `;
+      return ` width: 4rem; `;
   }
 };
 
@@ -50,8 +50,8 @@ export const BottomLink = styled(Link)`
 
 // 탭 버튼
 export const SpringTab = styled(FlexBox).attrs({ row: "center", col: "center" })`
-  width: 7rem;
-  height: ${(props) => (props.clicked ? "2.5rem" : "3.25rem")};
+  width: 6rem;
+  height: ${(props) => (props.clicked ? "2.25rem" : "3rem")};
   background-color: ${(props) => {
     if (props.type === "detail") {
       return props.clicked ? props.theme.colors.content : props.theme.colors.paleBlueGray;

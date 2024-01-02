@@ -20,7 +20,9 @@ import {
 const Profile = ({ isAdmin, profileInfos }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);
-  const [isActiveAccount, setIsActiveAccount] = useState(true);
+  const [isActiveAccount, setIsActiveAccount] = useState(
+    profileInfos.isBanned === "true"
+  );
 
   const handleToggle = () => {
     if (isActiveAccount) {
@@ -54,9 +56,7 @@ const Profile = ({ isAdmin, profileInfos }) => {
                     </ProfileInfoField>
                   ))
                 : Object.entries(profileInfos)
-                    .filter(
-                      ([key]) => key !== "avatarUrl" && key !== "exp" && key !== "winRate"
-                    )
+                    .filter(([key]) => ["nickname", "level"].includes(key))
                     .map(([key, [title, value]], idx) => (
                       <ProfileInfo key={idx}>
                         {key === "nickname" ? value : `${title} ${value}`}
@@ -100,7 +100,9 @@ Profile.defaultProps = {
     nickname: ["닉네임", ""],
     level: ["레벨", 0],
     winRate: ["승률", 0],
-    exp: ["경험치", 0]
+    exp: ["경험치", 0],
+    isBanned: "false",
+    bannedReson: ""
   }
 };
 

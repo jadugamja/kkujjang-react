@@ -30,6 +30,20 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 100 900;
   }
 
+  // 배달의민족 한나체
+  @font-face {
+    font-family: 'Hanna';
+    src: url('/fonts/BMHANNA_11yrs_ttf.ttf');
+  }
+
+  // 배달의민족 한나체 Air
+  @font-face {
+    font-family: 'BMHANNAAir';
+    src: url('/fonts/BMHANNAAir_ttf.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

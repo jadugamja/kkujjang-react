@@ -31,6 +31,11 @@ export const NarrowContent = styled(FlexBox)`
   height: 100vh;
 `;
 
+// 페이지의 핵심 콘텐츠
+export const Main = styled.main`
+  margin-top: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
+`;
+
 // 작은 요소들을 감싸는 요소
 export const SmallWrapper = styled(FlexBox)`
   flex-basis: ${(props) => props.width || auto};

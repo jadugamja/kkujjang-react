@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import Header from "@shared/Layout/Header/Header";
-import Footer from "@shared/Layout/Footer/Footer";
+import Header from "@/components/Web/Shared/Layout/Header";
+import Footer from "@/components/Web/Shared/Layout/Footer";
+import Pagination from "../../components/Web/Shared/Board/Pagination";
+import PhoneNumberAuth from "../../components/Web/Shared/Form/PhoneNumberAuth";
+import Profile from "../../components/Game/Shared/Profile";
 
 const Home = () => {
   const location = useLocation();
@@ -24,7 +27,10 @@ const Home = () => {
         <ContentWrapper row="center" col="center">
           <WideContent dir="col">
             <Header />
-            <Main></Main>
+            <Main>
+              <Pagination />
+              <PhoneNumberAuth />
+            </Main>
           </WideContent>
         </ContentWrapper>
       )}

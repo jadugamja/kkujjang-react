@@ -85,9 +85,3 @@ export const VerificationInput = styled(Input)`
   width: 245px;
   font-size: ${({ theme }) => theme.fontSize.xxs};
 `;
-
-export const TimerText = styled.span`
-  position: relative;
-  right: 61px;
-  color: red;
-`;

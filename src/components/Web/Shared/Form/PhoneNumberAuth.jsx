@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+
 import Timer from "./Timer";
 import {
   ContentWrapper,
@@ -22,7 +23,7 @@ const PhoneNumberAuth = ({}) => {
   // 전화 번호
   const numbersRef = Array(3)
     .fill()
-    .map(() => React.createRef());
+    ?.map(() => React.createRef());
   // 인증 번호
   const verificationRef = useRef();
 

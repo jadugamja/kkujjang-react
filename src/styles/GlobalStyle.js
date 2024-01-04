@@ -68,6 +68,12 @@ const GlobalStyle = createGlobalStyle`
   button {
     border-width: 0;
   }
+
+  ul, ol {
+    list-style-type: none;
+    margin: 0;
+    padding-inline-start: 0;
+  }
   
   a {
     text-decoration: none;

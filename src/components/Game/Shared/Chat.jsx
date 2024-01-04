@@ -1,15 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
-import {
-  ChatWrapper,
-  ChatHeader,
-  ChatIcon,
-  ChatItemWrapper,
-  ChatInputWrapper,
-  ChatInput,
-  ChatSubmitButton
-} from "./ChatStyle";
+
+import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
 
 // 환경 변수 가져오기
@@ -39,6 +34,7 @@ const Chat = ({ sessionId, roomId }) => {
         console.log(ws.current.readyState);
         ws.current.send(JSON.stringify(_chat));
       };
+
       setChats([...chats, { nickname: "테스트", message: toMessage }]);
       setToMessage("");
       chatInput.current.focus();
@@ -79,9 +75,7 @@ const Chat = ({ sessionId, roomId }) => {
     };
 
     // 컴포넌트 언마운트될 때 WebSocket 연결 종료
-    return () => {
-      ws.current.close();
-    };
+    return () => ws.current.close();
   }, [chats]);
 
   return (
@@ -91,7 +85,7 @@ const Chat = ({ sessionId, roomId }) => {
         채팅
       </ChatHeader>
       <ChatItemWrapper dir="col" ref={chatResult}>
-        {chats.map((chat, i) => (
+        {chats?.map((chat, i) => (
           <ChatItem key={i} nickname={chat.nickname} message={chat.message} />
         ))}
       </ChatItemWrapper>
@@ -117,5 +111,61 @@ Chat.propTypes = {
   sessionId: PropTypes.string,
   roomId: PropTypes.string
 };
+
+const ChatWrapper = styled(FlexBox)`
+  width: ${(props) => (props.width === "big" ? "inherit" : "71.75rem")};
+  height: ${(props) => (props.height === "big" ? "inherit" : "12.25rem")};
+  background-color: #eee;
+`;
+
+const ChatHeader = styled.div`
+  width: ${(props) => (props.width === "big" ? "inherit" : "70.25rem")};
+  height: ${(props) => (props.height === "big" ? "inherit" : "20px")};
+  margin-left: 10px;
+  padding-left: 10px;
+  border-radius: 4px;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+  background-color: #dddddd;
+  opacity: 0.8;
+  color: #000000cc;
+  font-size: ${({ theme }) => theme.fontSize.xxxxs};
+  font-weight: 700;
+`;
+
+const ChatIcon = styled(FontAwesomeIcon)`
+  margin-right: 4px;
+`;
+
+const ChatItemWrapper = styled(FlexBox)`
+  flex-basis: 65%;
+  margin: 2px 12px;
+  overflow-y: auto;
+`;
+
+const ChatInputWrapper = styled(FlexBox)`
+  position: relative;
+  height: 36px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  margin: 0 10px;
+`;
+
+const ChatInput = styled.input`
+  width: 100%;
+  border: 0;
+  border-radius: 10px 0 0 10px;
+  padding: 0 10px;
+  font-size: 16px;
+`;
+
+const ChatSubmitButton = styled(FlexBox).attrs({
+  as: "button"
+})`
+  width: 4.625rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5590e0;
+  border-radius: 0 10px 10px 0;
+`;
 
 export default Chat;

@@ -1,21 +1,16 @@
 import PropTypes from "prop-types";
-import {
-  PaginationWrapper,
-  FirstButton,
-  PrevListButton,
-  NextListButton,
-  LastButton,
-  PageList,
-  PageItem
-} from "./PaginationStyle";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   faAnglesLeft,
   faAngleLeft,
   faAngleRight,
   faAnglesRight
 } from "@fortawesome/free-solid-svg-icons";
+import FlexBox from "@/styles/FlexStyle";
 
-const Pagination = ({ currPage, setCurrPage, totalPageIdx }) => {
+const Pagination = ({ currPage = 1, setCurrPage, totalPageIdx = 1 }) => {
   // 페이지 그룹 크기
   const size = 10;
 
@@ -43,7 +38,7 @@ const Pagination = ({ currPage, setCurrPage, totalPageIdx }) => {
         onClick={() => setCurrPage(Math.max(1, startPageIdx - size))}
       ></PrevListButton>
       <PageList>
-        {pageList.map((page) => (
+        {pageList?.map((page) => (
           <PageItem
             key={page}
             onClick={() => setCurrPage(page)}
@@ -71,8 +66,52 @@ Pagination.propTypes = {
   totalPageIdx: PropTypes.number // 마지막 페이지 번호
 };
 
-Pagination.defaultProps = {
-  totalPageIdx: 1
-};
+// 페이지네이션을 감싸는 태그
+const PaginationWrapper = styled(FlexBox)`
+  margin-top: 200px;
+  width: 100%;
+  height: 30px;
+`;
+
+// 페이지네이션에 쓰이는 공통 버튼 스타일
+const PaginationButton = styled(FontAwesomeIcon)`
+  margin: 8px;
+  font-size: 1.25rem;
+  color: #687587;
+  cursor: pointer;
+`;
+
+// 맨 앞으로 가기 버튼
+const FirstButton = styled(PaginationButton)``;
+
+// 이전 페이지 리스트로 가기 버튼
+const PrevListButton = styled(PaginationButton)``;
+
+// 다음 페이지 리스트로 가기 버튼
+const NextListButton = styled(PaginationButton)``;
+
+// 맨 마지막으로 가기 버튼
+const LastButton = styled(PaginationButton)``;
+
+// 페이지 번호를 감싸는 태그
+const PageList = styled(FlexBox)``;
+
+// 페이지 번호
+const PageItem = styled.button`
+  background-color: transparent;
+  font-family: "Pretendard Variable";
+  width: 32px;
+  height: 32px;
+  font-size: ${({ theme }) => theme.fontSize.xxxs};
+  margin: 0 2px;
+  font-weight: ${({ active }) => (active ? "700" : "500")};
+  color: ${({ active }) => (active ? "#2C333C" : "#B0B5BE")};
+  text-decoration: ${({ active }) => (active ? "underline" : "none")};
+
+  &:hover {
+    background-color: #ffffff90;
+    border-radius: 50%;
+  }
+`;
 
 export default Pagination;

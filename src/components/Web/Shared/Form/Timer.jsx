@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import PropTypes from "prop-types";
-
-import { TimerText } from "./PhoneNumberStyle";
 
 const Timer = ({ initialTime, onTimeOut }) => {
   const [time, setTime] = useState(initialTime);
@@ -34,5 +33,11 @@ Timer.propTypes = {
   initialTime: PropTypes.number, // 인증 번호 유효 시간
   onTimeOut: PropTypes.func // 인증 번호 유효 시간 만료 세팅 함수
 };
+
+const TimerText = styled.span`
+  position: relative;
+  right: 61px;
+  color: red;
+`;
 
 export default Timer;

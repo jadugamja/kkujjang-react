@@ -1,5 +1,8 @@
+import styled from "styled-components";
 import PropTypes from "prop-types";
-import { ChatContent, NickName, Message } from "./ChatStyle";
+
+import FlexBox from "@/styles/FlexStyle";
+
 const ChatItem = ({ nickname, message }) => {
   return (
     <ChatContent>
@@ -12,6 +15,20 @@ const ChatItem = ({ nickname, message }) => {
     </ChatContent>
   );
 };
+
+const ChatContent = styled(FlexBox)`
+  height: 20px;
+`;
+
+const NickName = styled(FlexBox)`
+  width: 104px;
+  height: inherit;
+  font-weight: 700;
+`;
+
+const Message = styled(FlexBox)`
+  height: inherit;
+`;
 
 ChatItem.propTypes = {
   nickname: PropTypes.string,

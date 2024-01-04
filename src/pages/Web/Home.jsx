@@ -1,13 +1,18 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
-import { Gradation, ContentWrapper, WideContent, Header } from "../../styles/CommonStyle";
+import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
+import Header from "@/components/Web/Shared/Layout/Header";
+import Footer from "@/components/Web/Shared/Layout/Footer";
 
 const Home = () => {
+  const location = useLocation();
+
   return (
     <>
       {/* 모든 컴포넌트에 공통으로 나타나는 부분 */}
       <Gradation />
+      <Footer />
       {/* 모든 컴포넌트에 공통으로 나타나는 부분 */}
 
       {/* 다른 컴포넌트로 갈아끼워지는 부분 */}
@@ -15,11 +20,14 @@ const Home = () => {
       {/* 다른 컴포넌트로 갈아끼워지는 부분 */}
 
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}
-      <ContentWrapper row="center" col="center">
-        <WideContent dir="col">
-          <Header></Header>
-        </WideContent>
-      </ContentWrapper>
+      {location.pathname === "/" && (
+        <ContentWrapper row="center" col="center">
+          <WideContent dir="col">
+            <Header />
+            <Main></Main>
+          </WideContent>
+        </ContentWrapper>
+      )}
       {/* 현재 컴포넌트에서만 쓰이는 부분 */}
     </>
   );

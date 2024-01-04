@@ -9,7 +9,6 @@ export const sharedTheme = {
     gray700: "#4E4E4D", // 아주 짙은 회색
     error: "#FF6C6C", // 빨강
     success: "#486DFF", // 파랑
-    paleBlueGray: "#B6C6DD", // 채도 낮은 파랑
     kakao: "#FFDE00"
   },
   fontSize: {
@@ -56,11 +55,7 @@ export const gameTheme = {
   colors: {
     ...sharedTheme.colors,
     background: "#1C1405",
-    content: "#79ACEF",
-    text: {
-      main: "#32250F",
-      sub: "#363636"
-    }
+    content: "#79ACEF"
   }
 };
 

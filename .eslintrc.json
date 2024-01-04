@@ -19,7 +19,7 @@
   "extends": ["prettier", "plugin:react/recommended"],
   "plugins": ["react"],
   "rules": {
-    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "warn",
     "react/jsx-uses-vars": "warn"
   }
 }

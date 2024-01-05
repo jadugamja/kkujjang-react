@@ -17,7 +17,10 @@ const Header = ({ type = "default" }) => {
   );
 };
 
-// 헤더
+Header.propTypes = {
+  type: PropTypes.string
+};
+
 const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
   as: "header",
   row: type === "big" ? "center" : "between",
@@ -40,7 +43,7 @@ const LogoImg = styled.img`
   }
 `;
 
-// 로고 사이즈 조정
+// 로고 이미지 사이즈 조정
 const setLogoSize = (type) => {
   switch (type) {
     case "big":
@@ -48,10 +51,6 @@ const setLogoSize = (type) => {
     default:
       return ` width: 4rem; `;
   }
-};
-
-Header.propTypes = {
-  type: PropTypes.string
 };
 
 export default Header;

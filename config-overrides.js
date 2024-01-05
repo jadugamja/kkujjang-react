@@ -25,9 +25,7 @@ module.exports = function override(config) {
   config.resolve.alias = {
     ...config.resolve.alias,
     // @: "src" 폴더를 가리키는 별칭
-    ["@"]: path.resolve(__dirname, "src"),
-    // @shared: 공용 컴포넌트가 있는 폴더(src/components/Shared)를 가리키는 별칭
-    ["@shared"]: path.resolve(__dirname, "src/components/Shared")
+    ["@"]: path.resolve(__dirname, "src")
   };
 
   return config;

@@ -2,8 +2,8 @@ import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import Header from "@shared/Layout/Header/Header";
-import Footer from "@shared/Layout/Footer/Footer";
+import Header from "@/components/Web/Shared/Layout/Header";
+import Footer from "@/components/Web/Shared/Layout/Footer";
 
 const Home = () => {
   const location = useLocation();

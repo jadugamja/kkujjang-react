@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import { FlexBox } from "@/styles/FlexStyle";
 import Player from "./Player";
+import ProfileActiveToggle from "./ProfileActiveToggle";
 
 const init = {
   avatarUrl: "",
@@ -21,17 +22,6 @@ const Profile = ({ isAdmin, profileInfos = init }) => {
   const [isActiveAccount, setIsActiveAccount] = useState(
     profileInfos.isBanned === "true"
   );
-
-  const handleToggle = () => {
-    if (isActiveAccount) {
-      // 임시
-      alert("계정을 비활성화하시겠습니까?");
-    } else {
-      // 임시
-      alert("계정을 활성화시키겠습니까?");
-    }
-    setIsActiveAccount(!isActiveAccount);
-  };
 
   return (
     <>
@@ -71,14 +61,10 @@ const Profile = ({ isAdmin, profileInfos = init }) => {
             </ExpWrapper>
           )}
           {isAdmin && (
-            <ActiveToggle
-              col="center"
-              row={isActiveAccount ? "end" : "start"}
-              active={isActiveAccount}
-              onClick={handleToggle}
-            >
-              <ActiveCircle />
-            </ActiveToggle>
+            <ProfileActiveToggle
+              isActiveAccount={isActiveAccount}
+              setIsActiveAccount={setIsActiveAccount}
+            />
           )}
         </>
       )}
@@ -139,31 +125,6 @@ const ExpText = styled.span`
   bottom: 33px;
   color: #fff;
   font-weight: 700;
-`;
-
-// ============ Active Toggle ============
-const ActiveToggle = styled(FlexBox)`
-  width: 75px;
-  height: 44px;
-  background-color: ${({ active }) => (active ? "#fff" : "#D9D9D9")};
-  border: 3px solid ${({ active }) => (active ? "#34E250" : "#787878")};
-  border-radius: 22px;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  & > div {
-    background-color: ${({ active }) => (active ? "#34E250" : "#787878")};
-    margin-left: ${({ active }) => !active && "3px"};
-    margin-right: ${({ active }) => active && "3px"};
-  }
-`;
-
-const ActiveCircle = styled.div`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
 `;
 
 export default Profile;

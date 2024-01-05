@@ -27,7 +27,6 @@ const App = () => {
           <Route exact path="/" element={<Home />}>
             <Route path="member/join" element={<Signup />} />
             <Route path="member/find" element={<Find />} />
-            <Route path="member/change-pw" element={<ChangePw />} />
             <Route path="member/login" element={<Login />} />
             <Route path="member/out" element={<Withdrawal />} />
 

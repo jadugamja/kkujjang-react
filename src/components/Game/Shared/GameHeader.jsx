@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import gameLogo from "@/assets/images/logo-game.png";
 
-const Header = ({ nickname = "" }) => {
+const GameHeader = ({ nickname = "" }) => {
   const handleClick = (e) => {
     alert("게임에서 홈으로 넘어갈라 할 때 나오는 경고창");
   };
@@ -15,16 +15,17 @@ const Header = ({ nickname = "" }) => {
       <Link to="/" onClick={handleClick}>
         <LogoImg src={gameLogo} />
       </Link>
+      <span>{nickname}</span>
     </FixedHeader>
   );
 };
 
 // 헤더
-const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
+const FixedHeader = styled(FlexBox).attrs({
   as: "header",
   row: "between",
   col: "center"
-}))`
+})`
   position: fixed;
   top: 0;
   width: inherit;
@@ -42,8 +43,8 @@ const LogoImg = styled.img`
   }
 `;
 
-Header.propTypes = {
+GameHeader.propTypes = {
   nickname: PropTypes.string
 };
 
-export default Header;
+export default GameHeader;

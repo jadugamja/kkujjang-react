@@ -1,93 +1,41 @@
-import React from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 
 import { Label, Input } from "./InputFieldStyle";
 
-const InputField = ({ type, message }) => {
-  const [idValue, setIdValue] = useState("");
-  const [pwValue, setPwValue] = useState("");
-  const [pwCheckValue, setpwCheckValue] = useState("");
+const InputField = ({ inputType, hasLabel, label, placeholder }) => {
+  const inputValueRef = useRef("");
 
-  const handleInputAboutIdChange = (e) => {
-    setIdValue(e.target.value);
-  };
+  const handleValidation = (e) => {
+    inputValueRef.current = {
+      ...inputValueRef.current,
+      [e.target.name || "value"]: e.target.value
+    };
 
-  const handleInputAboutPwChange = (e) => {
-    setPwValue(e.target.value);
-  };
-
-  const handleInputAboutPwCheckChange = (e) => {
-    setpwCheckValue(e.target.value);
+    console.log(inputValueRef.current["value"]);
+    switch (e.target.name) {
+      case "id":
+        break;
+      case "password":
+        break;
+      case "password_check":
+        break;
+    }
   };
 
   return (
     <>
-      {/* {Label 포함한 Input (회원가입 등)} */}
-      {type === "label_id" && (
-        <Label>
-          아이디
-          <Input
-            type="text"
-            value={idValue}
-            onChange={handleInputAboutIdChange}
-            placeholder="아이디 입력"
-          />
-        </Label>
-      )}
-      {type === "label_pw" && (
-        <Label>
-          비밀번호
-          <Input
-            type="password"
-            value={pwValue}
-            onChange={handleInputAboutPwChange}
-            placeholder="비밀번호 입력"
-          />
-        </Label>
-      )}
-      {type === "label_pwCheck" && (
-        <Label>
-          비밀번호 확인
-          <Input
-            type="password"
-            value={pwCheckValue}
-            onChange={handleInputAboutPwCheckChange}
-            placeholder="비밀번호 확인"
-          />
-        </Label>
-      )}
-      {/* {Label 없는 Input} */}
-      {type === "id" && (
-        <Input
-          type="text"
-          value={idValue}
-          onChange={handleInputAboutIdChange}
-          placeholder="아이디를 입력하세요"
-        />
-      )}
-      {type === "pw" && (
-        <Input
-          type="password"
-          value={pwValue}
-          onChange={handleInputAboutPwChange}
-          placeholder={message}
-        />
-      )}
-      {type === "pwChaeck" && (
-        <Input
-          type="password"
-          value={pwCheckValue}
-          onChange={handleInputAboutPwCheckChange}
-          placeholder={message}
-        />
-      )}
+      {hasLabel && <Label>{label}</Label>}
+      {<Input type={inputType} placeholder={placeholder} onChange={handleValidation} />}
     </>
   );
 };
 
 InputField.propTypes = {
-  type: PropTypes.string,
-  message: PropTypes.string
+  inputType: PropTypes.string,
+  hasLabel: PropTypes.bool,
+  label: PropTypes.string,
+  placeholder: PropTypes.string
 };
 
 export default InputField;

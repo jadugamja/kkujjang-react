@@ -32,7 +32,10 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     }
 
     // 기존 파일 리스트에 새로운 파일 추가
-    setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
+    setSelectedFiles((prevFiles) => {
+      appendFilesToFormData([...prevFiles, ...newSelectedFiles]);
+      return [...prevFiles, ...newSelectedFiles];
+    });
 
     // 브라우저 상에 보여질 썸네일 이미지
     const thumbnailImageArray = fileUrlList.map((url, i) => {
@@ -60,11 +63,6 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
       </DeleteButton>
     </div>
   ));
-
-  useEffect(() => {
-    // // 상위 컴포넌트로 파일 리스트 객체 전달
-    appendFilesToFormData(selectedFiles);
-  }, [selectedFiles]);
 
   return (
     <ImageFileUploadWrapper>

@@ -12,7 +12,7 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
     filterOptions?.reduce((acc, key) => ({ ...acc, [key]: false }), {})
   );
 
-  const applyFilterOption = (key, item) => {
+  const onApplyFilter = (key, item) => {
     setSelectedFilterOptions((prev) => ({ ...prev, [key]: item }));
     setIsClicked((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -34,7 +34,7 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
                 <FilterListItem
                   key={idx}
                   value={item}
-                  onClick={() => applyFilterOption(key, item)}
+                  onClick={() => onApplyFilter(key, item)}
                 >
                   {getFilterItemText(key, item)}
                 </FilterListItem>

@@ -20,7 +20,6 @@ const GameHeader = ({ nickname = "" }) => {
   );
 };
 
-// 헤더
 const FixedHeader = styled(FlexBox).attrs({
   as: "header",
   row: "between",

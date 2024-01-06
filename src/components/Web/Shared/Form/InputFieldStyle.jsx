@@ -27,3 +27,8 @@ export const Input = styled.input.attrs((props) => ({
     font-weight: 500;
   `}
 `;
+
+export const MapWrapper = styled(FlexBox)`
+  width: ${(props) => props.width || "fit-content"};
+  height: ${(props) => props.height || "fit-content"};
+`;

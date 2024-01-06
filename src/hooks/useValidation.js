@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const useIdValidation = () => {
+export const useIdValidation = () => {
   const [isValid, setIsValid] = useState(false);
 
   const validateId = (id) => {
@@ -18,7 +18,7 @@ const useIdValidation = () => {
   return { isValid, validateId };
 };
 
-const usePasswordValidation = () => {
+export const usePasswordValidation = () => {
   const [conditions, setConditions] = useState({
     isNotEmpty: false,
     isLengthValid: false,
@@ -45,7 +45,7 @@ const usePasswordValidation = () => {
   return { conditions, validatePassword };
 };
 
-const usePasswordCheckValidation = () => {
+export const usePasswordCheckValidation = () => {
   const [isMatch, setIsMatch] = useState(false);
 
   const validatePasswordCheck = (password, passwordCheck) => {
@@ -55,5 +55,3 @@ const usePasswordCheckValidation = () => {
   };
   return { isMatch, validatePasswordCheck };
 };
-
-export default { useIdValidation, usePasswordValidation, usePasswordCheckValidation };

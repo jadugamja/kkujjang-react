@@ -4,6 +4,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import InputField from "@/components/Web/Shared/Form/InputField";
 
 const Home = () => {
   const location = useLocation();
@@ -25,6 +26,13 @@ const Home = () => {
           <WideContent dir="col">
             <Header />
             <Main></Main>
+            <InputField
+              name="id"
+              inputType="text"
+              hasLabel={true}
+              label={"테스트"}
+              placeholder={"테스트"}
+            ></InputField>
           </WideContent>
         </ContentWrapper>
       )}

@@ -4,6 +4,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import InputField from "@/components/Web/Shared/Form/InputField";
 
 const Home = () => {
   const location = useLocation();
@@ -25,6 +26,8 @@ const Home = () => {
           <WideContent dir="col">
             <Header />
             <Main></Main>
+            <InputField name="password" hasLabel={true} logInForm={true}></InputField>
+            <InputField name="password_check" hasLabel={true}></InputField>
           </WideContent>
         </ContentWrapper>
       )}

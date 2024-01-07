@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+// 아이디 유효성 검사
 export const useIdValidation = () => {
   const [isValid, setIsValid] = useState(false);
 
@@ -18,12 +19,14 @@ export const useIdValidation = () => {
   return { isValid, validateId };
 };
 
+// 비밀번호 유효성 검사
 export const usePasswordValidation = () => {
   const [conditions, setConditions] = useState({
     isNotEmpty: false,
     isLengthValid: false,
     hasNumber: false,
-    hasUppercaseAndLowercase: false,
+    hasUppercase: false,
+    hasLowercase: false,
     hasSpecialChar: false
   });
 
@@ -31,27 +34,18 @@ export const usePasswordValidation = () => {
     const isNotEmpty = password.trim() !== ""; // 빈값
     const isLengthValid = password.length >= 7 && password.length <= 30; // 최소 7자, 최대 30자 제한
     const hasNumber = /\d/.test(password); // 숫자 포함
-    const hasUppercaseAndLowercase = /[A-Za-z]/.test(password); // 영어 (대소문자) 포함
+    const hasUppercase = /[A-Z]/.test(password); // 영어 대문자 포함
+    const hasLowercase = /[a-z]/.test(password); // 영어 소문자 포함
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password); // 특수문자 포함
 
     setConditions({
       isNotEmpty,
       isLengthValid,
       hasNumber,
-      hasUppercaseAndLowercase,
+      hasUppercase,
+      hasLowercase,
       hasSpecialChar
     });
   };
   return { conditions, validatePassword };
-};
-
-export const usePasswordCheckValidation = () => {
-  const [isMatch, setIsMatch] = useState(false);
-
-  const validatePasswordCheck = (password, passwordCheck) => {
-    const isMatch = password === passwordCheck; // 비밀번호 일치
-
-    setIsMatch(isMatch);
-  };
-  return { isMatch, validatePasswordCheck };
 };

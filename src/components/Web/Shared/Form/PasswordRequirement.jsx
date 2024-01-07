@@ -1,54 +1,31 @@
 import React from "react";
+import PropTypes from "prop-types";
 
-import PasswordRequirementWrapper from "./PasswordRequirementStyle.jsx";
-import PasswordRequirementMeassage from "./PasswordRequirementStyle.jsx";
+import {
+  PasswordRequirementWrapper,
+  PasswordRequirementMeassage,
+  CheckIconImage
+} from "./PasswordRequirementStyle";
+import hoveredCheck from "@/assets/images/blue-check.png";
+import defaultCheck from "@/assets/images/gray-check.png";
 
-const PasswordRequirement = (props) => {
-  let message = "";
-
-  const [isValid, setIsValid] = useState(false);
-
-  const { type, inputValue, isMatch } = props;
-
-  if (type === "uppercaseAndLowercaseLetter") {
-    message = "영어 대소문자";
-  } else if (type === "number") {
-    message = "숫자";
-  } else if (type === "specialCharacter") {
-    message = "특수문자";
-  } else if (type === "length") {
-    message = "7-30자 이내";
-  } else if (type === "confirmPassword") {
-    message = "비밀번호 일치";
-  }
-
-  useEffect(() => {
-    const validate = () => {
-      if (type === "uppercaseAndLowercaseLetter") {
-        return /[A-Za-z]/.test(inputValue);
-      } else if (type === "number") {
-        return /\d/.test(inputValue);
-      } else if (type === "specialCharacter") {
-        return /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
-      } else if (type === "length") {
-        return inputValue.length >= 7 && inputValue.length <= 30;
-      } else if (type === "confirmPassword") {
-        return isMatch;
-      }
-
-      return false;
-    };
-
-    setIsValid(validate());
-  }, [type, inputValue, isMatch]);
-
+const PasswordRequirement = ({ isCheck, message }) => {
   return (
-    <PasswordRequirementWrapper>
-      <PasswordRequirementMeassage color={isValid ? true : false}>
+    <PasswordRequirementWrapper col="center">
+      <PasswordRequirementMeassage isCheck={isCheck}>
         {message}
       </PasswordRequirementMeassage>
+      <CheckIconImage
+        isCheck={isCheck}
+        src={isCheck ? hoveredCheck : defaultCheck}
+      ></CheckIconImage>
     </PasswordRequirementWrapper>
   );
+};
+
+PasswordRequirement.propTypes = {
+  isCheck: PropTypes.bool,
+  message: PropTypes.string
 };
 
 export default PasswordRequirement;

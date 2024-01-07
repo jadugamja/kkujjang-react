@@ -27,28 +27,6 @@ const WebModal = ({ type, message }) => {
             </ModalContent>
           </>
         )}
-        {type === "input" && (
-          <>
-            {/* {InputField를 포함한 모달, 예 : 밴 모달} */}
-            <ModalHeader>
-              <ExitMiniCircle></ExitMiniCircle>
-            </ModalHeader>
-            <ModalContent>
-              <ModalMessage>{message}</ModalMessage>
-            </ModalContent>
-          </>
-        )}
-        {type === "move" && (
-          <>
-            {/* {이동 버튼과 닫기 버튼이 있는 모달, 예 : 비밀번호 변경 모달} */}
-            <ModalHeader>
-              <ExitMiniCircle></ExitMiniCircle>
-            </ModalHeader>
-            <ModalContent>
-              <ModalMessage>{message}</ModalMessage>
-            </ModalContent>
-          </>
-        )}
       </ModalWrapper>
     </ModalBackground>
   );

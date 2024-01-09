@@ -1,34 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 
-import { Gradation, ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import Header from "@/components/Web/Shared/Layout/Header";
+import { userState } from "../../recoil/userState";
+import { Gradation } from "@/styles/CommonStyle";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import HomeGuest from "./HomeGuest";
+import HomeMember from "./HomeMember";
+import HomeAdmin from "./HomeAdmin";
 
 const Home = () => {
   const location = useLocation();
+  const user = useRecoilValue(userState);
+  const isAuthenticated = user != null;
 
   return (
     <>
-      {/* 모든 컴포넌트에 공통으로 나타나는 부분 */}
       <Gradation />
       <Footer />
-      {/* 모든 컴포넌트에 공통으로 나타나는 부분 */}
-
-      {/* 다른 컴포넌트로 갈아끼워지는 부분 */}
       <Outlet />
-      {/* 다른 컴포넌트로 갈아끼워지는 부분 */}
 
-      {/* 현재 컴포넌트에서만 쓰이는 부분 */}
       {location.pathname === "/" && (
-        <ContentWrapper row="center" col="center">
-          <WideContent dir="col">
-            <Header />
-            <Main></Main>
-          </WideContent>
-        </ContentWrapper>
+        <>
+          {!isAuthenticated ? (
+            <HomeGuest />
+          ) : user?.role !== "admin" ? (
+            <HomeMember />
+          ) : (
+            <HomeAdmin />
+          )}
+        </>
       )}
-      {/* 현재 컴포넌트에서만 쓰이는 부분 */}
     </>
   );
 };

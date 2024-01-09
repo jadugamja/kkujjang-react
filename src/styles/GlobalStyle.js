@@ -48,7 +48,7 @@ const GlobalStyle = createGlobalStyle`
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    font-family: 'Noto Sans KR', sans-serif, 'FontAwesome';
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, 'FontAwesome';
   }
 
   body {
@@ -59,6 +59,10 @@ const GlobalStyle = createGlobalStyle`
 
   form {
     margin: 0;
+  }
+
+  table {
+    border-collapse: collapse;
   }
 
   input[type="text"], input[type="submit"], input[type="submit"] {
@@ -76,6 +80,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
   a {
+    color: inherit;
     text-decoration: none;
   }
 

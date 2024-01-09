@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -5,14 +6,46 @@ import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import HeaderTab from "./HeaderTab";
 import logo from "@/assets/images/logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({ type = "default" }) => {
+  const [headerBgColor, setHeaderBgColor] = useState("transparent");
+  const [headerShadow, setHeaderShadow] = useState();
+
+  const checkScrollTop = () => {
+    if (window.scrollY > 0) {
+      setHeaderBgColor("#E9EBF0");
+      setHeaderShadow("-14px 15px 30px #E9EBF0");
+    } else {
+      setHeaderBgColor("transparent");
+      setHeaderShadow("none");
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", checkScrollTop);
+    return () => window.removeEventListener("scroll", checkScrollTop);
+  }, []);
+
   return (
-    <FixedHeader type={type}>
+    <FixedHeader type={type} color={headerBgColor} shadow={headerShadow}>
       <Link to="/">
         <LogoImg src={logo} type={type} />
       </Link>
       {(type === "detail" || type === "clearTab") && <HeaderTab type={type}></HeaderTab>}
+      {type === "admin" && (
+        <ButtonWrapper>
+          <Link to="/game">
+            <GameButton>게임 시작</GameButton>
+          </Link>
+          <Link to="/member/out">
+            <LogoutButton>
+              <LogoutIcon icon={faSignOut} />
+            </LogoutButton>
+          </Link>
+        </ButtonWrapper>
+      )}
     </FixedHeader>
   );
 };
@@ -29,8 +62,10 @@ const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
   position: fixed;
   top: 0;
   width: inherit;
-  height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
-  background-color: transparent;
+  height: ${({ type }) =>
+    type === "big" ? "10rem" : type !== "admin" ? "7.5rem" : "6.5rem"};
+  background-color: ${({ color }) => color};
+  box-shadow: ${({ shadow }) => shadow};
   z-index: 3;
 `;
 
@@ -52,5 +87,26 @@ const setLogoSize = (type) => {
       return ` width: 4rem; `;
   }
 };
+
+const ButtonWrapper = styled(FlexBox)``;
+
+const GameButton = styled.button`
+  width: 14.5rem;
+  height: 5.25rem;
+  font-family: "Gugi";
+  font-size: ${({ theme }) => theme.fontSize.xl};
+  color: ${({ theme }) => theme.colors.gray700};
+`;
+
+const LogoutButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.gray100};
+  width: 4.75rem;
+  height: 5.25rem;
+`;
+
+const LogoutIcon = styled(FontAwesomeIcon)`
+  font-size: 27px;
+  color: ${({ theme }) => theme.colors.text.main};
+`;
 
 export default Header;

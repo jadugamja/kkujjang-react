@@ -38,7 +38,7 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     });
 
     // 브라우저 상에 보여질 썸네일 이미지
-    const thumbnailImageArray = fileUrlList.map((url, i) => {
+    const thumbnailImageArray = fileUrlList?.map((url, i) => {
       return { name: newSelectedFiles[i].name, url: url };
     });
 
@@ -49,13 +49,13 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
 
   const onDeleteFile = (fileName) => {
     debugger;
-    setSelectedFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+    setSelectedFiles((prevFiles) => prevFiles?.filter((file) => file.name !== fileName));
     setThumbnailImages((prevImage) =>
-      prevImage.filter((image) => image.name !== fileName)
+      prevImage?.filter((image) => image.name !== fileName)
     );
   };
 
-  const thumbnailFile = thumbnailImages.map((image, idx) => (
+  const thumbnailFile = thumbnailImages?.map((image, idx) => (
     <div key={idx}>
       <ThumbnailImage src={image.url} alt={image.name} />
       <DeleteButton onClick={() => onDeleteFile(image.name)}>

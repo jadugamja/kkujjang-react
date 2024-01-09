@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 
-const Pagination = ({ currPage = 1, setCurrPage, totalPageIdx = 1 }) => {
+const Pagination = ({ currPage = 1, setCurrPage, lastPageIdx = 1 }) => {
   // 페이지 그룹 크기
   const size = 10;
 
@@ -18,15 +18,15 @@ const Pagination = ({ currPage = 1, setCurrPage, totalPageIdx = 1 }) => {
   const currentPageGroup = Math.floor((currPage - 1) / size);
 
   // 총 페이지 그룹
-  const totalPageGroup = Math.floor((totalPageIdx - 1) / size);
+  const totalPageGroup = Math.floor((lastPageIdx - 1) / size);
 
   // 페이지 그룹의 시작 페이지 번호
   const startPageIdx = currentPageGroup * size + 1;
 
   // 현재 페이지에서 나타나는 페이지 목록
   const pageListLength =
-    currentPageGroup === totalPageGroup && totalPageIdx % size !== 0
-      ? totalPageIdx % size
+    currentPageGroup === totalPageGroup && lastPageIdx % size !== 0
+      ? lastPageIdx % size
       : size;
   const pageList = Array.from({ length: pageListLength }, (_, i) => startPageIdx + i);
 
@@ -50,11 +50,11 @@ const Pagination = ({ currPage = 1, setCurrPage, totalPageIdx = 1 }) => {
       </PageList>
       <NextListButton
         icon={faAngleRight}
-        onClick={() => setCurrPage(Math.min(totalPageIdx, startPageIdx + size))}
+        onClick={() => setCurrPage(Math.min(lastPageIdx, startPageIdx + size))}
       ></NextListButton>
       <LastButton
         icon={faAnglesRight}
-        onClick={() => setCurrPage(totalPageIdx)}
+        onClick={() => setCurrPage(lastPageIdx)}
       ></LastButton>
     </PaginationWrapper>
   );
@@ -63,20 +63,20 @@ const Pagination = ({ currPage = 1, setCurrPage, totalPageIdx = 1 }) => {
 Pagination.propTypes = {
   currPage: PropTypes.number, // 현재 페이지 번호
   setCurrPage: PropTypes.func, // 현재 페이지 번호 업데이트 함수
-  totalPageIdx: PropTypes.number // 마지막 페이지 번호
+  lastPageIdx: PropTypes.number // 마지막 페이지 번호
 };
 
 // 페이지네이션을 감싸는 태그
 const PaginationWrapper = styled(FlexBox)`
-  margin-top: 200px;
   width: 100%;
   height: 30px;
+  margin-top: 10px;
 `;
 
 // 페이지네이션에 쓰이는 공통 버튼 스타일
 const PaginationButton = styled(FontAwesomeIcon)`
   margin: 8px;
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #687587;
   cursor: pointer;
 `;
@@ -102,7 +102,7 @@ const PageItem = styled.button`
   font-family: "Pretendard Variable";
   width: 32px;
   height: 32px;
-  font-size: ${({ theme }) => theme.fontSize.xxxs};
+  font-size: 16px;
   margin: 0 2px;
   font-weight: ${({ active }) => (active ? "700" : "500")};
   color: ${({ active }) => (active ? "#2C333C" : "#B0B5BE")};

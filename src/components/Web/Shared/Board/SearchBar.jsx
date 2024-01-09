@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FlexBox } from "@/styles/FlexStyle";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
-const Search = ({ setSearchKeyword }) => {
+const SearchBar = ({ setSearchKeyword }) => {
   const keywordRef = useRef();
 
   const sendKeyword = (e) => {
@@ -34,7 +34,7 @@ const Search = ({ setSearchKeyword }) => {
   );
 };
 
-Search.propTypes = {
+SearchBar.propTypes = {
   setSearchKeyword: PropTypes.func
 };
 
@@ -42,7 +42,7 @@ const SearchInputWrapper = styled(FlexBox)`
   border: 2px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 10px;
   width: ${(props) => props.width || "26.5rem"};
-  height: ${(props) => props.height || "3.5rem"};
+  height: ${(props) => props.height || "3.2rem"};
 `;
 
 const TransparentInput = styled.input`
@@ -81,4 +81,4 @@ const SearchIcon = styled(FontAwesomeIcon)`
   font-size: 19px;
 `;
 
-export default Search;
+export default SearchBar;

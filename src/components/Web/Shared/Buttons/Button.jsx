@@ -13,7 +13,7 @@ import {
   MiniRedButton
 } from "./ButtonStyle";
 
-const Button = ({ type, message }) => {
+const Button = ({ type, message, onClick }) => {
   return (
     <>
       {type === "bigBrown" && <BigSubmitBrownButton>{message}</BigSubmitBrownButton>}
@@ -27,8 +27,12 @@ const Button = ({ type, message }) => {
       {type === "smallTransparent" && (
         <SmallTransparentButton>{message}</SmallTransparentButton>
       )}
-      {type === "smallDark" && <SmallDarkButton>{message}</SmallDarkButton>}
-      {type === "smallGray" && <SmallGrayButton>{message}</SmallGrayButton>}
+      {type === "smallDark" && (
+        <SmallDarkButton onClick={onClick}>{message}</SmallDarkButton>
+      )}
+      {type === "smallGray" && (
+        <SmallGrayButton onClick={onClick}>{message}</SmallGrayButton>
+      )}
       {type === "miniBlue" && <MiniBlueButton>{message}</MiniBlueButton>}
       {type === "miniRed" && <MiniRedButton>{message}</MiniRedButton>}
     </>
@@ -37,7 +41,8 @@ const Button = ({ type, message }) => {
 
 Button.propTypes = {
   type: PropTypes.string,
-  message: PropTypes.string
+  message: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 export default Button;

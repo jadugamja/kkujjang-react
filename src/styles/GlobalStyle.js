@@ -61,6 +61,10 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
   }
 
+  table {
+    border-collapse: collapse;
+  }
+
   input[type="text"], input[type="submit"], input[type="submit"] {
     outline: 0;
   }
@@ -76,6 +80,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
   a {
+    color: inherit;
     text-decoration: none;
   }
 

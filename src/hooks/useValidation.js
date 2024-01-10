@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// 아이디 유효성 검사
+// 아이디 유효성 검사 (영어, 숫자는 가능하게)
 export const useIdValidation = () => {
   const [isValid, setIsValid] = useState(false);
 
@@ -19,7 +19,7 @@ export const useIdValidation = () => {
   return { isValid, validateId };
 };
 
-// 비밀번호 유효성 검사
+// 비밀번호 유효성 검사 (영어, 숫자, 길이만)
 export const usePasswordValidation = () => {
   const [conditions, setConditions] = useState({
     isNotEmpty: false,

@@ -16,16 +16,18 @@ import {
 const Button = ({ type, message, onClick }) => {
   return (
     <>
-      {type === "bigBrown" && <BigSubmitBrownButton>{message}</BigSubmitBrownButton>}
-      {type === "smallBrown" && (
-        <SmallSubmitBrownButton>{message}</SmallSubmitBrownButton>
+      {type === "bigBrown" && (
+        <BigSubmitBrownButton onClick={onClick}>{message}</BigSubmitBrownButton>
       )}
-      {type === "modal" && <ModalGrayButton>{message}</ModalGrayButton>}
+      {type === "smallBrown" && (
+        <SmallSubmitBrownButton onClick={onClick}>{message}</SmallSubmitBrownButton>
+      )}
+      {type === "modal" && <ModalGrayButton onClick={onClick}>{message}</ModalGrayButton>}
       {type === "bigTransparent" && (
-        <BigTransparentButton>{message}</BigTransparentButton>
+        <BigTransparentButton onClick={onClick}>{message}</BigTransparentButton>
       )}
       {type === "smallTransparent" && (
-        <SmallTransparentButton>{message}</SmallTransparentButton>
+        <SmallTransparentButton onClick={onClick}>{message}</SmallTransparentButton>
       )}
       {type === "smallDark" && (
         <SmallDarkButton onClick={onClick}>{message}</SmallDarkButton>
@@ -33,8 +35,10 @@ const Button = ({ type, message, onClick }) => {
       {type === "smallGray" && (
         <SmallGrayButton onClick={onClick}>{message}</SmallGrayButton>
       )}
-      {type === "miniBlue" && <MiniBlueButton>{message}</MiniBlueButton>}
-      {type === "miniRed" && <MiniRedButton>{message}</MiniRedButton>}
+      {type === "miniBlue" && (
+        <MiniBlueButton onClick={onClick}>{message}</MiniBlueButton>
+      )}
+      {type === "miniRed" && <MiniRedButton onClick={onClick}>{message}</MiniRedButton>}
     </>
   );
 };

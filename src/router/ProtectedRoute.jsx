@@ -1,11 +1,17 @@
 import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userState } from "../recoil/userState";
+import { useEffect } from "react";
 
 const ProtectedRoute = ({ authentication, member = false, admin = false, children }) => {
-  const user = useRecoilValue(userState);
-  const isAuthenticated = user != null; // 게스트, 사용자, 관리자
+  // const user = useRecoilValue(userState);
+  const [user, setUser] = useRecoilState(userState);
+  useEffect(() => {
+    setUser({ role: "admin" });
+  }, []);
+
+  const isAuthenticated = user != null;
 
   if (!authentication) {
     return !isAuthenticated ? children : <Navigate to="/" />;

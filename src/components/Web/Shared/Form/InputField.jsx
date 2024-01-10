@@ -7,46 +7,37 @@ import PasswordRequirement from "./PasswordRequirement";
 import { Label, Input, MapWrapper } from "./InputFieldStyle";
 
 const InputField = ({ name, hasLabel, logInForm }) => {
-  const inputValueRef = useRef("");
+  const idValueRef = useRef("");
+  const passwordValueRef = useRef("");
+  const passwordCheckValueRef = useRef("");
   const { isValid, validateId } = useIdValidation();
   const { conditions, validatePassword } = usePasswordValidation();
   const [isMatch, setIsMatch] = useState(false);
 
-  let inputType = "";
   let label = "";
   let placeholder = "";
 
   if (name === "id") {
-    inputType = "text";
     label = "아이디";
     placeholder = logInForm ? "아이디를 입력하세요" : "아이디 입력";
   } else if (name === "password") {
-    inputType = "password";
     label = "비밀번호";
     placeholder = logInForm ? "비밀번호를 입력하세요" : "비밀번호 입력";
   } else if (name === "password_check") {
-    inputType = "password";
     label = "비밀번호 확인";
     placeholder = "비밀번호 확인";
   }
 
-  const handleValidation = (e) => {
-    const { name, value } = e.target;
-
-    inputValueRef.current = {
-      ...inputValueRef.current,
-      [name]: value
-    };
-
+  const handleValidation = () => {
     switch (name) {
       case "id":
-        validateId(value);
+        validateId(idValueRef);
         break;
       case "password":
-        validatePassword(value);
+        validatePassword(passwordValueRef);
         break;
       case "password_check":
-        const isMatch = value === inputValueRef.current.password;
+        const isMatch = passwordCheckValueRef === passwordValueRef;
         setIsMatch(isMatch);
         break;
     }
@@ -65,29 +56,52 @@ const InputField = ({ name, hasLabel, logInForm }) => {
   return (
     <>
       {hasLabel && <Label>{label}</Label>}
-      <Input
-        type={inputType}
-        name={name}
-        placeholder={placeholder}
-        onChange={handleValidation}
-        ref={inputValueRef}
-      />
-      {name === "password" && (
-        <MapWrapper>
-          {messages.map((message, index) => (
-            <PasswordRequirement
-              key={index}
-              message={message.text}
-              isCheck={message.condition}
-            />
-          ))}
-        </MapWrapper>
+      {/* {아이디 input} */}
+      {name === "id" && (
+        <Input
+          type="text"
+          name={name}
+          placeholder={placeholder}
+          onChange={handleValidation}
+          ref={idValueRef}
+        />
       )}
+      {/* {비밀번호 input} */}
+      {name === "password" && (
+        <>
+          <Input
+            type="password"
+            name={name}
+            placeholder={placeholder}
+            onChange={handleValidation}
+            ref={passwordValueRef}
+          />
+          <MapWrapper>
+            {messages.map((message, index) => (
+              <PasswordRequirement
+                key={index}
+                message={message.text}
+                isCheck={message.condition}
+              />
+            ))}
+          </MapWrapper>
+        </>
+      )}
+      {/* {비밀번호 확인 input} */}
       {name === "password_check" && (
-        <PasswordRequirement
-          message={"비밀번호 일치"}
-          isCheck={isMatch}
-        ></PasswordRequirement>
+        <>
+          <Input
+            type="password"
+            name={name}
+            placeholder={placeholder}
+            onChange={handleValidation}
+            ref={passwordCheckValueRef}
+          />
+          <PasswordRequirement
+            message={"비밀번호 일치"}
+            isCheck={isMatch}
+          ></PasswordRequirement>
+        </>
       )}
     </>
   );

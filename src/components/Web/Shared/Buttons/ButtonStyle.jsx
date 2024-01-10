@@ -126,12 +126,3 @@ export const MiniRedButton = styled(MiniButton)`
   border: 1px solid ${({ theme }) => theme.colors.error};
   color: ${({ theme }) => theme.colors.error};
 `;
-
-// ======= IncrementButton, DecrementButton =======
-
-export const ButtonWrapper = styled.button`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.width || "fit-content"};
-  padding: 0;
-  background-color: transparent;
-`;

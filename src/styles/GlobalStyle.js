@@ -55,6 +55,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text.main};
+    cursor: auto;
   }
 
   form {
@@ -67,6 +68,11 @@ const GlobalStyle = createGlobalStyle`
 
   input[type="text"], input[type="submit"], input[type="submit"] {
     outline: 0;
+  }
+
+  textarea {
+    outline: 0;
+    resize: none;
   }
 
   button {

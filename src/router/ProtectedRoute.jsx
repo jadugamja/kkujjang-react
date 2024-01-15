@@ -26,6 +26,7 @@ const ProtectedRoute = ({ authentication, member = false, admin = false, childre
 
     return children;
   }
+  [];
 };
 
 ProtectedRoute.propTypes = {

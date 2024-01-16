@@ -7,6 +7,9 @@ import FlexBox from "@/styles/FlexStyle";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 
+import { useSetRecoilState } from "recoil";
+import { noticeArticleState } from "../../../recoil/testState.test";
+
 const MAX_IMAGE_COUNT = 3;
 
 const NoticeManagementCreate = () => {
@@ -15,6 +18,8 @@ const NoticeManagementCreate = () => {
   const [images, setImages] = useState([]);
 
   const editorRef = useRef(null);
+
+  const setNotice = useSetRecoilState(noticeArticleState);
 
   // 텍스트 에디터 옵션
   const modules = {
@@ -39,7 +44,14 @@ const NoticeManagementCreate = () => {
       formData.append(`file[${idx}]`, image);
     });
 
+    debugger;
     // 공지사항 등록 api 호출 (notice)
+
+    let notice = {};
+    for (let [key, value] of formData) {
+      notice[key] = value;
+    }
+    setNotice(notice);
   };
 
   useEffect(() => {

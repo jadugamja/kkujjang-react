@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import FlexBox from "@/styles/FlexStyle";
@@ -14,18 +14,15 @@ import WebModal from "../Shared/Modal/WebModal";
 import { useRecoilState } from "recoil";
 import { isModalOpenState } from "@/recoil/modalState";
 
-import { noticeArticleState } from "@/recoil/testState.test";
-
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const { id, title, createdAt, views, content } = data;
   const [editTitle, setEditTitle] = useState(title);
   const [editContent, setEditContent] = useState(content);
   const [isOpenModal, setIsOpenModal] = useRecoilState(isModalOpenState);
 
+  const contentRef = useRef();
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
-
-  // const [notice, setNotice] = useRecoilState(noticeArticleState);
 
   const onClickEditModeOn = () => {
     setIsEditMode(true);
@@ -54,6 +51,28 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     ]
   };
 
+  // 수정
+  const updateNotice = (e) => {
+    e.preventDefault();
+  };
+
+  // 삭제
+  const deleteNotice = () => {
+    // 경고 메시지 모달 출력
+    setIsOpenModal(true);
+  };
+
+  // 서버에서 받은 데이터의 이미지 url을 img src 속성에 적용
+  // useEffect(() => {
+  //   let imageUrl;
+  //   const empthImg = contentRef.current.querySelectorAll("img");
+  //   empthImg?.forEach((img) => {
+  //     if (imageUrl) {
+  //       img.src = imageUrl;
+  //     }
+  //   });
+  // }, [content]);
+
   const renderDetailView = () => (
     <>
       <HeaderTextWrapper dir="col">
@@ -72,11 +91,12 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         </SubTextWrapper>
       </HeaderTextWrapper>
       <ContentWrapper>
+        {/* <ContentText dangerouslySetInnerHTML={{__html: content}} ref={contentRef}></ContentText> */}
         <ContentText>{content}</ContentText>
       </ContentWrapper>
       <ButtonWrapper row="end">
         <Button type="smallTransparent" message="수정" onClick={onClickEditModeOn} />
-        <Button type="smallGray" message="삭제" onClick={() => setIsOpenModal(true)} />
+        <Button type="smallGray" message="삭제" onClick={deleteNotice} />
       </ButtonWrapper>
     </>
   );
@@ -116,7 +136,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         </EditorWrapper>
       </ContentWrapper>
       <ButtonWrapper row="end">
-        <Button type="smallTransparent" message="저장" />
+        <Button type="smallTransparent" message="저장" onClick={(e) => updateNotice(e)} />
       </ButtonWrapper>
     </>
   );
@@ -127,7 +147,6 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         {isEditMode ? renderUpdateView() : renderDetailView()}
       </DetailWrapper>
       {isOpenModal && <WebModal hasButton={true} message="게시물을 삭제하시겠습니까?" />}
-      {/* <div dangerouslySetInnerHTML={{ __html: notice }}></div> */}
     </>
   );
 };

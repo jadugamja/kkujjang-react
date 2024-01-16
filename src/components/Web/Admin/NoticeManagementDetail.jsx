@@ -14,6 +14,8 @@ import WebModal from "../Shared/Modal/WebModal";
 import { useRecoilState } from "recoil";
 import { isModalOpenState } from "@/recoil/modalState";
 
+import { noticeArticleState } from "@/recoil/testState.test";
+
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const { id, title, createdAt, views, content } = data;
   const [editTitle, setEditTitle] = useState(title);
@@ -22,6 +24,8 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
+
+  // const [notice, setNotice] = useRecoilState(noticeArticleState);
 
   const onClickEditModeOn = () => {
     setIsEditMode(true);
@@ -123,6 +127,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         {isEditMode ? renderUpdateView() : renderDetailView()}
       </DetailWrapper>
       {isOpenModal && <WebModal hasButton={true} message="게시물을 삭제하시겠습니까?" />}
+      {/* <div dangerouslySetInnerHTML={{ __html: notice }}></div> */}
     </>
   );
 };

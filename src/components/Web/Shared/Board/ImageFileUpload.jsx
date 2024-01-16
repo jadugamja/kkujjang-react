@@ -21,9 +21,9 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     const fileUrlList = [];
 
     for (let i = 0; i < newSelectedFiles.length; i++) {
-      // 10MB 제한
-      if (newSelectedFiles[i].size > 10000000) {
-        alert("파일 당 10MB를 초과할 수 없습니다.");
+      // 5MB 제한
+      if (newSelectedFiles[i].size > 1024 * 1024 * 5) {
+        alert("파일당 5MB를 초과할 수 없습니다.");
         return;
       }
 
@@ -48,7 +48,6 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
   };
 
   const onDeleteFile = (fileName) => {
-    debugger;
     setSelectedFiles((prevFiles) => prevFiles?.filter((file) => file.name !== fileName));
     setThumbnailImages((prevImage) =>
       prevImage?.filter((image) => image.name !== fileName)

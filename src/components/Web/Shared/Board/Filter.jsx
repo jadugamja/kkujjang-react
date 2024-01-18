@@ -18,9 +18,9 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
   };
 
   return (
-    <FlexBox>
+    <FilterListWrapper>
       {filterOptions?.map(({ key, values }, idx) => (
-        <FilterWrapper col="center" key={key}>
+        <FilterItemWrapper col="center" key={key}>
           <span>{getFilterLabel(key)}</span>
           <FilterImage
             src={defaultFilter}
@@ -41,9 +41,9 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
               ))}
             </FilterList>
           )}
-        </FilterWrapper>
+        </FilterItemWrapper>
       ))}
-    </FlexBox>
+    </FilterListWrapper>
   );
 };
 
@@ -61,22 +61,22 @@ const getFilterItemText = (key, item) => {
     case "type":
       switch (item) {
         case 0:
-          return "시스템 문의";
+          return <span>{"시스템 문의"}</span>;
         case 1:
-          return "계정 관련 문의";
+          return <span>{"계정 관련 문의"}</span>;
         case 2:
-          return "서비스 문의";
+          return <span>{"서비스 문의"}</span>;
         case 3:
-          return "순서 테스트";
+          return <span>{"순서 테스트"}</span>;
         default:
           return "";
       }
     case "needsAnswer":
       switch (item) {
         case true:
-          return "NO";
+          return <span>{"NO"}</span>;
         case false:
-          return "YES";
+          return <span>{"YES"}</span>;
         default:
           return "";
       }
@@ -88,9 +88,13 @@ Filter.propTypes = {
   setSelectedFilterOptions: PropTypes.func
 };
 
-const FilterWrapper = styled(FlexBox)`
-  margin-right: 44px;
+const FilterListWrapper = styled(FlexBox)`
+  & > * + * {
+    margin-left: 1.75rem;
+  }
 `;
+
+const FilterItemWrapper = styled(FlexBox)``;
 
 const FilterImage = styled.img`
   width: 19px;
@@ -106,6 +110,7 @@ const FilterList = styled(FlexBox).attrs({ as: "ul" })`
   top: 147px;
   width: max-content;
   align-self: baseline;
+  margin-top: 10px;
   margin-left: ${(props) => props.left || ""};
   background-color: ${({ theme }) => theme.colors.content};
   border: 2px solid #a2a2a2;

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
 
-const ManagementList = ({ title, data = [], onDetailOpen }) => {
+const ManagementList = ({ title, data = [], onSideOpen }) => {
   const getTitleText = (title) => {
     switch (title) {
       case "notice":
@@ -88,12 +88,12 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
             </tr>
           ) : (
             data?.map((item) => (
-              <Tr key={item.id} onClick={() => onDetailOpen(item.id)}>
+              <Tr key={item.id} onClick={() => onSideOpen(item.id)}>
                 {Object.entries(item)
                   ?.filter(([key]) => key !== "id")
                   ?.map(([key, value]) => {
-                    if (key === "type" || key === "title")
-                      return <TdLeft key={key}>{value}</TdLeft>;
+                    if (key === "type") return <TdCenter key={key}>{value}</TdCenter>;
+                    if (key === "title") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "createdAt")
                       return <TdCenter key={key}>{value.substr(0, 10)}</TdCenter>;
                     if (key === "isBanned")
@@ -104,7 +104,15 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
                       );
                     if (key === "needsAnswer")
                       return (
-                        <TdCenter key={key}>{!item?.needsAnswer ? "NO" : "YES"}</TdCenter>
+                        <TdCenter
+                          key={key}
+                          style={{
+                            color: item?.needsAnswer && "#FF6C6C",
+                            fontWeight: "700"
+                          }}
+                        >
+                          {!item?.needsAnswer ? "YES" : "NO"}
+                        </TdCenter>
                       );
                     return <TdCenter key={key}>{value}</TdCenter>;
                   })}
@@ -120,14 +128,16 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
 ManagementList.propTypes = {
   title: PropTypes.string,
   data: PropTypes.array,
-  onDetailOpen: PropTypes.func
+  onSideOpen: PropTypes.func
 };
 
 const TableWrapper = styled.div`
+  height: 38.7rem;
   width: 100%;
 `;
 
 const Table = styled.table`
+  table-layout: fixed;
   width: 100%;
 `;
 
@@ -154,8 +164,9 @@ const Tbody = styled.tbody`
 `;
 
 const Tr = styled.tr`
-  height: 3.25rem;
-  /* height: 3.7rem; */
+  height: 3.5rem;
+  /* height: 3.25rem; */
+  line-height: 0.75rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray300};
 
   &:hover {

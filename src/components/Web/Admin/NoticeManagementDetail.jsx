@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import FlexBox from "@/styles/FlexStyle";
 import ReactQuill from "react-quill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import FlexBox from "@/styles/FlexStyle";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { EditorWrapper } from "./NoticeManagementCreate";

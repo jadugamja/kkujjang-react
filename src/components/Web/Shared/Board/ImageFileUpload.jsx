@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faX } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 
-const ImageFileUpload = ({ appendFilesToFormData }) => {
+// mode 0: default(with plus icon), mode 1: secondary(with text)
+const ImageFileUpload = ({ appendFilesToFormData, width, height, mode = 0 }) => {
   // 화면에 출력되는 이미지 썸네일
-  const [thumbnailImages, setThumbnailImages] = useState([]);
+  const [previewImgs, setPreviewImgs] = useState([]);
   // 서버 전달용 파일 리스트
   const [selectedFiles, setSelectedFiles] = useState([]);
   const inputRef = useRef(null);
@@ -21,9 +22,15 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     const fileUrlList = [];
 
     for (let i = 0; i < newSelectedFiles.length; i++) {
-      // 5MB 제한
+      // 파일 크기 제한
       if (newSelectedFiles[i].size > 1024 * 1024 * 5) {
         alert("파일당 5MB를 초과할 수 없습니다.");
+        return;
+      }
+
+      // 파일명 중복 체크
+      if (selectedFiles.some((file) => file.name === newSelectedFiles[i].name)) {
+        alert("같은 이름의 파일이 존재합니다.");
         return;
       }
 
@@ -43,18 +50,17 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     });
 
     // 첨부 파일 삭제 시
-    setThumbnailImages((prev) => prev.concat(thumbnailImageArray));
+    setPreviewImgs((prev) => prev.concat(thumbnailImageArray));
     e.target.value = "";
   };
 
   const onDeleteFile = (fileName) => {
     setSelectedFiles((prevFiles) => prevFiles?.filter((file) => file.name !== fileName));
-    setThumbnailImages((prevImage) =>
-      prevImage?.filter((image) => image.name !== fileName)
-    );
+    setPreviewImgs((prevImage) => prevImage?.filter((image) => image.name !== fileName));
   };
 
-  const thumbnailFile = thumbnailImages?.map((image, idx) => (
+  // 미리보기 이미지
+  const previewImg = previewImgs?.map((image, idx) => (
     <div key={idx}>
       <ThumbnailImage src={image.url} alt={image.name} />
       <DeleteButton onClick={() => onDeleteFile(image.name)}>
@@ -63,14 +69,32 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
     </div>
   ));
 
+  // 미리보기 파일명
+  const previewName = selectedFiles?.map((file, idx) => (
+    <PreviewNameBox key={idx} col="center">
+      <PreviewNameSpan>{file.name}</PreviewNameSpan>
+      <DeleteButton onClick={() => onDeleteFile(file.name)}>
+        <DeleteIcon icon={faX} />
+      </DeleteButton>
+    </PreviewNameBox>
+  ));
+
   return (
-    <ImageFileUploadWrapper>
-      {thumbnailImages.length !== 0 && (
-        <ThumbnailImageWrapper>{thumbnailFile}</ThumbnailImageWrapper>
+    <ImageFileUploadWrapper mode={mode} col={mode !== 0 && "center"}>
+      {mode === 0 && previewImgs.length !== 0 && (
+        <PreviewImgWrapper>{previewImg}</PreviewImgWrapper>
       )}
-      {thumbnailImages.length < 3 && (
-        <FileUploadButton onClick={() => inputRef.current.click()}>
-          <PlusIcon icon={faPlus} />
+      {mode !== 0 && previewImgs.length !== 0 && (
+        <PreviewImgWrapper>{previewName}</PreviewImgWrapper>
+      )}
+      {previewImgs.length < 3 && (
+        <FileUploadButton
+          width={width}
+          height={height}
+          mode={mode}
+          onClick={() => inputRef.current.click()}
+        >
+          {mode === 0 ? <PlusIcon icon={faPlus} /> : <span>업로드</span>}
         </FileUploadButton>
       )}
       <UnvisibleInput
@@ -84,7 +108,10 @@ const ImageFileUpload = ({ appendFilesToFormData }) => {
 };
 
 ImageFileUpload.propTypes = {
-  appendFilesToFormData: PropTypes.func
+  appendFilesToFormData: PropTypes.func,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  mode: PropTypes.number
 };
 
 const CommonWrapper = styled(FlexBox)`
@@ -93,9 +120,30 @@ const CommonWrapper = styled(FlexBox)`
   }
 `;
 
-const ImageFileUploadWrapper = styled(CommonWrapper)``;
+const ImageFileUploadWrapper = styled(CommonWrapper)`
+  width: ${({ mode }) => mode !== 0 && "28.125rem"};
+  height: ${({ mode }) => mode !== 0 && "3rem"};
+  margin-left: ${({ mode }) => mode !== 0 && "5px"};
+  overflow-x: auto;
+`;
 
-const ThumbnailImageWrapper = styled(CommonWrapper)``;
+const PreviewImgWrapper = styled(CommonWrapper)``;
+
+// ========= 파일명 미리보기 =========
+const PreviewNameBox = styled(FlexBox)`
+  width: fit-content;
+  height: 2.25rem;
+  padding: 0 1.5rem 0 1rem;
+  background-color: #eee;
+  border-radius: 30px;
+`;
+
+const PreviewNameSpan = styled.span`
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 // ========= 이미지 미리보기 =========
 const ThumbnailImage = styled.img`
@@ -106,10 +154,12 @@ const ThumbnailImage = styled.img`
 
 const DeleteButton = styled.button`
   position: relative;
-  bottom: 78%;
-  right: calc(16% + 2px);
+  top: ${({ mode }) => mode !== 0 && "0"};
+  bottom: ${({ mode }) => mode === 0 && "78%"};
+  right: ${({ mode }) => (mode === 0 ? "calc(16% + 2px)" : "-12px")};
   background-color: #000;
   opacity: 0.7;
+  border-radius: ${({ mode }) => mode !== 0 && "50%"};
 `;
 
 const DeleteIcon = styled(FontAwesomeIcon)`
@@ -118,9 +168,14 @@ const DeleteIcon = styled(FontAwesomeIcon)`
 
 // ========= 파일 업로드 =========
 const FileUploadButton = styled.button`
-  width: 6.25rem;
-  height: 5.625rem;
-  background-color: #585858;
+  width: ${({ width }) => width || "6.25rem"};
+  height: ${({ height }) => height || "5.625rem"};
+  background-color: ${({ mode }) => (mode === 0 ? "#585858" : "#EBE8E1")};
+  color: ${({ mode }) => mode !== 0 && "#3F3F3F"};
+  font-size: ${({ mode, theme }) => mode !== 0 && theme.fontSize.xxxs};
+
+  min-width: ${({ mode }) => mode !== 0 && "5.5rem"};
+  margin-left: ${({ mode }) => mode !== 0 && "auto"};
 `;
 
 const PlusIcon = styled(FontAwesomeIcon)`

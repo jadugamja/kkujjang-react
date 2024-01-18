@@ -8,8 +8,6 @@ import ManagementList from "./ManagementList";
 import Pagination from "../Shared/Board/Pagination";
 import SearchBar from "../Shared/Board/SearchBar";
 import Button from "../Shared/Buttons/Button";
-import NoticeManagementDetail from "./NoticeManagementDetail";
-import NoticeManagementCreate from "./NoticeManagementCreate";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);
@@ -93,7 +91,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
     }
   }, []);
 
-  // 검색어 요청 때마다 통신
+  // 페이지 변경, 검색 시 호출
   useEffect(() => {
     let queryString = `?page=${currPage}${
       searchKeyword !== "" ? `&q=${searchKeyword}` : ""
@@ -111,7 +109,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
               <SearchBar setSearchKeyword={setSearchKeyword} />
             </SearchBarWrapper>
           </HeaderWrapper>
-          <ManagementList title="notice" data={listData} onDetailOpen={onDetailOpen} />
+          <ManagementList title="notice" data={listData} onSideOpen={onDetailOpen} />
           <Pagination
             currPage={currPage}
             setCurrPage={setCurrPage}

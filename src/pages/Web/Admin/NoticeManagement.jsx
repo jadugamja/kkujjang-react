@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+
+import { isAcitveSideContentTypeState } from "@/recoil/displayState";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -9,8 +12,10 @@ import NoticeManagementDetail from "@/components/Web/Admin/NoticeManagementDetai
 import NoticeManagementCreate from "@/components/Web/Admin/NoticeManagementCreate";
 
 const NoticeManagement = () => {
-  // 0: is not active, 1: Detail, 2: Create
-  const [isAcitveSideContentType, setIsActiveSideContentType] = useState(0);
+  // 0: not active, 1: Detail, 2: Create
+  const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
+    isAcitveSideContentTypeState
+  );
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [detailData, setDetailData] = useState({});

@@ -1,8 +1,13 @@
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+
 import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
+import { isAnswerCompletedState } from "@/recoil/boardState";
 
 const ManagementList = ({ title, data = [], onSideOpen }) => {
+  const isAnswerCompleted = useRecoilValue(isAnswerCompletedState);
+
   const getTitleText = (title) => {
     switch (title) {
       case "notice":
@@ -107,11 +112,20 @@ const ManagementList = ({ title, data = [], onSideOpen }) => {
                         <TdCenter
                           key={key}
                           style={{
-                            color: item?.needsAnswer && "#FF6C6C",
+                            color:
+                              Object.keys(isAnswerCompleted)?.length !== 0
+                                ? !isAnswerCompleted[item?.id] && "#FF6C6C"
+                                : item.needsAnswer && "#FF6C6C",
                             fontWeight: "700"
                           }}
                         >
-                          {!item?.needsAnswer ? "YES" : "NO"}
+                          {Object.keys(isAnswerCompleted)?.length !== 0
+                            ? isAnswerCompleted[item?.id]
+                              ? "YES"
+                              : "NO"
+                            : item.needsAnswer
+                              ? "YES"
+                              : "NO"}
                         </TdCenter>
                       );
                     return <TdCenter key={key}>{value}</TdCenter>;
@@ -128,7 +142,8 @@ const ManagementList = ({ title, data = [], onSideOpen }) => {
 ManagementList.propTypes = {
   title: PropTypes.string,
   data: PropTypes.array,
-  onSideOpen: PropTypes.func
+  onSideOpen: PropTypes.func,
+  isAnswerCompleted: PropTypes.object
 };
 
 const TableWrapper = styled.div`

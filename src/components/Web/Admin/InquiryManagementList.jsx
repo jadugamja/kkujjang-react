@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+
+import { FlexBox } from "@/styles/FlexStyle";
+import { isAnswerCompletedState } from "@/recoil/boardState";
+import ManagementTitle from "./ManagementTitle";
 import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
-import ManagementTitle from "./ManagementTitle";
-import { FlexBox } from "@/styles/FlexStyle";
 
 const InquiryManagementList = ({ type, onThreadOpen }) => {
   const [listData, setListData] = useState([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState({});
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
+  const [isAnswerCompleted, setIsAnswerCompleted] =
+    useRecoilState(isAnswerCompletedState);
 
   // 필터 key 데이터 추출
   const filterKeys = ["type", "needsAnswer"];
@@ -28,36 +33,34 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
   });
 
   useEffect(() => {
+    console.log("Props in InquiryManagementList: ", setIsAnswerCompleted);
+
     // 문의 목록 조회 api 호출
 
     // 임시 데이터
     const tmp = [
       {
-        id: 0,
+        id: "aldfka-123812lk-dklfal",
         type: 1,
         title: "제목1",
-        // author: "사용자1",
         needsAnswer: true
       },
       {
-        id: 1,
+        id: "aldfka-123812lk-dadkfml",
         type: 2,
         title: "제목2",
-        // author: "사용자1",
         needsAnswer: true
       },
       {
-        id: 2,
+        id: "aldfka-1238194809-dadkfml",
         type: 3,
         title: "제목3",
-        // author: "사용자1",
         needsAnswer: true
       },
       {
-        id: 3,
+        id: "aldfka-908194809-dadkfml",
         type: 3,
         title: "제목4",
-        // author: "사용자1",
         needsAnswer: false
       }
     ];
@@ -65,6 +68,10 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
     if (tmp.length === 0) {
       setListData([]);
     } else {
+      // 각 문의 아이템 id마다 답변 여부 매핑
+      setIsAnswerCompleted(
+        tmp.reduce((acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }), {})
+      );
       setListData(tmp);
     }
   }, []);
@@ -84,14 +91,19 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
         <Box>
           <HeaderWrapper row="between" col="center">
             <ManagementTitle title="inquiry" />
-            <FilterWrapper marginRight="0.75rem">
+            <FilterWrapper marginTop="1.313rem" marginRight="0.75rem">
               <Filter
                 filterOptions={filterOptions}
                 setSelectedFilterOptions={setSelectedFilterOptions}
               />
             </FilterWrapper>
           </HeaderWrapper>
-          <ManagementList title="inquiry" data={listData} onSideOpen={onThreadOpen} />
+          <ManagementList
+            title="inquiry"
+            data={listData}
+            onSideOpen={onThreadOpen}
+            isAnswerCompleted={isAnswerCompleted}
+          />
           <Pagination
             currPage={currPage}
             setCurrPage={setCurrPage}
@@ -101,7 +113,11 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
       ) : (
         <Box type={type}>
           <ManagementTitle type={type} title="inquiry" />
-          <ManagementList title="inquiry" data={listData} />
+          <ManagementList
+            title="inquiry"
+            data={listData}
+            isAnswerCompleted={isAnswerCompleted}
+          />
         </Box>
       )}
     </>
@@ -110,7 +126,9 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
 InquiryManagementList.propTypes = {
   type: PropTypes.string,
-  onThreadOpen: PropTypes.func
+  onThreadOpen: PropTypes.func,
+  isAnswerCompleted: PropTypes.object,
+  setIsAnswerCompleted: PropTypes.func
 };
 
 const Box = styled.div`

@@ -92,9 +92,13 @@ const ImageFileUpload = ({ appendFilesToFormData, width, height, mode = 0 }) => 
           width={width}
           height={height}
           mode={mode}
-          onClick={() => inputRef.current.click()}
+          onClick={() => inputRef.current && inputRef.current.click()}
         >
-          {mode === 0 ? <PlusIcon icon={faPlus} /> : <span>업로드</span>}
+          {mode === 0 ? (
+            <PlusIcon icon={faPlus} />
+          ) : (
+            <AttachmentText>첨부파일</AttachmentText>
+          )}
         </FileUploadButton>
       )}
       <UnvisibleInput
@@ -121,8 +125,7 @@ const CommonWrapper = styled(FlexBox)`
 `;
 
 const ImageFileUploadWrapper = styled(CommonWrapper)`
-  width: ${({ mode }) => mode !== 0 && "28.125rem"};
-  height: ${({ mode }) => mode !== 0 && "3rem"};
+  width: ${({ mode }) => mode !== 0 && "100%"};
   margin-left: ${({ mode }) => mode !== 0 && "5px"};
   overflow-x: auto;
 `;
@@ -143,6 +146,10 @@ const PreviewNameSpan = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const AttachmentText = styled.span`
+  font-size: ${({ theme }) => theme.fontSize.xxxs};
 `;
 
 // ========= 이미지 미리보기 =========

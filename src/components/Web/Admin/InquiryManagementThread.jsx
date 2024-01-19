@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -49,7 +49,7 @@ const InquiryManagementThread = ({ data }) => {
 
   const appendFilesToFormData = useCallback(
     (_files) => {
-      if (isAnswerCompleted[id] === false) {
+      if (!isAnswerCompleted[id]) {
         setAnswerFiles(_files);
       } else {
         setReplyAnswerFiles((prevFiles) => {
@@ -77,6 +77,11 @@ const InquiryManagementThread = ({ data }) => {
     (e) => {
       e.preventDefault();
 
+      if (answer === "") {
+        alert("답변을 입력하세요");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("answer", answer);
       formData.append("file", answerFiles);
@@ -93,6 +98,11 @@ const InquiryManagementThread = ({ data }) => {
     (e) => {
       e.preventDefault();
 
+      if (replyAnswer === "") {
+        alert("답변을 입력하세요");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("answer", replyAnswer);
       replyAnswerFiles.forEach((file, idx) => {
@@ -108,7 +118,7 @@ const InquiryManagementThread = ({ data }) => {
       ]);
 
       replyAnswerRef.current.value = "";
-      // setReplyAnswerFiles([]);
+      setReplyAnswerFiles([]);
     },
     [replyAnswer, replyAnswerFiles]
   );
@@ -228,16 +238,21 @@ const InquiryManagementThread = ({ data }) => {
       )}
       {isAnswerCompleted[id] &&
         replyAnswers.length > 0 &&
-        replyAnswers.map((replyAnswer, idx) => (
+        replyAnswers?.map((_replyAnswer, idx) => (
           <AnswerWrapper key={idx}>
             <div>
               <QnAText>A.</QnAText>
             </div>
             <Width100 marginTop="10px">
-              <AnswerText>{replyAnswer.text}</AnswerText>
-              {Object.keys(replyAnswer.file).length > 0 && (
-                <AttachedImg src={window.URL.createObjectURL(replyAnswer.file)} />
-              )}
+              <AnswerText>{_replyAnswer.text}</AnswerText>
+              {_replyAnswer.file.length > 0 &&
+                _replyAnswer.file?.map((file, idx) => (
+                  <AttachedImg
+                    key={idx}
+                    src={URL.createObjectURL(file[idx])}
+                    alt="첨부파일"
+                  />
+                ))}
             </Width100>
           </AnswerWrapper>
         ))}

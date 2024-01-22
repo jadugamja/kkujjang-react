@@ -7,6 +7,10 @@ import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import ChatItem from "../../Game/Shared/ChatItem";
 
 const ReportManagementDetailTable = ({ data, type }) => {
+  if (!data) {
+    return <div>Loading...</div>; // or return an error message
+  }
+
   return (
     <Table dir="col">
       {type === "report" && (
@@ -16,23 +20,23 @@ const ReportManagementDetailTable = ({ data, type }) => {
               <WarningIcon icon={faTriangleExclamation} />
             </IconWrapper>
             <TextWrapper dir="col">
-              <span>{data.reporteeNickname}</span>
-              <span>{`(${data.reporteeId})`}</span>
+              <span>{data?.reporteeNickname}</span>
+              <span>{`(${data?.reporteeId})`}</span>
             </TextWrapper>
           </TableHead>
-          <TableRow dir="col" key={data.id}>
+          <TableRow dir="col" key={data?.id}>
             <TableCell>
               <TableCellLabel>신고자</TableCellLabel>
-              <TableCellContent>{`${data.reporterNickname} (${data.reporterId})`}</TableCellContent>
+              <TableCellContent>{`${data?.reporterNickname} (${data?.reporterId})`}</TableCellContent>
             </TableCell>
             <TableCell>
               <TableCellLabel>신고 시각</TableCellLabel>
-              <TableCellContent>{data.createdAt}</TableCellContent>
+              <TableCellContent>{data?.createdAt}</TableCellContent>
             </TableCell>
             <TableCell>
               <TableCellLabel>신고 사유</TableCellLabel>
               <TableCellContent>
-                {Object.entries(data.types)
+                {Object.entries(data?.types)
                   ?.filter(([key, value]) => value === true)
                   ?.map(
                     ([key, value]) =>
@@ -63,11 +67,11 @@ const ReportManagementDetailTable = ({ data, type }) => {
           <TableRow type={type} dir="col">
             <TableCell type={type}>
               <TableCellLabel width="90px">개설 시각</TableCellLabel>
-              <TableCellContent>{data.createdAt}</TableCellContent>
+              <TableCellContent>{data?.createdAt}</TableCellContent>
             </TableCell>
             <TableCell type={type}>
               <TableCellLabel width="90px">종료 시각</TableCellLabel>
-              <TableCellContent>{data.expiredAt}</TableCellContent>
+              <TableCellContent>{data?.expiredAt}</TableCellContent>
             </TableCell>
             <TableCell type={type}>
               <TableCellLabel width="90px">플레이 횟수</TableCellLabel>
@@ -85,7 +89,7 @@ const ReportManagementDetailTable = ({ data, type }) => {
           <TableRow type={type}>
             <ChatItemWrapper dir="col">
               {data?.map((chat, i) => (
-                <ChatItem key={i} nickname={chat.nickname} message={chat.content} />
+                <ChatItem key={i} nickname={chat?.nickname} message={chat?.content} />
               ))}
             </ChatItemWrapper>
           </TableRow>

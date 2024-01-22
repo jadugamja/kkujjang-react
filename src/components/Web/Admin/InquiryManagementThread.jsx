@@ -156,7 +156,7 @@ const InquiryManagementThread = ({ data }) => {
               <ContentText>{content}</ContentText>
             </div>
             <div>
-              {file.length > 0 && file?.map((f, idx) => <img key={idx} src={f} />)}
+              {file?.length > 0 && file?.map((f, idx) => <img key={idx} src={f} />)}
             </div>
           </ContentWrapper>
         </AnswerInputFieldWrapper>

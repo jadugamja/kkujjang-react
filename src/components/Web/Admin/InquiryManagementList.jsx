@@ -132,6 +132,7 @@ InquiryManagementList.propTypes = {
 const Box = styled.div`
   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
   height: 48.6rem;
+  padding: 10px;
   background-color: ${({ type, theme }) =>
     type === "home" ? "#fff" : theme.colors.content};
 `;

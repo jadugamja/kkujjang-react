@@ -6,6 +6,13 @@ import { FlexBox } from "@/styles/FlexStyle";
 import hoveredFilter from "@/assets/images/icon-filter-gr.png";
 import defaultFilter from "@/assets/images/icon-filter.png";
 
+const filterLabels = {
+  type: "문의 유형",
+  types: "신고 유형",
+  needsAnswer: "답변 여부",
+  createdAt: "정렬"
+};
+
 const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
   // 각 key에 대해 false로 초기화
   const [isClicked, setIsClicked] = useState(
@@ -47,11 +54,6 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
   );
 };
 
-const filterLabels = {
-  type: "문의 유형",
-  needsAnswer: "답변 여부"
-};
-
 const getFilterLabel = (key) => {
   return filterLabels[key] || "";
 };
@@ -77,6 +79,17 @@ const getFilterItemText = (key, item) => {
           return <span>{"NO"}</span>;
         case false:
           return <span>{"YES"}</span>;
+        default:
+          return "";
+      }
+    case "types":
+      switch (item) {
+        case "isOffensive":
+          return <span>{"isOffensive"}</span>;
+        case "isCheating":
+          return <span>{"isCheating"}</span>;
+        case "isPoorManner":
+          return <span>{"isPoorManner"}</span>;
         default:
           return "";
       }

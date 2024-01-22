@@ -41,6 +41,10 @@ const NoticeManagement = () => {
     setIsActiveSideContentType(2);
   };
 
+  useEffect(() => {
+    setIsActiveSideContentType(0);
+  }, []);
+
   const renderSideContent = () => {
     switch (isAcitveSideContentType) {
       case 1:

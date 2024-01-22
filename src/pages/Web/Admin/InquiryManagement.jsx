@@ -3,8 +3,8 @@ import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import { isAnswerCompletedState } from "@/recoil/boardState";
 import { isAcitveSideContentTypeState } from "@/recoil/displayState";
+import { isAnswerCompletedState } from "@/recoil/boardState";
 import InquiryManagementList from "@/components/Web/Admin/InquiryManagementList";
 import InquiryManagementThread from "@/components/Web/Admin/InquiryManagementThread";
 import Header from "@/components/Web/Shared/Layout/Header";

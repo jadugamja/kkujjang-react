@@ -6,7 +6,7 @@ import FlexBox from "@/styles/FlexStyle";
 const ChatItem = ({ nickname, message }) => {
   return (
     <ChatContent>
-      <NickName row="center" col="center">
+      <NickName row="start" col="center">
         <span>{nickname}</span>
       </NickName>
       <Message col="center">
@@ -21,9 +21,12 @@ const ChatContent = styled(FlexBox)`
 `;
 
 const NickName = styled(FlexBox)`
-  width: 104px;
+  width: 130px;
   height: inherit;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const Message = styled(FlexBox)`

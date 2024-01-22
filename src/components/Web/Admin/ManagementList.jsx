@@ -1,3 +1,4 @@
+import React from "react";
 import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -30,20 +31,26 @@ const ManagementList = ({ title, data = [], onSideOpen }) => {
       ?.filter((key) => key !== "id")
       ?.map((key, idx) => {
         switch (key) {
+          case "reporterNickname":
+            return <Th key={idx}>신고자</Th>;
           case "type":
             return (
               <ThLeft key={idx} width="6.5rem">{`${getTitleText(title)} 유형`}</ThLeft>
             );
+          case "types":
+            return <ThLeft width="12.5rem">{`${getTitleText(title)} 사유`}</ThLeft>;
           case "title":
             return (
               <ThLeft key={idx}>
                 {title !== "notice" ? `${getTitleText(title)} 제목` : "제목"}
               </ThLeft>
             );
+          case "reporteeNickname":
+            return <Th key={idx}>피신고자</Th>;
           case "createdAt":
             return (
               <Th key={idx} width="7rem">
-                작성일
+                {title === "report" ? "신고 날짜" : "작성일"}
               </Th>
             );
           case "author":
@@ -97,7 +104,30 @@ const ManagementList = ({ title, data = [], onSideOpen }) => {
                 {Object.entries(item)
                   ?.filter(([key]) => key !== "id")
                   ?.map(([key, value]) => {
-                    if (key === "type") return <TdCenter key={key}>{value}</TdCenter>;
+                    if (key === "type")
+                      return (
+                        <React.Fragment key={key}>
+                          {title === "report" ? (
+                            <TdLeft key={key}>{value}</TdLeft>
+                          ) : (
+                            <TdCenter key={key}>{value}</TdCenter>
+                          )}
+                        </React.Fragment>
+                      );
+                    if (key === "types")
+                      return (
+                        <TdLeft key={key}>
+                          {Object.entries(value)
+                            ?.filter(([_key, _value]) => _value === true)
+                            .map(
+                              ([_key, _value]) =>
+                                (_key === "isOffensive" && "공격적인 언어 사용") ||
+                                (_key === "isCheating" && "부정행위") ||
+                                (_key === "isPoorManner" && "비매너 행위")
+                            )
+                            .join(", ")}
+                        </TdLeft>
+                      );
                     if (key === "title") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "createdAt")
                       return <TdCenter key={key}>{value.substr(0, 10)}</TdCenter>;

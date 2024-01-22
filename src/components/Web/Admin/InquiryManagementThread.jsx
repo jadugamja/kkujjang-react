@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRecoilState } from "recoil";
-import styled from "styled-components";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { isAnswerCompletedState } from "@/recoil/boardState";
@@ -247,11 +247,9 @@ const InquiryManagementThread = ({ data }) => {
               <AnswerText>{_replyAnswer.text}</AnswerText>
               {_replyAnswer.file.length > 0 &&
                 _replyAnswer.file?.map((file, idx) => (
-                  <AttachedImg
-                    key={idx}
-                    src={URL.createObjectURL(file[idx])}
-                    alt="첨부파일"
-                  />
+                  <AttachedImgWrapper key={idx}>
+                    <AttachedImg src={URL.createObjectURL(file[idx])} alt="첨부파일" />
+                  </AttachedImgWrapper>
                 ))}
             </Width100>
           </AnswerWrapper>

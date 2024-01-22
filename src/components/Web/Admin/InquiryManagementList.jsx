@@ -3,12 +3,12 @@ import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { FlexBox } from "@/styles/FlexStyle";
 import { isAnswerCompletedState } from "@/recoil/boardState";
 import ManagementTitle from "./ManagementTitle";
 import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
+import { FlexBox } from "@/styles/FlexStyle";
 
 const InquiryManagementList = ({ type, onThreadOpen }) => {
   const [listData, setListData] = useState([]);
@@ -33,8 +33,6 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
   });
 
   useEffect(() => {
-    console.log("Props in InquiryManagementList: ", setIsAnswerCompleted);
-
     // 문의 목록 조회 api 호출
 
     // 임시 데이터

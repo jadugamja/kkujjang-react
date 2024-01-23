@@ -3,7 +3,8 @@ import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { isAcitveSideContentTypeState } from "@/recoil/displayState";
+import { isActiveSideContentTypeState } from "@/recoil/displayState";
+import { itemIdState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -14,9 +15,9 @@ import NoticeManagementCreate from "@/components/Web/Admin/NoticeManagementCreat
 const NoticeManagement = () => {
   // 0: not active, 1: Detail, 2: Create
   const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
-    isAcitveSideContentTypeState
+    isActiveSideContentTypeState
   );
-
+  const [itemId, setItemId] = useRecoilState(itemIdState);
   const [isEditMode, setIsEditMode] = useState(false);
   const [detailData, setDetailData] = useState({});
 
@@ -35,6 +36,7 @@ const NoticeManagement = () => {
     setIsEditMode(false);
     setDetailData(detail);
     setIsActiveSideContentType(1);
+    setItemId(id);
   };
 
   const onCreateOpen = () => {
@@ -42,7 +44,24 @@ const NoticeManagement = () => {
   };
 
   useEffect(() => {
-    setIsActiveSideContentType(0);
+    if (itemId !== null) {
+      // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
+      const detail = {
+        id: itemId,
+        title: "제목1111",
+        content: "본문1111",
+        createdAt: "2024-01-01 03:10",
+        views: 10
+      };
+      setIsEditMode(false);
+      setDetailData(detail);
+    }
+  }, [itemId]);
+
+  useEffect(() => {
+    if (itemId === null) {
+      setIsActiveSideContentType(0);
+    }
   }, []);
 
   const renderSideContent = () => {

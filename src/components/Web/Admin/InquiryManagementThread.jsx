@@ -23,7 +23,6 @@ const InquiryManagementThread = ({ data }) => {
     useRecoilState(isAnswerCompletedState);
   const [answer, setAnswer] = useState("");
   const [answerFiles, setAnswerFiles] = useState([]);
-
   const [replyAnswer, setReplyAnswer] = useState("");
   const [replyAnswerFiles, setReplyAnswerFiles] = useState([]);
   const [replyAnswers, setReplyAnswers] = useState([]);

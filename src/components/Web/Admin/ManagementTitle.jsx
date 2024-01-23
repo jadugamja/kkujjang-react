@@ -22,7 +22,7 @@ const ManagementTitle = ({ type, title }) => {
   return (
     <Link to={`/admin/${title}`}>
       <TitleWrapper col="center">
-        <Title>{getTitleText(title)}</Title>
+        <Title type={type}>{getTitleText(title)}</Title>
         {type === "home" && <ArrowRightIcon icon={faChevronRight} />}
       </TitleWrapper>
     </Link>
@@ -44,8 +44,10 @@ const Title = styled.h2`
   font-family: "Gugi";
   font-size: ${({ theme }) => theme.fontSize.xl};
   font-weight: 500;
-  margin-left: 24px;
+  width: ${({ type }) => type !== "home" && "6.25rem"};
+  margin-left: ${({ type }) => (type !== "home" ? "24px" : "14px")};
   margin-right: 16px;
+  white-space: ${({ type }) => type !== "home" && "pre-wrap"};
 `;
 
 const ArrowRightIcon = styled(FontAwesomeIcon)`

@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { FlexBox } from "@/styles/FlexStyle";
 import ManagementTitle from "./ManagementTitle";
 import ManagementList from "./ManagementList";
-import Pagination from "../Shared/Board/Pagination";
-import SearchBar from "../Shared/Board/SearchBar";
 import Button from "../Shared/Buttons/Button";
+import SearchBar from "../Shared/Board/SearchBar";
+import Pagination from "../Shared/Board/Pagination";
+import { FlexBox } from "@/styles/FlexStyle";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);
@@ -106,10 +106,15 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
           <HeaderWrapper row="between" col="center">
             <ManagementTitle title="notice" />
             <SearchBarWrapper marginTop="14px" marginRight="10px">
-              <SearchBar setSearchKeyword={setSearchKeyword} />
+              <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
             </SearchBarWrapper>
           </HeaderWrapper>
-          <ManagementList title="notice" data={listData} onSideOpen={onDetailOpen} />
+          <ManagementList
+            isHome={false}
+            title="notice"
+            data={listData}
+            onSideOpen={onDetailOpen}
+          />
           <Pagination
             currPage={currPage}
             setCurrPage={setCurrPage}
@@ -122,7 +127,12 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
       ) : (
         <Box type={type}>
           <ManagementTitle type={type} title="notice" />
-          <ManagementList title="notice" data={listData} />
+          <ManagementList
+            isHome={true}
+            title="notice"
+            data={listData}
+            onSideOpen={onDetailOpen}
+          />
         </Box>
       )}
     </>

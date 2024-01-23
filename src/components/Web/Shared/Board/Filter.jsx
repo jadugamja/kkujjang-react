@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -14,14 +14,29 @@ const filterLabels = {
 };
 
 const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
-  // 각 key에 대해 false로 초기화
   const [isClicked, setIsClicked] = useState(
     filterOptions?.reduce((acc, key) => ({ ...acc, [key]: false }), {})
+  );
+  const [isChecked, setIsChecked] = useState(
+    filterOptions
+      ?.filter(({ key }) => key === "types")
+      ?.reduce((acc, option) => ({ ...acc, [option.key]: [] }), {})
   );
 
   const onApplyFilter = (key, item) => {
     setSelectedFilterOptions((prev) => ({ ...prev, [key]: item }));
-    setIsClicked((prev) => ({ ...prev, [key]: !prev[key] }));
+    if (key !== "types") {
+      setIsClicked((prev) => ({ ...prev, [key]: !prev[key] }));
+    }
+  };
+
+  const onCheckboxChange = (key, item) => {
+    setIsChecked((prev) => ({
+      ...prev,
+      [key]: prev[key].includes(item)
+        ? prev[key].filter((i) => i !== item)
+        : [...prev[key], item]
+    }));
   };
 
   return (
@@ -43,7 +58,18 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
                   value={item}
                   onClick={() => onApplyFilter(key, item)}
                 >
-                  {getFilterItemText(key, item)}
+                  {key === "types" ? (
+                    <>
+                      <input
+                        type="checkbox"
+                        checked={isChecked[key].includes(item)}
+                        onChange={() => onCheckboxChange(key, item)}
+                      />
+                      {getFilterItemText(key, item)}
+                    </>
+                  ) : (
+                    getFilterItemText(key, item)
+                  )}
                 </FilterListItem>
               ))}
             </FilterList>
@@ -85,13 +111,20 @@ const getFilterItemText = (key, item) => {
     case "types":
       switch (item) {
         case "isOffensive":
-          return <span>{"isOffensive"}</span>;
+          return <span>{"공격적인 언어 사용"}</span>;
         case "isCheating":
-          return <span>{"isCheating"}</span>;
+          return <span>{"사기 행위"}</span>;
         case "isPoorManner":
-          return <span>{"isPoorManner"}</span>;
+          return <span>{"비매너 행위"}</span>;
         default:
           return "";
+      }
+    case "createdAt":
+      switch (item) {
+        case "oldest":
+          return <span>{"과거순"}</span>;
+        case "latest":
+          return <span>{"최신순"}</span>;
       }
   }
 };
@@ -120,7 +153,7 @@ const FilterImage = styled.img`
 
 const FilterList = styled(FlexBox).attrs({ as: "ul" })`
   position: absolute;
-  top: 147px;
+  top: 165px;
   width: max-content;
   align-self: baseline;
   margin-top: 10px;

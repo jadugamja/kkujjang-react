@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
-import { isAcitveSideContentTypeState } from "@/recoil/displayState";
+import { isActiveSideContentTypeState } from "@/recoil/displayState";
+import { itemIdState } from "@/recoil/boardState";
 import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
 import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -11,8 +12,9 @@ import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 
 const ReportManagement = () => {
   const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
-    isAcitveSideContentTypeState
+    isActiveSideContentTypeState
   );
+  const [itemId, setItemId] = useRecoilState(itemIdState);
   const [reportData, setReportData] = useState();
 
   const onSideOpen = (id) => {
@@ -32,17 +34,41 @@ const ReportManagement = () => {
     };
 
     const { isOffensive, isCheating, isPoorManner, ...rest } = reportRes;
-
     setReportData({
       ...rest,
       types: { isOffensive, isCheating, isPoorManner }
     });
 
     setIsActiveSideContentType(1);
+    setItemId(id);
   };
 
   useEffect(() => {
-    setIsActiveSideContentType(0);
+    if (itemId !== null) {
+      const reportRes = {
+        id: itemId,
+        isOffensive: true,
+        isCheating: false,
+        isPoorManner: true,
+        note: "욕설 사용",
+        createdAt: "yyyy-MM-dd hh:mm:ss",
+        reporterId: 5,
+        reporterNickname: "someNickname#5",
+        reporteeId: 4,
+        reporteeNickname: "someNickname#4"
+      };
+      const { isOffensive, isCheating, isPoorManner, ...rest } = reportRes;
+      setReportData({
+        ...rest,
+        types: { isOffensive, isCheating, isPoorManner }
+      });
+    }
+  }, [itemId]);
+
+  useEffect(() => {
+    if (itemId === null) {
+      setIsActiveSideContentType(0);
+    }
   }, []);
 
   return (

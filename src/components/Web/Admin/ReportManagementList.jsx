@@ -17,28 +17,12 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   // 필터 key 데이터 추출
   const filterKeys = ["createdAt", "types"];
 
-  const createMultiSelectedFilterKeys = (data) => {
-    let arr = [];
-    data?.map((item) => {
-      arr.push(item["isOffensive"]);
-      arr.push(item["isCheating"]);
-      arr.push(item["isPoorManner"]);
-    });
-    debugger;
-  };
-
-  types: ["isOffensive", "isCheating", "isPoorManner"];
-  // 서버에서 받아온 데이터를 filterKeys의 값에 해당하는 것으로만 추출
   const filterOptions = filterKeys?.map((key) => {
-    const uniqueValues = [...new Set(data?.map((item) => item[key]))];
-
     if (key === "createdAt") {
-      uniqueValues?.sort((a, b) => new Date(a) - new Date(b));
-    } else {
-      uniqueValues?.sort((a, b) => a - b); // 오름차순 정렬
+      return { key, values: ["oldest", "latest"] };
+    } else if (key === "types") {
+      return { key, values: ["isOffensive", "isCheating", "isPoorManner"] };
     }
-
-    return { key, values: uniqueValues };
   });
 
   useEffect(() => {
@@ -107,6 +91,26 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
   // 페이지, 필터 변경 시 호출
   useEffect(() => {
+    if (data.length === 0) {
+      return;
+    }
+
+    let filteredData = [...data];
+
+    Object.entries(selectedFilterOptions).forEach(([key, value]) => {
+      if (key === "createdAt") {
+        filteredData.sort((a, b) =>
+          value === "oldest"
+            ? new Date(a[key]) - new Date(b[key])
+            : new Date(b[key]) - new Date(a[key])
+        );
+      } else if (key === "types") {
+        filteredData = filteredData.filter((item) => item[key] === value);
+      }
+    });
+
+    setData(filteredData);
+
     const queryString = Object.entries(selectedFilterOptions)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
@@ -127,7 +131,12 @@ const ReportManagementList = ({ type, onSideOpen }) => {
               />
             </FilterWrapper>
           </HeaderWrapper>
-          <ManagementList title="report" data={data} onSideOpen={onSideOpen} />
+          <ManagementList
+            isHome={false}
+            title="report"
+            data={data}
+            onSideOpen={onSideOpen}
+          />
           <Pagination
             currPage={currPage}
             setCurrPage={setCurrPage}
@@ -137,7 +146,12 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       ) : (
         <Box type={type}>
           <ManagementTitle type={type} title="report" />
-          <ManagementList title="report" data={data} onSideOpen={onSideOpen} />
+          <ManagementList
+            isHome={true}
+            title="report"
+            data={data}
+            onSideOpen={onSideOpen}
+          />
         </Box>
       )}
     </>
@@ -151,7 +165,7 @@ ReportManagementList.propTypes = {
 
 const Box = styled.div`
   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: 48.6rem;
+  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
   padding: 10px;
   background-color: ${({ type, theme }) =>
     type === "home" ? "#fff" : theme.colors.content};

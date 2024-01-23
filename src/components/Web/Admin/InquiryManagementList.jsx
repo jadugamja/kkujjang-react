@@ -97,6 +97,7 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
             </FilterWrapper>
           </HeaderWrapper>
           <ManagementList
+            isHome={false}
             title="inquiry"
             data={listData}
             onSideOpen={onThreadOpen}
@@ -112,9 +113,11 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
         <Box type={type}>
           <ManagementTitle type={type} title="inquiry" />
           <ManagementList
+            isHome={true}
             title="inquiry"
             data={listData}
             isAnswerCompleted={isAnswerCompleted}
+            onSideOpen={onThreadOpen}
           />
         </Box>
       )}
@@ -131,7 +134,7 @@ InquiryManagementList.propTypes = {
 
 const Box = styled.div`
   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: 48.6rem;
+  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
   padding: 10px;
   background-color: ${({ type, theme }) =>
     type === "home" ? "#fff" : theme.colors.content};

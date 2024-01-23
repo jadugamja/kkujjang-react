@@ -66,7 +66,7 @@ const GlobalStyle = createGlobalStyle`
     border-collapse: collapse;
   }
 
-  input[type="text"], input[type="submit"], input[type="submit"] {
+  input, select {
     outline: 0;
   }
 

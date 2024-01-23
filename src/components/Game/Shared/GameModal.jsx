@@ -17,7 +17,12 @@ import {
   GameModalAvatarWrapper,
   AvatarImage,
   ArrowIconImage,
-  ExitMiniCircle
+  ExitMiniCircle,
+  Table,
+  Tbody,
+  Tr,
+  TdLabel,
+  TdContent
 } from "./GameModalStyle";
 import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
@@ -30,9 +35,13 @@ const GameModal = ({
   isMakingRoom,
   hasText,
   message,
-  hasButton
+  hasButton,
+  onClick
 }) => {
-  // props에 따라 (어떤 content인지에 따라) buttonMessage랑 전체 height 지정
+  const [playerCount, setPlayerCount] = useState(5);
+  const [roundCount, setRoundCount] = useState(8);
+  const [roundTime, setRoundTime] = useState("60");
+
   let buttonMessage = "";
   let height = "";
 
@@ -56,7 +65,7 @@ const GameModal = ({
         {/* 전체 height 지정해 주는 부분 */}
         <GameModalContent dir="col" col="center" height={height}>
           <GameModalHeader row="end" col="center">
-            <ExitMiniCircle></ExitMiniCircle>
+            <ExitMiniCircle onClick={onClick}></ExitMiniCircle>
           </GameModalHeader>
           <>
             {/* 처음 닉네임, 아바타 (캐릭터) 사진 고르는 modal */}
@@ -105,82 +114,87 @@ const GameModal = ({
             {/* 방 만들기 modal */}
             {isMakingRoom && (
               <>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
+                <Table>
+                  <Tbody>
+                    <Tr>
+                      <TdLabel>
                         <GameModalMessage>방 제목</GameModalMessage>
-                      </td>
-                      <td>
+                      </TdLabel>
+                      <TdContent>
                         <GameModalInput
-                          width="16.063rem"
-                          height="2.625rem"
+                          type="text"
                           placeholder="방 제목"
                         ></GameModalInput>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
+                      </TdContent>
+                    </Tr>
+                    <Tr>
+                      <TdLabel>
                         <GameModalMessage>비밀번호</GameModalMessage>
-                      </td>
-                      <td>
+                      </TdLabel>
+                      <TdContent>
                         <GameModalInput
-                          width="16.063rem"
-                          height="2.625rem"
+                          type="text"
                           placeholder="비밀번호"
                         ></GameModalInput>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
+                      </TdContent>
+                    </Tr>
+                    <Tr>
+                      <TdLabel>
                         <GameModalMessage>플레이어 수</GameModalMessage>
-                      </td>
-                      <td>
+                      </TdLabel>
+                      <TdContent>
                         <GameModalInput
                           type="number"
                           max="8"
                           min="1"
                           step="1"
-                          value="5"
+                          value={playerCount}
+                          onChange={(e) => setPlayerCount(e.target.value)}
                         ></GameModalInput>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
+                      </TdContent>
+                    </Tr>
+                    <Tr>
+                      <TdLabel>
                         <GameModalMessage>라운드 수</GameModalMessage>
-                      </td>
-                      <td>
+                      </TdLabel>
+                      <TdContent>
                         <GameModalInput
                           type="number"
                           max="8"
                           min="2"
                           step="1"
-                          value="8"
+                          value={roundCount}
+                          onChange={(e) => setRoundCount(e.target.value)}
                         ></GameModalInput>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
+                      </TdContent>
+                    </Tr>
+                    <Tr>
+                      <TdLabel>
                         <GameModalMessage>라운드 시간</GameModalMessage>
-                      </td>
-                      <td>
-                        <GameModalSelect>
+                      </TdLabel>
+                      <TdContent>
+                        <GameModalSelect
+                          value={roundTime}
+                          onChange={(e) => setRoundTime(e.target.value)}
+                        >
                           <option value="60">60초</option>
                           <option value="90">90초</option>
                           <option value="120">120초</option>
                           <option value="150">150초</option>
                         </GameModalSelect>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </TdContent>
+                    </Tr>
+                  </Tbody>
+                </Table>
               </>
             )}
           </>
           {/* 메시지 출력 부분 */}
           {hasText && <GameModalMessage>{message}</GameModalMessage>}
           {/* 버튼 출력 부분 / 도움말 modal에는 버튼이 없음 */}
-          {hasButton && <GameModalButton>{buttonMessage}</GameModalButton>}
+          {hasButton && (
+            <GameModalButton onClick={onClick}>{buttonMessage}</GameModalButton>
+          )}
         </GameModalContent>
       </GameModalWrapper>
     </>
@@ -194,7 +208,8 @@ GameModal.propTypes = {
   isMakingRoom: PropTypes.bool,
   hasText: PropTypes.bool,
   message: PropTypes.string,
-  hasButton: PropTypes.bool
+  hasButton: PropTypes.bool,
+  onClick: PropTypes.func
 };
 
 export default GameModal;

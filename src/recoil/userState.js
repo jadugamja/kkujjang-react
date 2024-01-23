@@ -1,11 +1,11 @@
 import { atom } from "recoil";
 
-// {
-//   username: "username",
-//   role: "admin",
-//   nickname: "nickname"
-// }
 export const userState = atom({
   key: "userState",
-  default: null
+  default: {} // e.g., { username: "username", nickname: "nickname", role: "admin", ... }
+});
+
+export const isActiveAccountState = atom({
+  key: "isActiveAccountState",
+  default: {} // e.g., { 'username1': true, 'username1': false }
 });

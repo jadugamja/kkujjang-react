@@ -2,23 +2,18 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { FlexBox } from "@/styles/FlexStyle";
 import ManagementTitle from "./ManagementTitle";
 import ManagementList from "./ManagementList";
-import Pagination from "../Shared/Board/Pagination";
-import SearchBar from "../Shared/Board/SearchBar";
 import Button from "../Shared/Buttons/Button";
-import NoticeManagementDetail from "./NoticeManagementDetail";
-import NoticeManagementCreate from "./NoticeManagementCreate";
+import SearchBar from "../Shared/Board/SearchBar";
+import Pagination from "../Shared/Board/Pagination";
+import { FlexBox } from "@/styles/FlexStyle";
 
-const NoticeManagementList = ({ type }) => {
+const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);
-  const [detailData, setDetailData] = useState({});
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
-
-  const [isOpenRightSide, setIsOpenRightSide] = useState(0);
 
   // 컴포넌트 마운트될 때 조회
   useEffect(() => {
@@ -96,7 +91,7 @@ const NoticeManagementList = ({ type }) => {
     }
   }, []);
 
-  // 검색어 요청 때마다 통신
+  // 페이지 변경, 검색 시 호출
   useEffect(() => {
     let queryString = `?page=${currPage}${
       searchKeyword !== "" ? `&q=${searchKeyword}` : ""
@@ -104,56 +99,40 @@ const NoticeManagementList = ({ type }) => {
     // 공지사항 목록 조회 api 호출
   }, [currPage, searchKeyword]);
 
-  const onDetailOpen = (id) => {
-    // 공지사항 상세 조회 api 호출
-    const detail = {
-      id: id,
-      title: "제목1111",
-      content: "본문1111",
-      createdAt: "2024-01-01 03:10",
-      views: 10
-    };
-    setDetailData(detail);
-    setIsOpenRightSide(1);
-  };
-
   return (
     <>
       {type !== "home" ? (
-        <>
-          <Box>
-            <HeaderWrapper row="between" col="center">
-              <ManagementTitle title="notice" />
-              <SearchBarWrapper marginTop="14px" marginRight="10px">
-                <SearchBar setSearchKeyword={setSearchKeyword} />
-              </SearchBarWrapper>
-            </HeaderWrapper>
-            <ManagementList title="notice" data={listData} onDetailOpen={onDetailOpen} />
-            <Pagination
-              currPage={currPage}
-              setCurrPage={setCurrPage}
-              lastPageIdx={lastPageIdx}
-            />
-            <ButtonWrapper row="end">
-              <CreateButton onClick={() => setIsOpenRightSide(2)} />
-            </ButtonWrapper>
-          </Box>
-          {isOpenRightSide === 1 ? (
-            <Box>
-              <NoticeManagementDetail data={detailData} />
-            </Box>
-          ) : isOpenRightSide === 2 ? (
-            <Box>
-              <NoticeManagementCreate />
-            </Box>
-          ) : (
-            ""
-          )}
-        </>
+        <Box>
+          <HeaderWrapper row="between" col="center">
+            <ManagementTitle title="notice" />
+            <SearchBarWrapper marginTop="14px" marginRight="10px">
+              <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
+            </SearchBarWrapper>
+          </HeaderWrapper>
+          <ManagementList
+            isHome={false}
+            title="notice"
+            data={listData}
+            onSideOpen={onDetailOpen}
+          />
+          <Pagination
+            currPage={currPage}
+            setCurrPage={setCurrPage}
+            lastPageIdx={lastPageIdx}
+          />
+          <ButtonWrapper row="end">
+            <CreateButton onClick={onCreateOpen} />
+          </ButtonWrapper>
+        </Box>
       ) : (
         <Box type={type}>
           <ManagementTitle type={type} title="notice" />
-          <ManagementList title="notice" data={listData} />
+          <ManagementList
+            isHome={true}
+            title="notice"
+            data={listData}
+            onSideOpen={onDetailOpen}
+          />
         </Box>
       )}
     </>
@@ -161,7 +140,9 @@ const NoticeManagementList = ({ type }) => {
 };
 
 NoticeManagementList.propTypes = {
-  type: PropTypes.string
+  type: PropTypes.string,
+  onDetailOpen: PropTypes.func,
+  onCreateOpen: PropTypes.func
 };
 
 const Box = styled.div`

@@ -138,6 +138,7 @@ const ChatIcon = styled(FontAwesomeIcon)`
 
 const ChatItemWrapper = styled(FlexBox)`
   flex-basis: 65%;
+  flex-grow: 1;
   margin: 2px 12px;
   overflow-y: auto;
 `;

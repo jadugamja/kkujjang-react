@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { useRecoilState } from "recoil";
-import { isModalOpenState } from "@/recoil/ModalState.js";
+import { isModalOpenState } from "@/recoil/modalState";
 
 import {
   ModalBackground,

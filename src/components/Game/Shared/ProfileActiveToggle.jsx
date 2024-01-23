@@ -1,10 +1,15 @@
+import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
+import { isActiveAccountState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 
-const ProfileActiveToggle = ({ isActiveAccount, setIsActiveAccount }) => {
-  const handleToggle = () => {
+const ProfileActiveToggle = ({ userId }) => {
+  const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
+  const isActiveAccount = accountStates[userId];
+
+  const onActiveToggle = () => {
     if (isActiveAccount) {
       // 임시
       alert("계정을 비활성화하시겠습니까?");
@@ -12,7 +17,7 @@ const ProfileActiveToggle = ({ isActiveAccount, setIsActiveAccount }) => {
       // 임시
       alert("계정을 활성화시키겠습니까?");
     }
-    setIsActiveAccount(!isActiveAccount);
+    setAccountStates((oldState) => ({ ...oldState, [userId]: !isActiveAccount }));
   };
 
   return (
@@ -20,7 +25,7 @@ const ProfileActiveToggle = ({ isActiveAccount, setIsActiveAccount }) => {
       col="center"
       row={isActiveAccount ? "end" : "start"}
       active={isActiveAccount}
-      onClick={handleToggle}
+      onClick={onActiveToggle}
     >
       <ActiveCircle />
     </ActiveToggle>
@@ -28,16 +33,15 @@ const ProfileActiveToggle = ({ isActiveAccount, setIsActiveAccount }) => {
 };
 
 ProfileActiveToggle.propTypes = {
-  isActiveAccount: PropTypes.bool,
-  setIsActiveAccount: PropTypes.func
+  userId: PropTypes.oneOfType[(PropTypes.number, PropTypes.string)]
 };
 
 const ActiveToggle = styled(FlexBox)`
-  width: 75px;
-  height: 44px;
+  width: 74px;
+  height: 40px;
   background-color: ${({ active }) => (active ? "#fff" : "#D9D9D9")};
   border: 3px solid ${({ active }) => (active ? "#34E250" : "#787878")};
-  border-radius: 22px;
+  border-radius: 40px;
 
   &:hover {
     cursor: pointer;

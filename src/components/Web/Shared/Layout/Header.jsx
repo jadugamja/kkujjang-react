@@ -62,8 +62,7 @@ const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
   position: fixed;
   top: 0;
   width: inherit;
-  height: ${({ type }) =>
-    type === "big" ? "10rem" : type !== "admin" ? "7.5rem" : "6.5rem"};
+  height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
   background-color: ${({ color }) => color};
   box-shadow: ${({ shadow }) => shadow};
   z-index: 3;

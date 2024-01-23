@@ -1,8 +1,17 @@
+import React, { useState, useEffect } from "react";
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
 
-const ManagementList = ({ title, data = [], onDetailOpen }) => {
+import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
+import { isActiveAccountState } from "@/recoil/userState";
+import { isAnswerCompletedState } from "@/recoil/boardState";
+
+const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
+  const isAnswerCompleted = useRecoilValue(isAnswerCompletedState);
+  const isActiveAccount = useRecoilValue(isActiveAccountState);
+  const [header, setHeader] = useState([]);
+
   const getTitleText = (title) => {
     switch (title) {
       case "notice":
@@ -25,9 +34,17 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
       ?.filter((key) => key !== "id")
       ?.map((key, idx) => {
         switch (key) {
+          case "reporterNickname":
+            return <Th key={idx}>신고자</Th>;
           case "type":
             return (
               <ThLeft key={idx} width="6.5rem">{`${getTitleText(title)} 유형`}</ThLeft>
+            );
+          case "types":
+            return (
+              <ThLeft width={isHome ? "9.5rem" : "10.5rem"}>{`${getTitleText(
+                title
+              )} 사유`}</ThLeft>
             );
           case "title":
             return (
@@ -35,10 +52,12 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
                 {title !== "notice" ? `${getTitleText(title)} 제목` : "제목"}
               </ThLeft>
             );
+          case "reporteeNickname":
+            return <Th key={idx}>피신고자</Th>;
           case "createdAt":
             return (
               <Th key={idx} width="7rem">
-                작성일
+                {title === "report" ? "신고 날짜" : "작성일"}
               </Th>
             );
           case "author":
@@ -54,9 +73,17 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
           case "reporteeId":
             return <Th key={idx}>피신고자</Th>;
           case "nickname":
-            return <Th key={idx}>닉네임</Th>;
+            return (
+              <Th key={idx} width={title === "user" && "6rem"}>
+                닉네임
+              </Th>
+            );
           case "username":
-            return <Th key={idx}>아이디</Th>;
+            return (
+              <Th key={idx} width={title === "user" && "5.5rem"}>
+                아이디
+              </Th>
+            );
           case "needsAnswer":
             return (
               <Th key={idx} width="5.5rem">
@@ -75,11 +102,17 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
       });
   };
 
+  useEffect(() => {
+    if (data.length > 0) {
+      setHeader(getKeyText(data));
+    }
+  }, [data]);
+
   return (
-    <TableWrapper>
-      <Table>
+    <TableWrapper title={title}>
+      <Table title={title} isHome={isHome}>
         <thead>
-          <ThWrapper>{getKeyText(data)}</ThWrapper>
+          <ThWrapper fontSize={!isHome && "20px"}>{header}</ThWrapper>
         </thead>
         <Tbody>
           {data.length === 0 ? (
@@ -88,23 +121,67 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
             </tr>
           ) : (
             data?.map((item) => (
-              <Tr key={item.id} onClick={() => onDetailOpen(item.id)}>
+              <Tr
+                fontSize={!isHome && "18px"}
+                key={item.id}
+                onClick={() => onSideOpen(item.id)}
+              >
                 {Object.entries(item)
                   ?.filter(([key]) => key !== "id")
                   ?.map(([key, value]) => {
-                    if (key === "type" || key === "title")
-                      return <TdLeft key={key}>{value}</TdLeft>;
+                    if (key === "type")
+                      return (
+                        <React.Fragment key={key}>
+                          {title === "report" ? (
+                            <TdLeft key={key}>{value}</TdLeft>
+                          ) : (
+                            <TdCenter key={key}>{value}</TdCenter>
+                          )}
+                        </React.Fragment>
+                      );
+                    if (key === "types")
+                      return (
+                        <TdLeft key={key}>
+                          {Object.entries(value)
+                            ?.filter(([_key, _value]) => _value === true)
+                            .map(
+                              ([_key, _value]) =>
+                                (_key === "isOffensive" && "공격적인 언어 사용") ||
+                                (_key === "isCheating" && "부정행위") ||
+                                (_key === "isPoorManner" && "비매너 행위")
+                            )
+                            .join(", ")}
+                        </TdLeft>
+                      );
+                    if (key === "title") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "createdAt")
                       return <TdCenter key={key}>{value.substr(0, 10)}</TdCenter>;
                     if (key === "isBanned")
                       return (
-                        <TdCenter key={key} paddingLeft="8px">
-                          <ProfileActiveToggle isActiveAccount={!item.isBanned} />
+                        <TdCenter key={key} paddingLeft={isHome ? "1rem" : "2rem"}>
+                          <ProfileActiveToggle isBanned={item.isBanned} />
                         </TdCenter>
                       );
                     if (key === "needsAnswer")
                       return (
-                        <TdCenter key={key}>{!item?.needsAnswer ? "NO" : "YES"}</TdCenter>
+                        <TdCenter
+                          key={key}
+                          style={{
+                            color:
+                              Object.keys(isAnswerCompleted)?.length !== 0
+                                ? !isAnswerCompleted[item?.id] && "#FF6C6C"
+                                : item.needsAnswer && "#FF6C6C",
+                            fontWeight: "700"
+                          }}
+                        >
+                          {Object.keys(isAnswerCompleted)?.length !== 0
+                            ? isAnswerCompleted[item?.id]
+                              ? "YES"
+                              : "NO"
+                            : item.needsAnswer
+                              ? "YES"
+                              : "NO"}
+                        </TdCenter>
                       );
                     return <TdCenter key={key}>{value}</TdCenter>;
                   })}
@@ -118,29 +195,34 @@ const ManagementList = ({ title, data = [], onDetailOpen }) => {
 };
 
 ManagementList.propTypes = {
+  isHome: PropTypes.bool,
   title: PropTypes.string,
   data: PropTypes.array,
-  onDetailOpen: PropTypes.func
+  onSideOpen: PropTypes.func,
+  isAnswerCompleted: PropTypes.object
 };
 
 const TableWrapper = styled.div`
+  height: ${({ title }) => (title === "notice" ? "36.7rem" : "38.7rem")};
   width: 100%;
+  max-width: 100%;
 `;
 
 const Table = styled.table`
+  table-layout: fixed;
   width: 100%;
 `;
 
 const ThWrapper = styled.tr`
   width: 100%;
-  height: 3.6rem;
+  height: 3.2rem;
   display: table-row;
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray600};
+  font-size: ${({ fontSize }) => fontSize || "18px"};
 `;
 
 const Th = styled.th`
   width: ${({ width }) => width};
-  font-size: ${({ theme }) => theme.fontSize.xxs};
 `;
 
 const ThLeft = styled(Th)`
@@ -154,9 +236,11 @@ const Tbody = styled.tbody`
 `;
 
 const Tr = styled.tr`
-  height: 3.25rem;
-  /* height: 3.7rem; */
+  height: 3.36rem;
+  /* height: 3.25rem; */
+  line-height: 0.75rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray300};
+  font-size: ${({ fontSize }) => fontSize || "16px"};
 
   &:hover {
     cursor: pointer;
@@ -165,11 +249,17 @@ const Tr = styled.tr`
   }
 `;
 
-const TdLeft = styled.td`
+const Td = styled.td`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const TdLeft = styled(Td)`
   padding-left: 16px;
 `;
 
-const TdCenter = styled.td`
+const TdCenter = styled(Td)`
   padding-left: ${({ paddingLeft }) => paddingLeft};
   text-align: center;
 `;

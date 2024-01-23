@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FlexBox } from "@/styles/FlexStyle";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
-const SearchBar = ({ setSearchKeyword }) => {
+const SearchBar = ({ searchType, setSearchKeyword }) => {
   const keywordRef = useRef();
 
   const sendKeyword = (e) => {
@@ -17,10 +17,11 @@ const SearchBar = ({ setSearchKeyword }) => {
   };
 
   return (
-    <SearchInputWrapper col="center">
-      <SearchTypeInput type="text" readOnly value="제목" />
+    <SearchInputWrapper col="center" field={searchType}>
+      <SearchTypeInput type="text" readOnly value={searchType} />
       <SearchKeywordInput
         type="text"
+        field={searchType}
         placeholder="검색어 입력"
         onKeyDown={(e) => {
           if (e.key === "Enter") sendKeyword(e);
@@ -35,13 +36,14 @@ const SearchBar = ({ setSearchKeyword }) => {
 };
 
 SearchBar.propTypes = {
+  searchType: PropTypes.string,
   setSearchKeyword: PropTypes.func
 };
 
 const SearchInputWrapper = styled(FlexBox)`
   border: 2px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 10px;
-  width: ${(props) => props.width || "26.5rem"};
+  width: ${({ field }) => (field !== "닉네임" ? "26.5rem" : "18.5rem")};
   height: ${(props) => props.height || "3.2rem"};
 `;
 
@@ -52,7 +54,7 @@ const TransparentInput = styled.input`
 `;
 
 const SearchTypeInput = styled(TransparentInput)`
-  width: 4.2rem;
+  width: ${({ value }) => (value === "닉네임" ? "5.25rem" : "4.2rem")};
   padding: 0 16px;
   border-right: 2px solid ${({ theme }) => theme.colors.gray200};
 
@@ -64,6 +66,7 @@ const SearchTypeInput = styled(TransparentInput)`
 const SearchKeywordInput = styled(TransparentInput)`
   flex: 1;
   margin: 0 10px;
+  width: ${({ field }) => field === "닉네임" && "9.25rem"};
 
   &::placeholder {
     color: #a7a7a7;

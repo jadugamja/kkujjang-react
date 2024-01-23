@@ -45,7 +45,7 @@ export const ModalGrayButton = styled.button`
   border: 1px solid ${({ theme }) => theme.colors.gray500};
   color: ${({ theme }) => theme.colors.gray600};
   font-size: ${({ theme }) => theme.fontSize.s};
-  font-weight: 700;
+  font-weight: 500;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.gray400};
@@ -70,7 +70,7 @@ export const BigTransparentButton = styled.button`
 // 작은 버튼
 export const SmallButton = styled.button`
   width: ${(props) => props.width || "6rem"};
-  height: ${(props) => props.width || "3rem"};
+  height: ${(props) => props.height || "3rem"};
   font-size: ${({ theme }) => theme.fontSize.xxxs};
   font-weight: 700;
 `;

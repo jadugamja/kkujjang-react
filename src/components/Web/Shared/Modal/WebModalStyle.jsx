@@ -2,43 +2,45 @@ import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
 export const ModalBackground = styled.div`
-  width: 1920px;
-  height: 1072px;
+  width: 100%;
+  height: 100%;
   background-color: #000000;
   opacity: 0.7;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 `;
 
 export const ModalWrapper = styled.div`
-  width: ${(props) => props.width || "fit-content"};
+  width: ${(props) => props.width || "32rem"};
   height: ${(props) => props.height || "fit-content"};
   border-radius: ${(props) => props.borderRadius || null};
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 5;
 `;
 
 export const ModalHeader = styled(FlexBox)`
-  width: ${(props) => props.width || "36.375rem"};
-  height: ${(props) => props.height || "2.25rem"};
+  width: 100%;
+  height: ${(props) => props.height || "2rem"};
   background-color: ${({ theme }) => theme.colors.gray200};
   padding-right: 10px;
 `;
 
 export const ModalContent = styled(FlexBox)`
-  width: ${(props) => props.width || "36.375rem"};
-  height: ${(props) => props.height || "17.813rem"};
+  width: 100%;
+  height: ${(props) => props.height || "17rem"};
   background-color: #fefefe;
 `;
 
 export const ModalMessage = styled.p`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
-  font-size: ${({ theme }) => theme.fontSize.l};
+  font-size: ${({ theme }) => theme.fontSize.m};
   font-weight: 700;
   margin: 0;
   padding-bottom: 50px;

@@ -29,6 +29,7 @@ const InquiryManagementThread = ({ data }) => {
 
   const replyAnswerRef = useRef(null);
 
+  // 임시
   const getTypeName = (type) => {
     switch (type) {
       case 0:
@@ -42,6 +43,7 @@ const InquiryManagementThread = ({ data }) => {
     }
   };
 
+  // textarea로 출력하기..
   const replaceToBrTag = (str) => {
     return str.replace(/\n/g, "<br />");
   };

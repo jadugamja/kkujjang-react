@@ -2,15 +2,9 @@ import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { userState } from "../recoil/userState";
-import { useEffect } from "react";
 
 const ProtectedRoute = ({ authentication, member = false, admin = false, children }) => {
-  // const user = useRecoilValue(userState);
-  const [user, setUser] = useRecoilState(userState);
-  useEffect(() => {
-    setUser({ role: "admin" });
-  }, []);
-
+  const user = useRecoilValue(userState);
   const isAuthenticated = user != null;
 
   if (!authentication) {

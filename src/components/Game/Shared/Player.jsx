@@ -15,6 +15,12 @@ const Player = ({ avatarUrl, nickname, level }) => {
   );
 };
 
+Player.propTypes = {
+  avatarUrl: PropTypes.string,
+  nickname: PropTypes.string,
+  level: PropTypes.number
+};
+
 const PlayerWrapper = styled(FlexBox)`
   width: 8.75rem;
   height: 10.75rem;
@@ -47,11 +53,5 @@ const LevelBadge = styled(FlexBox).attrs({
 `;
 
 const NicknameText = styled.span``;
-
-Player.propTypes = {
-  avatarUrl: PropTypes.string,
-  nickname: PropTypes.string,
-  level: PropTypes.number
-};
 
 export default Player;

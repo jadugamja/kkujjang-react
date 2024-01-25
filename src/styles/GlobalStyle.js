@@ -44,6 +44,12 @@ const GlobalStyle = createGlobalStyle`
     font-style: normal;
   }
 
+  // Alfa Slab One
+  @font-face {
+    font-family: 'AlfaSlabOne';
+    src: url('/fonts/AlfaSlabOne-Regular.ttf');
+  }
+
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

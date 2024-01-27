@@ -1,13 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import FlexBox from "@/styles/FlexStyle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListUl, faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import GameModal from "../Shared/GameModal";
 
 const RoomList = () => {
   const timeLimits = [60, 90, 120];
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [showOpenRoom, setShowOpenRoom] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // 임시 데이터
   const rooms = Array.from({ length: 5 }, (_, i) => ({
@@ -20,6 +26,41 @@ const RoomList = () => {
     playerCnt: Math.floor(Math.random() * 8) + 1,
     maxPlayerCnt: 8
   }));
+
+  const onEnterRoom = (roomId) => {
+    const room = rooms.find((room) => room.id === roomId);
+
+    if (!room) {
+      console.error(`[Error] Room with ID: ${roomId} not found.`);
+      return;
+    }
+
+    if (room.isPlaying) {
+      setModalType("alert");
+      setModalMessage("게임이 진행 중인 방입니다.");
+      setIsModalOpen(true);
+      console.error("[Error] Cannot enter the room because the game is in progress.");
+      return;
+    }
+
+    if (room.playerCnt === room.maxPlayerCnt) {
+      setModalType("alert");
+      setModalMessage("방이 찼습니다.");
+      setIsModalOpen(true);
+      console.error("[Error] Cannot enter the room because it is full.");
+      return;
+    }
+
+    if (!room.isPlaying && room.isLocked) {
+      setModalType("password");
+      setIsModalOpen(true);
+      console.log("[Error] The room is locked. Please enter the password.");
+      return;
+    }
+
+    // 방 입장 로직
+    navigate(`/game/${roomId}`);
+  };
 
   return (
     <RoomListWrapper dir="col">
@@ -49,7 +90,14 @@ const RoomList = () => {
       </TitleBar>
       <RoomItemWrapper row="between">
         {rooms?.map((room) => (
-          <RoomItem key={room.id} isPlaying={room.isPlaying}>
+          <RoomItem
+            key={room.id}
+            isPlaying={room.isPlaying}
+            onClick={() => onEnterRoom(room.id)}
+          >
+            <RoomPlayingShadowText isPlaying={room.isPlaying}>
+              {room.isPlaying ? "PLAYING" : "WAITING"}
+            </RoomPlayingShadowText>
             <RoomItemInfoWrapper row="between">
               <LeftInfoWrapper row="center" col="center">
                 <RoomNumber>{room.id}</RoomNumber>
@@ -61,7 +109,7 @@ const RoomList = () => {
                   <RoomSubText>{`${room.timeLimit}초`}</RoomSubText>
                 </CenterBottomInfoWrapper>
               </CenterInfoWrapper>
-              <RightInfoWrapper dir="col">
+              <RightInfoWrapper dir="col" row="evenly" col="center">
                 <PlayerCount>{`${room.playerCnt}/${room.maxPlayerCnt}`}</PlayerCount>
                 <FlexBox row="center" col="center">
                   <LockIcon icon={room.isLocked ? faLock : faLockOpen} />
@@ -71,6 +119,14 @@ const RoomList = () => {
           </RoomItem>
         ))}
       </RoomItemWrapper>
+      {isModalOpen ? (
+        <GameModal
+          type={modalType}
+          message={modalMessage}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+        />
+      ) : null}
     </RoomListWrapper>
   );
 };
@@ -117,13 +173,28 @@ const RoomItemWrapper = styled(FlexBox)`
 `;
 
 const RoomItem = styled.div`
-  width: calc(50% - 1.5rem);
+  width: calc(50% - 1rem);
   height: 7rem;
   background-color: ${({ isPlaying }) => (isPlaying ? "#737373" : "#EBEBEB")};
   border: 2px solid rgba(0, 0, 0, 0.5);
   border-radius: 20px;
-  margin: 8px 12px;
+  margin: 8px 4px;
   padding: 15px 18px 15px 10px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const RoomPlayingShadowText = styled.span`
+  position: absolute;
+  margin-top: ${({ isPlaying }) => (isPlaying ? "8px" : "9.5px")};
+  transform: rotate(338deg);
+  font-family: "DNFBitBitv2";
+  font-size: 41px;
+  font-weight: 900;
+  z-index: 1;
+  opacity: ${({ isPlaying }) => (isPlaying ? "0.15" : "0.1")};
 `;
 
 const RoomItemInfoWrapper = styled(FlexBox)`
@@ -149,7 +220,7 @@ const CenterBottomInfoWrapper = styled(FlexBox)`
 `;
 
 const RightInfoWrapper = styled(FlexBox)`
-  width: 3.5rem;
+  width: 4.2rem;
 `;
 
 const RoomNumber = styled.span`
@@ -172,8 +243,9 @@ const RoomSubText = styled.span`
 `;
 
 const PlayerCount = styled.span`
-  font-family: "DNFBitBitv2";
+  font-family: "ZenDots";
   font-size: 27px;
+  font-weight: 600;
 `;
 
 const LockIcon = styled(FontAwesomeIcon)`

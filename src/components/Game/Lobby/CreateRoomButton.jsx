@@ -25,7 +25,7 @@ const CreateRoomButton = () => {
 
 const TabButton = styled(FlexBox).attrs({ as: "button" })`
   position: relative;
-  z-index: 10;
+  z-index: 9;
   width: 8.75rem;
   height: 3rem;
   background-color: ${({ bgColor }) => bgColor};

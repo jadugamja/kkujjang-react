@@ -112,16 +112,18 @@ Chat.propTypes = {
   roomId: PropTypes.string
 };
 
+// ver 1. width: 46rem
 const ChatWrapper = styled(FlexBox)`
-  width: ${(props) => (props.width === "big" ? "inherit" : "71.75rem")};
+  width: ${(props) => (props.width === "big" ? "inherit" : "57rem")};
   height: ${(props) => (props.height === "big" ? "inherit" : "12.25rem")};
   background-color: #eee;
+  padding: 6px 4px;
 `;
 
 const ChatHeader = styled.div`
-  width: ${(props) => (props.width === "big" ? "inherit" : "70.25rem")};
+  width: ${(props) => (props.width === "big" ? "inherit" : "auto")};
   height: ${(props) => (props.height === "big" ? "inherit" : "20px")};
-  margin-left: 10px;
+  margin: 0 5px;
   padding-left: 10px;
   border-radius: 4px;
   box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);

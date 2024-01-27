@@ -12,15 +12,17 @@ export const SideTab = () => (
   </Tab>
 );
 
-export const MainTab = ({ children, bgColor }) => (
-  <Tab row="center" col="center" bgColor={bgColor}>
+export const MainTab = ({ children, bgColor, color, onClick }) => (
+  <Tab row="center" col="center" bgColor={bgColor} color={color} onClick={onClick}>
     <TabSpan>{children}</TabSpan>
   </Tab>
 );
 
 MainTab.propTypes = {
   children: PropTypes.string,
-  bgColor: PropTypes.string
+  bgColor: PropTypes.string,
+  color: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 const Tab = styled(FlexBox)`
@@ -33,12 +35,17 @@ const Tab = styled(FlexBox)`
   border: 1px solid
     ${({ bgColor }) =>
       bgColor === "#779DC5" ? "#7D7D7D" : bgColor === "sub" ? "#ccc" : "transparent"};
+  color: ${({ color }) => color || "initial"};
   border-bottom: 0;
   border-radius: 12px 12px 0 0;
   flex-shrink: 0;
 
   & > * + * {
     margin-left: 7px;
+  }
+
+  &:hover {
+    cursor: ${({ onClick }) => onClick && "pointer"};
   }
 `;
 

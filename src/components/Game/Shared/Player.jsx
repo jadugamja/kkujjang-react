@@ -22,14 +22,14 @@ Player.propTypes = {
 };
 
 const PlayerWrapper = styled(FlexBox)`
-  width: 8.75rem;
+  width: 9rem;
   height: 10.75rem;
 `;
 
 const AvatarImage = styled(FlexBox).attrs({
   as: "img"
 })`
-  width: ${(props) => (props.type === "player" ? "7.75rem" : "6rem")};
+  width: ${(props) => (props.type === "player" ? "7.5rem" : "6rem")};
   height: ${(props) => (props.type === "player" ? "auto" : "5.304rem")};
 `;
 
@@ -45,7 +45,7 @@ const LevelBadge = styled(FlexBox).attrs({
 })`
   width: ${(props) => props.width || "23px"};
   height: ${(props) => props.height || "26px"};
-  margin-right: 8px;
+  margin: 0 6px;
   border: 1px solid ${({ theme }) => theme.colors.gray600};
   border-radius: 5px;
   font-size: 15px;

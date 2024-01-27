@@ -43,11 +43,6 @@ const InquiryManagementThread = ({ data }) => {
     }
   };
 
-  // textarea로 출력하기..
-  const replaceToBrTag = (str) => {
-    return str.replace(/\n/g, "<br />");
-  };
-
   const appendFilesToFormData = useCallback(
     (_files) => {
       if (!isAnswerCompleted[id]) {
@@ -190,10 +185,7 @@ const InquiryManagementThread = ({ data }) => {
         ) : (
           <AnswerInputFieldWrapper>
             <Width100 marginTop="10px">
-              <AnswerText
-                as="div"
-                dangerouslySetInnerHTML={{ __html: replaceToBrTag(answer) }}
-              />
+              <AnswerText>{answer}</AnswerText>
             </Width100>
             <AttachedImgWrapper>
               {answerFiles.length > 0 &&
@@ -414,7 +406,11 @@ const Width100 = styled(FlexBox)`
   margin-top: ${({ marginTop }) => marginTop || ""};
 `;
 
-const AnswerText = styled.span`
+const AnswerText = styled.textarea.attrs({ readonly: true })`
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
   font-size: ${({ theme }) => theme.fontSize.xxs};
 `;
 

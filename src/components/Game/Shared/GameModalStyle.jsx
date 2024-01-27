@@ -13,22 +13,16 @@ export const GameModalBackground = styled.div`
   z-index: 10;
 `;
 
-export const GameModalWrapper = styled.div`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "fit-content"};
-  border-radius: ${(props) => props.borderRadius || null};
+export const GameModalContent = styled(FlexBox)`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 11;
-`;
-
-export const GameModalContent = styled(FlexBox)`
   width: ${(props) => props.width || "26rem"};
   height: ${(props) => props.height || "15.625rem"};
   border-radius: ${(props) => props.borderRadius || "10px"};
   background-color: #23282d;
+  z-index: 11;
 `;
 
 export const GameModalHeader = styled(FlexBox)`
@@ -41,10 +35,22 @@ export const GameModalHeader = styled(FlexBox)`
   flex-shrink: 0;
 `;
 
+export const GameModalBody = styled.div`
+  position: relative;
+  top: ${({ top }) => top || "26px"};
+  width: 100%;
+  padding: 10px 14px;
+  flex-grow: 1;
+
+  & > * + * {
+    margin-top: ${({ marginTop }) => marginTop || "22px"};
+  }
+`;
+
 export const GameModalMessage = styled.p`
   height: ${(props) => props.height || "fit-content"};
-  font-size: ${({ theme }) => theme.fontSize.xxxs};
-  font-weight: 700;
+  font-size: ${({ fontSize, theme }) => fontSize || theme.fontSize.xxxs};
+  font-weight: ${({ fontWeight }) => fontWeight || "600"};
   color: #fff4e3;
   margin: 0;
   padding-bottom: ${(props) => props.paddingBottom || null};
@@ -78,7 +84,7 @@ export const GameModalMessageWrapper = styled(FlexBox)`
 
 export const ButtonWrapper = styled(FlexBox)`
   width: 100%;
-  margin: 20px 0px 32px;
+  margin: ${({ margin }) => margin || "10px 0px 32px"};
 `;
 
 export const GameModalButton = styled.button`
@@ -102,18 +108,6 @@ export const GameModalSelect = styled.select`
   font-size: 16px;
 `;
 
-export const ContentWrapper = styled.div`
-  position: relative;
-  top: 26px;
-  width: 100%;
-  padding: 10px 14px;
-  flex-grow: 1;
-
-  & > * + * {
-    margin-top: 22px;
-  }
-`;
-
 export const VolumeWrapper = styled(FlexBox)`
   position: absolute;
   width: calc(100% - 20px);
@@ -122,9 +116,7 @@ export const VolumeWrapper = styled(FlexBox)`
 `;
 
 export const GameModalInputWrapper = styled.div`
-  width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
-  margin: 10px;
   padding: 10px;
   padding-top: ${(props) => props.paddingTop || null};
   padding-bottom: ${(props) => props.paddingBottom || null};
@@ -169,7 +161,7 @@ export const ExitMiniCircle = styled.button`
 
 export const Table = styled.table`
   max-width: 100%;
-  margin: 1.2rem 0;
+  margin: 1.3rem 0;
 `;
 
 export const Tbody = styled.tbody`

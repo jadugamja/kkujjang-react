@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import GameModal from "../Shared/GameModal";
-import { ExtraButton, ExtarButtonIcon as ButtonIcon } from "../Shared/Button";
+import { ExtraButton, ExtraButtonIcon as ButtonIcon } from "../Shared/Button";
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 
 const guide = `

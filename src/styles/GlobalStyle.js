@@ -50,6 +50,13 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/AlfaSlabOne-Regular.ttf');
   }
 
+  // Zen Dots
+  @font-face {
+    font-family: 'ZenDots';
+    src: url('/fonts/ZenDots-Regular.ttf');
+  }
+
+
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

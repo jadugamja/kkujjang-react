@@ -1,14 +1,23 @@
 import React from "react";
 
+// ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
-import Footer from "@/components/Web/Shared/Layout/Footer";
 import LoginForm from "@/components/Web/Member/LoginForm";
+
+// ===== style import =====
+import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
 
 const Login = () => {
   return (
     <>
-      <Header />
-      <LoginForm />
+      <ContentWrapper row="center" col="center">
+        <Header />
+        <NarrowContent>
+          <Main>
+            <LoginForm />
+          </Main>
+        </NarrowContent>
+      </ContentWrapper>
     </>
   );
 };

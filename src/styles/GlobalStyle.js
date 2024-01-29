@@ -56,6 +56,12 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/ZenDots-Regular.ttf');
   }
 
+  // Poller One
+  @font-face {
+    font-family: 'PollerOne';
+    src: url('/fonts/PollerOne-Regular.ttf');
+  }
+
 
   * {
     -webkit-box-sizing: border-box;

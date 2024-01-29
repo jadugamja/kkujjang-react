@@ -1,7 +1,10 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "react-router-dom";
 import { faX } from "@fortawesome/free-solid-svg-icons";
+import Modal from "./GameModal";
 
 export const ExtraButton = styled.button`
   width: 50px;
@@ -15,15 +18,34 @@ export const ExtraButtonIcon = styled(FontAwesomeIcon)`
 `;
 
 // 퇴장 버튼
-export const ExitButton = () => {
+export const ExitButton = ({ location }) => {
   const navigate = useNavigate();
-  const onGoBackToLobby = () => navigate("/game");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onGoBackToLobby = () => {
+    setIsModalOpen(true);
+  };
 
   return (
-    <StyledExitButton onClick={onGoBackToLobby}>
-      <ExtraButtonIcon icon={faX} fontSize="19px" color="#fff" />
-    </StyledExitButton>
+    <>
+      <StyledExitButton onClick={onGoBackToLobby}>
+        <ExtraButtonIcon icon={faX} fontSize="19px" color="#fff" />
+      </StyledExitButton>
+      {isModalOpen ? (
+        <Modal
+          type="alert"
+          message={
+            location === "playing" ? "게임을 그만두시겠습니까?" : "방을 나가시겠습니까?"
+          }
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+        />
+      ) : null}
+    </>
   );
+};
+ExitButton.propTypes = {
+  location: PropTypes.string
 };
 
 const StyledExitButton = styled(ExtraButton)`

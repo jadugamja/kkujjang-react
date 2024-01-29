@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { MiniButton as Button } from "../Shared/Button";
+import TitleBar from "../Shared/TitleBar";
 
 const Ranking = () => {
   const [rankData, setRankData] = useState([]);
@@ -37,10 +36,7 @@ const Ranking = () => {
 
   return (
     <RankingWrapper>
-      <TitleBar>
-        <FontAwesomeIcon icon={faTrophy} style={{ fontSize: "12px" }} />
-        <span>랭킹</span>
-      </TitleBar>
+      <TitleBar type="rank" />
       <TableWrapper>
         <Table>
           <thead>
@@ -60,22 +56,22 @@ const Ranking = () => {
             ))}
           </Tbody>
         </Table>
-        <ButtonWrapper row="evenly" col="center">
-          <div>
+        <ButtonWrapper>
+          <FlexBox row="center">
             {currPage > 1 && (
               <SideButton onClick={() => setCurrPage(currPage - 1)}>이전</SideButton>
             )}
-          </div>
-          <div>
+          </FlexBox>
+          <FlexBox row="center">
             <CenterButton onClick={() => setCurrPage(Math.ceil(myRank / 15))}>
               내 순위
             </CenterButton>
-          </div>
-          <div>
+          </FlexBox>
+          <FlexBox row="center">
             {currPage < lastPageIdx && (
               <SideButton onClick={() => setCurrPage(currPage + 1)}>다음</SideButton>
             )}
-          </div>
+          </FlexBox>
         </ButtonWrapper>
       </TableWrapper>
     </RankingWrapper>
@@ -89,24 +85,6 @@ const RankingWrapper = styled.div`
   background-color: #f3f3f3;
   border: 1px solid #ccc;
   border-bottom: 0;
-`;
-
-const TitleBar = styled(FlexBox).attrs({
-  col: "center"
-})`
-  width: 100%;
-  height: 1.5rem;
-  padding: 0 7px;
-  background-color: rgba(221, 221, 221, 0.5);
-  border-radius: 4px;
-  box-shadow: 2px 2px 1px #00000025;
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0.8;
-
-  & > * + * {
-    margin-left: 5px;
-  }
 `;
 
 const TableWrapper = styled.div`
@@ -149,7 +127,9 @@ const Td = styled.td`
   font-weight: 430;
 `;
 
-const ButtonWrapper = styled(FlexBox)`
+const ButtonWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
   margin: 7px 24px;
 `;
 

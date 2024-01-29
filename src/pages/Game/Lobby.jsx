@@ -1,25 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import { ContentWrapper, WideContent, Main, SkyblueBox } from "@/styles/CommonStyle";
+import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import { FlexBox } from "@/styles/FlexStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
 import Profile from "../../components/Game/Shared/Profile";
-import RoomList from "@/components/Game/Lobby/RoomList";
-import { SideTab, MainTab } from "@/components/Game/Lobby/Tab";
-import CreateRoomButton from "../../components/Game/Lobby/CreateRoomButton";
+import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
+import {
+  SideTab,
+  MainTab,
+  CreateRoomButton,
+  EnterRoomButton
+} from "@/components/Game/Shared/Tab";
 import { HelpButton } from "@/components/Game/Lobby/Help";
 import { SettingButton } from "@/components/Game/Lobby/Setting";
 import Footer from "@/components/Web/Shared/Layout/Footer";
 
 const Lobby = () => {
+  const [rooms, setRooms] = useState();
+
+  useEffect(() => {
+    // 방 목록 정보 불러오기 api 호출
+
+    // 임시 데이터
+    const timeLimits = [60, 90, 120, 150];
+    const init = Array.from({ length: 5 }, (_, i) => ({
+      id: i + 1,
+      name: `Room ${i + 1}`,
+      isPlaying: i % 2 === 0,
+      roundCnt: Math.floor(Math.random() * 10) + 1,
+      timeLimit: timeLimits[Math.floor(Math.random() * timeLimits.length)],
+      isLocked: Math.random() > 0.5,
+      playerCnt: Math.floor(Math.random() * 8) + 1,
+      maxPlayerCnt: 8
+    }));
+
+    setRooms(init);
+  }, []);
+
   return (
     <ContentWrapper row="center" col="center">
       <WideContent dir="col">
         <GameHeader />
         <Main>
-          <SkyblueBox>
+          <Box>
             <SideContentWrapper dir="col">
               <SideTab />
               <Ranking />
@@ -30,16 +55,16 @@ const Lobby = () => {
                 <TabWrapper>
                   <MainTab bgColor="#779DC5">방 목록</MainTab>
                   <CreateRoomButton />
-                  <MainTab bgColor="#A0CFD5">게임시작</MainTab>
+                  <EnterRoomButton rooms={rooms} />
                 </TabWrapper>
                 <div>
                   <HelpButton />
                   <SettingButton />
                 </div>
               </TabWrapper>
-              <RoomList />
+              <LobbyRoomList rooms={rooms} />
             </MainContentWrapper>
-          </SkyblueBox>
+          </Box>
         </Main>
         <Footer />
       </WideContent>
@@ -54,34 +79,10 @@ const SideContentWrapper = styled(FlexBox)`
 
 const MainContentWrapper = styled(FlexBox)``;
 
-// const ProfileWrapper = styled.div`
-//   padding: 3px 5px;
-//   background-color: #d6d6d6;
-//   flex-grow: 1;
-//   border: 1px solid #ccc;
-// `;
-
 const TabWrapper = styled(FlexBox)`
   & > * + * {
     margin-left: 5px;
   }
 `;
-
-// const TitleBar = styled(FlexBox).attrs({
-//   col: "center"
-// })`
-//   width: 100%;
-//   height: 1.5rem;
-//   padding: 0 7px;
-//   background-color: rgba(221, 221, 221, 0.5);
-//   border-radius: 4px;
-//   box-shadow: 2px 2px 1px #00000025;
-//   font-size: 14px;
-//   font-weight: 700;
-
-//   & > * + * {
-//     margin-left: 5px;
-//   }
-// `;
 
 export default Lobby;

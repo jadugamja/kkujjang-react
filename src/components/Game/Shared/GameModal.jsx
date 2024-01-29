@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
+import PropTypes from "prop-types";
 
+import { roomInfoState } from "@/recoil/roomState";
+import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
 import Profile from "./Profile";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
@@ -35,58 +37,49 @@ import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 
 const GameModal = ({ type, message, isOpen, setIsOpen }) => {
-  const [maxPlayerCount, setMaxPlayerCount] = useState(5);
-  const [roundCount, setRoundCount] = useState(8);
-  const [roundTime, setRoundTime] = useState("60");
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
   const [fxCurrVolume, setFxCurrVolume] = useRecoilState(fxVolumeState);
+  const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [isCorrectPassword, setIsCorrectPassword] = useState();
 
-  let title = "";
+  let titleText = "";
   let buttonMessage = "확인";
   let height = "";
-  let hasButton = "";
 
   switch (type) {
     case "alert":
-      title = "경고";
-      hasButton = true;
+      titleText = "경고";
       break;
     case "input":
-      hasButton = true;
       height = "18.75rem";
       break;
     case "avatar":
       height = "29.188rem";
       break;
     case "password":
-      hasButton = true;
       height = "18.75rem";
       break;
     case "room":
-      title = "방 만들기";
-      hasButton = true;
-      height = "27.6rem";
+      titleText = "방 만들기";
+      height = "28.3rem";
       break;
     case "profile":
-      title = "프로필";
-      hasButton = false;
+      titleText = "프로필";
       height = "13.75rem";
       break;
     case "setting":
-      title = "환경설정";
-      hasButton = true;
+      titleText = "환경설정";
       buttonMessage = "저장";
       height = "20rem";
       break;
     case "help":
-      title = "도움말";
-      hasButton = false;
+      titleText = "도움말";
       height = "25.625rem";
       break;
-    default:
-      hasButton = false;
   }
+
+  const navigate = useNavigate();
 
   const onValidateChange = (e) => {
     const t = e.target;
@@ -106,12 +99,36 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
       v = t.max;
     }
 
-    if (t.name === "MaxPlayerCount") {
-      setMaxPlayerCount(v);
-    } else if (t.name === "roundCount") {
-      setRoundCount(v);
-    } else if (t.name === "roundTime") {
-      setRoundTime(v);
+    setRoomInfo({
+      ...roomInfo,
+      [t.name]: v
+    });
+  };
+
+  const onValidateSubmit = (e) => {
+    e.preventDefault();
+
+    if (!roomInfo.title) {
+      setIsTitleEmpty(true);
+      return;
+    }
+
+    // 방 정보 보내는 api 호출
+    const roomId = Math.floor(Math.random() * 10) + 1;
+    setRoomInfo({
+      id: roomId,
+      title: roomInfo.title,
+      password: roomInfo.password,
+      maxPlayerCount: roomInfo.maxPlayerCount,
+      roundCount: roomInfo.roundCount,
+      roundTime: roomInfo.roundTime
+    });
+
+    setIsOpen(false);
+    navigate(`/game/${roomId}`);
+
+    if (roomInfo) {
+      // 방 정보 변경 사항 보내는 api 호출
     }
   };
 
@@ -120,8 +137,8 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
       <>
         <GameModalBackground />
         <GameModalContent dir="col" col="center" height={height}>
-          <GameModalHeader row={title !== "" ? "between" : "end"} col="center">
-            {title !== "" && <span>{title}</span>}
+          <GameModalHeader row={titleText !== "" ? "between" : "end"} col="center">
+            {titleText !== "" && <span>{titleText}</span>}
             <ExitMiniCircle onClick={() => setIsOpen(false)} />
           </GameModalHeader>
 
@@ -147,6 +164,11 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                 <AvatarImage src={avatar}></AvatarImage>
                 <ArrowIconImage src={rightArrow}></ArrowIconImage>
               </GameModalAvatarWrapper>
+              <ButtonWrapper row="center" col="center">
+                <GameModalButton onClick={(e) => onValidateChange(e)}>
+                  확인
+                </GameModalButton>
+              </ButtonWrapper>
             </GameModalBody>
           )}
 
@@ -162,88 +184,115 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                   <ValidationMessage message="비밀번호가 일치하지 않습니다." />
                 )}
               </GameModalInputWrapper>
+              <ButtonWrapper row="center" col="center">
+                <GameModalButton onClick={(e) => onValidateChange(e)}>
+                  확인
+                </GameModalButton>
+              </ButtonWrapper>
             </GameModalBody>
           )}
 
           {/* 방 만들기 modal */}
           {type === "room" && (
-            <Table>
-              <Tbody>
-                <Tr>
-                  <TdLabel>
-                    <GameModalMessage>방 제목</GameModalMessage>
-                  </TdLabel>
-                  <TdContent>
-                    <GameModalInput
-                      type="text"
-                      placeholder="방 제목"
-                      maxLength={20}
-                    ></GameModalInput>
-                  </TdContent>
-                </Tr>
-                <Tr>
-                  <TdLabel>
-                    <GameModalMessage>비밀번호</GameModalMessage>
-                  </TdLabel>
-                  <TdContent>
-                    <GameModalInput
-                      type="text"
-                      placeholder="비밀번호"
-                      maxLength={30}
-                    ></GameModalInput>
-                  </TdContent>
-                </Tr>
-                <Tr>
-                  <TdLabel>
-                    <GameModalMessage>플레이어 수</GameModalMessage>
-                  </TdLabel>
-                  <TdContent>
-                    <GameModalInput
-                      type="number"
-                      max={8}
-                      min={1}
-                      step={1}
-                      name="maxPlayerCount"
-                      value={maxPlayerCount}
-                      onChange={(e) => onValidateChange(e)}
-                    ></GameModalInput>
-                  </TdContent>
-                </Tr>
-                <Tr>
-                  <TdLabel>
-                    <GameModalMessage>라운드 수</GameModalMessage>
-                  </TdLabel>
-                  <TdContent>
-                    <GameModalInput
-                      type="number"
-                      max={8}
-                      min={2}
-                      step={1}
-                      name="roundCount"
-                      value={roundCount}
-                      onChange={(e) => onValidateChange(e)}
-                    ></GameModalInput>
-                  </TdContent>
-                </Tr>
-                <Tr>
-                  <TdLabel>
-                    <GameModalMessage>라운드 시간</GameModalMessage>
-                  </TdLabel>
-                  <TdContent>
-                    <GameModalSelect
-                      name="roundTime"
-                      value={roundTime}
-                      onChange={(e) => onValidateChange(e)}
-                    >
-                      <option value="60">60초</option>
-                      <option value="90">90초</option>
-                      <option value="120">120초</option>
-                      <option value="150">150초</option>
-                    </GameModalSelect>
-                  </TdContent>
-                </Tr>
-              </Tbody>
-            </Table>
+            <form onSubmit={onValidateSubmit}>
+              <Table>
+                <Tbody>
+                  <Tr>
+                    <TdLabel>
+                      <GameModalMessage>방 제목</GameModalMessage>
+                    </TdLabel>
+                    <TdContent>
+                      <GameModalInput
+                        type="text"
+                        placeholder="방 제목"
+                        maxLength={20}
+                        name="title"
+                        value={roomInfo?.title}
+                      />
+                    </TdContent>
+                  </Tr>
+                  {isTitleEmpty && (
+                    <Tr>
+                      <TdLabel />
+                      <TdContent>
+                        <ValidationMessage message="제목을 입력하세요." fontSize="14px" />
+                      </TdContent>
+                    </Tr>
+                  )}
+                  <Tr>
+                    <TdLabel>
+                      <GameModalMessage>비밀번호</GameModalMessage>
+                    </TdLabel>
+                    <TdContent>
+                      <GameModalInput
+                        type="text"
+                        placeholder="비밀번호"
+                        maxLength={30}
+                        value={roomInfo?.password}
+                      />
+                    </TdContent>
+                  </Tr>
+                  <Tr>
+                    <TdLabel>
+                      <GameModalMessage>플레이어 수</GameModalMessage>
+                    </TdLabel>
+                    <TdContent>
+                      <GameModalInput
+                        type="number"
+                        max={8}
+                        min={1}
+                        step={1}
+                        name="maxPlayerCount"
+                        value={roomInfo?.maxPlayerCount}
+                        onChange={(e) => onValidateChange(e)}
+                      />
+                    </TdContent>
+                  </Tr>
+                  <Tr>
+                    <TdLabel>
+                      <GameModalMessage>라운드 수</GameModalMessage>
+                    </TdLabel>
+                    <TdContent>
+                      <GameModalInput
+                        type="number"
+                        max={8}
+                        min={2}
+                        step={1}
+                        name="roundCount"
+                        value={roomInfo?.roundCount}
+                        onChange={(e) => onValidateChange(e)}
+                      />
+                    </TdContent>
+                  </Tr>
+                  <Tr>
+                    <TdLabel>
+                      <GameModalMessage>라운드 시간</GameModalMessage>
+                    </TdLabel>
+                    <TdContent>
+                      <GameModalSelect
+                        name="roundTime"
+                        value={roomInfo?.roundTime}
+                        onChange={(e) => onValidateChange(e)}
+                      >
+                        <option value="60">60초</option>
+                        <option value="90">90초</option>
+                        <option value="120">120초</option>
+                        <option value="150">150초</option>
+                      </GameModalSelect>
+                    </TdContent>
+                  </Tr>
+                </Tbody>
+              </Table>
+              <ButtonWrapper
+                row="center"
+                col="center"
+                margin={isTitleEmpty ? "22px 0 0" : "42px 0 0"}
+              >
+                <GameModalButton type="submit" onClick={(e) => onValidateChange(e)}>
+                  확인
+                </GameModalButton>
+              </ButtonWrapper>
+            </form>
           )}
 
           {/* 환경 설정 modal */}
@@ -259,6 +308,11 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                 currVolume={fxCurrVolume}
                 setCurrVolume={setFxCurrVolume}
               />
+              <ButtonWrapper row="center" col="center">
+                <GameModalButton onClick={(e) => onValidateChange(e)}>
+                  저장
+                </GameModalButton>
+              </ButtonWrapper>
             </GameModalBody>
           )}
 
@@ -283,16 +337,12 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
               <GameModalMessage fontSize="20px" fontWeight="500">
                 {message}
               </GameModalMessage>
+              <ButtonWrapper row="center" col="center">
+                <GameModalButton onClick={(e) => onValidateChange(e)}>
+                  {buttonMessage}
+                </GameModalButton>
+              </ButtonWrapper>
             </GameModalBody>
-          )}
-
-          {/* 버튼 출력 부분 */}
-          {hasButton && (
-            <ButtonWrapper row="center" col="center">
-              <GameModalButton onClick={(e) => onValidateChange(e)}>
-                {buttonMessage}
-              </GameModalButton>
-            </ButtonWrapper>
           )}
         </GameModalContent>
       </>
@@ -312,7 +362,8 @@ GameModal.propTypes = {
   ]),
   message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
-  setIsOpen: PropTypes.func.isRequired
+  setIsOpen: PropTypes.func.isRequired,
+  roomInfo: PropTypes.object
 };
 
 export default GameModal;

@@ -1,8 +1,13 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
+// ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
-import Footer from "@/components/Web/Shared/Layout/Footer";
+import FindidForm from "@/components/Web/Member/FindidForm";
+import FindpwForm from "@/components/Web/Member/FindpwForm";
+
+// ===== style import =====
+import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
 
 const Find = () => {
   const location = useLocation();
@@ -12,7 +17,17 @@ const Find = () => {
 
   return (
     <>
-      <Header />
+      <ContentWrapper row="center" col="center">
+        <Header />
+        <NarrowContent>
+          <Main type="big">
+            <FindidForm />
+            {/* <FindpwForm /> */}
+            {/* {type === "id" && <FindidForm />} */}
+            {/* {type === "pw" && <FindpwForm />} */}
+          </Main>
+        </NarrowContent>
+      </ContentWrapper>
     </>
   );
 };

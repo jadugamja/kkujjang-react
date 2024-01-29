@@ -1,51 +1,32 @@
 import React, { useState } from "react";
 
-// 아이디 유효성 검사 (영어, 숫자는 가능하게)
+// 아이디 유효성 검사
+// 길이 7 ~ 30
+// 영어 소문자, 숫자 허용
 export const useIdValidation = () => {
-  const [isValid, setIsValid] = useState(false);
+  const [isIdValid, setIsIdValid] = useState(false);
 
   const validateId = (id) => {
-    const isNotEmpty = id.trim() !== ""; // 빈값
-    const isLengthValid = id.length >= 7 && id.length <= 30; // 최소 7자, 최대 30자 길이 제한
-    const hasNumber = /\d/.test(id); // 숫자 포함
-    const hasUppercaseAndLowercase = /[a-z]/.test(id); // 영어 (소문자) 포함
-
-    const conditions = [isNotEmpty, isLengthValid, hasNumber, hasUppercaseAndLowercase];
-    const isValidId = conditions.every((condition) => condition);
-
-    setIsValid(isValidId);
+    const regex = /^[a-z0-9]{7,30}$/;
+    const isValidId = regex.test(id);
+    setIsIdValid(isValidId);
   };
 
-  return { isValid, validateId };
+  return [isIdValid, validateId];
 };
 
-// 비밀번호 유효성 검사 (영어, 숫자, 길이만)
+// 비밀번호 유효성 검사
+// 길이 7 ~ 30
+// 영어 대소문자, 숫자 필수
+// 특수문자 허용
 export const usePasswordValidation = () => {
-  const [conditions, setConditions] = useState({
-    isNotEmpty: false,
-    isLengthValid: false,
-    hasNumber: false,
-    hasUppercase: false,
-    hasLowercase: false,
-    hasSpecialChar: false
-  });
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const validatePassword = (password) => {
-    const isNotEmpty = password.trim() !== ""; // 빈값
-    const isLengthValid = password.length >= 7 && password.length <= 30; // 최소 7자, 최대 30자 제한
-    const hasNumber = /\d/.test(password); // 숫자 포함
-    const hasUppercase = /[A-Z]/.test(password); // 영어 대문자 포함
-    const hasLowercase = /[a-z]/.test(password); // 영어 소문자 포함
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password); // 특수문자 포함
-
-    setConditions({
-      isNotEmpty,
-      isLengthValid,
-      hasNumber,
-      hasUppercase,
-      hasLowercase,
-      hasSpecialChar
-    });
+    const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+    const isValidPassword = regex.test(password);
+    setIsPasswordValid(isValidPassword);
   };
-  return { conditions, validatePassword };
+
+  return [isPasswordValid, validatePassword];
 };

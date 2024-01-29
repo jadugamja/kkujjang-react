@@ -28,8 +28,9 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.colors.gray600};
 `;
 
+// 수정 (margin-top: 300px)
 export const ContentWrapper = styled(FlexBox)`
-  margin-top: 300px;
+  margin-top: ${(props) => props.marginTop || "0px"};
 `;
 
 export const ItemWrapper = styled(FlexBox)``;

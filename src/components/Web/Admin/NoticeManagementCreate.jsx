@@ -8,7 +8,7 @@ import { Input } from "../Shared/Form/InputFieldStyle";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 
 import { useSetRecoilState } from "recoil";
-import { noticeArticleState } from "../../../recoil/testState.test";
+// import { noticeArticleState } from "../../../recoil/testState.test";
 
 const MAX_IMAGE_COUNT = 3;
 

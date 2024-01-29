@@ -16,7 +16,7 @@ export const Input = styled.input.attrs((props) => ({
   ${({ type, theme }) =>
     (type === "text" || type === "password" || type === "email") &&
     `
-    width: 100%;
+    width: ${(props) => props.width || "100%"};
     height: 4.3rem;
     margin-top: 8px;
     padding: 10px 18px;
@@ -26,9 +26,4 @@ export const Input = styled.input.attrs((props) => ({
     font-size: ${theme.fontSize.s};
     font-weight: 500;
   `}
-`;
-
-export const MapWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "fit-content"};
 `;

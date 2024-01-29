@@ -1,14 +1,23 @@
 import React from "react";
 
+// ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
-import Footer from "@/components/Web/Shared/Layout/Footer";
 import ChangepwForm from "@/components/Web/Member/ChangepwForm";
+
+// ===== style import =====
+import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
 
 const ChangePw = () => {
   return (
     <>
-      <Header />
-      <ChangepwForm />
+      <ContentWrapper row="center" col="center">
+        <Header />
+        <NarrowContent>
+          <Main type="big">
+            <ChangepwForm />
+          </Main>
+        </NarrowContent>
+      </ContentWrapper>
     </>
   );
 };

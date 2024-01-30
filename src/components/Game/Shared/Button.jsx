@@ -33,7 +33,7 @@ export const ExitButton = ({ location }) => {
       </StyledExitButton>
       {isModalOpen ? (
         <Modal
-          type="alert"
+          type="exit"
           message={
             location === "playing" ? "게임을 그만두시겠습니까?" : "방을 나가시겠습니까?"
           }
@@ -44,6 +44,7 @@ export const ExitButton = ({ location }) => {
     </>
   );
 };
+
 ExitButton.propTypes = {
   location: PropTypes.string
 };

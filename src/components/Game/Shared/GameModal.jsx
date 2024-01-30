@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 
-import { roomInfoState } from "@/recoil/roomState";
+import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
 import Profile from "./Profile";
@@ -35,13 +35,18 @@ import {
 import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
+import { isHostUserState } from "../../../recoil/userState";
 
-const GameModal = ({ type, message, isOpen, setIsOpen }) => {
+const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
+  const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
   const [fxCurrVolume, setFxCurrVolume] = useRecoilState(fxVolumeState);
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
-  const [isCorrectPassword, setIsCorrectPassword] = useState();
+  const [password, setPassword] = useState("");
+  const [isCorrectPassword, setIsCorrectPassword] = useState(true);
+  const setRoomId = useSetRecoilState(roomIdState);
+  const setIsHost = useSetRecoilState(isHostUserState);
 
   let titleText = "";
   let buttonMessage = "확인";
@@ -58,7 +63,7 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
       height = "29.188rem";
       break;
     case "password":
-      height = "18.75rem";
+      height = "17.75rem";
       break;
     case "room":
       titleText = "방 만들기";
@@ -78,6 +83,32 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
       height = "25.625rem";
       break;
   }
+
+  useEffect(() => {
+    if (roomId !== roomInfo.id) {
+      setRoomInfo({
+        title: "",
+        password: "",
+        playerCount: 1,
+        maxPlayerCount: 8,
+        roundCount: 5,
+        roundTime: 90
+      });
+    }
+  }, []);
+
+  // 임시: 로컬 스토리지에서 불러오기
+  useEffect(() => {
+    const storedRoomInfoList = localStorage.getItem("roomInfoList");
+    if (storedRoomInfoList) {
+      setRoomInfoList(JSON.parse(storedRoomInfoList));
+    }
+  }, []);
+
+  // 임시: 로컬 스토리지에 세팅
+  useEffect(() => {
+    localStorage.setItem("roomInfoList", JSON.stringify(roomInfoList));
+  }, [roomInfoList]);
 
   const navigate = useNavigate();
 
@@ -101,7 +132,8 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
 
     setRoomInfo({
       ...roomInfo,
-      [t.name]: v
+      [t.name]: v,
+      createdAt: new Date().toISOString() // 임시 추가
     });
   };
 
@@ -113,22 +145,42 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
       return;
     }
 
-    // 방 정보 보내는 api 호출
-    const roomId = Math.floor(Math.random() * 10) + 1;
-    setRoomInfo({
-      id: roomId,
-      title: roomInfo.title,
-      password: roomInfo.password,
-      maxPlayerCount: roomInfo.maxPlayerCount,
-      roundCount: roomInfo.roundCount,
-      roundTime: roomInfo.roundTime
-    });
+    const roomId = Math.floor(Math.random() * 100) + 1;
+
+    if (roomInfoList.some((room) => room.id === roomId)) {
+      // 방 정보 PUT API 호출
+      setRoomInfoList((prev) =>
+        prev.map((room) =>
+          room.id === roomId ? { ...room, ...roomInfo, id: roomId } : room
+        )
+      );
+    } else {
+      // 방 정보 POST API 호출
+      setRoomId(roomId);
+      setIsHost(true);
+      setRoomInfo((prev) => ({
+        ...prev,
+        id: roomId
+      }));
+      setRoomInfoList((prev) => [...prev, { ...roomInfo, id: roomId }]);
+    }
 
     setIsOpen(false);
     navigate(`/game/${roomId}`);
+  };
 
-    if (roomInfo) {
-      // 방 정보 변경 사항 보내는 api 호출
+  const onCheckSamePassword = () => {
+    const thisRoomInfo = roomInfoList.find((room) => room.id === roomId);
+
+    if (thisRoomInfo && thisRoomInfo.password !== "") {
+      if (thisRoomInfo.password !== password) {
+        setIsCorrectPassword(false);
+        return;
+      } else {
+        setIsCorrectPassword(true);
+        setIsOpen(false);
+        navigate(`/game/${roomId}`);
+      }
     }
   };
 
@@ -179,15 +231,18 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                 <GameModalMessage paddingBottom="15px">
                   비밀번호를 입력하세요.
                 </GameModalMessage>
-                <GameModalInput marginBottom="10px" maxLength={30} />
+                <GameModalInput
+                  marginBottom="10px"
+                  maxLength={30}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 {!isCorrectPassword && (
                   <ValidationMessage message="비밀번호가 일치하지 않습니다." />
                 )}
               </GameModalInputWrapper>
               <ButtonWrapper row="center" col="center">
-                <GameModalButton onClick={(e) => onValidateChange(e)}>
-                  확인
-                </GameModalButton>
+                <GameModalButton onClick={onCheckSamePassword}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}
@@ -208,6 +263,9 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                         maxLength={20}
                         name="title"
                         value={roomInfo?.title}
+                        onChange={(e) =>
+                          setRoomInfo({ ...roomInfo, title: e.target.value })
+                        }
                       />
                     </TdContent>
                   </Tr>
@@ -229,6 +287,9 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
                         placeholder="비밀번호"
                         maxLength={30}
                         value={roomInfo?.password}
+                        onChange={(e) =>
+                          setRoomInfo({ ...roomInfo, password: e.target.value })
+                        }
                       />
                     </TdContent>
                   </Tr>
@@ -331,15 +392,34 @@ const GameModal = ({ type, message, isOpen, setIsOpen }) => {
           {/* 도움말 modal */}
           {type === "help" && <GameModalLongMessage>{message}</GameModalLongMessage>}
 
-          {/*  modal */}
+          {/* 경고 modal */}
           {type === "alert" && (
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
                 {message}
               </GameModalMessage>
-              <ButtonWrapper row="center" col="center">
-                <GameModalButton onClick={(e) => onValidateChange(e)}>
+              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+                <GameModalButton onClick={() => setIsOpen(false)}>
                   {buttonMessage}
+                </GameModalButton>
+              </ButtonWrapper>
+            </GameModalBody>
+          )}
+
+          {/* 퇴장 modal */}
+          {type === "exit" && (
+            <GameModalBody top="43px">
+              <GameModalMessage fontSize="20px" fontWeight="500">
+                {message}
+              </GameModalMessage>
+              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+                <GameModalButton
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate("/game");
+                  }}
+                >
+                  확인
                 </GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
@@ -358,12 +438,13 @@ GameModal.propTypes = {
     "room",
     "profile",
     "setting",
-    "help"
+    "help",
+    "exit"
   ]),
   message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
-  roomInfo: PropTypes.object
+  roomId: PropTypes.number
 };
 
 export default GameModal;

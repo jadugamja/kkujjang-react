@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { roomIdState } from "@/recoil/roomState";
+import { isHostUserState } from "@/recoil/userState";
 import FlexBox from "@/styles/FlexStyle";
 import Modal from "../Shared/GameModal";
 import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
@@ -11,19 +14,20 @@ import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
 const LobbyRoomItem = ({
   roomInfo: {
     id,
-    name,
-    isPlaying,
-    roundCnt,
-    timeLimit,
-    isLocked,
-    playerCnt,
-    maxPlayerCnt
+    title,
+    password,
+    roundCount,
+    roundTime,
+    playerCount,
+    maxPlayerCount,
+    isPlaying
   }
 }) => {
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const setRoomId = useSetRecoilState(roomIdState)
+  const setIsHost = useSetRecoilState(isHostUserState);
   const navigate = useNavigate();
 
   const onEnterRoom = (roomId) => {
@@ -34,19 +38,21 @@ const LobbyRoomItem = ({
       return;
     }
 
-    if (playerCnt === maxPlayerCnt) {
+    if (playerCount === maxPlayerCount) {
       setModalType("alert");
       setModalMessage("방이 찼습니다.");
       setIsModalOpen(true);
       return;
     }
 
-    if (!isPlaying && isLocked) {
+    if (!isPlaying && password !== "") {
       setModalType("password");
       setIsModalOpen(true);
       return;
     }
-
+    
+    setRoomId(roomId);
+    setIsHost(false);
     navigate(`/game/${roomId}`);
   };
 
@@ -61,16 +67,16 @@ const LobbyRoomItem = ({
             <RoomNumber>{id}</RoomNumber>
           </LeftInfoWrapper>
           <CenterInfoWrapper dir="col" row="center">
-            <RoomName>{name}</RoomName>
+            <RoomName>{title}</RoomName>
             <CenterBottomInfoWrapper>
-              <RoomSubText>{`라운드 ${roundCnt}`}</RoomSubText>
-              <RoomSubText>{`${timeLimit}초`}</RoomSubText>
+              <RoomSubText>{`라운드 ${roundCount}`}</RoomSubText>
+              <RoomSubText>{`${roundTime}초`}</RoomSubText>
             </CenterBottomInfoWrapper>
           </CenterInfoWrapper>
           <RightInfoWrapper dir="col" row="evenly" col="center">
-            <PlayerCount>{`${playerCnt}/${maxPlayerCnt}`}</PlayerCount>
+            <PlayerCount>{`${playerCount}/${maxPlayerCount}`}</PlayerCount>
             <FlexBox row="center" col="center">
-              <LockIcon icon={isLocked ? faLock : faLockOpen} />
+              <LockIcon icon={password !== "" ? faLock : faLockOpen} />
             </FlexBox>
           </RightInfoWrapper>
         </RoomItemInfoWrapper>
@@ -81,6 +87,7 @@ const LobbyRoomItem = ({
           message={modalMessage}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
+          roomId={id}
         />
       ) : null}
     </>
@@ -90,13 +97,13 @@ const LobbyRoomItem = ({
 LobbyRoomItem.propTypes = {
   roomInfo: PropTypes.shape({
     id: PropTypes.number,
-    name: PropTypes.string,
-    isPlaying: PropTypes.bool,
-    roundCnt: PropTypes.number,
-    timeLimit: PropTypes.number,
-    isLocked: PropTypes.bool,
-    playerCnt: PropTypes.number,
-    maxPlayerCnt: PropTypes.number
+    title: PropTypes.string,
+    password: PropTypes.string,
+    roundCount: PropTypes.number,
+    roundTime: PropTypes.number,
+    playerCount: PropTypes.number,
+    maxPlayerCount: PropTypes.number,
+    isPlaying: PropTypes.bool
   }).isRequired
 };
 

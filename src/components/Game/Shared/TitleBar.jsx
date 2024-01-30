@@ -12,7 +12,7 @@ const TitleBar = ({
   showOpenRoom,
   setShowOpenRoom
 }) => {
-  const { id, name, playerCount, maxPlayerCount, roundCount, roundTime } = info;
+  const { id, title, playerCount, maxPlayerCount, roundCount, roundTime } = info;
   return (
     <StyledTitleBar row="between">
       {/* Left */}
@@ -28,7 +28,7 @@ const TitleBar = ({
           <span>랭킹</span>
         </div>
       )}
-      {type === "room" && <span>{`[${id}] ${name}`}</span>}
+      {type === "room" && <span>{`[${id}] ${title}`}</span>}
 
       {/* Right */}
       {type === "list" && (
@@ -66,7 +66,7 @@ TitleBar.propTypes = {
   type: PropTypes.string,
   info: PropTypes.shape({
     id: PropTypes.number,
-    name: PropTypes.string,
+    title: PropTypes.string,
     playerCount: PropTypes.number,
     maxPlayerCount: PropTypes.number,
     roundCount: PropTypes.number,

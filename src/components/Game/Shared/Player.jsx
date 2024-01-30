@@ -30,8 +30,8 @@ const PlayerWrapper = styled(FlexBox)`
 const AvatarImage = styled(FlexBox).attrs({
   as: "img"
 })`
-  width: ${({ type }) => (type === "play" ? "6.75rem" : "6rem")};
-  height: ${({ type }) => (type === "play" ? "auto" : "5.304rem")};
+  width: ${({ type }) => (type === "play" ? "6.75rem" : "7.25rem")};
+  height: ${({ type }) => type === "play" && "auto"};
 `;
 
 const PlayerInfoWrapper = styled(FlexBox)`

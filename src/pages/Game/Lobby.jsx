@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
 import GameHeader from "@/components/Game/Shared/GameHeader";
@@ -16,27 +17,42 @@ import {
 import { HelpButton } from "@/components/Game/Lobby/Help";
 import { SettingButton } from "@/components/Game/Lobby/Setting";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import { roomInfoListState } from "@/recoil/roomState";
 
 const Lobby = () => {
-  const [rooms, setRooms] = useState();
+  const [rooms, setRooms] = useRecoilState(roomInfoListState);
+
+  // useEffect(() => {
+  // 방 목록 정보 불러오기 api 호출
+
+  // 임시 데이터
+  // const timeLimits = [60, 90, 120, 150];
+  // const init = Array.from({ length: 5 }, (_, i) => ({
+  //   id: i + 1,
+  //   title: `Room ${i + 1}`,
+  //   password: Math.random() < 0.5 ? "" : "password",
+  //   playerCount: Math.floor(Math.random() * 8) + 1,
+  //   maxPlayerCount: 8,
+  //   roundCount: Math.floor(Math.random() * 10) + 1,
+  //   roundTime: timeLimits[Math.floor(Math.random() * timeLimits.length)],
+  //   isPlaying: i % 2 === 0
+  // }));
+  // }, []);
 
   useEffect(() => {
-    // 방 목록 정보 불러오기 api 호출
+    const storedRoomInfoList = localStorage.getItem("roomInfoList");
+    const bgVolume = localStorage.getItem("bgVolume");
+    const fxVolume = localStorage.getItem("fxVolume");
 
-    // 임시 데이터
-    const timeLimits = [60, 90, 120, 150];
-    const init = Array.from({ length: 5 }, (_, i) => ({
-      id: i + 1,
-      name: `Room ${i + 1}`,
-      isPlaying: i % 2 === 0,
-      roundCnt: Math.floor(Math.random() * 10) + 1,
-      timeLimit: timeLimits[Math.floor(Math.random() * timeLimits.length)],
-      isLocked: Math.random() > 0.5,
-      playerCnt: Math.floor(Math.random() * 8) + 1,
-      maxPlayerCnt: 8
-    }));
+    if (storedRoomInfoList) {
+      const roomList = JSON.parse(storedRoomInfoList);
+      roomList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setRooms(roomList);
+    }
 
-    setRooms(init);
+    // 볼륨 조절
+    // Audio.volume = bgVolume
+    // Audio.volume = fxVolume
   }, []);
 
   return (
@@ -62,7 +78,7 @@ const Lobby = () => {
                   <SettingButton />
                 </div>
               </TabWrapper>
-              <LobbyRoomList rooms={rooms} />
+              <LobbyRoomList rooms={rooms} roomId={null} />
             </MainContentWrapper>
           </Box>
         </Main>

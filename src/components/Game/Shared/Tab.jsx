@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { roomIdState } from "@/recoil/roomState";
+import { isHostUserState } from "@/recoil/userState";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
@@ -55,11 +58,15 @@ export const CreateRoomButton = () => {
 // ========= 바로 입장 버튼 =========
 export const EnterRoomButton = ({ rooms }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const setRoomId = useSetRecoilState(roomIdState);
+  const setIsHost = useSetRecoilState(isHostUserState);
+
   const navigate = useNavigate();
 
   const onTryEnterRoom = () => {
     const availableRooms = rooms?.filter(
-      (room) => !room.isPlaying && !room.isLocked && room.playerCnt < room.maxPlayerCnt
+      (room) =>
+        !room.isPlaying && room.password === "" && room.playerCount < room.maxPlayerCount
     );
 
     if (availableRooms.length === 0) {
@@ -68,6 +75,8 @@ export const EnterRoomButton = ({ rooms }) => {
       const pickedRoom =
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
+      setRoomId(pickedRoom.id);
+      setIsHost(false);
       navigate(`/game/${pickedRoom.id}`);
     }
   };
@@ -123,6 +132,7 @@ const Tab = styled(FlexBox)`
 
   &:hover {
     cursor: ${({ onClick }) => onClick && "pointer"};
+    opacity: ${({ onClick }) => onClick && "0.8"};
   }
 `;
 

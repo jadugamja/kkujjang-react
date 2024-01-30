@@ -1,6 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
+import {
+  roomIdState,
+  roomInfoState,
+  roomInfoListState,
+  isPlayingRoomState
+} from "@/recoil/roomState";
+import { isHostUserState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
@@ -16,19 +24,31 @@ import WaitingPlayerList from "../../components/Game/Waiting/WaitingPlayerList";
 import PlayingPlayerList from "../../components/Game/Playing/PlayingPlayerList";
 import WordInput from "../../components/Game/Playing/WordInput";
 
-const info = {
-  id: 3,
-  name: "방제목1",
-  playerCount: 1,
-  maxPlayerCount: 8,
-  roundCount: 5,
-  roundTime: 60
-};
-
 const GameRoom = () => {
-  const [isHost, setIsHost] = useState(true);
+  const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
+  const roomId = useRecoilValue(roomIdState);
+  const isHost = useRecoilValue(isHostUserState);
+  const [playerReadyList, setPlayerReadyList] = useState([]);
   const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingRoomState);
+
+  useEffect(() => {
+    setIsPlaying(false);
+  }, []);
+
+  useEffect(() => {
+    const storedRoomInfoList = localStorage.getItem("roomInfoList");
+    if (storedRoomInfoList) {
+      setRoomInfoList(JSON.parse(storedRoomInfoList));
+
+      const pickecRoomInfo = roomInfoList.find((room) => room.id === roomId);
+      if (roomInfoList.find((room) => room.id === roomId)) {
+        setRoomInfo(pickecRoomInfo);
+        setPlayerReadyList(Array(pickecRoomInfo.playerCount).fill(false));
+      }
+    }
+  }, [roomId]);
 
   return (
     <ContentWrapper row="center" col="center">
@@ -43,9 +63,8 @@ const GameRoom = () => {
                 ) : (
                   <WaitingTab
                     isHost={isHost}
-                    isReady={isReady}
-                    setIsReady={setIsReady}
-                    roomInfo={info}
+                    roomId={roomInfo.id}
+                    playerCount={playerReadyList.length}
                   />
                 )}
                 <div>
@@ -56,10 +75,10 @@ const GameRoom = () => {
               </HeaderWrapper>
               <BodyWrapper dir="col">
                 <GameRoomWrapper dir="col" type={isPlaying ? "play" : "wait"}>
-                  <TitleBar type="room" info={info} />
+                  <TitleBar type="room" info={roomInfo} />
                   {isPlaying ? (
                     <>
-                      <WordInput roundTime={info.roundTime} />
+                      <WordInput roundTime={roomInfo.roundTime} />
                       <PlayingPlayerList />
                     </>
                   ) : (

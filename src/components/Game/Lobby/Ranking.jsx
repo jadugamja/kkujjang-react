@@ -1,15 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+import { MiniButton as Button } from "../Shared/Button";
+import TitleBar from "../Shared/TitleBar";
 
 const Ranking = () => {
-  const rankings = Array.from({ length: 15 }, (_, i) => ({
-    rank: i + 1,
-    level: Math.floor(Math.random() * 100),
-    nickname: `User${i + 1}`
-  }));
+  const [rankData, setRankData] = useState([]);
+  const [myRank, setMyRank] = useState(31);
+  const [currPage, setCurrPage] = useState(1);
+  const [lastPageIdx, setLastPageIdx] = useState(30);
 
-  const getTopTier = (rank) => {
+  useEffect(() => {
+    // 랭킹 목록 조회 api 호출
+
+    const rankings = Array.from({ length: 15 }, (_, i) => ({
+      rank: (currPage - 1) * 15 + i + 1,
+      level: Math.floor(Math.random() * 100),
+      nickname: `User${(currPage - 1) * 15 + i + 1}`
+    }));
+
+    setRankData(rankings);
+  }, [currPage]);
+
+  const getTopRankColor = (rank) => {
     if (rank === 1) {
       return "#FFD700";
     } else if (rank === 2) {
@@ -22,43 +35,61 @@ const Ranking = () => {
   };
 
   return (
-    <TableWrapper>
-      <Table>
-        <thead>
-          <Tr>
-            <Th width="28px">#</Th>
-            <Th width="54px">레벨</Th>
-            <Th>닉네임</Th>
-          </Tr>
-        </thead>
-        <Tbody>
-          {rankings.map(({ rank, level, nickname }) => (
-            <Tr key={rank}>
-              <Td bgColor={getTopTier(rank)}>{rank}</Td>
-              <Td>{level}</Td>
-              <Td>{nickname}</Td>
+    <RankingWrapper>
+      <TitleBar type="rank" />
+      <TableWrapper>
+        <Table>
+          <thead>
+            <Tr>
+              <Th width="28px">#</Th>
+              <Th width="58px">레벨</Th>
+              <Th>닉네임</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-      <ButtonWrapper row="evenly" col="center">
-        <div>
-          <SideButton>이전</SideButton>
-        </div>
-        <div>
-          <CenterButton>내 순위</CenterButton>
-        </div>
-        <div>
-          <SideButton>다음</SideButton>
-        </div>
-      </ButtonWrapper>
-    </TableWrapper>
+          </thead>
+          <Tbody>
+            {rankData.map(({ rank, level, nickname }) => (
+              <Tr key={rank}>
+                <Td bgColor={getTopRankColor(rank)}>{rank}</Td>
+                <Td>{level}</Td>
+                <Td textAlign="left">{nickname}</Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+        <ButtonWrapper>
+          <FlexBox row="center">
+            {currPage > 1 && (
+              <SideButton onClick={() => setCurrPage(currPage - 1)}>이전</SideButton>
+            )}
+          </FlexBox>
+          <FlexBox row="center">
+            <CenterButton onClick={() => setCurrPage(Math.ceil(myRank / 15))}>
+              내 순위
+            </CenterButton>
+          </FlexBox>
+          <FlexBox row="center">
+            {currPage < lastPageIdx && (
+              <SideButton onClick={() => setCurrPage(currPage + 1)}>다음</SideButton>
+            )}
+          </FlexBox>
+        </ButtonWrapper>
+      </TableWrapper>
+    </RankingWrapper>
   );
 };
 
+const RankingWrapper = styled.div`
+  width: 100%;
+  height: 27.25rem;
+  padding: 3px 5px;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+`;
+
 const TableWrapper = styled.div`
   height: 100%;
-  padding: 8px 6px;
+  padding: 5px 10px;
 `;
 
 const Table = styled.table`
@@ -73,6 +104,8 @@ const Tbody = styled.tbody`
 `;
 
 const Tr = styled.tr`
+  max-height: 24px;
+
   & > * + * {
     margin-left: 3px;
   }
@@ -82,25 +115,22 @@ const Th = styled.th`
   width: ${({ width }) => width || "auto"};
   background-color: #ddd;
   border: 3px solid #f3f3f3;
-  font-size: 14px;
+  font-size: 13px;
 `;
 
 const Td = styled.td`
   background-color: ${({ bgColor }) => bgColor || "transparent"};
-  text-align: center;
-  font-size: 14px;
+  border: 3px solid #f3f3f3;
+  padding-left: ${({ textAlign }) => textAlign === "left" && "10px"};
+  text-align: ${({ textAlign }) => textAlign || "center"};
+  font-size: 12px;
   font-weight: 430;
 `;
 
-const ButtonWrapper = styled(FlexBox)`
-  margin: 12px 24px;
-`;
-
-const Button = styled.button`
-  background-color: transparent;
-  border: 1px solid #000;
-  border-radius: 10px;
-  font-size: 11px;
+const ButtonWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  margin: 7px 24px;
 `;
 
 const SideButton = styled(Button)`

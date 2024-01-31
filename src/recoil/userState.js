@@ -9,3 +9,8 @@ export const isActiveAccountState = atom({
   key: "isActiveAccountState",
   default: {} // e.g., { 'username1': true, 'username1': false }
 });
+
+export const isHostUserState = atom({
+  key: "isHostUserState",
+  default: false
+});

@@ -1,35 +1,47 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { FlexBox } from "@/styles/FlexStyle";
 
-const VolumeControl = ({ currVolume, setCurrVolume }) => {
+const VolumeControl = ({ label, currVolume, setCurrVolume }) => {
   return (
-    <SliderWrapper>
-      <SliderRail />
-      <SliderFillTrack width={`${currVolume * 100}%`} />
-      <Slider
-        min="0"
-        max="1"
-        step="0.01"
-        defaultValue={currVolume}
-        onChange={(e) => setCurrVolume(parseFloat(e.target.value))}
-      />
-    </SliderWrapper>
+    <VolumeSliderWrapper dir="col">
+      <VolumeLabel>
+        {label}
+        <VolumeSliderRail />
+        <VolumeSliderFillTrack width={`${currVolume * 100}%`} />
+        <VolumeSlider
+          min="0"
+          max="1"
+          step="0.01"
+          defaultValue={currVolume}
+          onChange={(e) => setCurrVolume(parseFloat(e.target.value))}
+        />
+      </VolumeLabel>
+    </VolumeSliderWrapper>
   );
 };
 
 VolumeControl.propTypes = {
+  label: PropTypes.string,
   currVolume: PropTypes.number,
   setCurrVolume: PropTypes.func
 };
 
-const SliderWrapper = styled.div`
+const VolumeSliderWrapper = styled(FlexBox)`
   position: relative;
-  width: 23rem;
+  width: 100%;
 `;
 
-const SliderRail = styled.div`
+const VolumeLabel = styled(FlexBox).attrs({ as: "label" })`
+  flex-basis: 60px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+`;
+
+const VolumeSliderRail = styled.div`
   position: absolute;
-  top: calc(50% - 25px);
+  top: calc(50% + 4px);
   width: 100%;
   height: 14px;
   background-color: #e5e5e5;
@@ -37,9 +49,9 @@ const SliderRail = styled.div`
   border-radius: 6px;
 `;
 
-const SliderFillTrack = styled.div`
+const VolumeSliderFillTrack = styled.div`
   position: absolute;
-  top: -24.2px;
+  top: 35.8px;
   width: ${(props) => props.width};
   height: 12px;
   margin-left: 1px;
@@ -47,9 +59,9 @@ const SliderFillTrack = styled.div`
   border-radius: 5px 0 0 5px;
 `;
 
-const Slider = styled.input.attrs(() => ({ type: "range" }))`
+const VolumeSlider = styled.input.attrs(() => ({ type: "range" }))`
   position: absolute;
-  top: calc(50% - 34px);
+  top: calc(50% + -5px);
   width: 100%;
   background-color: transparent;
   -webkit-appearance: none;

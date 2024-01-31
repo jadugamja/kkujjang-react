@@ -1,5 +1,10 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FlexBox } from "./FlexStyle";
+
+export const fadeIn = keyframes`
+  from { opacity: 0;}
+  to {opacity: 1;}
+`;
 
 // 숨겨진 요소
 export const Hidden = styled.div`
@@ -17,7 +22,9 @@ export const Gradation = styled.div`
 `;
 
 // 콘텐츠 영역 감싸는 태그
-export const ContentWrapper = styled(FlexBox)``;
+export const ContentWrapper = styled(FlexBox)`
+  animation: ${fadeIn} 0.5s ease-in-out;
+`;
 
 // 넓은 콘텐츠 영역 (width: 1200px)
 export const WideContent = styled(FlexBox)`
@@ -34,7 +41,15 @@ export const NarrowContent = styled(FlexBox)`
 // 페이지의 핵심 콘텐츠
 export const Main = styled.main`
   margin-top: ${({ type }) =>
-    type === "big" ? "10rem" : type !== "admin" ? "7.5rem" : "6.5rem"};
+    type === "big" ? "10rem" : type !== "admin" ? "7rem" : "6.5rem"};
+`;
+
+export const Box = styled(FlexBox)`
+  width: 100%;
+  max-width: 100%;
+  height: 43.25rem;
+  padding: 10px;
+  background-color: ${({ bgColor, theme }) => bgColor || theme.colors.content};
 `;
 
 // 작은 요소들을 감싸는 요소

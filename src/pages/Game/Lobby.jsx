@@ -14,8 +14,7 @@ import {
   CreateRoomButton,
   EnterRoomButton
 } from "@/components/Game/Shared/Tab";
-import { HelpButton } from "@/components/Game/Lobby/Help";
-import { SettingButton } from "@/components/Game/Lobby/Setting";
+import { Button } from "@/components/Game/Shared/Button";
 import Footer from "@/components/Web/Shared/Layout/Footer";
 import { roomInfoListState } from "@/recoil/roomState";
 
@@ -74,8 +73,8 @@ const Lobby = () => {
                   <EnterRoomButton rooms={rooms} />
                 </TabWrapper>
                 <div>
-                  <HelpButton />
-                  <SettingButton />
+                  <Button type="help" />
+                  <Button type="setting" />
                 </div>
               </TabWrapper>
               <LobbyRoomList rooms={rooms} roomId={null} />

@@ -1,22 +1,31 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
 
-const WordInput = ({ roundTime }) => {
+const WordInput = ({ roundCount, roundTime }) => {
+  const [firstWord, setFirstWord] = useState("");
+  const [currTurn, setCurrTurn] = useState(0);
+
+  useEffect(() => {
+    // 랜덤 단어 POST API 호출 (roundCount)
+    setFirstWord("테스트임당");
+  }, []);
+
   return (
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
-        <FirstWordSpan type="this">가</FirstWordSpan>
-        <FirstWordSpan>내</FirstWordSpan>
-        <FirstWordSpan>수</FirstWordSpan>
-        <FirstWordSpan>공</FirstWordSpan>
-        <FirstWordSpan>업</FirstWordSpan>
+        {firstWord?.split("").map((char, i) => (
+          <FirstWordSpan key={i} type={i === currTurn && "this"}>
+            {char}
+          </FirstWordSpan>
+        ))}
       </FirstWordWrapper>
       <WordTimerInfo dir="col" row="center" col="center">
         <DisplayWordWrapper row="center" col="center">
-          <DisplayWord>수작업</DisplayWord>
+          <DisplayWord>{firstWord?.split("")[currTurn]}</DisplayWord>
         </DisplayWordWrapper>
         <TimerBar type="turn" totalTime={15} />
         <TimerBar type="round" totalTime={roundTime} />
@@ -32,6 +41,7 @@ const WordInput = ({ roundTime }) => {
 };
 
 WordInput.propTypes = {
+  roundCount: PropTypes.number,
   roundTime: PropTypes.number
 };
 

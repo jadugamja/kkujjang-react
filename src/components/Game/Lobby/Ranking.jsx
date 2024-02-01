@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import { MiniButton as Button } from "../Shared/Button";
+import { StyledMiniButton as Button } from "../Shared/Button";
 import TitleBar from "../Shared/TitleBar";
 
 const Ranking = () => {
@@ -59,17 +59,21 @@ const Ranking = () => {
         <ButtonWrapper>
           <FlexBox row="center">
             {currPage > 1 && (
-              <SideButton onClick={() => setCurrPage(currPage - 1)}>이전</SideButton>
+              <Button layout="side" onClick={() => setCurrPage(currPage - 1)}>
+                이전
+              </Button>
             )}
           </FlexBox>
           <FlexBox row="center">
-            <CenterButton onClick={() => setCurrPage(Math.ceil(myRank / 15))}>
+            <Button layout="center" onClick={() => setCurrPage(Math.ceil(myRank / 15))}>
               내 순위
-            </CenterButton>
+            </Button>
           </FlexBox>
           <FlexBox row="center">
             {currPage < lastPageIdx && (
-              <SideButton onClick={() => setCurrPage(currPage + 1)}>다음</SideButton>
+              <Button layout="side" onClick={() => setCurrPage(currPage + 1)}>
+                다음
+              </Button>
             )}
           </FlexBox>
         </ButtonWrapper>
@@ -131,14 +135,6 @@ const ButtonWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
   margin: 7px 24px;
-`;
-
-const SideButton = styled(Button)`
-  padding: 5px 9px;
-`;
-
-const CenterButton = styled(Button)`
-  padding: 5px 14px;
 `;
 
 export default Ranking;

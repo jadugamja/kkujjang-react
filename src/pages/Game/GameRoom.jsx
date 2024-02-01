@@ -12,9 +12,7 @@ import { isHostUserState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import { HelpButton } from "@/components/Game/Lobby/Help";
-import { SettingButton } from "@/components/Game/Lobby/Setting";
-import { ExitButton } from "../../components/Game/Shared/Button";
+import { Button } from "../../components/Game/Shared/Button";
 import TitleBar from "../../components/Game/Shared/TitleBar";
 import Profile from "../../components/Game/Shared/Profile";
 import Chat from "@/components/Game/Shared/Chat";
@@ -25,13 +23,18 @@ import PlayingPlayerList from "../../components/Game/Playing/PlayingPlayerList";
 import WordInput from "../../components/Game/Playing/WordInput";
 
 const GameRoom = () => {
+  // roomInfo 조회 API 호출
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const roomId = useRecoilValue(roomIdState);
+  // host userId
   const isHost = useRecoilValue(isHostUserState);
+  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingRoomState);
+
+  // ready Status API 호출
+  // 따로
   const [playerReadyList, setPlayerReadyList] = useState([]);
   const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingRoomState);
 
   useEffect(() => {
     setIsPlaying(false);
@@ -68,9 +71,9 @@ const GameRoom = () => {
                   />
                 )}
                 <div>
-                  <HelpButton />
-                  <SettingButton />
-                  <ExitButton location={isPlaying ? "playing" : "waiting"} />
+                  <Button type="help" />
+                  <Button type="setting" />
+                  <Button type="exit" location={isPlaying ? "playing" : "waiting"} />
                 </div>
               </HeaderWrapper>
               <BodyWrapper dir="col">
@@ -78,7 +81,10 @@ const GameRoom = () => {
                   <TitleBar type="room" info={roomInfo} />
                   {isPlaying ? (
                     <>
-                      <WordInput roundTime={roomInfo.roundTime} />
+                      <WordInput
+                        roundCount={roomInfo.roundCount}
+                        roundTime={roomInfo.roundTime}
+                      />
                       <PlayingPlayerList />
                     </>
                   ) : (

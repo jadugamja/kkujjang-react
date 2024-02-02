@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import { MainTab } from "@/components/Game/Shared/Tab";
+import { Tab } from "@/components/Game/Shared/Tab";
 
 const PlayingTab = () => (
   <TabWrapper>
-    <MainTab bgColor="#889E7D">게임중</MainTab>
+    <Tab type="playing">게임중</Tab>
   </TabWrapper>
 );
 

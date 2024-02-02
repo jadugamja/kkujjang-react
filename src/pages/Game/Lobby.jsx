@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
@@ -8,12 +9,7 @@ import { FlexBox } from "@/styles/FlexStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
 import Profile from "../../components/Game/Shared/Profile";
 import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
-import {
-  SideTab,
-  MainTab,
-  CreateRoomButton,
-  EnterRoomButton
-} from "@/components/Game/Shared/Tab";
+import { Tab } from "@/components/Game/Shared/Tab";
 import { Button } from "@/components/Game/Shared/Button";
 import Footer from "@/components/Web/Shared/Layout/Footer";
 
@@ -45,16 +41,18 @@ const Lobby = () => {
         <Main>
           <Box>
             <SideContentWrapper dir="col">
-              <SideTab />
+              <Tab type="ranking">랭킹</Tab>
               <Ranking />
               <Profile />
             </SideContentWrapper>
             <MainContentWrapper dir="col">
               <TabWrapper row="between" col="end">
                 <TabWrapper>
-                  <MainTab bgColor="#779DC5">방 목록</MainTab>
-                  <CreateRoomButton />
-                  <EnterRoomButton rooms={rooms} />
+                  <Tab type="list">방 목록</Tab>
+                  <Tab type="create">방 만들기</Tab>
+                  <Tab type="enter" rooms={rooms}>
+                    바로 입장
+                  </Tab>
                 </TabWrapper>
                 <div>
                   <Button type="help" />

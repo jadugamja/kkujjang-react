@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { roomIdState, isPlayingRoomState } from "@/recoil/roomState";
 import { FlexBox } from "@/styles/FlexStyle";
-import { MainTab } from "@/components/Game/Shared/Tab";
+import { MainTab, Tab } from "@/components/Game/Shared/Tab";
 import GameModal from "../Shared/GameModal";
 
 const WaitingTab = ({ isHost, roomId, playerCount }) => {
@@ -55,13 +55,9 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
             </MainTab>
           </>
         ) : (
-          <MainTab
-            bgColor={isReady ? "#676767" : "#cdeba1"}
-            color={isReady && "#fff"}
-            onClick={onReadyToggle}
-          >
+          <Tab type={isReady ? "ready" : "wait"} onClick={onReadyToggle}>
             {isReady ? "대기" : "준비"}
-          </MainTab>
+          </Tab>
         )}
       </TabWrapper>
       {isModalOpen ? (

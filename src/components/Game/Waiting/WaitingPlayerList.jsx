@@ -53,7 +53,7 @@ const PlayerWrapper = styled(FlexBox)`
     return type === "host"
       ? "linear-gradient(0deg, #fbdb94, transparent)"
       : type === "ready"
-        ? "linear-gradient(0deg, #c4e19a, #efffd75e)"
+        ? "linear-gradient(0deg, rgb(157 171 136), rgba(239, 255, 215, 0.37))"
         : "linear-gradient(0deg, rgb(217 217 217), transparent)";
   }};
   border: 2px solid rgb(107 107 107 / 26%);

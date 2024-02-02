@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 
-const client = io("서버 IP:서버포트");
+const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
+const client = io(WEBSOCKET_URL);
 
 export const initSocket = () => {
   client.on("connect", () => {

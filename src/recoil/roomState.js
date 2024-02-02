@@ -18,7 +18,8 @@ export const roomInfoState = atom({
     playerCount: 1,
     maxPlayerCount: 8,
     roundCount: 5,
-    roundTime: 90
+    roundTime: 90,
+    isPlaying: false
   }
 });
 

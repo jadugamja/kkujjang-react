@@ -36,6 +36,11 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
     setIsModalOpen(true);
   };
 
+  const onReadyToggle = () => {
+    // 준비 상태 변경 PUT api 호출
+    setIsReady(!isReady);
+  };
+
   return (
     <>
       <TabWrapper>
@@ -51,11 +56,11 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
           </>
         ) : (
           <MainTab
-            bgColor={isReady ? "#cdeba1" : "#676767"}
-            color={!isReady && "#fff"}
-            onClick={() => setIsReady(!isReady)}
+            bgColor={isReady ? "#676767" : "#cdeba1"}
+            color={isReady && "#fff"}
+            onClick={onReadyToggle}
           >
-            {isReady ? "준비" : "대기"}
+            {isReady ? "대기" : "준비"}
           </MainTab>
         )}
       </TabWrapper>

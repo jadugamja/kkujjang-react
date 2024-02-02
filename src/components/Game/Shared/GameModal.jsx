@@ -35,7 +35,6 @@ import {
 import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
-import { isHostUserState } from "../../../recoil/userState";
 
 const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
@@ -46,7 +45,6 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   const [password, setPassword] = useState("");
   const [isCorrectPassword, setIsCorrectPassword] = useState(true);
   const setRoomId = useSetRecoilState(roomIdState);
-  const setIsHost = useSetRecoilState(isHostUserState);
 
   let titleText = "";
   let buttonMessage = "확인";
@@ -98,17 +96,17 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   }, []);
 
   // 임시: 로컬 스토리지에서 불러오기
-  useEffect(() => {
-    const storedRoomInfoList = localStorage.getItem("roomInfoList");
-    if (storedRoomInfoList) {
-      setRoomInfoList(JSON.parse(storedRoomInfoList));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedRoomInfoList = localStorage.getItem("roomInfoList");
+  //   if (storedRoomInfoList) {
+  //     setRoomInfoList(JSON.parse(storedRoomInfoList));
+  //   }
+  // }, []);
 
-  // 임시: 로컬 스토리지에 세팅
-  useEffect(() => {
-    localStorage.setItem("roomInfoList", JSON.stringify(roomInfoList));
-  }, [roomInfoList]);
+  // // 임시: 로컬 스토리지에 세팅
+  // useEffect(() => {
+  //   localStorage.setItem("roomInfoList", JSON.stringify(roomInfoList));
+  // }, [roomInfoList]);
 
   const navigate = useNavigate();
 
@@ -156,8 +154,8 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       );
     } else {
       // 방 정보 POST API 호출
+      // (최초 방 생성 시, 생성한 플레이어의 username을 같이 보내어 roomInfo에 hostId를 같이 저장해둬야 함)
       setRoomId(roomId);
-      setIsHost(true);
       setRoomInfo((prev) => ({
         ...prev,
         id: roomId
@@ -170,17 +168,17 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   };
 
   const onCheckSamePassword = () => {
-    const thisRoomInfo = roomInfoList.find((room) => room.id === roomId);
+    // 비밀번호 확인 요청 (body: roomId, password)
 
-    if (thisRoomInfo && thisRoomInfo.password !== "") {
-      if (thisRoomInfo.password !== password) {
-        setIsCorrectPassword(false);
-        return;
-      } else {
-        setIsCorrectPassword(true);
-        setIsOpen(false);
-        navigate(`/game/${roomId}`);
-      }
+    // if (!data.isCorrect)
+    {
+      setIsCorrectPassword(false);
+      return;
+    }
+    // else
+    {
+      setIsOpen(false);
+      navigate(`/game/${roomId}`);
     }
   };
 
@@ -369,7 +367,7 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
                 currVolume={fxCurrVolume}
                 setCurrVolume={setFxCurrVolume}
               />
-              <ButtonWrapper row="center" col="center">
+              <ButtonWrapper row="center" col="center" margin="30px 0px 20px">
                 <GameModalButton onClick={(e) => onValidateChange(e)}>
                   저장
                 </GameModalButton>
@@ -381,7 +379,7 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
           {type === "profile" && (
             <GameModalBody top="0" marginTop="8px">
               <Profile type="modal" />
-              <ButtonWrapper row="end" col="center">
+              <ButtonWrapper row="end" col="center" margin="6px 0">
                 <GameModalButton onClick={(e) => onValidateChange(e)}>
                   수정
                 </GameModalButton>

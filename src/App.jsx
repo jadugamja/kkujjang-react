@@ -46,7 +46,7 @@ const App = () => {
             <Route path="admin/user" element={<UserManagement />} />
           </Route>
           <Route path="/game" element={<Lobby />} />
-          <Route path="/game/:gameroomId" element={<GameRoom />} />
+          <Route path="/game/:roomId" element={<GameRoom />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

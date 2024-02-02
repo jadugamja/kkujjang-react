@@ -5,30 +5,31 @@ import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
 const WaitingPlayerList = ({ isHost, isReady, info }) => {
+  // 임시 플레이어 배열
+  const players = [
+    { id: 1, isHost: true, isReady: true, nickname: "닉네임#1", level: 3 },
+    { id: 2, isHost: false, isReady: true, nickname: "닉네임#2", level: 2 },
+    { id: 3, isHost: false, isReady: false, nickname: "닉네임#3", level: 1 },
+    { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
+    { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
+  ];
+
   return (
     <PlayerBox>
-      {isHost ? (
-        <PlayerWrapper type="host" row="between">
-          <Player avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
+      {players?.map((player) => (
+        <PlayerWrapper
+          key={player.id}
+          type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}
+          row="between"
+        >
+          <Player avatarUrl={avatarUrl} nickname={player.nickname} level={player.level} />
           <StatusBox dir="col" row="start">
-            <StatusText type="host">방장</StatusText>
+            <StatusText type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}>
+              {player.isHost ? "방장" : player.isReady ? "준비" : "대기"}
+            </StatusText>
           </StatusBox>
         </PlayerWrapper>
-      ) : isReady ? (
-        <PlayerWrapper type="ready" row="between">
-          <Player avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-          <StatusBox dir="col" row="start">
-            <StatusText type="ready">준비</StatusText>
-          </StatusBox>
-        </PlayerWrapper>
-      ) : (
-        <PlayerWrapper type="wait" row="between">
-          <Player avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-          <StatusBox dir="col" row="start">
-            <StatusText type="wait">대기</StatusText>
-          </StatusBox>
-        </PlayerWrapper>
-      )}
+      ))}
     </PlayerBox>
   );
 };

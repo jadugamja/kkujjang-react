@@ -1,22 +1,40 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
 
-const WordInput = ({ roundTime }) => {
+const WordInput = ({ roundCount, roundTime }) => {
+  const [firstWord, setFirstWord] = useState("");
+  const [currTurn, setCurrTurn] = useState(0);
+  const [inputWord, setInputWord] = useState("");
+
+  useEffect(() => {
+    // 랜덤 단어 POST API 호출 (roundCount)
+    setFirstWord("테스트임당");
+  }, []);
+
+  const onEnterKeyDown = async (e) => {
+    if (e.key !== "Enter") return;
+
+    if (!inputWord.startsWith(firstWord?.split("")[currTurn])) return;
+
+    // 적합 단어(유효 단어 O, 중복 단어 X) 여부 확인 GET API 요청
+  };
+
   return (
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
-        <FirstWordSpan type="this">가</FirstWordSpan>
-        <FirstWordSpan>내</FirstWordSpan>
-        <FirstWordSpan>수</FirstWordSpan>
-        <FirstWordSpan>공</FirstWordSpan>
-        <FirstWordSpan>업</FirstWordSpan>
+        {firstWord?.split("").map((char, i) => (
+          <FirstWordSpan key={i} type={i === currTurn && "this"}>
+            {char}
+          </FirstWordSpan>
+        ))}
       </FirstWordWrapper>
       <WordTimerInfo dir="col" row="center" col="center">
         <DisplayWordWrapper row="center" col="center">
-          <DisplayWord>수작업</DisplayWord>
+          <DisplayWord>{firstWord?.split("")[currTurn]}</DisplayWord>
         </DisplayWordWrapper>
         <TimerBar type="turn" totalTime={15} />
         <TimerBar type="round" totalTime={roundTime} />
@@ -25,6 +43,11 @@ const WordInput = ({ roundTime }) => {
         <Input
           type="text"
           placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
+          bgColor="#fff"
+          fontSize="18px"
+          value={inputWord}
+          onChange={(e) => setInputWord(e.target.value)}
+          onKeyDown={onEnterKeyDown}
         />
       </InputWrapper>
     </WordInputWrapper>
@@ -32,6 +55,7 @@ const WordInput = ({ roundTime }) => {
 };
 
 WordInput.propTypes = {
+  roundCount: PropTypes.number,
   roundTime: PropTypes.number
 };
 

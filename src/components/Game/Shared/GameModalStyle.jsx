@@ -128,8 +128,8 @@ export const GameModalInput = styled.input`
   margin-bottom: ${(props) => props.marginBottom || null};
   padding: 10px;
   border: 0;
-  background-color: #e5e5e5;
-  font-size: 16px;
+  background-color: ${({ bgColor }) => bgColor || "#e5e5e5"};
+  font-size: ${({ fontSize }) => fontSize || "16px"};
 `;
 
 export const GameModalAvatarWrapper = styled(FlexBox)`

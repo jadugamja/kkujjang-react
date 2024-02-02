@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { roomIdState } from "@/recoil/roomState";
-import { isHostUserState } from "@/recoil/userState";
 import FlexBox from "@/styles/FlexStyle";
 import Modal from "../Shared/GameModal";
 import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
@@ -26,8 +23,6 @@ const LobbyRoomItem = ({
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const setRoomId = useSetRecoilState(roomIdState)
-  const setIsHost = useSetRecoilState(isHostUserState);
   const navigate = useNavigate();
 
   const onEnterRoom = (roomId) => {
@@ -50,9 +45,7 @@ const LobbyRoomItem = ({
       setIsModalOpen(true);
       return;
     }
-    
-    setRoomId(roomId);
-    setIsHost(false);
+
     navigate(`/game/${roomId}`);
   };
 

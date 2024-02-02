@@ -3,46 +3,34 @@ import { FlexBox } from "@/styles/FlexStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
-const PlayingPlayerList = () => (
-  <PlayerBox row="between" col="center">
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-    <PlayerWrapper dir="col" col="center">
-      <Player type="play" avatarUrl={avatarUrl} nickname="닉네임#2" level={3} />
-      <ScoreWrapper row="center" col="center">
-        <Score>00000</Score>
-      </ScoreWrapper>
-    </PlayerWrapper>
-  </PlayerBox>
-);
+const PlayingPlayerList = () => {
+  // 임시 플레이어 배열
+  const players = [
+    { id: 1, isHost: true, isReady: true, nickname: "닉네임#1", level: 3 },
+    { id: 2, isHost: false, isReady: true, nickname: "닉네임#2", level: 2 },
+    { id: 3, isHost: false, isReady: false, nickname: "닉네임#3", level: 1 },
+    { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
+    { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
+  ];
+
+  return (
+    <PlayerBox row="between" col="center">
+      {players?.map((player) => (
+        <PlayerWrapper key={player.id} dir="col" col="center">
+          <Player
+            type="play"
+            avatarUrl={avatarUrl}
+            nickname={player.nickname}
+            level={player.level}
+          />
+          <ScoreWrapper row="center" col="center">
+            <Score>00000</Score>
+          </ScoreWrapper>
+        </PlayerWrapper>
+      ))}
+    </PlayerBox>
+  );
+};
 
 const PlayerBox = styled(FlexBox)`
   margin: 5px 10px;

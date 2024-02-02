@@ -1,16 +1,24 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 
 export const userState = atom({
   key: "userState",
   default: {} // e.g., { username: "username", nickname: "nickname", role: "admin", ... }
 });
 
-export const isActiveAccountState = atom({
-  key: "isActiveAccountState",
-  default: {} // e.g., { 'username1': true, 'username1': false }
+// username만 추출
+export const userNameState = selector({
+  key: "userNameState",
+  get: ({ get }) => {
+    const user = get(userState);
+    return user.username;
+  }
 });
 
-export const isHostUserState = atom({
-  key: "isHostUserState",
-  default: false
+// isActive만 추출
+export const isActiveAccountState = selector({
+  key: "isActiveAccountState",
+  get: ({ get }) => {
+    const user = get(userState);
+    return user.isActive;
+  }
 });

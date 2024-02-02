@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { roomIdState } from "@/recoil/roomState";
-import { isHostUserState } from "@/recoil/userState";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
@@ -59,8 +58,6 @@ export const CreateRoomButton = () => {
 export const EnterRoomButton = ({ rooms }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const setRoomId = useSetRecoilState(roomIdState);
-  const setIsHost = useSetRecoilState(isHostUserState);
-
   const navigate = useNavigate();
 
   const onTryEnterRoom = () => {
@@ -76,7 +73,6 @@ export const EnterRoomButton = ({ rooms }) => {
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
       setRoomId(pickedRoom.id);
-      setIsHost(false);
       navigate(`/game/${pickedRoom.id}`);
     }
   };

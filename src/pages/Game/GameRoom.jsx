@@ -1,57 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useParams } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
-import {
-  roomIdState,
-  roomInfoState,
-  roomInfoListState,
-  isPlayingRoomState
-} from "@/recoil/roomState";
-import { isHostUserState } from "@/recoil/userState";
+import { userNameState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import { Button } from "../../components/Game/Shared/Button";
-import TitleBar from "../../components/Game/Shared/TitleBar";
-import Profile from "../../components/Game/Shared/Profile";
+import { Button } from "@/components/Game/Shared/Button";
+import TitleBar from "@/components/Game/Shared/TitleBar";
+import Profile from "@/components/Game/Shared/Profile";
 import Chat from "@/components/Game/Shared/Chat";
-import WaitingTab from "../../components/Game/Waiting/WaitingTab";
-import PlayingTab from "../../components/Game/Playing/PlayingTab";
-import WaitingPlayerList from "../../components/Game/Waiting/WaitingPlayerList";
-import PlayingPlayerList from "../../components/Game/Playing/PlayingPlayerList";
-import WordInput from "../../components/Game/Playing/WordInput";
+import WaitingTab from "@/components/Game/Waiting/WaitingTab";
+import PlayingTab from "@/components/Game/Playing/PlayingTab";
+import WaitingPlayerList from "@/components/Game/Waiting/WaitingPlayerList";
+import PlayingPlayerList from "@/components/Game/Playing/PlayingPlayerList";
+import WordInput from "@/components/Game/Playing/WordInput";
 
 const GameRoom = () => {
-  // roomInfo 조회 API 호출
-  const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
-  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
-  const roomId = useRecoilValue(roomIdState);
-  // host userId
-  const isHost = useRecoilValue(isHostUserState);
-  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingRoomState);
+  const [roomInfo, setRoomInfo] = useState({});
+  const userName = useRecoilValue(userNameState);
+  const [isHost, setIsHost] = useState();
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // ready Status API 호출
-  // 따로
   const [playerReadyList, setPlayerReadyList] = useState([]);
   const [isReady, setIsReady] = useState(false);
 
+  // 경로의 roomId값 추출
+  const { roomId } = useParams();
+
   useEffect(() => {
-    setIsPlaying(false);
+    // roomInfo 조회 GET API 호출 (query: roomId)
+    const tmp = {
+      id: roomId,
+      title: "테스트123",
+      password: "", // 비밀번호 X
+      playerCount: 1,
+      maxPlayerCount: 8,
+      roundCount: 5,
+      roundTime: 90,
+      hostUserName: "abcd1234",
+      isPlaying: false
+    };
+
+    // 1. roomInfo 전체를 state에 저장
+    // 2. 현재 플레이어의 username과 roomInfo 내 host userId 비교
+    setRoomInfo(tmp);
+    setIsPlaying(roomInfo.isPlaying);
+    setIsHost(userName === tmp.hostUserName ? true : false);
   }, []);
 
-  useEffect(() => {
-    const storedRoomInfoList = localStorage.getItem("roomInfoList");
-    if (storedRoomInfoList) {
-      setRoomInfoList(JSON.parse(storedRoomInfoList));
-
-      const pickecRoomInfo = roomInfoList.find((room) => room.id === roomId);
-      if (roomInfoList.find((room) => room.id === roomId)) {
-        setRoomInfo(pickecRoomInfo);
-        setPlayerReadyList(Array(pickecRoomInfo.playerCount).fill(false));
-      }
-    }
-  }, [roomId]);
+  useEffect(() => {}, []);
 
   return (
     <ContentWrapper row="center" col="center">

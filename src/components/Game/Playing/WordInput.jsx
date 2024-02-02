@@ -8,11 +8,20 @@ import TimerBar from "../Shared/TimerBar";
 const WordInput = ({ roundCount, roundTime }) => {
   const [firstWord, setFirstWord] = useState("");
   const [currTurn, setCurrTurn] = useState(0);
+  const [inputWord, setInputWord] = useState("");
 
   useEffect(() => {
     // 랜덤 단어 POST API 호출 (roundCount)
     setFirstWord("테스트임당");
   }, []);
+
+  const onEnterKeyDown = async (e) => {
+    if (e.key !== "Enter") return;
+
+    if (!inputWord.startsWith(firstWord?.split("")[currTurn])) return;
+
+    // 적합 단어(유효 단어 O, 중복 단어 X) 여부 확인 GET API 요청
+  };
 
   return (
     <WordInputWrapper dir="col" col="center">
@@ -34,6 +43,11 @@ const WordInput = ({ roundCount, roundTime }) => {
         <Input
           type="text"
           placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
+          bgColor="#fff"
+          fontSize="18px"
+          value={inputWord}
+          onChange={(e) => setInputWord(e.target.value)}
+          onKeyDown={onEnterKeyDown}
         />
       </InputWrapper>
     </WordInputWrapper>

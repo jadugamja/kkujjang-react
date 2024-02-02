@@ -34,17 +34,17 @@ const getColors = (type) => {
     case "help":
       return {
         bgColor: "#ccc",
-        hoverBgColor: "#ddd"
+        hoverBgColor: "#E0E0E0"
       };
     case "setting":
       return {
         bgColor: "#bbbbb9",
-        hoverBgColor: "#cccccc"
+        hoverBgColor: "#ddd"
       };
     case "exit":
       return {
         bgColor: "#FF6C6C",
-        hoverBgColor: "",
+        hoverBgColor: "#e55f5f",
         color: "#fff",
         fontSize: "19px"
       };

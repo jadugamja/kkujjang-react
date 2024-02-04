@@ -3,16 +3,17 @@ import PropTypes from "prop-types";
 
 import { ValidationMessageWrapper, ValidationMessageP } from "./ValidationMessageStyle";
 
-const ValidationMessage = ({ message }) => {
+const ValidationMessage = ({ message, fontSize }) => {
   return (
     <ValidationMessageWrapper>
-      <ValidationMessageP>{message}</ValidationMessageP>
+      <ValidationMessageP fontSize={fontSize}>{message}</ValidationMessageP>
     </ValidationMessageWrapper>
   );
 };
 
 ValidationMessage.propTypes = {
-  message: PropTypes.string
+  message: PropTypes.string,
+  fontSize: PropTypes.string
 };
 
 export default ValidationMessage;

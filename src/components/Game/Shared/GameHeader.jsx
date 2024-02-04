@@ -28,7 +28,7 @@ const FixedHeader = styled(FlexBox).attrs({
   position: fixed;
   top: 0;
   width: inherit;
-  height: 7.5rem;
+  height: 7rem;
   background-color: transparent;
   z-index: 3;
 `;

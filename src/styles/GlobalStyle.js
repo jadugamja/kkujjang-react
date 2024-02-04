@@ -44,6 +44,25 @@ const GlobalStyle = createGlobalStyle`
     font-style: normal;
   }
 
+  // Alfa Slab One
+  @font-face {
+    font-family: 'AlfaSlabOne';
+    src: url('/fonts/AlfaSlabOne-Regular.ttf');
+  }
+
+  // Zen Dots
+  @font-face {
+    font-family: 'ZenDots';
+    src: url('/fonts/ZenDots-Regular.ttf');
+  }
+
+  // Poller One
+  @font-face {
+    font-family: 'PollerOne';
+    src: url('/fonts/PollerOne-Regular.ttf');
+  }
+
+
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

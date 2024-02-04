@@ -1,102 +1,75 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import Footer from "@/components/Web/Shared/Layout/Footer";
-import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
+import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import { FlexBox } from "@/styles/FlexStyle";
+import Ranking from "@/components/Game/Lobby/Ranking";
+import Profile from "../../components/Game/Shared/Profile";
+import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
 import {
-  faCouch,
-  faTrophy,
-  faListUl,
-  faCircleQuestion,
-  faGear
-} from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import Ranking from "../../components/Game/Lobby/Ranking";
-import RoomList from "../../components/Game/Lobby/RoomList";
+  SideTab,
+  MainTab,
+  CreateRoomButton,
+  EnterRoomButton
+} from "@/components/Game/Shared/Tab";
+import { Button } from "@/components/Game/Shared/Button";
+import Footer from "@/components/Web/Shared/Layout/Footer";
 
 const Lobby = () => {
-  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
-  const [showOpenRoom, setShowOpenRoom] = useState(false);
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    // 방 목록 정보 불러오기 api 호출
+    const storedRoomInfoList = localStorage.getItem("roomInfoList");
+    const bgVolume = localStorage.getItem("bgVolume");
+    const fxVolume = localStorage.getItem("fxVolume");
+
+    // 임시: 로컬 스토리지에서 불러오기
+    if (storedRoomInfoList) {
+      const roomList = JSON.parse(storedRoomInfoList);
+      roomList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setRooms(roomList);
+    }
+
+    // 볼륨 조절
+    // Audio.volume = bgVolume
+    // Audio.volume = fxVolume
+  }, []);
 
   return (
     <ContentWrapper row="center" col="center">
       <WideContent dir="col">
         <GameHeader />
         <Main>
-          <SkyblueBox>
+          <Box>
             <SideContentWrapper dir="col">
-              <Tab row="center" col="center">
-                <TabIcon icon={faTrophy} />
-                <TabSpan>랭킹</TabSpan>
-              </Tab>
-              <RankingWrapper>
-                <TitleBar>랭킹</TitleBar>
-                <Ranking />
-              </RankingWrapper>
-              <ProfileWrapper>
-                <TitleBar>프로필</TitleBar>
-              </ProfileWrapper>
+              <SideTab />
+              <Ranking />
+              <Profile />
             </SideContentWrapper>
             <MainContentWrapper dir="col">
               <TabWrapper row="between" col="end">
-                <Tab row="center" col="center" bgColor="#748F9B80">
-                  <TabSpan>방 목록</TabSpan>
-                </Tab>
+                <TabWrapper>
+                  <MainTab bgColor="#779DC5">방 목록</MainTab>
+                  <CreateRoomButton />
+                  <EnterRoomButton rooms={rooms} />
+                </TabWrapper>
                 <div>
-                  <GuideButton>
-                    <TabIcon icon={faCircleQuestion} fontSize="21px" />
-                  </GuideButton>
-                  <SettingButton>
-                    <TabIcon icon={faGear} fontSize="21px" />
-                  </SettingButton>
+                  <Button type="help" />
+                  <Button type="setting" />
                 </div>
               </TabWrapper>
-              <RoomListWrapper dir="col">
-                <TitleBar row="between">
-                  <div>
-                    <TitleIcon icon={faListUl} />
-                    <span>방 목록</span>
-                  </div>
-                  <CheckboxWrapper>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={showWaitingRoom}
-                        onChange={(e) => setShowWaitingRoom(e.target.checked)}
-                      />
-                      대기방만 보기
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={showOpenRoom}
-                        onChange={(e) => setShowOpenRoom(e.target.checked)}
-                      />
-                      열린 방만 보기
-                    </label>
-                  </CheckboxWrapper>
-                </TitleBar>
-                <RoomList />
-              </RoomListWrapper>
+              <LobbyRoomList rooms={rooms} roomId={null} />
             </MainContentWrapper>
-          </SkyblueBox>
+          </Box>
         </Main>
         <Footer />
       </WideContent>
     </ContentWrapper>
   );
 };
-
-const SkyblueBox = styled(FlexBox)`
-  width: 100%;
-  max-width: 100%;
-  height: 43.25rem;
-  padding: 10px;
-  background-color: ${({ theme }) => theme.colors.content};
-`;
 
 const SideContentWrapper = styled(FlexBox)`
   width: 16.5rem;
@@ -105,97 +78,10 @@ const SideContentWrapper = styled(FlexBox)`
 
 const MainContentWrapper = styled(FlexBox)``;
 
-const RankingWrapper = styled.div`
-  width: 100%;
-  height: 28.25rem;
-  padding: 3px 5px;
-  background-color: #f3f3f3;
-  border: 1px solid #ccc;
-  border-bottom: 0;
-`;
-
-const ProfileWrapper = styled.div`
-  padding: 3px 5px;
-  background-color: #d6d6d6;
-  flex-grow: 1;
-  border: 1px solid #ccc;
-`;
-
-const RoomListWrapper = styled(FlexBox)`
-  width: 57.6rem;
-  height: 100%;
-  padding: 3px 5px;
-  background-color: #748f9b80;
-  border: 1px solid #ccc;
-`;
-
-const CheckboxWrapper = styled.div`
-  & > * + * {
-    margin-left: 10px;
-  }
-`;
-
-const TabWrapper = styled(FlexBox)``;
-
-const Tab = styled(FlexBox)`
-  position: relative;
-  z-index: 10;
-  width: 8.75rem;
-  height: 3rem;
-  background-color: ${({ bgColor }) => bgColor || "#f3f3f3"};
-  border: 1px solid #ccc;
-  border-bottom: 0;
-  border-radius: 12px 12px 0 0;
-  flex-shrink: 0;
-
-  & > * + * {
-    margin-left: 7px;
-  }
-`;
-
-const TabIcon = styled(FontAwesomeIcon)`
-  font-size: ${({ fontSize }) => fontSize || "19px"};
-`;
-
-const TabSpan = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.m};
-  font-weight: 700;
-`;
-
-const TitleBar = styled(FlexBox).attrs({
-  col: "center"
-})`
-  width: 100%;
-  height: 1.5rem;
-  padding: 0 7px;
-  background-color: rgba(221, 221, 221, 0.5);
-  border-radius: 4px;
-  box-shadow: 2px 2px 1px #00000025;
-  font-size: 14px;
-  font-weight: 700;
-
+const TabWrapper = styled(FlexBox)`
   & > * + * {
     margin-left: 5px;
   }
-`;
-
-const TitleIcon = styled(FontAwesomeIcon)`
-  margin-right: 5px;
-  font-size: ${({ theme }) => theme.fontSize.xxxxs};
-`;
-
-const ExtraButton = styled.button`
-  width: 50px;
-  height: 42px;
-  border-radius: 15px 15px 0 0;
-`;
-
-const GuideButton = styled(ExtraButton)`
-  background-color: #ccc;
-`;
-
-const SettingButton = styled(ExtraButton)`
-  background-color: #bbbbb9;
 `;
 
 export default Lobby;

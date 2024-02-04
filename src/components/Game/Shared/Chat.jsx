@@ -10,7 +10,7 @@ import ChatItem from "./ChatItem";
 // 환경 변수 가져오기
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-const Chat = ({ sessionId, roomId }) => {
+const Chat = ({ sessionId, roomId, size = "default" }) => {
   const [toMessage, setToMessage] = useState("");
   const [chats, setChats] = useState([]);
 
@@ -79,8 +79,8 @@ const Chat = ({ sessionId, roomId }) => {
   }, [chats]);
 
   return (
-    <ChatWrapper dir="col">
-      <ChatHeader>
+    <ChatWrapper dir="col" size={size}>
+      <ChatHeader size={size}>
         <ChatIcon icon={faComment} />
         채팅
       </ChatHeader>
@@ -109,19 +109,22 @@ const Chat = ({ sessionId, roomId }) => {
 
 Chat.propTypes = {
   sessionId: PropTypes.string,
-  roomId: PropTypes.string
+  roomId: PropTypes.string,
+  size: PropTypes.string
 };
 
+// ver 1. width: 46rem
 const ChatWrapper = styled(FlexBox)`
-  width: ${(props) => (props.width === "big" ? "inherit" : "71.75rem")};
-  height: ${(props) => (props.height === "big" ? "inherit" : "12.25rem")};
+  width: ${({ size }) => (size === "big" ? "100%" : "57rem")};
+  height: 12.25rem;
   background-color: #eee;
+  padding: 6px 4px;
 `;
 
 const ChatHeader = styled.div`
-  width: ${(props) => (props.width === "big" ? "inherit" : "70.25rem")};
-  height: ${(props) => (props.height === "big" ? "inherit" : "20px")};
-  margin-left: 10px;
+  width: ${({ size }) => (size === "big" ? "calc(100% - 8px)" : "auto")};
+  height: 20px;
+  margin: 0 5px;
   padding-left: 10px;
   border-radius: 4px;
   box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);

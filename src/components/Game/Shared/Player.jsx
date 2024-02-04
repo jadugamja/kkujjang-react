@@ -3,10 +3,10 @@ import styled from "styled-components";
 
 import { FlexBox } from "@/styles/FlexStyle";
 
-const Player = ({ avatarUrl, nickname, level }) => {
+const Player = ({ type = "wait", avatarUrl, nickname, level }) => {
   return (
-    <PlayerWrapper dir="col" row="center" col="center">
-      <AvatarImage src={avatarUrl} type="player" />
+    <PlayerWrapper type={type} dir="col" row="center" col="center">
+      <AvatarImage type={type} src={avatarUrl} />
       <PlayerInfoWrapper col="center">
         <LevelBadge>{level}</LevelBadge>
         <NicknameText>{nickname}</NicknameText>
@@ -15,16 +15,23 @@ const Player = ({ avatarUrl, nickname, level }) => {
   );
 };
 
+Player.propTypes = {
+  type: PropTypes.string,
+  avatarUrl: PropTypes.string,
+  nickname: PropTypes.string,
+  level: PropTypes.number
+};
+
 const PlayerWrapper = styled(FlexBox)`
-  width: 8.75rem;
-  height: 10.75rem;
+  width: ${({ type }) => type !== "play" && "9rem"};
+  height: ${({ type }) => (type === "play" ? "9.75rem" : "10.75rem")};
 `;
 
 const AvatarImage = styled(FlexBox).attrs({
   as: "img"
 })`
-  width: ${(props) => (props.type === "player" ? "7.75rem" : "6rem")};
-  height: ${(props) => (props.type === "player" ? "auto" : "5.304rem")};
+  width: ${({ type }) => (type === "play" ? "6.75rem" : "7.25rem")};
+  height: ${({ type }) => type === "play" && "auto"};
 `;
 
 const PlayerInfoWrapper = styled(FlexBox)`
@@ -39,7 +46,7 @@ const LevelBadge = styled(FlexBox).attrs({
 })`
   width: ${(props) => props.width || "23px"};
   height: ${(props) => props.height || "26px"};
-  margin-right: 8px;
+  margin: 0px 6px 0 2px;
   border: 1px solid ${({ theme }) => theme.colors.gray600};
   border-radius: 5px;
   font-size: 15px;
@@ -47,11 +54,5 @@ const LevelBadge = styled(FlexBox).attrs({
 `;
 
 const NicknameText = styled.span``;
-
-Player.propTypes = {
-  avatarUrl: PropTypes.string,
-  nickname: PropTypes.string,
-  level: PropTypes.number
-};
 
 export default Player;

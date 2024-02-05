@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 import PropTypes from "prop-types";
 
@@ -62,19 +63,22 @@ const LoginForm = () => {
   const passwordRef = useRef(""); // 비밀번호
 
   // === state ===
-  const [error, setError] = useState(""); // id validton error state
-
-  // 유효성 검사 및 예외처리
-  const handleValidation = () => {};
+  const [error, setError] = useState(""); // error state
 
   // 로그인
   const handleLogin = () => {
-    const id = idRef.current.getValue();
-    const password = passwordRef.current.getValue();
+    const id = idRef.current.value;
+    const password = passwordRef.current.value;
 
-    // API 호출 전 프론트에서 걸러주는 코드
-    setError("아이디 혹은 비밀번호가 존재하지 않습니다");
-    // 로그인 API 코드
+    const idRegex = /^[a-z0-9]{7,30}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+
+    if (!idRegex.test(id) || !pwRegex.test(password)) {
+      setError("아이디 혹은 비밀번호가 존재하지 않습니다");
+    } else {
+      setError("");
+      // 로그인 API 코드
+    }
   };
 
   // 카카오 로그인
@@ -87,28 +91,35 @@ const LoginForm = () => {
       <FormTitle type="login"></FormTitle>
       {/* 아이디 input */}
       <LoginFormFlexContainer marginBottom="7px">
-        <InputField name="id" isLoginForm={true} ref={idRef}></InputField>
+        <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
       </LoginFormFlexContainer>
       {/* 비밀번호 input */}
       <LoginFormFlexContainer marginBottom="15px">
-        <InputField name="password" isLoginForm={true} ref={passwordRef}></InputField>
+        <InputField
+          name="password"
+          isLoginForm={true}
+          inputRef={passwordRef}
+        ></InputField>
       </LoginFormFlexContainer>
-      {/* 자동 로그인 체크 박스 추가*/}
       {/* 경고 문구 */}
       {error && <ValidationMessage message={error} />}
       {/* 로그인 button */}
-      <LoginFormFlexContainer marginBottom="15px">
+      <LoginFormFlexContainer marginTop="15px" marginBottom="15px">
         <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
       </LoginFormFlexContainer>
-      {/* a 버튼 */}
       <LoginFormFlexContainer row="between" marginBottom="30px">
         <LoginFormFlexContainer width="fit-content">
-          <LoginLinkButton marginRight="10px">아이디 찾기</LoginLinkButton>
-          <LoginLinkButton>비밀번호 찾기</LoginLinkButton>
+          <Link to="/member/find">
+            <LoginLinkButton marginRight="10px">아이디 찾기</LoginLinkButton>
+          </Link>
+          <Link to="/member/find">
+            <LoginLinkButton>비밀번호 찾기</LoginLinkButton>
+          </Link>
         </LoginFormFlexContainer>
-        <LoginLinkButton color="#413014">회원가입</LoginLinkButton>
+        <Link to="/member/join">
+          <LoginLinkButton color="#413014">회원가입</LoginLinkButton>
+        </Link>
       </LoginFormFlexContainer>
-      {/* 카카오 로그인 button */}
       <KakaoLoginButton onClick={handleKakaoLogin}>
         <LoginFormFlexContainer col="center">
           <KakaoIconImage src={KakaoIcon} />

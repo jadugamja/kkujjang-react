@@ -6,25 +6,33 @@ import PropTypes from "prop-types";
 // ===== style import =====
 import { Label, Input } from "./InputFieldStyle";
 
-const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange }, ref) => {
+// const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange }, ref) => {
+const InputField = (props) => {
+  const { hasLabel, isLoginForm, name, inputRef, onBlur } = props;
+
   // === props ===
   // hasLabel : true, false
   // isLoginForm : true, false
-  // width : width setting
   // name : id, password, confirmPassword
+  // inputRef : ref setting
   // onChange : function setting
 
   // === ref ===
-  const inputRef = useRef(null);
+  // const inputRef = useRef(null);
 
   // Form 에서 사용할 함수
-  useImperativeHandle(ref, () => ({
-    getValue
-  }));
+  // useImperativeHandle(ref, () => ({
+  //   getValue
+  // }));
 
   // input의 값을 가져오는 함수
-  const getValue = () => {
-    return inputRef.current.value;
+  // const getValue = () => {
+  //   return inputRef.current.value;
+  // };
+
+  const handleUpdateValue = (e) => {
+    const value = e.target.value;
+    inputRef.current.value = value;
   };
 
   // === placeholder setting ===
@@ -49,7 +57,6 @@ const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange },
       )}
       <Input
         ref={inputRef}
-        width={width}
         type={
           name === "id"
             ? "text"
@@ -69,20 +76,21 @@ const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange },
                 ? confirmPasswordPlaceholder
                 : null
         }
-        onChange={onChange}
+        onChange={handleUpdateValue}
+        onBlur={onBlur}
         minLength={7}
         maxLength={30}
       />
     </>
   );
-});
+};
 
 InputField.propTypes = {
   hasLabel: PropTypes.bool,
   isLoginForm: PropTypes.bool,
-  width: PropTypes.string,
   name: PropTypes.string,
-  onChange: PropTypes.func
+  inputRef: PropTypes.string,
+  onBlur: PropTypes.func
 };
 
 InputField.displayName = "InputField";

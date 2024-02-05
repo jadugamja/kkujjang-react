@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import PhoneNumberAuth from "@/components/Web/Shared/Form/PhoneNumberAuth";
 import Button from "@/components/Web/Shared/Buttons/Button";
-import WebModal from "@/components/Web/Shared/Form/ValidationMessage";
+import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const FindidFormFlexContainer = styled(FlexBox)`
@@ -56,6 +56,7 @@ const FindidForm = () => {
   const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
+  const [userId, setUserId] = useState(""); // 아이디 출력 state
 
   // 인증번호 검증
   const handlePhoneNumberAuth = () => {
@@ -76,12 +77,14 @@ const FindidForm = () => {
 
   // 아이디 조회
   const handleFindid = () => {
+    // 유효성 검사 및 예외처리 코드
     // 아이디 조회 API 코드
     const result = "jephpp123";
 
     // 조회 성공 시 (string 넘어오면)
     if (result === "jephpp123") {
       setHasUserInfo(true);
+      setUserId("jephpp123");
     }
     // 조회 실패 시
     else {
@@ -100,12 +103,12 @@ const FindidForm = () => {
       )}
       <FindidFormFlexContainer dir="col">
         <FormTitle type="findid" marginTop="0px" marginBottom="0px"></FormTitle>
-        {hasUserInfo ? (
+        {!hasUserInfo ? (
           <>
             <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
             <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
               <IdLabel marginLeft="20px">아이디</IdLabel>
-              <IdText marginRight="20px">jephpp123</IdText>
+              <IdText marginRight="20px">{userId}</IdText>
             </FindidFormFlexContainer>
             <FindidFormFlexContainer marginTop="50px">
               <Button type="smallBrown" message="로그인" />

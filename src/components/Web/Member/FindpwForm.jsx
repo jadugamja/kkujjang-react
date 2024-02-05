@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import PhoneNumberAuth from "@/components/Web/Shared/Form/PhoneNumberAuth";
-import WebModal from "@/components/Web/Shared/Form/ValidationMessage";
+import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const FindpwFormFlexContainer = styled(FlexBox)`
@@ -29,6 +29,9 @@ const FindpwText = styled.p`
 
 // ===== component ======
 const FindpwForm = () => {
+  // === ref ===
+  const idRef = useRef(""); // 아이디
+
   // === state ===
   const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
@@ -42,8 +45,7 @@ const FindpwForm = () => {
 
     if (result === "success") {
       setIsAuthMath(true);
-      // 성공 시, 비밀번호 찾기
-      // 비밀번호 찾기 함수 호출
+      // 성공 시, 비밀번호 찾기 함수 호출
       handleFindpw();
     } else {
       // 경고 모달 출력
@@ -53,10 +55,11 @@ const FindpwForm = () => {
 
   // 비밀번호 찾기
   const handleFindpw = () => {
-    const result = "success";
+    const id = idRef.current.value;
+    const idRegex = /^[a-z0-9]{7,30}$/;
 
-    if (result === "success") {
-      // 성공 시, 비밀번호 변경 모달 출력
+    if (!idRegex.test(id)) {
+      // 아이디 유효성 검사 및 전화번호 인증 통과 시, 비밀번호 변경 모달 출력
       setChangePwModalOpen(true);
     } else {
       setFindidModalOpen(true);
@@ -84,7 +87,7 @@ const FindpwForm = () => {
           회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
         </FindpwText>
         <FindpwFormFlexContainer dir="col" marginBottom="15px">
-          <InputField hasLabel={true} name="id" />
+          <InputField hasLabel={true} name="id" inputRef={idRef} />
         </FindpwFormFlexContainer>
         <PhoneNumberAuth></PhoneNumberAuth>
       </FindpwFormFlexContainer>

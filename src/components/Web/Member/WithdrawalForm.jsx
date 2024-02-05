@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import Button from "@/components/Web/Shared/Buttons/Button";
-import WebModal from "@/components/Web/Shared/Form/ValidationMessage";
+import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const WithdrawalFormFlexContainer = styled(FlexBox)`
@@ -27,17 +27,27 @@ const WithdrawalFormContainer = styled.div`
 
 // ===== component ======
 const WithdrawalForm = () => {
-  // === state ===
-  const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false); // 회원 탈퇴 성공 여부 state
+  // === ref ===
+  const idRef = useRef(""); // 아이디
+  const passwordRef = useRef(""); // 비밀번호
 
-  // 유효성 검사 및 예외처리
-  const handleValidation = () => {};
+  // === state ===
+  const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false); // 회원 탈퇴 modal state, 유효성 검사 실패 및 회원 탈퇴 실패 시, 회원 탈퇴 실패 modal 출력
 
   // 회원 탈퇴
   const handleWithdrawal = () => {
-    // 유효성 검사 통과 시, 회원 탈퇴 API 호출
-    // 유효성 검사 실패 및 회원 탈퇴 실패 시, 회원 탈퇴 실패 modal 출력
-    setWithdrawalModalOpen(true);
+    const id = idRef.current.value;
+    const password = passwordRef.current.value;
+
+    const idRegex = /^[a-z0-9]{7,30}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+
+    if (!idRegex.test(id) || !pwRegex.test(password)) {
+      setWithdrawalModalOpen(true);
+    } else {
+      setWithdrawalModalOpen(false);
+      // 회원 탈퇴 API 코드
+    }
   };
 
   return (
@@ -48,10 +58,10 @@ const WithdrawalForm = () => {
       <WithdrawalFormFlexContainer dir="col">
         <FormTitle type="withdrawal" />
         <WithdrawalFormContainer marginBottom="7px">
-          <InputField name="id" />
+          <InputField name="id" inputRef={idRef} />
         </WithdrawalFormContainer>
         <WithdrawalFormContainer marginBottom="15px">
-          <InputField name="password" />
+          <InputField name="password" inputRef={passwordRef} />
         </WithdrawalFormContainer>
         <Button type="bigBrown" message="탈퇴하기" onClick={handleWithdrawal} />
       </WithdrawalFormFlexContainer>

@@ -34,20 +34,44 @@ const ChangepwText = styled.p`
 
 // ===== component ======
 const ChangepwForm = () => {
+  // === ref ===
+  const passwordRef = useRef(""); // 비밀번호
+  const confirmPasswordRef = useRef(""); // 비밀번호 확인
+
   // === state ===
   const [pwError, setPwError] = useState(""); // pw validton error state
   const [confirmPwError, setConfirmPwError] = useState(""); // confirm pw validton error state
   const [isSucess, setIsSucess] = useState(false); // validton test state
 
-  // 유효성 검사 및 예외처리
-  const handleValidation = () => {};
+  // 비밀번호 유효성 검사
+  const handlePasswordValidation = () => {
+    const password = passwordRef.current.value;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+
+    if (!pwRegex.test(password)) {
+      setPwError("비밀번호 형식이 올바르지 않습니다");
+    } else {
+      setPwError("");
+    }
+  };
+
+  // 비밀번호 일치 검사
+  const handleConfirmPassword = () => {
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+
+    if (password !== confirmPassword || !confirmPassword.trim()) {
+      setConfirmPwError("비밀번호가 일치하지 않습니다");
+    } else {
+      setConfirmPwError("");
+    }
+  };
 
   // 비밀번호 변경
   const handleChange = () => {
-    // 유효성 검사 통과 시에만
-    setIsSucess(true);
-
-    if (isSucess) {
+    if (!pwError && !confirmPwError) {
+      setPwError("");
+      setConfirmPwError("");
       // 비밀번호 변경 API 호출
     } else {
     }
@@ -58,12 +82,20 @@ const ChangepwForm = () => {
       <FormTitle type="changepw" marginTop="0px" marginBottom="0px"></FormTitle>
       <ChangepwText>새로운 비밀번호를 입력해 주세요.</ChangepwText>
       <ChangepwFormContainer marginBottom="7px">
-        <InputField name="password" />
-        {pwError && <ValidationMessage>{pwError}</ValidationMessage>}
+        <InputField
+          name="password"
+          inputRef={passwordRef}
+          onBlur={handlePasswordValidation}
+        />
+        {pwError && <ValidationMessage message={pwError} />}
       </ChangepwFormContainer>
       <ChangepwFormContainer marginBottom="15px">
-        <InputField name="confirmPassword" />
-        {confirmPwError && <ValidationMessage>{confirmPwError}</ValidationMessage>}
+        <InputField
+          name="confirmPassword"
+          inputRef={confirmPasswordRef}
+          onBlur={handleConfirmPassword}
+        />
+        {confirmPwError && <ValidationMessage message={confirmPwError} />}
       </ChangepwFormContainer>
       <Button type="bigBrown" message="변경하기" onClick={handleChange} />
     </ChangepwFormFlexContainer>

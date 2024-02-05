@@ -2,19 +2,19 @@ import React from "react";
 
 // ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
-import ChangepwForm from "@/components/Web/Member/ChangepwForm";
+import MyInfoContainer from "@/components/Web/Member/SignupForm";
 
 // ===== style import =====
 import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
 
-const ChangePw = () => {
+const MyInfo = () => {
   return (
     <>
       <ContentWrapper row="center" col="center">
         <Header />
         <NarrowContent>
-          <Main type="big">
-            <ChangepwForm />
+          <Main>
+            <MyInfoContainer />
           </Main>
         </NarrowContent>
       </ContentWrapper>
@@ -22,4 +22,4 @@ const ChangePw = () => {
   );
 };
 
-export default ChangePw;
+export default MyInfo;

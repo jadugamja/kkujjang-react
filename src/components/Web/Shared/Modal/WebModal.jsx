@@ -23,10 +23,8 @@ import {
 import Button from "../Buttons/Button.jsx";
 
 const WebModal = ({ hasButton, isVan, isMoving, message }) => {
-  const [isOpen, setIsOpen] = useRecoilState(isModalOpenState);
-
   const handelExit = () => {
-    setIsOpen(false);
+    setModalVisible(false);
   };
 
   return (

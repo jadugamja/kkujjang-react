@@ -1,116 +1,98 @@
-import React, { useState, useRef } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useRef } from "react";
 import PropTypes from "prop-types";
 
-import { useIdValidation, usePasswordValidation } from "@/hooks/useValidation";
-import PasswordRequirement from "./PasswordRequirement";
+// import { useIdValidation, usePasswordValidation } from "@/hooks/useValidation";
 
-import { Label, Input, MapWrapper } from "./InputFieldStyle";
+// ===== style import =====
+import { Label, Input } from "./InputFieldStyle";
 
-const InputField = ({ name, hasLabel, logInForm }) => {
-  const idValueRef = useRef("");
-  const passwordValueRef = useRef("");
-  const passwordCheckValueRef = useRef("");
-  const { isValid, validateId } = useIdValidation();
-  const { conditions, validatePassword } = usePasswordValidation();
-  const [isMatch, setIsMatch] = useState(false);
+// const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange }, ref) => {
+const InputField = (props) => {
+  const { hasLabel, isLoginForm, name, inputRef, onBlur } = props;
 
-  let label = "";
-  let placeholder = "";
+  // === props ===
+  // hasLabel : true, false
+  // isLoginForm : true, false
+  // name : id, password, confirmPassword
+  // inputRef : ref setting
+  // onChange : function setting
 
-  if (name === "id") {
-    label = "아이디";
-    placeholder = logInForm ? "아이디를 입력하세요" : "아이디 입력";
-  } else if (name === "password") {
-    label = "비밀번호";
-    placeholder = logInForm ? "비밀번호를 입력하세요" : "비밀번호 입력";
-  } else if (name === "password_check") {
-    label = "비밀번호 확인";
-    placeholder = "비밀번호 확인";
-  }
+  // === ref ===
+  // const inputRef = useRef(null);
 
-  const handleValidation = () => {
-    switch (name) {
-      case "id":
-        validateId(idValueRef);
-        break;
-      case "password":
-        validatePassword(passwordValueRef);
-        break;
-      case "password_check":
-        const isMatch = passwordCheckValueRef === passwordValueRef;
-        setIsMatch(isMatch);
-        break;
-    }
+  // Form 에서 사용할 함수
+  // useImperativeHandle(ref, () => ({
+  //   getValue
+  // }));
+
+  // input의 값을 가져오는 함수
+  // const getValue = () => {
+  //   return inputRef.current.value;
+  // };
+
+  const handleUpdateValue = (e) => {
+    const value = e.target.value;
+    inputRef.current.value = value;
   };
 
-  const messages = [
-    {
-      text: "영어 대소문자",
-      condition: conditions.hasUppercase && conditions.hasLowercase
-    },
-    { text: "숫자", condition: conditions.hasNumber },
-    { text: "특수문자", condition: conditions.hasSpecialChar },
-    { text: "7-30자 이내", condition: conditions.isLengthValid }
-  ];
+  // === placeholder setting ===
+  const idPlaceholder =
+    isLoginForm && name === "id" ? "아이디를 입력해 주세요" : "아이디 입력";
+  const passwordPlaceholder =
+    isLoginForm && name === "password" ? "비밀번호를 입력해 주세요" : "비밀번호 입력";
+  const confirmPasswordPlaceholder = "비밀번호 확인";
 
   return (
     <>
-      {hasLabel && <Label>{label}</Label>}
-      {/* {아이디 input} */}
-      {name === "id" && (
-        <Input
-          type="text"
-          name={name}
-          placeholder={placeholder}
-          onChange={handleValidation}
-          ref={idValueRef}
-        />
+      {hasLabel && (
+        <Label>
+          {name === "id"
+            ? "아이디"
+            : name === "password"
+              ? "비밀번호"
+              : name === "confirmPassword"
+                ? "비밀번호 확인"
+                : null}
+        </Label>
       )}
-      {/* {비밀번호 input} */}
-      {name === "password" && (
-        <>
-          <Input
-            type="password"
-            name={name}
-            placeholder={placeholder}
-            onChange={handleValidation}
-            ref={passwordValueRef}
-          />
-          <MapWrapper>
-            {messages.map((message, index) => (
-              <PasswordRequirement
-                key={index}
-                message={message.text}
-                isCheck={message.condition}
-              />
-            ))}
-          </MapWrapper>
-        </>
-      )}
-      {/* {비밀번호 확인 input} */}
-      {name === "password_check" && (
-        <>
-          <Input
-            type="password"
-            name={name}
-            placeholder={placeholder}
-            onChange={handleValidation}
-            ref={passwordCheckValueRef}
-          />
-          <PasswordRequirement
-            message={"비밀번호 일치"}
-            isCheck={isMatch}
-          ></PasswordRequirement>
-        </>
-      )}
+      <Input
+        ref={inputRef}
+        type={
+          name === "id"
+            ? "text"
+            : name === "password"
+              ? "password"
+              : name === "confirmPassword"
+                ? "password"
+                : null
+        }
+        name={name}
+        placeholder={
+          name === "id"
+            ? idPlaceholder
+            : name === "password"
+              ? passwordPlaceholder
+              : name === "confirmPassword"
+                ? confirmPasswordPlaceholder
+                : null
+        }
+        onChange={handleUpdateValue}
+        onBlur={onBlur}
+        minLength={7}
+        maxLength={30}
+      />
     </>
   );
 };
 
 InputField.propTypes = {
-  name: PropTypes.string,
   hasLabel: PropTypes.bool,
-  logInForm: PropTypes.bool
+  isLoginForm: PropTypes.bool,
+  name: PropTypes.string,
+  inputRef: PropTypes.string,
+  onBlur: PropTypes.func
 };
+
+InputField.displayName = "InputField";
 
 export default InputField;

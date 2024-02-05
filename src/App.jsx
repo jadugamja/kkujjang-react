@@ -8,6 +8,7 @@ const Find = lazy(() => import("./pages/Web/Member/Find"));
 const ChangePw = lazy(() => import("./pages/Web/Member/ChangePw"));
 const Login = lazy(() => import("./pages/Web/Member/Login"));
 const Withdrawal = lazy(() => import("./pages/Web/Member/Withdrawal"));
+const MyInfo = lazy(() => import("./pages/Web/Member/MyInfo"));
 const NoticeList = lazy(() => import("./pages/Web/Notice/NoticeList"));
 const NoticeDetail = lazy(() => import("./pages/Web/Notice/NoticeDetail"));
 const InquiryList = lazy(() => import("./pages/Web/Inquiry/InquiryList"));
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="member/change-pw" element={<ChangePw />} />
             <Route path="member/login" element={<Login />} />
             <Route path="member/out" element={<Withdrawal />} />
+            <Route path="member/myInfo" element={<MyInfo />} />
 
             <Route path="notice/list" element={<NoticeList />} />
             <Route path="notice/:noticeId" element={<NoticeDetail />} />

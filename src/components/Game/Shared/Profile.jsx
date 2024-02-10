@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { userState } from "@/recoil/userState";
 import Player from "./Player";
 import ProfileActiveToggle from "./ProfileActiveToggle";
 import GameModal from "./GameModal";
 import avatar from "@/assets/images/avatar.png";
 import { FlexBox } from "@/styles/FlexStyle";
-import { faUserLarge } from "@fortawesome/free-solid-svg-icons";
+import TitleBar from "./TitleBar";
 
 const init = {
   avatarUrl: avatar,
@@ -21,6 +22,8 @@ const init = {
 };
 
 const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
+  const user = useRecoilValue(userState);
+  const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);
   const [isActiveAccount, setIsActiveAccount] = useState(
@@ -28,31 +31,41 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onModalOpen = () => {
-    debugger;
-  };
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        ...profile,
+        // nickname: ["닉네임", user.nickname],
+        // level: ["레벨", user.level],
+        // winRate: ["승률", user.winRate],
+        // exp: ["경험치", user.exp],
+        // isBanned: user.isBanned,
+        avatarUrl: user.avatarUrl
+      });
+    }
+  }, [user]);
 
   return (
     <>
       {isPlaying ? (
         <Player
-          avatarUrl={profileInfos.avatarUrl}
-          nickname={profileInfos.nickname[1]}
-          level={profileInfos.level[1]}
+          avatarUrl={profile.avatarUrl}
+          nickname={profile.nickname[1]}
+          level={profile.level[1]}
         />
       ) : type === "modal" ? (
         <ProfileWrapper type={type} dir="col">
           <ProfileUpperWrapper type={type}>
-            <AvatarImage src={profileInfos.avatarUrl} />
+            <AvatarImage src={profile.avatarUrl} />
             <ProfileInfoWrapper dir="col" row="center">
               {isIncludingKey
-                ? Object.entries(profileInfos)?.map(([key, [title, value]], idx) => (
-                    <ProfileInfoField row="between" key={idx}>
+                ? Object.entries(profile)?.map(([key, [title, value]], idx) => (
+                    <ProfileInfoField row="between" key={key}>
                       <ProfileInfoKey>{title}</ProfileInfoKey>
                       <ProfileInfo>{value}</ProfileInfo>
                     </ProfileInfoField>
                   ))
-                : Object.entries(profileInfos)
+                : Object.entries(profile)
                     .filter(([key]) => ["nickname", "level"].includes(key))
                     ?.map(([key, [title, value]], idx) => (
                       <ProfileInfo key={idx}>
@@ -65,21 +78,18 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
       ) : (
         <>
           <ProfileWrapper dir="col">
-            <TitleBar>
-              <FontAwesomeIcon icon={faUserLarge} style={{ fontSize: "12px" }} />
-              <span>프로필</span>
-            </TitleBar>
+            <TitleBar type="profile" />
             <ProfileUpperWrapper onClick={() => setIsModalOpen(true)}>
-              <AvatarImage src={profileInfos.avatarUrl} />
+              <AvatarImage src={profile.avatarUrl} />
               <ProfileInfoWrapper dir="col" row="center">
                 {isIncludingKey
-                  ? Object.entries(profileInfos)?.map(([key, [title, value]], idx) => (
+                  ? Object.entries(profile)?.map(([key, [title, value]], idx) => (
                       <ProfileInfoField row="between" key={idx}>
                         <ProfileInfoKey>{title}</ProfileInfoKey>
                         <ProfileInfo>{value}</ProfileInfo>
                       </ProfileInfoField>
                     ))
-                  : Object.entries(profileInfos)
+                  : Object.entries(profile)
                       .filter(([key]) => ["nickname", "level"].includes(key))
                       ?.map(([key, [title, value]], idx) => (
                         <ProfileInfo key={idx}>
@@ -91,8 +101,8 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
             {!isIncludingKey && (
               <ExpWrapper row="center" col="center">
                 <ExpBar>
-                  <ProgressToNextLevel exp={profileInfos.exp[1]} />
-                  <ExpText>{profileInfos.exp[1]}</ExpText>
+                  <ProgressToNextLevel exp={profile?.exp[1]} />
+                  <ExpText>{profile?.exp[1]}</ExpText>
                 </ExpBar>
               </ExpWrapper>
             )}
@@ -127,26 +137,8 @@ const ProfileWrapper = styled(FlexBox)`
   color: ${({ type }) => type === "modal" && "#fff"};
 `;
 
-const TitleBar = styled(FlexBox).attrs({
-  col: "center"
-})`
-  width: 100%;
-  height: 1.5rem;
-  padding: 0 7px;
-  background-color: rgba(221, 221, 221, 0.5);
-  border-radius: 4px;
-  box-shadow: 2px 2px 1px #00000025;
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0.8;
-
-  & > * + * {
-    margin-left: 5px;
-  }
-`;
-
 const ProfileUpperWrapper = styled(FlexBox)`
-  padding: 12px 8px;
+  padding: 8px;
 
   &:hover {
     cursor: ${({ type }) => type !== "modal" && "pointer"};

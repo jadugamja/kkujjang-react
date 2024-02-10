@@ -127,14 +127,14 @@ export const GameModalInput = styled.input`
   font-size: ${({ fontSize }) => fontSize || "16px"};
 `;
 
-export const AvatarImage = styled.img`
-  width: 10rem;
-  padding: 15px;
-`;
-
 export const ArrowIconImage = styled.img`
   width: ${(props) => props.width || "42px"};
   height: ${(props) => props.width || "48px"};
+  margin: 0 22px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const ExitMiniCircle = styled.button`

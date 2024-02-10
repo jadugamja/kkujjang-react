@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 
+import { userState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
@@ -13,16 +14,12 @@ import {
   GameModalContent,
   GameModalHeader,
   GameModalBody,
-  GameModalMessageWrapper,
   GameModalMessage,
   GameModalLongMessage,
-  GameModalSubMessage,
   GameModalButton,
   GameModalSelect,
   GameModalInputWrapper,
   GameModalInput,
-  GameModalAvatarWrapper,
-  AvatarImage,
   ArrowIconImage,
   ExitMiniCircle,
   Table,
@@ -35,6 +32,7 @@ import {
 import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
+import AvatarCanvas from "../Shared/AvatarCanvas";
 
 const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
@@ -44,6 +42,9 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [password, setPassword] = useState("");
   const [isCorrectPassword, setIsCorrectPassword] = useState(true);
+  const [avatarImage, setAvatarImage] = useState(null);
+  const [currAvatar, setCurrAvatar] = useState(0);
+  const setUser = useSetRecoilState(userState);
   const setRoomId = useSetRecoilState(roomIdState);
 
   let titleText = "";
@@ -83,6 +84,33 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       break;
   }
 
+  const accessories = [
+    "",
+    "emo1",
+    "emo2",
+    "eye1",
+    "eye2",
+    "eye3",
+    "head1",
+    "head2",
+    "fx1",
+    "fx2"
+  ];
+
+  useEffect(() => {
+    if (roomInfo.id) {
+      if (roomInfoList.some((room) => room.id === roomInfo.id)) {
+        // 방 정보 PUT API 호출
+        setRoomInfoList((prev) =>
+          prev.map((room) => (room.id === roomInfo.id ? { ...room, ...roomInfo } : room))
+        );
+      } else {
+        // 방 정보 POST API 호출
+        setRoomInfoList((prev) => [...prev, { ...roomInfo }]);
+      }
+    }
+  }, [roomInfo]);
+
   useEffect(() => {
     if (roomId !== roomInfo.id) {
       setRoomInfo({
@@ -94,20 +122,22 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
         roundTime: 90
       });
     }
-  }, []);
+  }, [roomId, roomInfo.id]);
 
-  // 임시: 로컬 스토리지에서 불러오기
-  // useEffect(() => {
-  //   const storedRoomInfoList = localStorage.getItem("roomInfoList");
-  //   if (storedRoomInfoList) {
-  //     setRoomInfoList(JSON.parse(storedRoomInfoList));
-  //   }
-  // }, []);
+  const onAvatarLeftClick = () => {
+    const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
+    setCurrAvatar(index);
+  };
 
-  // // 임시: 로컬 스토리지에 세팅
-  // useEffect(() => {
-  //   localStorage.setItem("roomInfoList", JSON.stringify(roomInfoList));
-  // }, [roomInfoList]);
+  const onAvatarRightClick = () => {
+    const index = (currAvatar + 1) % accessories.length;
+    setCurrAvatar(index);
+  };
+
+  const onConfirmAvatarUrl = () => {
+    setUser((prev) => ({ ...prev, avatarUrl: avatarImage }));
+    setIsOpen(false);
+  };
 
   const navigate = useNavigate();
 
@@ -144,7 +174,7 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       return;
     }
 
-    const roomId = Math.floor(Math.random() * 100) + 1;
+    const roomId = roomInfoList.length + 1;
 
     if (roomInfoList.some((room) => room.id === roomId)) {
       // 방 정보 PUT API 호출
@@ -190,36 +220,26 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
         <GameModalContent dir="col" col="center" height={height}>
           <GameModalHeader row={titleText !== "" ? "between" : "end"} col="center">
             {titleText !== "" && <span>{titleText}</span>}
-            <ExitMiniCircle onClick={() => setIsOpen(false)} />
+            {type !== "avatar" && <ExitMiniCircle onClick={() => setIsOpen(false)} />}
           </GameModalHeader>
 
           {/* 아바타 설정 modal */}
           {type === "avatar" && (
             <GameModalBody top="0" marginTop="0">
-              {/* 닉네임 부분 */}
-              {/* <GameModalInputWrapper paddingBottom="15px">
-                  <GameModalMessage paddingBottom="15px" fontSize="22px">
-                    닉네임
-                  </GameModalMessage>
-                  <GameModalInput placeholder="닉네임 입력"></GameModalInput>
-                  <GameModalSubMessage>
-                    ※최대 15자, 한글/영어/숫자 가능, 공백 불가능
-                  </GameModalSubMessage>
-                </GameModalInputWrapper> */}
-
-              {/* 아바타 (캐릭터) 사진 부분  */}
               <ButtonWrapper row="start" col="center" margin="9px 0 0">
                 <GameModalMessage fontSize="22px">캐릭터</GameModalMessage>
               </ButtonWrapper>
               <ButtonWrapper row="center" col="center" margin="0">
-                <ArrowIconImage src={leftArrow} onClick=""></ArrowIconImage>
-                <AvatarImage src={avatar}></AvatarImage>
-                <ArrowIconImage src={rightArrow} onClick=""></ArrowIconImage>
+                <ArrowIconImage src={leftArrow} onClick={onAvatarLeftClick} />
+                <AvatarCanvas
+                  avatar={avatar}
+                  item={accessories[currAvatar]}
+                  setAvatarImage={setAvatarImage}
+                />
+                <ArrowIconImage src={rightArrow} onClick={onAvatarRightClick} />
               </ButtonWrapper>
-              <ButtonWrapper row="center" col="center" margin="25px 0 0">
-                <GameModalButton onClick={(e) => onValidateChange(e)}>
-                  확인
-                </GameModalButton>
+              <ButtonWrapper row="center" col="center" margin="10px 0 0">
+                <GameModalButton onClick={onConfirmAvatarUrl}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}
@@ -444,7 +464,7 @@ GameModal.propTypes = {
   ]),
   message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
-  setIsOpen: PropTypes.func.isRequired,
+  setIsOpen: PropTypes.func,
   roomId: PropTypes.number
 };
 

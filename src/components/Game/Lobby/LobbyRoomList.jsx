@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import FlexBox from "@/styles/FlexStyle";
@@ -8,6 +8,8 @@ import LobbyRoomItem from "./LobbyRoomItem";
 const LobbyRoomList = ({ rooms }) => {
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [showOpenRoom, setShowOpenRoom] = useState(false);
+
+  useEffect(() => {}, []);
 
   return (
     <RoomListWrapper dir="col">
@@ -50,8 +52,11 @@ const RoomListWrapper = styled(FlexBox)`
   border: 1px solid #7d7d7d;
 `;
 const RoomItemWrapper = styled(FlexBox)`
-  margin: 12px 24px;
+  max-height: 32rem;
+  margin: 12px 0;
+  padding: 0 24px;
   flex-wrap: wrap;
+  overflow: auto;
 `;
 
 export default LobbyRoomList;

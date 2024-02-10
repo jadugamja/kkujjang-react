@@ -40,6 +40,8 @@ const WordInput = ({ roundCount, roundTime }) => {
   const onEnterKeyDown = async (e) => {
     if (e.key !== "Enter") return;
 
+    setInputWord("");
+
     if (!inputWord.startsWith(roundInitialCharacter?.split("")[currRound])) return;
     // 적합 단어(유효 단어 O, 중복 단어 X) 여부 확인 GET API 요청
 
@@ -48,7 +50,6 @@ const WordInput = ({ roundCount, roundTime }) => {
     // 끝말잇기 성공 시
     if (thisTurnLeftTime > 0) {
       const inputWordCharacters = inputWord?.split("");
-      setInputWord("");
 
       const delay = 500; // 0.5초
       inputWordCharacters.forEach((char, idx) => {
@@ -69,17 +70,17 @@ const WordInput = ({ roundCount, roundTime }) => {
     }
   };
 
-  const calculateTurnTime = (roundTime) => {
-    const minTime = 10;
-    const maxTime = 20;
-    const minRoundTime = 60;
-    const maxRoundTime = 150;
+  // const calculateTurnTime = (roundTime) => {
+  //   const minTime = 10;
+  //   const maxTime = 20;
+  //   const minRoundTime = 60;
+  //   const maxRoundTime = 150;
 
-    return (
-      ((roundTime - minRoundTime) / (maxRoundTime - minRoundTime)) * (maxTime - minTime) +
-      minTime
-    );
-  };
+  //   return (
+  //     ((roundTime - minRoundTime) / (maxRoundTime - minRoundTime)) * (maxTime - minTime) +
+  //     minTime
+  //   );
+  // };
 
   return (
     <WordInputWrapper dir="col" col="center">
@@ -94,7 +95,7 @@ const WordInput = ({ roundCount, roundTime }) => {
         <DisplayWordWrapper row="center" col="center">
           <DisplayWord>{initialCharacter}</DisplayWord>
         </DisplayWordWrapper>
-        <TimerBar type="turn" totalTime={10} />
+        <TimerBar type="turn" totalTime={15} />
         <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {/* Player Who is myTurn === true */}

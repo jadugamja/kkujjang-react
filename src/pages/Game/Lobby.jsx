@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 
+import { avatarUrlState } from "../../recoil/userState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
@@ -18,10 +19,14 @@ import {
 } from "@/components/Game/Shared/Layout";
 
 const Lobby = () => {
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const avatarUrl = useRecoilValue(avatarUrlState);
   const [rooms, setRooms] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
 
+  // 플레이어 정보
+  useEffect(() => {}, []);
+
+  // 방 정보
   useEffect(() => {
     // 방 목록 정보 불러오기 api 호출
     const storedRoomInfoList = localStorage.getItem("roomInfoList");
@@ -42,8 +47,8 @@ const Lobby = () => {
 
   return (
     <ContentWrapper row="center" col="center">
-      {isFirstVisit && (
-        <Modal type="avatar" isOpen={isFirstVisit} setIsOpen={setIsFirstVisit} />
+      {isModalOpen && (
+        <Modal type="avatar" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
       )}
       <WideContent dir="col">
         <GameHeader />

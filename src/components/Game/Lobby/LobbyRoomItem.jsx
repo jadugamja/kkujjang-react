@@ -130,7 +130,7 @@ const RoomItemInfoWrapper = styled(FlexBox)`
 `;
 
 const LeftInfoWrapper = styled(FlexBox)`
-  width: 3rem;
+  width: 4rem;
 `;
 
 const CenterInfoWrapper = styled(FlexBox)`

@@ -95,3 +95,28 @@ Button.propTypes = {
   type: PropTypes.string,
   location: PropTypes.string
 };
+
+// 준비 버튼
+// const ButtonWrapper = styled(FlexBox)`
+//   flex-grow: 1;
+//   background-color: #eee;
+// `;
+
+// const ReadyButton = styled.button`
+//   padding: 14px 26px;
+//   background-color: #ffd700;
+//   font-family: "DNFBitBitv2";
+//   font-size: 32px;
+//   letter-spacing: 10px;
+//   transition-duration: 0.4s;
+//   border-radius: 6px;
+
+//   &:hover {
+//     background-color: #8b4513;
+//     color: black;
+//   }
+
+//   &:first-letter {
+//     margin-left: 10px;
+//   }
+// `;

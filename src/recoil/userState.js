@@ -22,3 +22,21 @@ export const isActiveAccountState = selector({
     return user.isActive;
   }
 });
+
+export const waitingPlayerListState = atom({
+  key: "waitingPlayerListState",
+  default: []
+});
+
+// export const waitingPlayerReadyListState = selector({
+//   key: "waitingPlayerReadyListState",
+//   get: ({ get }) => {
+//     const playerList = get(waitingPlayerListState);
+//     return playerList.map((player) => player.isReady);
+//   }
+// });
+
+export const playingPlayerListState = atom({
+  key: "playingPlayerListState",
+  default: []
+});

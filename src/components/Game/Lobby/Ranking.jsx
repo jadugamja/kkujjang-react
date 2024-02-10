@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+import GridBox from "@/styles/GridStyle";
 import { StyledMiniButton as Button } from "../Shared/Button";
 import TitleBar from "../Shared/TitleBar";
 
@@ -56,7 +57,7 @@ const Ranking = () => {
             ))}
           </Tbody>
         </Table>
-        <ButtonWrapper>
+        <GridBox flow="col" cols="1fr 1.5fr 1fr" margin="7px 24px">
           <FlexBox row="center">
             {currPage > 1 && (
               <Button layout="side" onClick={() => setCurrPage(currPage - 1)}>
@@ -76,7 +77,7 @@ const Ranking = () => {
               </Button>
             )}
           </FlexBox>
-        </ButtonWrapper>
+        </GridBox>
       </TableWrapper>
     </RankingWrapper>
   );
@@ -129,12 +130,6 @@ const Td = styled.td`
   text-align: ${({ textAlign }) => textAlign || "center"};
   font-size: 12px;
   font-weight: 430;
-`;
-
-const ButtonWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr;
-  margin: 7px 24px;
 `;
 
 export default Ranking;

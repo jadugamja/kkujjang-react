@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import styled from "styled-components";
 
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
-import { FlexBox } from "@/styles/FlexStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
-import Profile from "../../components/Game/Shared/Profile";
+import Profile from "@/components/Game/Shared/Profile";
 import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
 import { Tab } from "@/components/Game/Shared/Tab";
 import { Button } from "@/components/Game/Shared/Button";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import Modal from "@/components/Game/Shared/GameModal";
+import {
+  SideContentWrapper,
+  MainContentWrapper,
+  SpacingWrapper
+} from "@/components/Game/Shared/Layout";
 
 const Lobby = () => {
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
@@ -36,6 +42,9 @@ const Lobby = () => {
 
   return (
     <ContentWrapper row="center" col="center">
+      {isFirstVisit && (
+        <Modal type="avatar" isOpen={isFirstVisit} setIsOpen={setIsFirstVisit} />
+      )}
       <WideContent dir="col">
         <GameHeader />
         <Main>
@@ -46,19 +55,19 @@ const Lobby = () => {
               <Profile />
             </SideContentWrapper>
             <MainContentWrapper dir="col">
-              <TabWrapper row="between" col="end">
-                <TabWrapper>
+              <SpacingWrapper row="between" col="end">
+                <SpacingWrapper spacingX="5px">
                   <Tab type="list">방 목록</Tab>
                   <Tab type="create">방 만들기</Tab>
                   <Tab type="enter" rooms={rooms}>
                     바로 입장
                   </Tab>
-                </TabWrapper>
+                </SpacingWrapper>
                 <div>
                   <Button type="help" />
                   <Button type="setting" />
                 </div>
-              </TabWrapper>
+              </SpacingWrapper>
               <LobbyRoomList rooms={rooms} roomId={null} />
             </MainContentWrapper>
           </Box>
@@ -68,18 +77,5 @@ const Lobby = () => {
     </ContentWrapper>
   );
 };
-
-const SideContentWrapper = styled(FlexBox)`
-  width: 16.5rem;
-  height: 100%;
-`;
-
-const MainContentWrapper = styled(FlexBox)``;
-
-const TabWrapper = styled(FlexBox)`
-  & > * + * {
-    margin-left: 5px;
-  }
-`;
 
 export default Lobby;

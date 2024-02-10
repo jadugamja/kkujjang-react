@@ -1,44 +1,103 @@
 import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
+import {
+  initialCharacterState,
+  thisTurnLeftTimeState,
+  thisRoundLeftTimeState
+} from "@/recoil/gameState";
 
 const WordInput = ({ roundCount, roundTime }) => {
-  const [firstWord, setFirstWord] = useState("");
-  const [currTurn, setCurrTurn] = useState(0);
+  const [roundInitialCharacter, setRoundInitialCharacter] = useState("");
+  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
+  const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
+  const [currRound, setCurrRound] = useState(0);
   const [inputWord, setInputWord] = useState("");
 
+  // 1. 게임 시작
   useEffect(() => {
     // 랜덤 단어 POST API 호출 (roundCount)
-    setFirstWord("테스트임당");
+    setRoundInitialCharacter("테스트임당");
   }, []);
+
+  // 2. 라운드 시작: 첫 글자 제시
+  useEffect(() => {
+    setInitialCharacter(roundInitialCharacter?.split("")[currRound]);
+  }, [roundInitialCharacter, currRound]);
+
+  // 3. 라운드 변경
+  useEffect(() => {
+    if (thisRoundLeftTime === 0 && currRound < roundCount) {
+      setCurrRound((prevTurn) => prevTurn + 1);
+    }
+  }, [thisRoundLeftTime]);
 
   const onEnterKeyDown = async (e) => {
     if (e.key !== "Enter") return;
 
-    if (!inputWord.startsWith(firstWord?.split("")[currTurn])) return;
-
+    if (!inputWord.startsWith(roundInitialCharacter?.split("")[currRound])) return;
     // 적합 단어(유효 단어 O, 중복 단어 X) 여부 확인 GET API 요청
+
+    // 끝말잇기 실패 시
+
+    // 끝말잇기 성공 시
+    if (thisTurnLeftTime > 0) {
+      const inputWordCharacters = inputWord?.split("");
+      setInputWord("");
+
+      const delay = 500; // 0.5초
+      inputWordCharacters.forEach((char, idx) => {
+        setTimeout(
+          () => {
+            if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
+          },
+          delay * (idx + 1)
+        );
+      });
+
+      setTimeout(
+        () => {
+          setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
+        },
+        delay * 1.5 * inputWordCharacters?.length
+      );
+    }
+  };
+
+  const calculateTurnTime = (roundTime) => {
+    const minTime = 10;
+    const maxTime = 20;
+    const minRoundTime = 60;
+    const maxRoundTime = 150;
+
+    return (
+      ((roundTime - minRoundTime) / (maxRoundTime - minRoundTime)) * (maxTime - minTime) +
+      minTime
+    );
   };
 
   return (
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
-        {firstWord?.split("").map((char, i) => (
-          <FirstWordSpan key={i} type={i === currTurn && "this"}>
+        {roundInitialCharacter?.split("").map((char, i) => (
+          <FirstWordSpan key={i} type={i === currRound && "this"}>
             {char}
           </FirstWordSpan>
         ))}
       </FirstWordWrapper>
       <WordTimerInfo dir="col" row="center" col="center">
         <DisplayWordWrapper row="center" col="center">
-          <DisplayWord>{firstWord?.split("")[currTurn]}</DisplayWord>
+          <DisplayWord>{initialCharacter}</DisplayWord>
         </DisplayWordWrapper>
-        <TimerBar type="turn" totalTime={15} />
+        <TimerBar type="turn" totalTime={10} />
         <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
+      {/* Player Who is myTurn === true */}
       <InputWrapper>
         <Input
           type="text"

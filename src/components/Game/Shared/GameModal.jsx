@@ -58,7 +58,8 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       height = "18.75rem";
       break;
     case "avatar":
-      height = "29.188rem";
+      titleText = "아바타 설정하기";
+      height = "21rem";
       break;
     case "password":
       height = "17.75rem";
@@ -194,7 +195,7 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
 
           {/* 아바타 설정 modal */}
           {type === "avatar" && (
-            <GameModalBody top="0">
+            <GameModalBody top="0" marginTop="0">
               {/* 닉네임 부분 */}
               {/* <GameModalInputWrapper paddingBottom="15px">
                   <GameModalMessage paddingBottom="15px" fontSize="22px">
@@ -205,16 +206,17 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
                     ※최대 15자, 한글/영어/숫자 가능, 공백 불가능
                   </GameModalSubMessage>
                 </GameModalInputWrapper> */}
+
               {/* 아바타 (캐릭터) 사진 부분  */}
-              <GameModalMessageWrapper>
+              <ButtonWrapper row="start" col="center" margin="9px 0 0">
                 <GameModalMessage fontSize="22px">캐릭터</GameModalMessage>
-              </GameModalMessageWrapper>
-              <GameModalAvatarWrapper col="center">
-                <ArrowIconImage src={leftArrow}></ArrowIconImage>
+              </ButtonWrapper>
+              <ButtonWrapper row="center" col="center" margin="0">
+                <ArrowIconImage src={leftArrow} onClick=""></ArrowIconImage>
                 <AvatarImage src={avatar}></AvatarImage>
-                <ArrowIconImage src={rightArrow}></ArrowIconImage>
-              </GameModalAvatarWrapper>
-              <ButtonWrapper row="center" col="center">
+                <ArrowIconImage src={rightArrow} onClick=""></ArrowIconImage>
+              </ButtonWrapper>
+              <ButtonWrapper row="center" col="center" margin="25px 0 0">
                 <GameModalButton onClick={(e) => onValidateChange(e)}>
                   확인
                 </GameModalButton>
@@ -437,7 +439,8 @@ GameModal.propTypes = {
     "profile",
     "setting",
     "help",
-    "exit"
+    "exit",
+    "avatar"
   ]),
   message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,

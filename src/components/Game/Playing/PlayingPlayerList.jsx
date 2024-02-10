@@ -1,22 +1,18 @@
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
-const PlayingPlayerList = () => {
-  // 임시 플레이어 배열
-  const players = [
-    { id: 1, isHost: true, isReady: true, nickname: "닉네임#1", level: 3 },
-    { id: 2, isHost: false, isReady: true, nickname: "닉네임#2", level: 2 },
-    { id: 3, isHost: false, isReady: false, nickname: "닉네임#3", level: 1 },
-    { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
-    { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
-  ];
-
+const PlayingPlayerList = ({ playerList }) => {
   return (
-    <PlayerBox row="between" col="center">
-      {players?.map((player) => (
-        <PlayerWrapper key={player.id} dir="col" col="center">
+    <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
+      {playerList?.map((player) => (
+        <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
+          <Balloon myTurn={player.myTurn}>
+            <span></span>
+          </Balloon>
           <Player
             type="play"
             avatarUrl={avatarUrl}
@@ -28,24 +24,22 @@ const PlayingPlayerList = () => {
           </ScoreWrapper>
         </PlayerWrapper>
       ))}
-    </PlayerBox>
+    </GridBox>
   );
 };
 
-const PlayerBox = styled(FlexBox)`
-  margin: 5px 10px;
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-gap: 10px;
-  grid-auto-flow: column;
-`;
+PlayingPlayerList.propTypes = {
+  playerList: PropTypes.array
+};
 
 const PlayerWrapper = styled(FlexBox)`
   width: 8.3rem;
   height: 11.5rem;
   padding: 12px 10px;
-  background-color: #f0f0f0;
+  background-color: ${({ myTurn }) => (myTurn ? "#DDFFDD" : "#f0f0f0")};
+  border: ${({ myTurn }) => myTurn && "2px solid #57F857"};
   border-radius: 7px;
+  transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
 `;
 
 const ScoreWrapper = styled(FlexBox)`
@@ -58,6 +52,37 @@ const Score = styled.span`
   font-family: "PollerOne";
   font-size: 28px;
   letter-spacing: -1px;
+`;
+
+const Balloon = styled.div`
+  position: absolute;
+  top: ${({ myTurn }) => (myTurn ? "-30px" : "calc(41% - 2px)")};
+  width: 133px;
+  height: 34px;
+  background-color: #fff;
+  border: 1px solid #a3a3a3;
+  border-radius: 9px;
+  padding: 3px 5px;
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+  }
+
+  &::before {
+    top: 32px;
+    left: 42%;
+    border-top: 11px solid #a3a3a3;
+  }
+
+  &::after {
+    top: 31px;
+    left: 42%;
+    border-top: 10px solid #fff;
+  }
 `;
 
 export default PlayingPlayerList;

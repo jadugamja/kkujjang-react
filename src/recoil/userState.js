@@ -5,7 +5,7 @@ export const userState = atom({
   default: {} // e.g., { username: "username", nickname: "nickname", role: "admin", level: 1, winRate: 0.0, exp: 0, avatarUrl: "" }
 });
 
-// username만 추출
+// userState -> username만 추출
 export const userNameState = selector({
   key: "userNameState",
   get: ({ get }) => {
@@ -14,7 +14,7 @@ export const userNameState = selector({
   }
 });
 
-// avatarUrl만 추출
+// userState -> avatarUrl만 추출
 export const avatarUrlState = selector({
   key: "avatarUrlState",
   get: ({ get }) => {
@@ -23,7 +23,7 @@ export const avatarUrlState = selector({
   }
 });
 
-// isActive만 추출
+// userState -> isActive(활성화 여부)만 추출
 export const isActiveAccountState = selector({
   key: "isActiveAccountState",
   get: ({ get }) => {
@@ -32,11 +32,13 @@ export const isActiveAccountState = selector({
   }
 });
 
+// 대기실 플레이어들의 상태 목록
 export const waitingPlayerListState = atom({
   key: "waitingPlayerListState",
   default: []
 });
 
+// 대기실 플레이어의 대기 상태만 추출
 // export const waitingPlayerReadyListState = selector({
 //   key: "waitingPlayerReadyListState",
 //   get: ({ get }) => {
@@ -45,7 +47,29 @@ export const waitingPlayerListState = atom({
 //   }
 // });
 
+// 대기실 플레이어의 상태
+export const waitingPlayerState = atom({
+  key: "waitingPlayerState",
+  default: {
+    ...userState,
+    isReady: false,
+    isHost: true
+  }
+});
+
+// 인게임 플레이어들의 상태 목록
 export const playingPlayerListState = atom({
   key: "playingPlayerListState",
-  default: []
+  default: [] // e.g. isDefeated,
+});
+
+// 인게임 플레이어의 상태
+export const playingPlayerState = atom({
+  key: "playingPlayerState",
+  default: {
+    ...userState,
+    myTurn: true,
+    roundScore: [], // 각 라운드에서 얻은 점수
+    totalRoundScore: 0 // 총 점수
+  }
 });

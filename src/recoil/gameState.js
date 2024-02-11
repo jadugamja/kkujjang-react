@@ -20,8 +20,14 @@ export const thisRoundLeftTimeState = atom({
 });
 
 // 현재 차례 플레이어 순서
-export const myTurnState = selector({
-  key: "myTurnState",
+export const myTurnPlayerIndexState = selector({
+  key: "myTurnPlayerIndexState",
   get: ({ get }) =>
     get(playingPlayerListState).findIndex((player) => player.myTurn === true)
+});
+
+// 현재 차례 끝말잇기 점수 결과
+export const currentPoints = atom({
+  key: "currentPoints",
+  default: 0
 });

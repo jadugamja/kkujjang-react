@@ -2,7 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FlexBox } from "@/styles/FlexStyle";
-import { faListUl, faTrophy } from "@fortawesome/free-solid-svg-icons";
+import { faListUl, faTrophy, faUserLarge } from "@fortawesome/free-solid-svg-icons";
 
 const TitleBar = ({
   type,
@@ -26,6 +26,12 @@ const TitleBar = ({
         <div>
           <TitleIcon size="xs" icon={faTrophy} />
           <span>랭킹</span>
+        </div>
+      )}
+      {type === "profile" && (
+        <div>
+          <TitleIcon size="xs" icon={faUserLarge} />
+          <span>프로필</span>
         </div>
       )}
       {type === "room" && <span>{`[${id}] ${title}`}</span>}

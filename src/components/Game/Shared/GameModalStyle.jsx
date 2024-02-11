@@ -77,11 +77,6 @@ export const GameModalLongMessage = styled.textarea.attrs({ readonly: true })`
   padding: 0 15px;
 `;
 
-export const GameModalMessageWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "23rem"};
-  height: ${(props) => props.height || "fit-content"};
-`;
-
 export const ButtonWrapper = styled(FlexBox)`
   width: 100%;
   margin: ${({ margin }) => margin || "10px 0px 32px"};
@@ -132,20 +127,14 @@ export const GameModalInput = styled.input`
   font-size: ${({ fontSize }) => fontSize || "16px"};
 `;
 
-export const GameModalAvatarWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "fit-content"};
-  padding-bottom: 30px;
-`;
-export const AvatarImage = styled.img`
-  width: ${(props) => props.width || "136px"};
-  height: ${(props) => props.width || "121px"};
-  padding: 15px;
-`;
-
 export const ArrowIconImage = styled.img`
   width: ${(props) => props.width || "42px"};
   height: ${(props) => props.width || "48px"};
+  margin: 0 22px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const ExitMiniCircle = styled.button`

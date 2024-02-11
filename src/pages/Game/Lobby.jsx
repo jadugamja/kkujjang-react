@@ -1,25 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { useRecoilState } from "recoil";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue, useRecoilState } from "recoil";
 
+import { avatarUrlState } from "../../recoil/userState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
-import { FlexBox } from "@/styles/FlexStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
-import Profile from "../../components/Game/Shared/Profile";
+import Profile from "@/components/Game/Shared/Profile";
 import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
-import {
-  SideTab,
-  MainTab,
-  CreateRoomButton,
-  EnterRoomButton
-} from "@/components/Game/Shared/Tab";
+import { Tab } from "@/components/Game/Shared/Tab";
 import { Button } from "@/components/Game/Shared/Button";
 import Footer from "@/components/Web/Shared/Layout/Footer";
+import Modal from "@/components/Game/Shared/GameModal";
+import {
+  SideContentWrapper,
+  MainContentWrapper,
+  SpacingWrapper
+} from "@/components/Game/Shared/Layout";
 
 const Lobby = () => {
+  const avatarUrl = useRecoilValue(avatarUrlState);
   const [rooms, setRooms] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
 
+  // 플레이어 정보
+  useEffect(() => {}, []);
+
+  // 방 정보
   useEffect(() => {
     // 방 목록 정보 불러오기 api 호출
     const storedRoomInfoList = localStorage.getItem("roomInfoList");
@@ -40,27 +47,32 @@ const Lobby = () => {
 
   return (
     <ContentWrapper row="center" col="center">
+      {isModalOpen && (
+        <Modal type="avatar" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+      )}
       <WideContent dir="col">
         <GameHeader />
         <Main>
           <Box>
             <SideContentWrapper dir="col">
-              <SideTab />
+              <Tab type="ranking">랭킹</Tab>
               <Ranking />
               <Profile />
             </SideContentWrapper>
             <MainContentWrapper dir="col">
-              <TabWrapper row="between" col="end">
-                <TabWrapper>
-                  <MainTab bgColor="#779DC5">방 목록</MainTab>
-                  <CreateRoomButton />
-                  <EnterRoomButton rooms={rooms} />
-                </TabWrapper>
+              <SpacingWrapper row="between" col="end">
+                <SpacingWrapper spacingX="5px">
+                  <Tab type="list">방 목록</Tab>
+                  <Tab type="create">방 만들기</Tab>
+                  <Tab type="enter" rooms={rooms}>
+                    바로 입장
+                  </Tab>
+                </SpacingWrapper>
                 <div>
                   <Button type="help" />
                   <Button type="setting" />
                 </div>
-              </TabWrapper>
+              </SpacingWrapper>
               <LobbyRoomList rooms={rooms} roomId={null} />
             </MainContentWrapper>
           </Box>
@@ -70,18 +82,5 @@ const Lobby = () => {
     </ContentWrapper>
   );
 };
-
-const SideContentWrapper = styled(FlexBox)`
-  width: 16.5rem;
-  height: 100%;
-`;
-
-const MainContentWrapper = styled(FlexBox)``;
-
-const TabWrapper = styled(FlexBox)`
-  & > * + * {
-    margin-left: 5px;
-  }
-`;
 
 export default Lobby;

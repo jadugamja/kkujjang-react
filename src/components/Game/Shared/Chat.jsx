@@ -1,27 +1,35 @@
 import { useState, useRef, useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { io } from "socket.io-client";
 
+import {
+  initialCharacterState,
+  thisTurnLeftTimeState,
+  myTurnState
+} from "@/recoil/gameState";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
 
 // 환경 변수 가져오기
-const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
+  const [myTurn, setMyTurn] = useRecoilState(myTurnState);
+  const leftTime = useRecoilValue(thisTurnLeftTimeState);
+  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const [toMessage, setToMessage] = useState("");
   const [chats, setChats] = useState([]);
 
   const chatResult = useRef(null);
   const chatInput = useRef();
-  const ws = useRef(null);
+  const cs = useRef(null);
 
-  const sendMessage = (e) => {
-    e.preventDefault();
-
-    if (ws.current && toMessage) {
+  const sendChatMessage = () => {
+    if (cs.current && toMessage) {
       const _chat = {
         type: "CHAT",
         sessionId: sessionId,
@@ -30,10 +38,8 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         message: toMessage
       };
 
-      ws.current.onopen = () => {
-        console.log(ws.current.readyState);
-        ws.current.send(JSON.stringify(_chat));
-      };
+      // 소켓 전송
+      cs.current.emit("message", _chat);
 
       setChats([...chats, { nickname: "테스트", message: toMessage }]);
       setToMessage("");
@@ -41,7 +47,36 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
     }
   };
 
-  // 사용자가 메시지를 입력한 경우
+  const sendGameWord = (word) => {
+    if (toMessage.length > 1) {
+      if (leftTime > 0) {
+        // 유효 단어 여부 확인 API 호출
+      } else {
+        // 현재 차례 시간 만료
+      }
+    }
+
+    sendChatMessage(word);
+  };
+
+  const handleMessage = (e) => {
+    e.preventDefault();
+
+    if (toMessage) {
+      // myTurn 임시 index 부여
+      if (
+        initialCharacter !== "" &&
+        myTurn === 0 &&
+        toMessage.startsWith(initialCharacter)
+      ) {
+        sendGameWord(toMessage);
+      } else {
+        sendChatMessage(toMessage);
+      }
+    }
+  };
+
+  // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
   useEffect(() => {
     if (chatResult.current) {
       chatResult.current.scrollTop = chatResult.current.scrollHeight;
@@ -50,12 +85,12 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
 
   // 다른 사용자가 메시지를 입력한 경우
   useEffect(() => {
-    // 웹 소켓 연결 초기화
-    ws.current = new WebSocket(WEBSOCKET_URL);
+    // 소켓 연결 초기화
+    cs.current = io(SOCKET_URL);
 
-    // 웹 소켓으로부터 받은 메시지
-    ws.current.onmessage = (e) => {
-      const { fromNickname, fromMessage } = JSON.parse(e.data);
+    // 소켓으로부터 받은 메시지
+    cs.current.on("message", (data) => {
+      const { fromNickname, fromMessage } = data;
 
       // 사용자가 스크롤 제어하는지 확인
       const isUserScrolling =
@@ -72,10 +107,9 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         ...prevChat,
         { nickname: fromNickname, message: fromMessage }
       ]);
-    };
-
-    // 컴포넌트 언마운트될 때 WebSocket 연결 종료
-    return () => ws.current.close();
+    });
+    // 컴포넌트 언마운트될 때 소켓 연결 종료
+    return () => cs.current.disconnect();
   }, [chats]);
 
   return (
@@ -95,11 +129,11 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
           value={toMessage}
           onChange={(e) => setToMessage(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage(e);
+            if (e.key === "Enter") handleMessage(e);
           }}
           ref={chatInput}
         />
-        <ChatSubmitButton col="center" row="center" onClick={sendMessage}>
+        <ChatSubmitButton col="center" row="center" onClick={handleMessage}>
           전송
         </ChatSubmitButton>
       </ChatInputWrapper>

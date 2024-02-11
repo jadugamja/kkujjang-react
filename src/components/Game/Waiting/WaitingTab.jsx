@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+
 import { roomIdState, isPlayingRoomState } from "@/recoil/roomState";
-import { FlexBox } from "@/styles/FlexStyle";
-import { MainTab } from "@/components/Game/Shared/Tab";
-import GameModal from "../Shared/GameModal";
+import { waitingPlayerListState } from "@/recoil/userState";
+import { userNameState } from "@/recoil/userState";
+import { SpacingWrapper } from "../Shared/Layout";
+import { MainTab, Tab } from "../Shared/Tab";
+import Modal from "../Shared/GameModal";
 
 const WaitingTab = ({ isHost, roomId, playerCount }) => {
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const userName = useRecoilValue(userNameState);
+  const setPlayerList = useSetRecoilState(waitingPlayerListState);
   const [isReady, setIsReady] = useState(false);
+
   const setRoomId = useSetRecoilState(roomIdState);
   const setIsPlaying = useSetRecoilState(isPlayingRoomState);
 
@@ -37,13 +43,21 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
   };
 
   const onReadyToggle = () => {
-    // 준비 상태 변경 PUT api 호출
     setIsReady(!isReady);
+    setPlayerList((prevList) => {
+      return prevList?.map((player) =>
+        // player.id === userName ? { ...player, isReady: !player.isReady } : player
+        // 임시
+        player.id === 3 ? { ...player, isReady: !player.isReady } : player
+      );
+    });
+
+    // 준비 상태 변경 PUT api 호출
   };
 
   return (
     <>
-      <TabWrapper>
+      <SpacingWrapper spacingX="5px">
         <MainTab bgColor="#f3f3f3">대기실</MainTab>
         {isHost ? (
           <>
@@ -55,17 +69,13 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
             </MainTab>
           </>
         ) : (
-          <MainTab
-            bgColor={isReady ? "#676767" : "#cdeba1"}
-            color={isReady && "#fff"}
-            onClick={onReadyToggle}
-          >
+          <Tab type={isReady ? "ready" : "wait"} onClick={onReadyToggle}>
             {isReady ? "대기" : "준비"}
-          </MainTab>
+          </Tab>
         )}
-      </TabWrapper>
+      </SpacingWrapper>
       {isModalOpen ? (
-        <GameModal
+        <Modal
           type={modalType}
           message={modalMessage}
           isOpen={isModalOpen}
@@ -84,11 +94,5 @@ WaitingTab.propTypes = {
   roomId: PropTypes.number,
   playerCount: PropTypes.number
 };
-
-const TabWrapper = styled(FlexBox)`
-  & > * + * {
-    margin-left: 5px;
-  }
-`;
 
 export default WaitingTab;

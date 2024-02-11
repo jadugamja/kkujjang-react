@@ -1,110 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { roomIdState } from "@/recoil/roomState";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
 
-// ========= Side 탭 =========
-export const SideTab = () => (
-  <Tab row="center" col="center" bgColor="#f3f3f3">
-    <TabIcon icon={faTrophy} />
-    <TabSpan>랭킹</TabSpan>
-  </Tab>
-);
-
-// ========= Main 탭 =========
-export const MainTab = ({ children, bgColor, color, onClick }) => (
-  <Tab row="center" col="center" bgColor={bgColor} color={color} onClick={onClick}>
-    <TabSpan>{children}</TabSpan>
-  </Tab>
-);
-
-MainTab.propTypes = {
-  children: PropTypes.string,
-  bgColor: PropTypes.string,
-  color: PropTypes.string,
-  onClick: PropTypes.func
+const TAB_TYPES = {
+  CREATE: "create",
+  ENTER: "enter",
+  LIST: "list",
+  RANKING: "ranking",
+  PLAYING: "playing",
+  READY: "ready",
+  WAIT: "wait"
 };
 
-// ========= 방 만들기 버튼 =========
-export const CreateRoomButton = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  return (
-    <>
-      <Tab
-        as="button"
-        row="center"
-        col="center"
-        bgColor="#B0D3F3"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <TabSpan>방 만들기</TabSpan>
-      </Tab>
-      {isModalOpen ? (
-        <Modal type="room" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
-      ) : null}
-    </>
-  );
+const TAB_BG_COLORS = {
+  [TAB_TYPES.CREATE]: "#B0D3F3",
+  [TAB_TYPES.ENTER]: "#E6EEB4",
+  [TAB_TYPES.LIST]: "#779DC5",
+  [TAB_TYPES.RANKING]: "#f3f3f3",
+  [TAB_TYPES.PLAYING]: "#889E7D",
+  [TAB_TYPES.WAIT]: "#cdeba1",
+  [TAB_TYPES.READY]: "#676767"
 };
 
-// ========= 바로 입장 버튼 =========
-export const EnterRoomButton = ({ rooms }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const setRoomId = useSetRecoilState(roomIdState);
-  const navigate = useNavigate();
-
-  const onTryEnterRoom = () => {
-    const availableRooms = rooms?.filter(
-      (room) =>
-        !room.isPlaying && room.password === "" && room.playerCount < room.maxPlayerCount
-    );
-
-    if (availableRooms.length === 0) {
-      setIsModalOpen(true);
-    } else {
-      const pickedRoom =
-        availableRooms[Math.floor(Math.random() * availableRooms.length)];
-
-      setRoomId(pickedRoom.id);
-      navigate(`/game/${pickedRoom.id}`);
-    }
-  };
-
-  return (
-    <>
-      <Tab
-        as="button"
-        row="center"
-        col="center"
-        bgColor="#E6EEB4"
-        onClick={onTryEnterRoom}
-      >
-        <TabSpan>바로 입장</TabSpan>
-      </Tab>
-      {isModalOpen ? (
-        <Modal
-          type="alert"
-          message="입장 가능한 방이 없습니다."
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
-        />
-      ) : null}
-    </>
-  );
+const TAB_TEXT_COLORS = {
+  [TAB_TYPES.READY]: "#fff"
 };
 
-EnterRoomButton.propTypes = {
-  rooms: PropTypes.array
+const TAB_TEXTS = {
+  [TAB_TYPES.CREATE]: { type: "room", message: "" },
+  [TAB_TYPES.ENTER]: {
+    type: "alert",
+    message: "입장 가능한 방이 없습니다."
+  }
 };
 
-const Tab = styled(FlexBox)`
+const StyledTab = styled(FlexBox)`
   position: relative;
   top: ${({ bgColor }) =>
     bgColor === "#779DC5" || bgColor === "#f3f3f3" || bgColor === "#889E7D"
@@ -127,8 +63,8 @@ const Tab = styled(FlexBox)`
   }
 
   &:hover {
-    cursor: ${({ onClick }) => onClick && "pointer"};
-    opacity: ${({ onClick }) => onClick && "0.8"};
+    cursor: ${({ hasOnClick }) => (hasOnClick ? "pointer" : "default")};
+    transform: ${({ hasOnClick }) => hasOnClick && "translateY(-2px)"};
   }
 `;
 
@@ -140,3 +76,89 @@ const TabSpan = styled.span`
   font-size: ${({ theme }) => theme.fontSize.s};
   font-weight: 700;
 `;
+
+// ========= Main 탭 =========
+export const MainTab = ({ children, bgColor, color, onClick }) => (
+  <StyledTab
+    row="center"
+    col="center"
+    bgColor={bgColor}
+    color={color}
+    hasOnClick={onClick}
+  >
+    <TabSpan>{children}</TabSpan>
+  </StyledTab>
+);
+
+MainTab.propTypes = {
+  children: PropTypes.string,
+  bgColor: PropTypes.string,
+  color: PropTypes.string,
+  onClick: PropTypes.func
+};
+
+export const Tab = ({ children, type, rooms, onClick }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const onCreateRoom = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const onTryEnterRoom = useCallback(() => {
+    const availableRooms = rooms?.filter(
+      (room) =>
+        !room.isPlaying && room.password === "" && room.playerCount < room.maxPlayerCount
+    );
+
+    if (availableRooms.length === 0) {
+      setIsModalOpen(true);
+    } else {
+      const pickedRoom =
+        availableRooms[Math.floor(Math.random() * availableRooms.length)];
+
+      // setRoomId(pickedRoom.id);
+      navigate(`/game/${pickedRoom.id}`);
+    }
+  }, [rooms]);
+
+  const getOnClick = {
+    [TAB_TYPES.CREATE]: onCreateRoom,
+    [TAB_TYPES.ENTER]: onTryEnterRoom
+  };
+
+  return (
+    <>
+      <StyledTab
+        as="button"
+        row="center"
+        col="center"
+        type={type}
+        bgColor={TAB_BG_COLORS[type]}
+        color={TAB_TEXT_COLORS[type]}
+        onClick={getOnClick[type] || onClick}
+        hasOnClick={!!getOnClick[type] || onClick}
+      >
+        {type === "ranking" && <TabIcon icon={faTrophy} />}
+        <TabSpan>{children}</TabSpan>
+      </StyledTab>
+      {isModalOpen ? (
+        <Modal
+          type={TAB_TEXTS[type].type}
+          message={TAB_TEXTS[type].message}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+        />
+      ) : null}
+    </>
+  );
+};
+
+Tab.propTypes = {
+  children: PropTypes.string,
+  type: PropTypes.oneOf(Object.values(TAB_TYPES)),
+  rooms: PropTypes.array,
+  onClick: PropTypes.func,
+  isModalOpen: PropTypes.bool,
+  setIsModalOpen: PropTypes.func
+};

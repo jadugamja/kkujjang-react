@@ -54,9 +54,10 @@ const FindButton = styled.button`
 const FindidForm = () => {
   const [hasUserInfo, setHasUserInfo] = useState(false); // 아이디 조회 state
   const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
+  const [userId, setUserId] = useState(""); // 아이디 출력 state
+  // (modal 관련)
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
-  const [userId, setUserId] = useState(""); // 아이디 출력 state
 
   // 인증번호 검증
   const handlePhoneNumberAuth = () => {
@@ -96,10 +97,18 @@ const FindidForm = () => {
   return (
     <>
       {authModalOpen && (
-        <WebModal hasButton={true} message="인증번호가 일치하지 않습니다." />
+        <WebModal
+          setIsOpen={setAuthModalOpen}
+          hasButton={true}
+          message="인증번호가 일치하지 않습니다."
+        />
       )}
       {findidModalOpen && (
-        <WebModal hasButton={true} message="아이디가 존재하지 않습니다." />
+        <WebModal
+          setIsOpen={setFindidModalOpen}
+          hasButton={true}
+          message="아이디가 존재하지 않습니다."
+        />
       )}
       <FindidFormFlexContainer dir="col">
         <FormTitle type="findid" marginTop="0px" marginBottom="0px"></FormTitle>

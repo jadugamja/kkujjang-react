@@ -22,17 +22,13 @@ import {
 } from "./WebModalStyle";
 import Button from "../Buttons/Button.jsx";
 
-const WebModal = ({ hasButton, isVan, isMoving, message }) => {
-  const handelExit = () => {
-    setModalVisible(false);
-  };
-
+const WebModal = ({ setIsOpen, hasButton, isVan, isMoving, message }) => {
   return (
     <>
-      <ModalBackground onClick={handelExit}></ModalBackground>
+      <ModalBackground onClick={() => setIsOpen(false)}></ModalBackground>
       <ModalWrapper>
         <ModalHeader row="end" col="center">
-          <ExitMiniCircle onClick={handelExit}></ExitMiniCircle>
+          <ExitMiniCircle onClick={() => setIsOpen(false)}></ExitMiniCircle>
         </ModalHeader>
         <ModalContent dir="col" row="center" col="center" height={isVan && "25.438rem"}>
           {hasButton && (
@@ -72,6 +68,7 @@ const WebModal = ({ hasButton, isVan, isMoving, message }) => {
 };
 
 WebModal.propTypes = {
+  setIsOpen: PropTypes.func,
   isVan: PropTypes.bool,
   hasButton: PropTypes.bool,
   isMoving: PropTypes.bool,

@@ -44,11 +44,14 @@ const SignupForm = () => {
   const confirmPasswordRef = useRef(""); // 비밀번호 확인
 
   // === state ===
+  // (에러 메시지 관련)
   const [idError, setIdError] = useState(""); // 아이디 유효성 검사 에러 메시지 state
   const [pwError, setPwError] = useState(""); // 비밀번호 유효성 검사 에러 메시지 state
   const [confirmPwError, setConfirmPwError] = useState(""); // 비밀번호 일치 검사 에러 메시지 state
   const [duplicationError, setDuplicationError] = useState(""); // 아이디 중복 확인 에러 메시지 state
+  // (인증번호 관련)
   const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
+  // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 알림 modal state
   const [signupModalOpen, setSignupModalOpen] = useState(false); // 회원 가입 실패 알림 modal state
 
@@ -127,10 +130,18 @@ const SignupForm = () => {
   return (
     <>
       {authModalOpen && (
-        <WebModal hasButton={true} message="인증번호가 일치하지 않습니다." />
+        <WebModal
+          setIsOpen={setAuthModalOpen}
+          hasButton={true}
+          message="인증번호가 일치하지 않습니다."
+        />
       )}
       {signupModalOpen && (
-        <WebModal hasButton={true} message="회원 정보를 확인해 주세요." />
+        <WebModal
+          setIsOpen={setSignupModalOpen}
+          hasButton={true}
+          message="회원 정보를 확인해 주세요."
+        />
       )}
       <SignupFormContainer dir="col">
         <FormTitle type="signup" />

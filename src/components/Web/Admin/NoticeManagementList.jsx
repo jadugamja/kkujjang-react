@@ -8,6 +8,7 @@ import Button from "../Shared/Buttons/Button";
 import SearchBar from "../Shared/Board/SearchBar";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import { getNoticeList, getNoticeSearch } from "../../../services/api";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);
@@ -15,8 +16,19 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  // 컴포넌트 마운트될 때 조회
   useEffect(() => {
+    const getNoticeListHandler = async () => {
+      const data = await getNoticeList(currPage);
+      if (data.list.length === 0) {
+        setLastPageIdx(data.lastPage);
+        setListData([]);
+      } else {
+        setLastPageIdx(data.lastPage);
+        setListData(data.list);
+      }
+    };
+    getNoticeListHandler();
+
     // 임시 데이터
     const list = [
       {
@@ -81,9 +93,6 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
       }
     ];
 
-    // 공지사항 목록 조회 api 호출 및 성공 시 값 세팅
-    // setLastPageIdx(data.result.lastPage)
-
     if (list.length === 0) {
       setListData([]);
     } else {
@@ -93,10 +102,18 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
-    let queryString = `?page=${currPage}${
-      searchKeyword !== "" ? `&q=${searchKeyword}` : ""
-    }`;
     // 공지사항 목록 조회 api 호출
+    const getNoticeSearchHandler = async () => {
+      const data = await getNoticeSearch(currPage, searchKeyword);
+      if (data.list.length === 0) {
+        setLastPageIdx(data.lastPage);
+        setListData([]);
+      } else {
+        setLastPageIdx(data.lastPage);
+        setListData(data.list);
+      }
+    };
+    getNoticeSearchHandler();
   }, [currPage, searchKeyword]);
 
   return (

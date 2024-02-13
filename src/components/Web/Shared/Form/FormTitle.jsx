@@ -11,10 +11,9 @@ const FormTitleWrapper = styled.div`
 const FormTitleText = styled.p`
   color: ${(props) => props.color || "#828282"};
   font-family: "Gugi";
-  font-size: ${(props) => props.fontSize || "36px"};
+  font-size: ${(props) => props.fontSize || "32px"};
   font-weight: ${(props) => props.fontWeight || "500"};
-  margin-top: ${(props) => props.marginTop || "36px"};
-  margin-bottom: ${(props) => props.marginBottom || "36px"};
+  margin: ${(props) => props.margin || "28px 0"};
 `;
 
 // ===== component ======

@@ -1,17 +1,40 @@
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Wrapper } from "./Layout";
 import { currentPoints } from "@/recoil/gameState";
+import { playingPlayerListState, playingPlayerState } from "../../../recoil/userState";
 
 export const TurnScore = () => {
   const [pointType, setPointType] = useState(null);
-  const currPoints = useRecoilValue(currentPoints);
+  const [currPoints, setCurrPoints] = useRecoilState(currentPoints);
+  const [player, setPlayer] = useRecoilState(playingPlayerState);
+  const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
 
   useEffect(() => {
-    if (currPoints > 0) setPointType("score");
-    else if (currPoints < 0) setPointType("penalty");
+    if (currPoints !== 0) {
+      if (currPoints > 0) setPointType("score");
+      else if (currPoints < 0) setPointType("penalty");
+
+      const disappered = setTimeout(() => {
+        setCurrPoints(0);
+      }, 1500);
+
+      if (player.myTurn) {
+        const updatedPlayer = {
+          ...player,
+          totalScore: player.totalScore + currPoints
+        };
+        setPlayer(updatedPlayer);
+
+        const updatedPlayerList = playerList?.map((p) =>
+          p.id === player.id ? updatedPlayer : p
+        );
+        setPlayerList(updatedPlayerList);
+      }
+      return () => clearTimeout(disappered);
+    }
   }, [currPoints]);
 
   return (
@@ -23,7 +46,10 @@ export const TurnScore = () => {
       left={pointType === "penalty" && "15px"}
       type={pointType}
     >
-      <StyledSpan type={pointType}>{currPoints !== 0 && currPoints}</StyledSpan>
+      <StyledSpan type={pointType}>
+        {currPoints !== 0 &&
+          (pointType === "score" ? `+${currPoints}` : `-${currPoints}`)}
+      </StyledSpan>
     </Wrapper>
   );
 };

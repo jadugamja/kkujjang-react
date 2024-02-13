@@ -13,6 +13,10 @@ import {
   thisRoundLeftTimeState,
   currentPoints
 } from "@/recoil/gameState";
+import {
+  playingPlayerListState,
+  syncPlayingPlayerToListState
+} from "../../../recoil/userState";
 
 const WordInput = ({ roundCount, roundTime }) => {
   const [roundInitialCharacter, setRoundInitialCharacter] = useState("");
@@ -22,7 +26,8 @@ const WordInput = ({ roundCount, roundTime }) => {
   const [currRound, setCurrRound] = useState(0);
   const [inputWord, setInputWord] = useState("");
   const setCurrPoints = useSetRecoilState(currentPoints);
-  const setPlayingPlayer = useSetRecoilState(playingPlayerState);
+  const [player, setPlayer] = useRecoilState(playingPlayerState);
+  const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
 
   const [timeoutIds, setTimeoutIds] = useState([]);
 
@@ -45,6 +50,11 @@ const WordInput = ({ roundCount, roundTime }) => {
   }, [thisRoundLeftTime]);
 
   useEffect(() => {
+    syncPlayerList((prevList) => prevList?.map((p) => (player.myTurn ? player : p)));
+  }, [player]);
+
+  // clearTimeout
+  useEffect(() => {
     return () => {
       timeoutIds?.forEach((id) => clearTimeout(id));
     };
@@ -65,6 +75,8 @@ const WordInput = ({ roundCount, roundTime }) => {
     // payload: inputWord, thisTurnLeftTime
 
     // 서버로부터 1) 유효성 검사 결과 및 2) 점수 받기
+
+    // 임시 점수
     const score = 10;
 
     // 끝말잇기 실패 시
@@ -83,12 +95,12 @@ const WordInput = ({ roundCount, roundTime }) => {
       timeoutIds.push(id1);
     });
 
-    setCurrPoints(score);
     // 득점 저장
-    setPlayingPlayer((prev) => {
-      const newRoundScore = [...prev.roundScore];
+    setCurrPoints(score);
+    setPlayer((prev) => {
+      const newRoundScore = [...(prev.roundScore || [])];
       newRoundScore[currRound] = score;
-      return { ...prev, roundScore: newRoundScore };
+      return { ...prev, roundScore: newRoundScore, totalScore: prev.totalScore + score };
     });
 
     const id2 = setTimeout(
@@ -127,8 +139,8 @@ const WordInput = ({ roundCount, roundTime }) => {
         <DisplayWordWrapper row="center" col="center">
           <DisplayWord>{initialCharacter}</DisplayWord>
         </DisplayWordWrapper>
-        {/* <TimerBar type="turn" totalTime={15} />
-        <TimerBar type="round" totalTime={roundTime} /> */}
+        <TimerBar type="turn" totalTime={15} />
+        <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {/* Player Who is myTurn === true */}
       <InputWrapper>

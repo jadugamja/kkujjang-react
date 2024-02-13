@@ -11,11 +11,11 @@ import styled from "styled-components";
 
 // Web에서 주로 사용하는 갈색 Big Submit 버튼 (회원가입, 로그인, 탈퇴하기, 비밀번호 변경하기)
 export const BigSubmitBrownButton = styled.button`
-  width: 40.75rem;
-  height: 4.688rem;
+  width: 100%;
+  height: 4.3rem;
   background-color: ${({ theme }) => theme.colors.button.main.background};
   color: ${({ theme }) => theme.colors.button.main.text};
-  font-size: ${({ theme }) => theme.fontSize.l};
+  font-size: 26px;
   font-weight: 700;
 
   &:hover {

@@ -2,14 +2,10 @@ import React, { useRef, useState } from "react";
 
 import Timer from "./Timer";
 import {
-  ContentWrapper,
   ItemWrapper,
-  PhoneNumberWrapper,
-  PhoneNumberLabel,
   InputFieldsWrapper,
+  Label,
   PhoneNumberInput,
-  VerificationWrapper,
-  VerificationLabel,
   VerificationInput,
   Seperator,
   SmallTransparentButton
@@ -90,11 +86,11 @@ const PhoneNumberAuth = ({}) => {
   };
 
   return (
-    <ContentWrapper dir="col">
-      <ItemWrapper row="between">
-        <PhoneNumberLabel>
+    <ItemWrapper dir="col">
+      <ItemWrapper row="between" marginBottom="24px">
+        <Label width="100%">
           전화번호
-          <PhoneNumberWrapper row="between" col="center">
+          <ItemWrapper row="between" col="center" marginTop="5px">
             <InputFieldsWrapper row="between" col="center" onChange={handleChange}>
               <PhoneNumberInput type="text" placeholder="010" ref={numbersRef[0]} />
               <Seperator>-</Seperator>
@@ -105,14 +101,14 @@ const PhoneNumberAuth = ({}) => {
             <SmallTransparentButton onClick={sendPhoneNumber}>
               인증 요청
             </SmallTransparentButton>
-          </PhoneNumberWrapper>
-        </PhoneNumberLabel>
+          </ItemWrapper>
+        </Label>
       </ItemWrapper>
       {isSentPhoneNumber && (
-        <VerificationWrapper>
-          <VerificationLabel>
+        <ItemWrapper marginBottom="24px">
+          <Label>
             인증
-            <PhoneNumberWrapper row="start" col="center" onChange={handleChange}>
+            <ItemWrapper row="start" col="center" marginTop="5px" onChange={handleChange}>
               <VerificationInput
                 type="text"
                 width="verification"
@@ -123,11 +119,11 @@ const PhoneNumberAuth = ({}) => {
               <SmallTransparentButton type="verification" onClick={sendVerification}>
                 확인
               </SmallTransparentButton>
-            </PhoneNumberWrapper>
-          </VerificationLabel>
-        </VerificationWrapper>
+            </ItemWrapper>
+          </Label>
+        </ItemWrapper>
       )}
-    </ContentWrapper>
+    </ItemWrapper>
   );
 };
 

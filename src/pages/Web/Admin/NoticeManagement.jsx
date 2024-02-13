@@ -11,6 +11,7 @@ import Header from "@/components/Web/Shared/Layout/Header";
 import NoticeManagementList from "@/components/Web/Admin/NoticeManagementList";
 import NoticeManagementDetail from "@/components/Web/Admin/NoticeManagementDetail";
 import NoticeManagementCreate from "@/components/Web/Admin/NoticeManagementCreate";
+import { getNoticeDetail } from "../../../services/api";
 
 const NoticeManagement = () => {
   // 0: not active, 1: Detail, 2: Create
@@ -21,9 +22,15 @@ const NoticeManagement = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [detailData, setDetailData] = useState({});
 
-  const onDetailOpen = (id) => {
-    // 공지사항 게시물 상세 조회 api 호출 (notice/:id)
+  const onDetailOpen = async (id) => {
 
+    const data = await getNoticeDetail(id)
+    if (data) {
+      setIsEditMode(false);
+      setDetailData(data);
+      setIsActiveSideContentType(1);
+      setItemId(id);
+    }
     // 임시 데이터
     const detail = {
       id: id,
@@ -37,6 +44,7 @@ const NoticeManagement = () => {
     setDetailData(detail);
     setIsActiveSideContentType(1);
     setItemId(id);
+
   };
 
   const onCreateOpen = () => {

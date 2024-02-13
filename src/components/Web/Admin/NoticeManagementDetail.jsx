@@ -47,7 +47,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
       ["bold", "italic", "underline", "strike", "code-block"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link", "image"],
-      [{ align: [] }, { color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ align: [] }, { color: [] }, { background: [] }],
       ["clean"]
     ]
   };

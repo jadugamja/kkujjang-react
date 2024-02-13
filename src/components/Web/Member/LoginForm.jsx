@@ -13,9 +13,7 @@ import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 
 // ===== style ======
 const LoginFormFlexContainer = styled(FlexBox)`
-  width: ${(props) => props.width || "40.75rem"};
   height: ${(props) => props.height || "fit-content"};
-
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
   margin-left: ${(props) => props.marginLeft || null};
@@ -23,19 +21,15 @@ const LoginFormFlexContainer = styled(FlexBox)`
 `;
 
 const KakaoLoginButton = styled.button`
-  width: 40.75rem;
   height: 4.688rem;
   background-color: ${({ theme }) => theme.colors.kakao};
   color: #413014;
 `;
 
-const LoginLinkButton = styled.a`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "29px"};
+const LinkSpan = styled.span`
   color: ${(props) => props.color || "#929292"};
-  font-size: ${({ theme }) => theme.fontSize.m};
-  font-weight: 600;
-
+  font-size: 21px;
+  font-weight: ${(props) => props.fontWeight || "600"};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
   margin-left: ${(props) => props.marginLeft || null};
@@ -45,15 +39,8 @@ const LoginLinkButton = styled.a`
 const KakaoIconImage = styled.img`
   width: ${(props) => props.width || "24px"};
   height: ${(props) => props.height || "24px"};
-  margin-left: 5px;
+  margin-left: 14px;
   margin-right: 10px;
-`;
-
-const KakaoLoginText = styled.p`
-  width: ${(props) => props.width || "fit-content"};
-  font-size: ${({ theme }) => theme.fontSize.m};
-  font-weight: 600;
-  margin: 0;
 `;
 
 // ===== component ======
@@ -87,10 +74,10 @@ const LoginForm = () => {
   };
 
   return (
-    <LoginFormFlexContainer dir="col">
+    <LoginFormFlexContainer dir="col" marginTop="4rem">
       <FormTitle type="login"></FormTitle>
       {/* 아이디 input */}
-      <LoginFormFlexContainer marginBottom="7px">
+      <LoginFormFlexContainer marginBottom="25px">
         <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
       </LoginFormFlexContainer>
       {/* 비밀번호 input */}
@@ -104,26 +91,28 @@ const LoginForm = () => {
       {/* 경고 문구 */}
       {error && <ValidationMessage message={error} />}
       {/* 로그인 button */}
-      <LoginFormFlexContainer marginTop="15px" marginBottom="15px">
+      <LoginFormFlexContainer marginTop="28px" marginBottom="15px">
         <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
       </LoginFormFlexContainer>
       <LoginFormFlexContainer row="between" marginBottom="30px">
         <LoginFormFlexContainer width="fit-content">
           <Link to="/member/find">
-            <LoginLinkButton marginRight="10px">아이디 찾기</LoginLinkButton>
+            <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
           </Link>
           <Link to="/member/find">
-            <LoginLinkButton>비밀번호 찾기</LoginLinkButton>
+            <LinkSpan>비밀번호 찾기</LinkSpan>
           </Link>
         </LoginFormFlexContainer>
         <Link to="/member/join">
-          <LoginLinkButton color="#413014">회원가입</LoginLinkButton>
+          <LinkSpan color="#413014">회원가입</LinkSpan>
         </Link>
       </LoginFormFlexContainer>
       <KakaoLoginButton onClick={handleKakaoLogin}>
         <LoginFormFlexContainer col="center">
           <KakaoIconImage src={KakaoIcon} />
-          <KakaoLoginText>카카오 계정으로 로그인하기</KakaoLoginText>
+          <LinkSpan color="#413014" fontWeight="700">
+            카카오 계정으로 로그인하기
+          </LinkSpan>
         </LoginFormFlexContainer>
       </KakaoLoginButton>
     </LoginFormFlexContainer>

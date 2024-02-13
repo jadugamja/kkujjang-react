@@ -18,9 +18,9 @@ const Find = () => {
   return (
     <>
       <ContentWrapper row="center" col="center">
-        <Header />
+        <Header type="big" />
         <NarrowContent>
-          <Main type="big">
+          <Main>
             <FindidForm />
             {/* <FindpwForm /> */}
             {/* {type === "id" && <FindidForm />} */}

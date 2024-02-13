@@ -11,14 +11,17 @@ const PlayingPlayerList = ({ playerList }) => {
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
       {playerList?.map((player) => (
         <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
+          <StyledBalloon>
+            <span>{/* 채팅 메시지 */}</span>
+          </StyledBalloon>
           <Player
             type="play"
             avatarUrl={avatarUrl}
             nickname={player.nickname}
             level={player.level}
           />
-          <TurnScore />
-          <TotalScore>00000</TotalScore>
+          {player.myTurn && <TurnScore />}
+          <TotalScore>{String(player.totalScore).padStart(5, "0")}</TotalScore>
         </PlayerWrapper>
       ))}
     </GridBox>
@@ -40,7 +43,7 @@ const PlayerWrapper = styled(FlexBox)`
   transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
 `;
 
-const Balloon = styled.div`
+const StyledBalloon = styled.div`
   position: absolute;
   top: -29px;
   width: 133px;

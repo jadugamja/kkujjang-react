@@ -75,18 +75,22 @@ const AvatarCanvas = ({ item, avatar, setAvatarImage }) => {
       canvas.height = avatarImg.height / 1.5 + 40;
       ctx.drawImage(avatarImg, 10, 20, canvas.width - 20, canvas.height - 40);
 
-      accessoryImg.onload = () => {
-        const position = getPosition(item, canvas.width, canvas.height);
-        ctx.drawImage(
-          accessoryImg,
-          position.left + 10,
-          position.top + 20,
-          accessoryImg.width,
-          accessoryImg.height
-        );
+      if (getAccessoryImg(item)) {
+        accessoryImg.onload = () => {
+          const position = getPosition(item, canvas.width, canvas.height);
+          ctx.drawImage(
+            accessoryImg,
+            position.left + 10,
+            position.top + 20,
+            accessoryImg.width,
+            accessoryImg.height
+          );
+          setAvatarImage(canvas.toDataURL());
+        };
+        accessoryImg.src = getAccessoryImg(item);
+      } else {
         setAvatarImage(canvas.toDataURL());
-      };
-      accessoryImg.src = getAccessoryImg(item);
+      }
     };
     avatarImg.src = avatar;
   }, [item, avatar]);

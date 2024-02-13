@@ -61,20 +61,11 @@ const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
 }))`
   position: fixed;
   top: 0;
-  width: inherit;
+  width: ${({ type }) => (type === "detail" ? "75rem" : "inherit")};
   height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
   background-color: ${({ color }) => color};
   box-shadow: ${({ shadow }) => shadow};
   z-index: 3;
-`;
-
-// 로고 이미지
-const LogoImg = styled.img`
-  ${({ type }) => setLogoSize(type)}
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 // 로고 이미지 사이즈 조정
@@ -86,6 +77,24 @@ const setLogoSize = (type) => {
       return ` width: 4rem; `;
   }
 };
+
+// const setHeaderSize = (type) => {
+//   switch (type) {
+//     case "detail":
+//       return {
+//         width:
+//       }
+//   }
+// }
+
+// 로고 이미지
+const LogoImg = styled.img`
+  ${({ type }) => setLogoSize(type)};
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 const ButtonWrapper = styled(FlexBox)``;
 

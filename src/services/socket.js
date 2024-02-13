@@ -1,7 +1,7 @@
 import io from "socket.io-client";
+import { BASE_URL } from "./const";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
-const client = io(SOCKET_URL);
+const client = io(BASE_URL);
 
 export const initSocket = () => {
   client.on("connect", () => {

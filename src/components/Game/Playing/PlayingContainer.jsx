@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
-import { playingPlayerListState } from "@/recoil/userState";
+import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
 import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
 import TitleBar from "../Shared/TitleBar";
 import Chat from "../Shared/Chat";
@@ -10,6 +10,7 @@ import WordInput from "./WordInput";
 import PlayingPlayerList from "./PlayingPlayerList";
 
 const PlayingContainer = ({ roomInfo }) => {
+  const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const prevRoundScoreRef = useRef();
 
@@ -22,7 +23,7 @@ const PlayingContainer = ({ roomInfo }) => {
         level: 3,
         myTurn: false,
         roundScore: [],
-        totalRoundScore: 0,
+        totalScore: 0,
         isDefeated: false
       },
       {
@@ -31,7 +32,7 @@ const PlayingContainer = ({ roomInfo }) => {
         level: 2,
         myTurn: false,
         roundScore: [],
-        totalRoundScore: 0,
+        totalScore: 0,
         isDefeated: false
       },
       {
@@ -40,7 +41,7 @@ const PlayingContainer = ({ roomInfo }) => {
         level: 1,
         myTurn: false,
         roundScore: [],
-        totalRoundScore: 0,
+        totalScore: 0,
         isDefeated: false
       },
       {
@@ -49,7 +50,7 @@ const PlayingContainer = ({ roomInfo }) => {
         level: 2,
         myTurn: false,
         roundScore: [],
-        totalRoundScore: 0,
+        totalScore: 0,
         isDefeated: false
       },
       {
@@ -58,7 +59,7 @@ const PlayingContainer = ({ roomInfo }) => {
         level: 3,
         myTurn: false,
         roundScore: [],
-        totalRoundScore: 0,
+        totalScore: 0,
         isDefeated: false
       }
     ];
@@ -69,6 +70,11 @@ const PlayingContainer = ({ roomInfo }) => {
     });
     setPlayerList(players);
   }, []);
+
+  useEffect(() => {
+    debugger;
+    setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
+  }, [player]);
 
   useEffect(() => {
     if (!prevRoundScoreRef.current) {
@@ -98,6 +104,7 @@ const PlayingContainer = ({ roomInfo }) => {
       return player;
     });
 
+    setPlayer(changedTurnPlayerList[nextPlayerIndex]);
     setPlayerList(changedTurnPlayerList);
   };
 

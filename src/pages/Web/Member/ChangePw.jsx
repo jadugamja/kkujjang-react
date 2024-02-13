@@ -11,7 +11,7 @@ const ChangePw = () => {
   return (
     <>
       <ContentWrapper row="center" col="center">
-        <Header />
+        <Header type="big" />
         <NarrowContent>
           <Main type="big">
             <ChangepwForm />

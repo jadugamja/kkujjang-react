@@ -13,12 +13,12 @@ import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const SignupFormContainer = styled(FlexBox)`
-  width: ${(props) => props.width || "40.75rem"};
+  width: 100%;
   height: ${(props) => props.height || "fit-content"};
 `;
 
 const SignupInputFieldWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "40.75rem"};
+  flex-grow: ${(props) => props.flexGrow};
   height: ${(props) => props.height || "fit-content"};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
@@ -27,8 +27,8 @@ const SignupInputFieldWrapper = styled(FlexBox)`
 `;
 
 export const DuplicationButton = styled.button`
-  width: ${(props) => props.width || "8.5rem"};
-  height: ${(props) => props.width || "4.3rem"};
+  width: ${(props) => props.width || "8.3rem"};
+  height: ${(props) => props.width || "3.8rem"};
   font-size: ${({ theme }) => theme.fontSize.xxs};
   font-weight: 700;
   background-color: transparent;
@@ -146,9 +146,9 @@ const SignupForm = () => {
       <SignupFormContainer dir="col">
         <FormTitle type="signup" />
         {/* {아이디 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="15px">
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <SignupInputFieldWrapper row="between" col="end">
-            <SignupInputFieldWrapper width="29.75rem" dir="col">
+            <SignupInputFieldWrapper flexGrow="0.75" dir="col">
               <InputField
                 hasLabel={true}
                 name="id"
@@ -162,7 +162,7 @@ const SignupForm = () => {
           {idError && <ValidationMessage message={idError} />}
         </SignupInputFieldWrapper>
         {/* {비밀번호 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="15px">
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <InputField
             hasLabel={true}
             name="password"
@@ -172,7 +172,7 @@ const SignupForm = () => {
           {pwError && <ValidationMessage message={pwError} />}
         </SignupInputFieldWrapper>
         {/* 비밀번호 확인 input field */}
-        <SignupInputFieldWrapper dir="col" marginBottom="15px">
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <InputField
             hasLabel={true}
             name="confirmPassword"
@@ -182,11 +182,11 @@ const SignupForm = () => {
           {confirmPwError && <ValidationMessage message={confirmPwError} />}
         </SignupInputFieldWrapper>
         {/* 전화번호 인증 */}
-        <SignupInputFieldWrapper dir="col" marginBottom="15px">
-          <PhoneNumberAuth />
-        </SignupInputFieldWrapper>
+        <PhoneNumberAuth />
         {/* 회원가입 button */}
-        <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
+        <SignupInputFieldWrapper marginTop="15px">
+          <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
+        </SignupInputFieldWrapper>
       </SignupFormContainer>
     </>
   );

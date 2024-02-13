@@ -23,14 +23,18 @@ const NoticeManagement = () => {
   const [detailData, setDetailData] = useState({});
 
   const onDetailOpen = async (id) => {
-
-    const data = await getNoticeDetail(id)
-    if (data) {
-      setIsEditMode(false);
-      setDetailData(data);
-      setIsActiveSideContentType(1);
-      setItemId(id);
+    try {
+      const data = await getNoticeDetail(id);
+      if (data) {
+        setIsEditMode(false);
+        setDetailData(data);
+        setIsActiveSideContentType(1);
+        setItemId(id);
+      }
+    } catch (err) {
+      console.error(`[Error]: ${err}`);
     }
+
     // 임시 데이터
     const detail = {
       id: id,
@@ -44,13 +48,13 @@ const NoticeManagement = () => {
     setDetailData(detail);
     setIsActiveSideContentType(1);
     setItemId(id);
-
   };
 
   const onCreateOpen = () => {
     setIsActiveSideContentType(2);
   };
 
+  // ?? 검토 必
   useEffect(() => {
     if (itemId !== null) {
       // 문의 스레드 상세 조회 api 호출 (inquirys/:id)

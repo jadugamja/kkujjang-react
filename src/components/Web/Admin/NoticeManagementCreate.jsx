@@ -129,17 +129,13 @@ const NoticeManagementCreate = () => {
     formData.append("content", content);
     formData.append("files", images);
 
-    // images.forEach((image, idx) => {
-    //   formData.append(`file[${idx}]`, image);
-    // });
-
-    if ((await postNotice(formData)) === "success") {
-      // let notice = {};
-      // for (let [key, value] of formData) {
-      //   notice[key] = value;
-      // }
-      // setNotice(notice);
-      // NoticeManagementCreate 닫기
+    try {
+      const data = await postNotice(formData);
+      if (data === "success") {
+        // NoticeManagementCreate 닫고 + NoticeManagementList 업데이트
+      }
+    } catch (e) {
+      console.error(`[Error]: ${err}`);
     }
   };
 

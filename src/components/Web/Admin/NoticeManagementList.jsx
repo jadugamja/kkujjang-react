@@ -18,13 +18,17 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
 
   useEffect(() => {
     const getNoticeListHandler = async () => {
-      const data = await getNoticeList(currPage);
-      if (data.list.length === 0) {
-        setLastPageIdx(data.lastPage);
-        setListData([]);
-      } else {
-        setLastPageIdx(data.lastPage);
-        setListData(data.list);
+      try {
+        const data = await getNoticeList(currPage);
+        if (data.list.length === 0) {
+          setLastPageIdx(data.lastPage);
+          setListData([]);
+        } else {
+          setLastPageIdx(data.lastPage);
+          setListData(data.list);
+        }
+      } catch (err) {
+        console.error(`[Error]: ${err}`);
       }
     };
     getNoticeListHandler();
@@ -102,15 +106,18 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
-    // 공지사항 목록 조회 api 호출
     const getNoticeSearchHandler = async () => {
-      const data = await getNoticeSearch(currPage, searchKeyword);
-      if (data.list.length === 0) {
-        setLastPageIdx(data.lastPage);
-        setListData([]);
-      } else {
-        setLastPageIdx(data.lastPage);
-        setListData(data.list);
+      try {
+        const data = await getNoticeSearch(currPage, searchKeyword);
+        if (data.list.length === 0) {
+          setLastPageIdx(data.lastPage);
+          setListData([]);
+        } else {
+          setLastPageIdx(data.lastPage);
+          setListData(data.list);
+        }
+      } catch (err) {
+        console.error(`[Error]: ${err}`);
       }
     };
     getNoticeSearchHandler();

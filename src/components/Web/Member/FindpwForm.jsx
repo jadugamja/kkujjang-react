@@ -69,17 +69,26 @@ const FindpwForm = () => {
   return (
     <>
       {authModalOpen && (
-        <WebModal hasButton={true} message="인증번호가 일치하지 않습니다." />
+        <WebModal
+          setIsOpen={setAuthModalOpen}
+          hasButton={true}
+          message="인증번호가 일치하지 않습니다."
+        />
       )}
       {changePwModalOpen && (
         <WebModal
+          setIsOpen={setChangePwModalOpen}
           hasButton={true}
           isMoving={true}
           message="아이디가 조회되었습니다. 비밀번호를 변경하시겠습니까?"
         />
       )}
       {findidModalOpen && (
-        <WebModal hasButton={true} message="아이디가 존재하지 않습니다." />
+        <WebModal
+          setIsOpen={setFindidModalOpen}
+          hasButton={true}
+          message="아이디가 존재하지 않습니다."
+        />
       )}
       <FindpwFormFlexContainer dir="col">
         <FormTitle type="findpw" marginTop="0px" marginBottom="0px"></FormTitle>

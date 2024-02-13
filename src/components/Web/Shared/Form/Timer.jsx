@@ -38,6 +38,8 @@ const TimerText = styled.span`
   position: relative;
   right: 61px;
   color: red;
+  font-size: 19px;
+  font-weight: 500;
 `;
 
 export default Timer;

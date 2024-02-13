@@ -11,14 +11,11 @@ import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 
 // ===== style ======
 const ChangepwFormFlexContainer = styled(FlexBox)`
-  width: ${(props) => props.width || "40.75rem"};
   height: ${(props) => props.height || "fit-content"};
 `;
 
 const ChangepwFormContainer = styled.div`
-  width: ${(props) => props.width || "40.75rem"};
   height: ${(props) => props.height || "fit-content"};
-
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
   margin-left: ${(props) => props.marginLeft || null};
@@ -81,7 +78,7 @@ const ChangepwForm = () => {
     <ChangepwFormFlexContainer dir="col">
       <FormTitle type="changepw" marginTop="0px" marginBottom="0px"></FormTitle>
       <ChangepwText>새로운 비밀번호를 입력해 주세요.</ChangepwText>
-      <ChangepwFormContainer marginBottom="7px">
+      <ChangepwFormContainer marginBottom="24px">
         <InputField
           name="password"
           inputRef={passwordRef}
@@ -89,7 +86,7 @@ const ChangepwForm = () => {
         />
         {pwError && <ValidationMessage message={pwError} />}
       </ChangepwFormContainer>
-      <ChangepwFormContainer marginBottom="15px">
+      <ChangepwFormContainer marginBottom="24px">
         <InputField
           name="confirmPassword"
           inputRef={confirmPasswordRef}
@@ -97,7 +94,9 @@ const ChangepwForm = () => {
         />
         {confirmPwError && <ValidationMessage message={confirmPwError} />}
       </ChangepwFormContainer>
-      <Button type="bigBrown" message="변경하기" onClick={handleChange} />
+      <ChangepwFormContainer marginTop="10px">
+        <Button type="bigBrown" message="변경하기" onClick={handleChange} />
+      </ChangepwFormContainer>
     </ChangepwFormFlexContainer>
   );
 };

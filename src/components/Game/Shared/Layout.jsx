@@ -11,7 +11,18 @@ export const MainContentWrapper = styled(FlexBox)`
   flex-grow: 1;
 `;
 
-export const Wrapper = styled(FlexBox)``;
+export const Wrapper = styled(FlexBox)`
+  position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  bottom: ${({ bottom }) => bottom};
+  left: ${({ left }) => left};
+  right: ${({ right }) => right};
+  max-width: ${({ maxWidth }) => maxWidth};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  margin: ${({ margin }) => margin};
+  padding: ${({ padding }) => padding};
+`;
 
 export const SpacingWrapper = styled(FlexBox)`
   & > * + * {

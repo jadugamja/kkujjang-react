@@ -3,7 +3,7 @@ import { FlexBox } from "@/styles/FlexStyle";
 
 // 입력칸의 제목 역할
 export const Label = styled.label`
-  font-size: ${({ theme }) => theme.fontSize.xxs};
+  font-size: 19px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.gray600};
 `;
@@ -17,13 +17,13 @@ export const Input = styled.input.attrs((props) => ({
     (type === "text" || type === "password" || type === "email") &&
     `
     width: 100%;
-    height: 4.3rem;
+    height: 3.8rem;
     margin-top: 8px;
     padding: 10px 18px;
     background-color: #fff;
     border: 1px solid #ccc;
     color: ${theme.colors.text.sub};
-    font-size: ${theme.fontSize.s};
-    font-weight: 500;
+    font-size: 19px;
+    font-weight: 400;
   `}
 `;

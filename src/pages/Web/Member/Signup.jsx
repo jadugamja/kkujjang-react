@@ -11,9 +11,9 @@ const Signup = () => {
   return (
     <>
       <ContentWrapper row="center" col="center">
-        <Header />
+        <Header type="big" />
         <NarrowContent>
-          <Main>
+          <Main row="center">
             <SignupForm />
           </Main>
         </NarrowContent>

@@ -13,32 +13,17 @@ const TimerBar = ({ type, totalTime }) => {
   const [startTime, setStartTime] = useState(Date.now());
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
-  // const leftTimeRef = useRef(leftTime);
-  // leftTimeRef.current = leftTime;
-
-  const getBgColor = (type, name) => {
-    switch (type) {
-      case "turn":
-        return name === "outer" ? "#70712d" : "#E6E846";
-      case "round":
-        return name === "outer" ? "#223c6c" : "#3573E4";
-    }
-  };
-
   useEffect(() => {
     if (type === "turn") setThisTurnLeftTime(totalTime);
     else if (type === "round") setThisRoundLeftTime(totalTime);
   }, []);
 
-  // setTimeOut 이용
   // useEffect(() => {
-  //   if (timeLeft > 0) {
-  //     const timerId = setTimeout(() => {
-  //       setTimeLeft(timeLeft - 0.01);
-  //     }, 10);
-  //     return () => clearTimeout(timerId);
+  //   if (leftTime <= 0) {
+  //     if (type === "turn") setThisTurnLeftTime(leftTime);
+  //     else if (type === "round") setThisRoundLeftTime(leftTime);
   //   }
-  // }, [timeLeft]);
+  // }, [leftTime])
 
   useEffect(() => {
     const frame = () => {
@@ -66,6 +51,15 @@ const TimerBar = ({ type, totalTime }) => {
 
     return () => cancelAnimationFrame(frame);
   }, [startTime, lastUpdate, totalTime]);
+
+  const getBgColor = (type, name) => {
+    switch (type) {
+      case "turn":
+        return name === "outer" ? "#70712d" : "#E6E846";
+      case "round":
+        return name === "outer" ? "#223c6c" : "#3573E4";
+    }
+  };
 
   const width = leftTime > 0 ? (leftTime / totalTime) * 100 : 0;
   const sec = Math.round(leftTime, 0.1);

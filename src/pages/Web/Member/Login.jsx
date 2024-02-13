@@ -11,7 +11,7 @@ const Login = () => {
   return (
     <>
       <ContentWrapper row="center" col="center">
-        <Header />
+        <Header type="big" />
         <NarrowContent>
           <Main>
             <LoginForm />

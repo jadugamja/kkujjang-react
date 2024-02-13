@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -6,9 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import FlexBox from "@/styles/FlexStyle";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
-
-import { useSetRecoilState } from "recoil";
-// import { noticeArticleState } from "../../../recoil/testState.test";
+import { postNotice } from "@/services/api";
 
 const MAX_IMAGE_COUNT = 3;
 
@@ -18,8 +17,6 @@ const NoticeManagementCreate = () => {
   const [images, setImages] = useState([]);
 
   const editorRef = useRef(null);
-
-  const setNotice = useSetRecoilState(noticeArticleState);
 
   // 텍스트 에디터 옵션
   const modules = {
@@ -31,27 +28,6 @@ const NoticeManagementCreate = () => {
       [{ align: [] }, { color: [] }, { background: [] }], // dropdown with defaults from theme
       ["clean"]
     ]
-  };
-
-  const sendNoticeForm = (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    // formData.append("file", images);
-    images.forEach((image, idx) => {
-      formData.append(`file[${idx}]`, image);
-    });
-
-    debugger;
-    // 공지사항 등록 api 호출 (notice)
-
-    let notice = {};
-    for (let [key, value] of formData) {
-      notice[key] = value;
-    }
-    setNotice(notice);
   };
 
   useEffect(() => {
@@ -145,6 +121,24 @@ const NoticeManagementCreate = () => {
     }
   }, [content]);
 
+  const noticeSubmitHandler = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("files", images);
+
+    try {
+      const data = await postNotice(formData);
+      if (data === "success") {
+        // NoticeManagementCreate 닫고 + NoticeManagementList 업데이트
+      }
+    } catch (e) {
+      console.error(`[Error]: ${err}`);
+    }
+  };
+
   return (
     <NoticeCreateForm>
       <TitleInput
@@ -174,7 +168,7 @@ const NoticeManagementCreate = () => {
         />
       </EditorWrapper>
       <ButtonWrapper row="end">
-        <SaveButton width="7rem" onClick={(e) => sendNoticeForm(e)}>
+        <SaveButton width="7rem" onClick={(e) => noticeSubmitHandler(e)}>
           저장
         </SaveButton>
       </ButtonWrapper>

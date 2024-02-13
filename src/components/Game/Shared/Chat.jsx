@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import {
   initialCharacterState,
   thisTurnLeftTimeState,
-  myTurnState
+  myTurnPlayerIndexState
 } from "@/recoil/gameState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
@@ -18,7 +18,7 @@ import ChatItem from "./ChatItem";
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
-  const [myTurn, setMyTurn] = useRecoilState(myTurnState);
+  const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const [toMessage, setToMessage] = useState("");

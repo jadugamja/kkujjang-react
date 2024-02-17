@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
 
 // ===== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -34,6 +34,9 @@ const WithdrawalForm = () => {
   // === state ===
   const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false); // 회원 탈퇴 modal state, 유효성 검사 실패 및 회원 탈퇴 실패 시, 회원 탈퇴 실패 modal 출력
 
+  // === navigate ===
+  const navigate = useNavigate();
+
   // 회원 탈퇴
   const handleWithdrawal = () => {
     const id = idRef.current.value;
@@ -45,13 +48,22 @@ const WithdrawalForm = () => {
     if (!idRegex.test(id) || !pwRegex.test(password)) {
       setWithdrawalModalOpen(true);
     } else {
-      setWithdrawalModalOpen(false);
       // 회원 탈퇴 API 코드
+
+      // 프론트엔드 테스트를 위한 백엔드 임시 코드
+      const result = true;
+      if (!result) {
+        setWithdrawalModalOpen(true);
+      } else {
+        // 홈으로 이동
+        navigate(`/`);
+      }
     }
   };
 
   return (
     <>
+      {/* 탈퇴 실패 Modal */}
       {withdrawalModalOpen && (
         <WebModal
           setIsOpen={setWithdrawalModalOpen}
@@ -59,20 +71,25 @@ const WithdrawalForm = () => {
           message="회원 정보를 확인해 주세요."
         />
       )}
+
       <WithdrawalFormFlexContainer dir="col">
         <FormTitle type="withdrawal" />
+
+        {/* 아이디 input */}
         <WithdrawalFormContainer marginBottom="7px">
           <InputField name="id" inputRef={idRef} />
         </WithdrawalFormContainer>
+
+        {/* 비밀번호 input */}
         <WithdrawalFormContainer marginBottom="15px">
           <InputField name="password" inputRef={passwordRef} />
         </WithdrawalFormContainer>
+
+        {/* 탈퇴하기 button */}
         <Button type="bigBrown" message="탈퇴하기" onClick={handleWithdrawal} />
       </WithdrawalFormFlexContainer>
     </>
   );
 };
-
-WithdrawalForm.propTypes = {};
 
 export default WithdrawalForm;

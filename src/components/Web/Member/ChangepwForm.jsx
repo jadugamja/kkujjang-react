@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
 
 // ===== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -38,7 +38,9 @@ const ChangepwForm = () => {
   // === state ===
   const [pwError, setPwError] = useState(""); // pw validton error state
   const [confirmPwError, setConfirmPwError] = useState(""); // confirm pw validton error state
-  const [isSucess, setIsSucess] = useState(false); // validton test state
+
+  // === navigate ===
+  const navigate = useNavigate();
 
   // 비밀번호 유효성 검사
   const handlePasswordValidation = () => {
@@ -70,6 +72,15 @@ const ChangepwForm = () => {
       setPwError("");
       setConfirmPwError("");
       // 비밀번호 변경 API 호출
+
+      // 프론트엔드 테스트를 위한 백엔드 임시 코드
+      const result = true;
+      if (!result) {
+        alert("비밀번호 변경에 실패했습니다.");
+      } else {
+        // 로그인 페이지로 이동
+        navigate(`/member/login`);
+      }
     } else {
     }
   };
@@ -77,6 +88,8 @@ const ChangepwForm = () => {
   return (
     <ChangepwFormFlexContainer dir="col">
       <FormTitle type="changepw" marginTop="0px" marginBottom="0px"></FormTitle>
+
+      {/* 비밀번호 input field */}
       <ChangepwText>새로운 비밀번호를 입력해 주세요.</ChangepwText>
       <ChangepwFormContainer marginBottom="24px">
         <InputField
@@ -86,6 +99,8 @@ const ChangepwForm = () => {
         />
         {pwError && <ValidationMessage message={pwError} />}
       </ChangepwFormContainer>
+
+      {/* 비밀번호 확인 input field */}
       <ChangepwFormContainer marginBottom="24px">
         <InputField
           name="confirmPassword"
@@ -94,13 +109,13 @@ const ChangepwForm = () => {
         />
         {confirmPwError && <ValidationMessage message={confirmPwError} />}
       </ChangepwFormContainer>
+
+      {/* 비밀번호 변경 button */}
       <ChangepwFormContainer marginTop="10px">
         <Button type="bigBrown" message="변경하기" onClick={handleChange} />
       </ChangepwFormContainer>
     </ChangepwFormFlexContainer>
   );
 };
-
-ChangepwForm.propTypes = {};
 
 export default ChangepwForm;

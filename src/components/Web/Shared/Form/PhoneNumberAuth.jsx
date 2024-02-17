@@ -10,11 +10,17 @@ import {
   Seperator,
   SmallTransparentButton
 } from "./PhoneNumberStyle";
+import ValidationMessage from "./ValidationMessage";
+import WebModal from "../Modal/WebModal";
 
 const PhoneNumberAuth = ({}) => {
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
+  const [validMessage, setValidMessage] = useState("");
   const [isSentPhoneNumber, setIsSentPhoneNumber] = useState(false); // 전화번호 발송 여부
   const [initialTime, setInitialTime] = useState(null); // 타이머 유효 시작 시간
   const [timeOut, setTimeOut] = useState(false); // 인증 번호 유효시간 만료 여부
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   // 전화 번호
   const numbersRef = Array(3)
@@ -55,15 +61,17 @@ const PhoneNumberAuth = ({}) => {
 
     const regex = /^010-\d{4}-\d{4}$/;
     if (!regex.test(phoneNumber)) {
-      // 임시 경고
-      alert("전화번호는 010으로 시작하고, 총 11자의 숫자여야 합니다.");
+      setIsValidPhoneNumber(false);
+      setValidMessage("010으로 시작하는 총 11자의 숫자를 입력하세요.");
       return;
     }
 
     // SMS API 호출 코드
 
     // res.ok 시 호출
+    setIsValidPhoneNumber(true);
     setIsSentPhoneNumber(true);
+    setValidMessage("인증번호가 발송되었습니다.");
     setInitialTime(180);
   };
 
@@ -76,9 +84,16 @@ const PhoneNumberAuth = ({}) => {
     // 인증 번호 유효 시간 초과
     if (timeOut) {
       // 임시 경고
-      alert("인증 시간이 만료되었습니다.");
+      setIsModalOpen(true);
+      setModalMessage("인증 번호가 만료되었습니다.");
       return;
     }
+
+    // 인증 번호 검증 실패
+    setIsModalOpen(true);
+    setModalMessage("인증 번호가 일치하지 않습니다.");
+
+    // 인증 번호 검증 완료 처리
   };
 
   const handleTimeOut = () => {
@@ -102,6 +117,17 @@ const PhoneNumberAuth = ({}) => {
               인증 요청
             </SmallTransparentButton>
           </ItemWrapper>
+          {!isValidPhoneNumber ? (
+            <ValidationMessage message={validMessage} fontWeight="400" />
+          ) : (
+            isSentPhoneNumber && (
+              <ValidationMessage
+                message={validMessage}
+                fontWeight="400"
+                color="#686868"
+              />
+            )
+          )}
         </Label>
       </ItemWrapper>
       {isSentPhoneNumber && (
@@ -122,6 +148,13 @@ const PhoneNumberAuth = ({}) => {
             </ItemWrapper>
           </Label>
         </ItemWrapper>
+      )}
+      {isModalOpen && (
+        <WebModal
+          setIsOpen={setIsModalOpen}
+          message="인증번호가 일치하지 않습니다."
+          hasButton={true}
+        />
       )}
     </ItemWrapper>
   );

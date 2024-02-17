@@ -111,7 +111,7 @@ const FindidForm = () => {
         />
       )}
       <FindidFormFlexContainer dir="col">
-        <FormTitle type="findid" marginTop="0px" marginBottom="0px"></FormTitle>
+        <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
         {!hasUserInfo ? (
           <>
             <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>

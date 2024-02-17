@@ -26,13 +26,19 @@ export const avatarUrlState = selector({
 });
 
 // userState -> isActive(활성화 여부)만 추출
-export const isActiveAccountState = selector({
+export const isActiveAccountState = atom({
   key: "isActiveAccountState",
-  get: ({ get }) => {
-    const user = get(userState);
-    return user.isActive;
-  }
+  default: true
 });
+
+// read-only
+// export const isActiveAccountState = selector({
+//   key: "isActiveAccountState",
+//   get: ({ get }) => {
+//     const user = get(userState);
+//     return user.isActive;
+//   }
+// });
 
 // 대기실 플레이어들의 상태 목록
 export const waitingPlayerListState = atom({

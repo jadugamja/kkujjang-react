@@ -35,7 +35,7 @@ const GameRoom = () => {
       roundCount: 5,
       roundTime: 90,
       hostUserName: "abcd1234",
-      isPlaying: true
+      isPlaying: false
     };
 
     // 1. roomInfo 전체를 state에 저장

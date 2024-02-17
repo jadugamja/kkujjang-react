@@ -7,6 +7,7 @@ export const ValidationMessageWrapper = styled.div`
 
 export const ValidationMessageP = styled.p`
   font-size: ${({ fontSize }) => fontSize || "16px"};
-  color: ${({ theme }) => theme.colors.error};
-  margin: 0;
+  font-weight: ${({ fontWeight }) => fontWeight};
+  color: ${({ color, theme }) => (color ? color : theme.colors.error)};
+  margin: 0 3px;
 `;

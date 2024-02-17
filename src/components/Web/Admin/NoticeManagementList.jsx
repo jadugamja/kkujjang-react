@@ -8,7 +8,8 @@ import Button from "../Shared/Buttons/Button";
 import SearchBar from "../Shared/Board/SearchBar";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
-import { getNoticeList, getNoticeSearch } from "../../../services/api";
+import { getNoticeList, getNoticeSearch } from "@/services/api";
+import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);

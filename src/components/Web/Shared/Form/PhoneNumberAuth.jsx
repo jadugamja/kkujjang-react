@@ -21,6 +21,7 @@ const PhoneNumberAuth = ({}) => {
   const [timeOut, setTimeOut] = useState(false); // 인증 번호 유효시간 만료 여부
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
 
   // 전화 번호
   const numbersRef = Array(3)
@@ -78,8 +79,24 @@ const PhoneNumberAuth = ({}) => {
   // 인증 번호 전달
   const sendVerification = () => {
     const verification = verificationRef.current.value;
+    const regex = /^\d{4}$/;
 
-    // 인증 번호 검증 API 호출 코드
+    if (!regex.test(verification)) {
+      setIsModalOpen(true);
+      setModalMessage("인증 번호가 일치하지 않습니다.");
+    } else {
+      // 인증 번호 검증 API 호출 코드
+
+      // 프론트엔드 테스트를 위한 백엔드 임시 코드
+      const result = true;
+      if (!result) {
+        setIsModalOpen(true);
+        setModalMessage("인증 번호가 일치하지 않습니다.");
+      } else {
+        setVerificationSuccess(true);
+        // 결과 넘겨주기
+      }
+    }
 
     // 인증 번호 유효 시간 초과
     if (timeOut) {
@@ -88,12 +105,6 @@ const PhoneNumberAuth = ({}) => {
       setModalMessage("인증 번호가 만료되었습니다.");
       return;
     }
-
-    // 인증 번호 검증 실패
-    setIsModalOpen(true);
-    setModalMessage("인증 번호가 일치하지 않습니다.");
-
-    // 인증 번호 검증 완료 처리
   };
 
   const handleTimeOut = () => {

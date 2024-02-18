@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
 
 // ===== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -63,39 +62,37 @@ const FindidForm = () => {
   const handlePhoneNumberAuth = () => {
     // 인증번호 검증 API 코드
 
-    const result = "success";
+    const result = true;
 
-    if (result === "success") {
+    if (!result) {
+      // 경고 모달 출력
+      setAuthModalOpen(true);
+    } else {
       setIsAuthMath(true);
       // 성공 시, 아이디 조회
       // 아이디 조회 함수 호출
       handleFindid();
-    } else {
-      // 경고 모달 출력
-      setAuthModalOpen(true);
     }
   };
 
   // 아이디 조회
   const handleFindid = () => {
-    // 유효성 검사 및 예외처리 코드
     // 아이디 조회 API 코드
+
+    // 프론트엔드 테스트를 위한 백엔드 임시 코드
     const result = "jephpp123";
 
-    // 조회 성공 시 (string 넘어오면)
-    if (result === "jephpp123") {
-      setHasUserInfo(true);
-      setUserId("jephpp123");
-    }
-    // 조회 실패 시
-    else {
-      // 모달 출력
+    if (!result) {
       setFindidModalOpen(true);
+    } else {
+      setHasUserInfo(true);
+      setUserId(result);
     }
   };
 
   return (
     <>
+      {/* 인증 실패 modal */}
       {authModalOpen && (
         <WebModal
           setIsOpen={setAuthModalOpen}
@@ -103,6 +100,8 @@ const FindidForm = () => {
           message="인증번호가 일치하지 않습니다."
         />
       )}
+
+      {/* 아이디 찾기 실패 modal */}
       {findidModalOpen && (
         <WebModal
           setIsOpen={setFindidModalOpen}
@@ -110,10 +109,12 @@ const FindidForm = () => {
           message="아이디가 존재하지 않습니다."
         />
       )}
+
       <FindidFormFlexContainer dir="col">
         <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
-        {!hasUserInfo ? (
+        {hasUserInfo ? (
           <>
+            {/* 아이디 찾기 성공 시, 결과 출력부 */}
             <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
             <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
               <IdLabel marginLeft="20px">아이디</IdLabel>
@@ -126,6 +127,7 @@ const FindidForm = () => {
           </>
         ) : (
           <>
+            {/* 전화번호 인증 */}
             <FindidText>
               회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
             </FindidText>
@@ -136,7 +138,5 @@ const FindidForm = () => {
     </>
   );
 };
-
-FindidForm.propTypes = {};
 
 export default FindidForm;

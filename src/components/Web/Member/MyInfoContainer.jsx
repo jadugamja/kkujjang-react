@@ -32,6 +32,7 @@ const InfoText = styled.p`
   margin-left: ${(props) => props.marginLeft || "0"};
 `;
 const InfoInput = styled.input`
+  width: ${(props) => props.width || "390px"};
   color: ${(props) => props.color || "#5C5447"};
   font-size: ${(props) => props.fontSize || "24px"};
   margin-left: ${(props) => props.marginLeft || "0"};
@@ -56,7 +57,7 @@ const Table = styled.table`
 const MyInfoContainer = () => {
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
-  const [nickname, setNickname] = useState("닉네임이랑께");
+  const [nickname, setNickname] = useState("닉네임이랑께"); // 백엔드 state
   const inputRef = useRef(null);
 
   // 프로필 조회 API 호출
@@ -68,11 +69,15 @@ const MyInfoContainer = () => {
 
   // 확인 버튼 눌렀을 때
   const handleClickSaveButton = () => {
+    const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
+
     if (nickname.trim() === "") {
       alert("닉네임을 입력해 주세요.");
-      return;
+    } else if (!ninknameRegex.test(nickname)) {
+      alert("닉네임을 확인해 주세요.");
+    } else {
+      setEditMode(false);
     }
-    setEditMode(false);
     // 회원 정보 수정 API 코드
   };
 
@@ -90,13 +95,15 @@ const MyInfoContainer = () => {
 
   return (
     <>
-      {/* 정보 출력 */}
       <InfoFlexBox>
+        {/* 아바타 img */}
         <InfoBox>
           <InfoImg src={Avartar} />
         </InfoBox>
+
         <Table marginLeft="80px">
           <tbody>
+            {/* 닉네임 출력부 */}
             <tr>
               <td>
                 <InfoText>닉네임</InfoText>
@@ -109,6 +116,7 @@ const MyInfoContainer = () => {
                       value={nickname}
                       onChange={handleInputChange}
                       ref={inputRef}
+                      placeholder="영어, 한글 1 ~ 15자 입력 가능합니다"
                       marginLeft="100px"
                     />
                   ) : (
@@ -119,6 +127,8 @@ const MyInfoContainer = () => {
                 </>
               </td>
             </tr>
+
+            {/* 레벨 출력부 */}
             <tr>
               <td>
                 <InfoText>레벨</InfoText>
@@ -129,6 +139,8 @@ const MyInfoContainer = () => {
                 </InfoText>
               </td>
             </tr>
+
+            {/* 승률 출력부 */}
             <tr>
               <td>
                 <InfoText>승률</InfoText>
@@ -142,13 +154,22 @@ const MyInfoContainer = () => {
           </tbody>
         </Table>
       </InfoFlexBox>
-      {/* 버튼 */}
       <InfoFlexBox col="center" row="between" width="1000px">
+        {/* Link 버튼 */}
         <Link to="/member/out">
           <InfoLinkButton>회원 탈퇴</InfoLinkButton>
         </Link>
+
+        {/* 버튼 */}
         {editMode ? (
-          <Button type="smallDark" message="확인" onClick={handleClickSaveButton} />
+          <>
+            {
+              <InfoFlexBox row="between" width="200px">
+                <Button type="smallDark" message="확인" onClick={handleClickSaveButton} />
+                <Button type="smallGray" message="취소" onClick={handleClickSaveButton} />
+              </InfoFlexBox>
+            }
+          </>
         ) : (
           <Button type="smallDark" message="수정" onClick={handleClickEditButton} />
         )}

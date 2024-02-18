@@ -8,7 +8,7 @@ import viewsIcon from "@/assets/images/views.png";
 
 // ===== style ======
 const BoardItemWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "68.75rem"};
+  width: ${(props) => props.width || "82rem"};
   height: ${(props) => props.height || "fit-content"};
   justify-content: space-between;
   align-items: center;
@@ -31,17 +31,17 @@ const FlexBoardText = styled(BoardItemText)`
 
 // ===== component ======
 // data: { id, title, createdAt, views, type, needAnswer, onClick }
-const BoardItem = ({ boardType, data }) => {
+const BoardItem = ({ boardType, data, onClick }) => {
   return (
-    <BoardItemWrapper>
+    <BoardItemWrapper onClick={onClick}>
       {boardType === "notice" && (
         <>
           <FlexBoardText basis={4}>{data.title}</FlexBoardText>
-          <BoardItemImage src={createdAtIcon}></BoardItemImage>
+          <BoardItemImage src={createdAtIcon} />
           <FlexBoardText color="#A7A7A7" fontSize="20px">
             {data.createdAt}
           </FlexBoardText>
-          <BoardItemImage src={viewsIcon}></BoardItemImage>
+          <BoardItemImage src={viewsIcon} />
           <FlexBoardText color="#A7A7A7" fontSize="20px">
             {data.views}
           </FlexBoardText>
@@ -61,7 +61,8 @@ const BoardItem = ({ boardType, data }) => {
 
 BoardItem.propTypes = {
   boardType: PropTypes.string,
-  data: PropTypes.object
+  data: PropTypes.object,
+  onClick: PropTypes.func
 };
 
 // title: PropTypes.string,

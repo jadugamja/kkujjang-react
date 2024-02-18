@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
 
 // ====== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -55,35 +55,46 @@ const SignupForm = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 알림 modal state
   const [signupModalOpen, setSignupModalOpen] = useState(false); // 회원 가입 실패 알림 modal state
 
+  // === navigate ===
+  const navigate = useNavigate();
+
   // 아이디 중복 확인
   const handleDuplicateId = () => {
-    // 아이디 중복확인 API 코드
-    const result = "success";
-
-    if (result === "success") {
-      alert("사용 가능한 아이디입니다");
+    // 아이디 유효성 검사 진행
+    if (idError) {
+      console.log("Fail");
     } else {
-      setDuplicationError("사용할 수 없는 아이디입니다");
-      setIdError("");
+      // 아이디 중복확인 API 코드 추가
+
+      // 프론트엔드 테스트를 위한 백엔드 임시 코드
+      const result = true;
+      if (!result) {
+        setDuplicationError("사용할 수 없는 아이디입니다.");
+        setIdError("");
+      } else {
+        alert("사용 가능한 아이디입니다");
+      }
     }
   };
 
+  // 인증번호 버튼 누르면 무조건 수락되게 하기
   // 인증번호 검증
   const handlePhoneNumberAuth = () => {
-    // 인증번호 검증 결과 받아오기
-    const result = "success";
+    // PhoneNumberAuth 로부터 인증번호 검증 결과 받아오기
 
-    if (result === "success") {
-      setIsAuthMath(true);
-    } else {
+    // 임시 결과 코드
+    const result = true;
+
+    if (!result) {
       setAuthModalOpen(true);
+    } else {
+      setIsAuthMath(true);
     }
   };
 
   // 아이디 유효성 검사
   const handleIdValidation = () => {
     const id = idRef.current.value;
-    console.log(id);
     const idRegex = /^[a-z0-9]{7,30}$/;
 
     if (!idRegex.test(id)) {
@@ -118,10 +129,20 @@ const SignupForm = () => {
     }
   };
 
+  // 통신 완료됐다는 걸 가정하고 회원가입 완료됐을 때 코드 작성
   // 회원가입
   const handleSignup = () => {
     if (!idError && !pwError && !confirmPwError && !duplicationError && isAuthMath) {
       // 회원가입 API 코드
+
+      // 프론트엔드 테스트를 위한 백엔드 임시 코드
+      const result = true;
+      if (!result) {
+        setSignupModalOpen(true);
+      } else {
+        // 로그인 페이지로 이동
+        navigate(`/member/login`);
+      }
     } else {
       setSignupModalOpen(true);
     }
@@ -129,6 +150,7 @@ const SignupForm = () => {
 
   return (
     <>
+      {/* 인증 실패 Modal */}
       {authModalOpen && (
         <WebModal
           setIsOpen={setAuthModalOpen}
@@ -136,6 +158,8 @@ const SignupForm = () => {
           message="인증번호가 일치하지 않습니다."
         />
       )}
+
+      {/* 회원가입 실패 Modal */}
       {signupModalOpen && (
         <WebModal
           setIsOpen={setSignupModalOpen}
@@ -143,8 +167,10 @@ const SignupForm = () => {
           message="회원 정보를 확인해 주세요."
         />
       )}
+
       <SignupFormContainer dir="col">
         <FormTitle type="signup" />
+
         {/* {아이디 input field} */}
         <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <SignupInputFieldWrapper row="between" col="end">
@@ -161,6 +187,7 @@ const SignupForm = () => {
           {duplicationError && <ValidationMessage message={duplicationError} />}
           {idError && <ValidationMessage message={idError} />}
         </SignupInputFieldWrapper>
+
         {/* {비밀번호 input field} */}
         <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <InputField
@@ -171,6 +198,7 @@ const SignupForm = () => {
           />
           {pwError && <ValidationMessage message={pwError} />}
         </SignupInputFieldWrapper>
+
         {/* 비밀번호 확인 input field */}
         <SignupInputFieldWrapper dir="col" marginBottom="24px">
           <InputField
@@ -181,8 +209,10 @@ const SignupForm = () => {
           />
           {confirmPwError && <ValidationMessage message={confirmPwError} />}
         </SignupInputFieldWrapper>
+
         {/* 전화번호 인증 */}
         <PhoneNumberAuth />
+
         {/* 회원가입 button */}
         <SignupInputFieldWrapper marginTop="15px">
           <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
@@ -192,6 +222,6 @@ const SignupForm = () => {
   );
 };
 
-SignupForm.propTypes = {};
+// SignupForm.propTypes = {};
 
 export default SignupForm;

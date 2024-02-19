@@ -34,6 +34,12 @@ export const ItemWrapper = styled(FlexBox)`
   margin-bottom: ${({ marginBottom }) => marginBottom || null};
 `;
 
+export const CheckImg = styled.img`
+  width: ${(props) => props.width || "24px"};
+  height: ${(props) => props.height || "24px"};
+  margin-right: ${(props) => props.marginTop || "3px"};
+`;
+
 // 작은 투명 버튼
 export const SmallTransparentButton = styled.button`
   width: ${({ type }) => (type === "verification" ? "6rem" : "8.3rem")};
@@ -47,6 +53,15 @@ export const SmallTransparentButton = styled.button`
   &:hover {
     background-color: #ffffff32;
   }
+`;
+
+export const SuccessBox = styled(FlexBox)`
+  width: ${(props) => props.width || "8.3rem"};
+  height: 3.8rem;
+  font-size: ${({ theme }) => theme.fontSize.xxs};
+  font-weight: 700;
+  background-color: #9f9f9f;
+  color: #ffffff;
 `;
 
 // ============ 전화번호 ============

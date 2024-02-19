@@ -54,8 +54,8 @@ const FindButton = styled.button`
 const FindidForm = () => {
   // === state ===
   const [hasUserInfo, setHasUserInfo] = useState(false); // 아이디 조회 state
-  const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
   const [userId, setUserId] = useState("jephpp123"); // 아이디 출력 state
+  const [isVerified, setIsVerified] = useState(false); // 검증 성공 여부 전달 state
   // (modal 관련)
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
@@ -64,18 +64,14 @@ const FindidForm = () => {
   const navigate = useNavigate();
 
   // 인증번호 검증
-  const handlePhoneNumberAuth = () => {
-    // 인증번호 검증 API 코드
+  const handlePhoneNumberAuth = (isVerified) => {
+    setIsVerified(isVerified);
 
-    const result = true;
-
-    if (!result) {
+    if (!isVerified) {
       // 경고 모달 출력
       setAuthModalOpen(true);
     } else {
-      setIsAuthMath(true);
-      // 성공 시, 아이디 조회
-      // 아이디 조회 함수 호출
+      // 성공 시, 아이디 조회 함수 호출
       handleFindid();
     }
   };
@@ -124,7 +120,7 @@ const FindidForm = () => {
 
       <FindidFormFlexContainer dir="col">
         <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
-        {!hasUserInfo ? (
+        {hasUserInfo ? (
           <>
             {/* 아이디 찾기 성공 시, 결과 출력부 */}
             <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
@@ -145,7 +141,7 @@ const FindidForm = () => {
             <FindidText>
               회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
             </FindidText>
-            <PhoneNumberAuth />
+            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
           </>
         )}
       </FindidFormFlexContainer>

@@ -50,10 +50,12 @@ const SignupForm = () => {
   const [confirmPwError, setConfirmPwError] = useState(""); // 비밀번호 일치 검사 에러 메시지 state
   const [duplicationError, setDuplicationError] = useState(""); // 아이디 중복 확인 에러 메시지 state
   // (인증번호 관련)
-  const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
+  const [isVerified, setIsVerified] = useState(false); // 검증 성공 여부 전달 state
+  const [isAuthMath, setIsAuthMath] = useState(false); // 검증 성공 여부 state
   // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 알림 modal state
   const [signupModalOpen, setSignupModalOpen] = useState(false); // 회원 가입 실패 알림 modal state
+  const [duplicationModalOpen, setDuplicationModalOpen] = useState(false); // 중복 확인 성공 modal state
 
   // === navigate ===
   const navigate = useNavigate();
@@ -72,20 +74,18 @@ const SignupForm = () => {
         setDuplicationError("사용할 수 없는 아이디입니다.");
         setIdError("");
       } else {
-        alert("사용 가능한 아이디입니다");
+        setDuplicationModalOpen(true);
+        // alert("사용 가능한 아이디입니다.");
       }
     }
   };
 
-  // 인증번호 버튼 누르면 무조건 수락되게 하기
   // 인증번호 검증
-  const handlePhoneNumberAuth = () => {
-    // PhoneNumberAuth 로부터 인증번호 검증 결과 받아오기
+  const handlePhoneNumberAuth = (isVerified) => {
+    setIsVerified(isVerified);
 
-    // 임시 결과 코드
-    const result = true;
-
-    if (!result) {
+    if (!isVerified) {
+      // 경고 모달 출력
       setAuthModalOpen(true);
     } else {
       setIsAuthMath(true);
@@ -168,6 +168,15 @@ const SignupForm = () => {
         />
       )}
 
+      {/* 중복 확인 Modal */}
+      {duplicationModalOpen && (
+        <WebModal
+          setIsOpen={setDuplicationModalOpen}
+          hasButton={true}
+          message="사용 가능한 아이디입니다."
+        />
+      )}
+
       <SignupFormContainer dir="col">
         <FormTitle type="signup" />
 
@@ -213,7 +222,7 @@ const SignupForm = () => {
         </SignupInputFieldWrapper>
 
         {/* 전화번호 인증 */}
-        <PhoneNumberAuth />
+        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
 
         {/* 회원가입 button */}
         <SignupInputFieldWrapper marginTop="15px">

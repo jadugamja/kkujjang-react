@@ -32,23 +32,20 @@ const FindpwForm = () => {
   const idRef = useRef(""); // 아이디
 
   // === state ===
-  const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
+  const [isVerified, setIsVerified] = useState(false); // 검증 성공 여부 전달 state
+  // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
   const [changePwModalOpen, setChangePwModalOpen] = useState(false); // 비밀번호 조회 성공 시 (회원 정보 존재 시) 출력되는 비밀번호 변경 modal state
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
 
   // 인증번호 검증
-  const handlePhoneNumberAuth = () => {
-    // 인증번호 검증 API 코드
+  const handlePhoneNumberAuth = (isVerified) => {
+    setIsVerified(isVerified);
 
-    // 프론트엔드 테스트를 위한 백엔드 임시 코드
-    const result = true;
-
-    if (!result) {
+    if (!isVerified) {
       // 경고 모달 출력
       setAuthModalOpen(true);
     } else {
-      setIsAuthMath(true);
       // 성공 시, 비밀번호 찾기 함수 호출
       handleFindpw();
     }
@@ -117,7 +114,7 @@ const FindpwForm = () => {
         </FindpwFormFlexContainer>
 
         {/* 전화번호 인증 */}
-        <PhoneNumberAuth></PhoneNumberAuth>
+        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
       </FindpwFormFlexContainer>
     </>
   );

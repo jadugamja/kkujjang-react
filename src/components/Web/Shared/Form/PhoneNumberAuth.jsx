@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 import Timer from "./Timer";
 import {
@@ -8,12 +9,15 @@ import {
   PhoneNumberInput,
   VerificationInput,
   Seperator,
-  SmallTransparentButton
+  SmallTransparentButton,
+  CheckImg,
+  SuccessBox
 } from "./PhoneNumberStyle";
 import ValidationMessage from "./ValidationMessage";
 import WebModal from "../Modal/WebModal";
+import CheckIcon from "@/assets/images/white-check.png";
 
-const PhoneNumberAuth = ({}) => {
+const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
   const [validMessage, setValidMessage] = useState("");
   const [isSentPhoneNumber, setIsSentPhoneNumber] = useState(false); // 전화번호 발송 여부
@@ -21,7 +25,7 @@ const PhoneNumberAuth = ({}) => {
   const [timeOut, setTimeOut] = useState(false); // 인증 번호 유효시간 만료 여부
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [verificationSuccess, setVerificationSuccess] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   // 전화 번호
   const numbersRef = Array(3)
@@ -80,8 +84,9 @@ const PhoneNumberAuth = ({}) => {
   const sendVerification = () => {
     const verification = verificationRef.current.value;
     const regex = /^\d{4}$/;
+    const isVerified = regex.test(verification);
 
-    if (!regex.test(verification)) {
+    if (!isVerified) {
       setIsModalOpen(true);
       setModalMessage("인증 번호가 일치하지 않습니다.");
     } else {
@@ -93,8 +98,9 @@ const PhoneNumberAuth = ({}) => {
         setIsModalOpen(true);
         setModalMessage("인증 번호가 일치하지 않습니다.");
       } else {
-        setVerificationSuccess(true);
-        // 결과 넘겨주기
+        setIsVerifying(true);
+        onVerificationResult(isVerified);
+        setValidMessage("");
       }
     }
 
@@ -124,9 +130,20 @@ const PhoneNumberAuth = ({}) => {
               <Seperator>-</Seperator>
               <PhoneNumberInput type="text" ref={numbersRef[2]} />
             </InputFieldsWrapper>
-            <SmallTransparentButton onClick={sendPhoneNumber}>
-              인증 요청
-            </SmallTransparentButton>
+            {isVerifying ? (
+              <>
+                <SuccessBox row="center">
+                  <ItemWrapper col="center">
+                    <CheckImg src={CheckIcon} />
+                    인증 완료
+                  </ItemWrapper>
+                </SuccessBox>
+              </>
+            ) : (
+              <SmallTransparentButton onClick={sendPhoneNumber}>
+                인증 요청
+              </SmallTransparentButton>
+            )}
           </ItemWrapper>
           {!isValidPhoneNumber ? (
             <ValidationMessage message={validMessage} fontWeight="400" />
@@ -141,25 +158,32 @@ const PhoneNumberAuth = ({}) => {
           )}
         </Label>
       </ItemWrapper>
-      {isSentPhoneNumber && (
-        <ItemWrapper marginBottom="24px">
-          <Label>
-            인증
-            <ItemWrapper row="start" col="center" marginTop="5px" onChange={handleChange}>
-              <VerificationInput
-                type="text"
-                width="verification"
-                ref={verificationRef}
-                placeholder="인증번호"
-              />
-              <Timer initialTime={initialTime} onTimeOut={handleTimeOut} />
-              <SmallTransparentButton type="verification" onClick={sendVerification}>
-                확인
-              </SmallTransparentButton>
-            </ItemWrapper>
-          </Label>
-        </ItemWrapper>
-      )}
+      <>
+        {!isVerifying && isSentPhoneNumber && (
+          <ItemWrapper marginBottom="24px">
+            <Label>
+              인증
+              <ItemWrapper
+                row="start"
+                col="center"
+                marginTop="5px"
+                onChange={handleChange}
+              >
+                <VerificationInput
+                  type="text"
+                  width="verification"
+                  ref={verificationRef}
+                  placeholder="인증번호"
+                />
+                <Timer initialTime={initialTime} onTimeOut={handleTimeOut} />
+                <SmallTransparentButton type="verification" onClick={sendVerification}>
+                  확인
+                </SmallTransparentButton>
+              </ItemWrapper>
+            </Label>
+          </ItemWrapper>
+        )}
+      </>
       {isModalOpen && (
         <WebModal
           setIsOpen={setIsModalOpen}
@@ -169,6 +193,10 @@ const PhoneNumberAuth = ({}) => {
       )}
     </ItemWrapper>
   );
+};
+
+PhoneNumberAuth.propTypes = {
+  onVerificationResult: PropTypes.func
 };
 
 export default PhoneNumberAuth;

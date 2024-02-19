@@ -92,7 +92,7 @@ const FindpwForm = () => {
           setIsOpen={setChangePwModalOpen}
           hasButton={true}
           isMoving={true}
-          message="아이디가 조회되었습니다. 비밀번호를 변경하시겠습니까?"
+          message="비밀번호를 변경하시겠습니까?"
         />
       )}
 

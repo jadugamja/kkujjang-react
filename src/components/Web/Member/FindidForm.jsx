@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -51,12 +52,16 @@ const FindButton = styled.button`
 
 // ===== component ======
 const FindidForm = () => {
+  // === state ===
   const [hasUserInfo, setHasUserInfo] = useState(false); // 아이디 조회 state
   const [isAuthMath, setIsAuthMath] = useState(false); // 인증번호 일치 state
-  const [userId, setUserId] = useState(""); // 아이디 출력 state
+  const [userId, setUserId] = useState("jephpp123"); // 아이디 출력 state
   // (modal 관련)
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
+
+  // === navigate ===
+  const navigate = useNavigate();
 
   // 인증번호 검증
   const handlePhoneNumberAuth = () => {
@@ -80,14 +85,21 @@ const FindidForm = () => {
     // 아이디 조회 API 코드
 
     // 프론트엔드 테스트를 위한 백엔드 임시 코드
-    const result = "jephpp123";
+    const result = true;
 
     if (!result) {
       setFindidModalOpen(true);
     } else {
       setHasUserInfo(true);
-      setUserId(result);
     }
+  };
+
+  const handleMoveLogin = () => {
+    navigate(`/member/login`);
+  };
+
+  const handleMoveFindpw = () => {
+    navigate(`/member/find?type=pw`);
   };
 
   return (
@@ -112,7 +124,7 @@ const FindidForm = () => {
 
       <FindidFormFlexContainer dir="col">
         <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
-        {hasUserInfo ? (
+        {!hasUserInfo ? (
           <>
             {/* 아이디 찾기 성공 시, 결과 출력부 */}
             <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
@@ -121,8 +133,10 @@ const FindidForm = () => {
               <IdText marginRight="20px">{userId}</IdText>
             </FindidFormFlexContainer>
             <FindidFormFlexContainer marginTop="50px">
-              <Button type="smallBrown" message="로그인" />
-              <FindButton marginLeft="15px">비밀번호 찾기</FindButton>
+              <Button type="smallBrown" message="로그인" onClick={handleMoveLogin} />
+              <FindButton marginLeft="15px" onClick={handleMoveFindpw}>
+                비밀번호 찾기
+              </FindButton>
             </FindidFormFlexContainer>
           </>
         ) : (

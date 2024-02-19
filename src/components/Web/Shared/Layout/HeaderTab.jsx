@@ -26,9 +26,11 @@ const HeaderTab = ({ type = "default" }) => {
           문의
         </SpringTab>
       </BottomLink>
-      <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
-        내 정보
-      </SpringTab>
+      <BottomLink to="/member/myInfo">
+        <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
+          내 정보
+        </SpringTab>
+      </BottomLink>
     </TabWrapper>
   );
 };

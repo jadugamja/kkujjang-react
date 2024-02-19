@@ -70,7 +70,7 @@ const LoginForm = () => {
       // 로그인 API 코드 추가
 
       // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
+      const result = false;
       if (!result) {
         setError("해당 계정이 존재하지 않습니다.");
       } else {
@@ -114,10 +114,10 @@ const LoginForm = () => {
       {/* Link button */}
       <LoginFormFlexContainer row="between" marginBottom="30px">
         <LoginFormFlexContainer width="fit-content">
-          <Link to="/member/find">
+          <Link to="/member/find?type=id">
             <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
           </Link>
-          <Link to="/member/find">
+          <Link to="/member/find?type=pw">
             <LinkSpan>비밀번호 찾기</LinkSpan>
           </Link>
         </LoginFormFlexContainer>

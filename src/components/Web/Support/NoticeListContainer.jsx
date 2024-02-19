@@ -10,7 +10,10 @@ import BoardItem from "@/components/Web/Shared/Board/BoardItem";
 import Pagination from "@/components/Web/Shared/Board/Pagination";
 
 // ===== style =====
-const Noticewrapper = styled(FlexBox)``;
+const Noticewrapper = styled(FlexBox)`
+  margin-top: ${(props) => props.marginTop || null};
+  margin-bottom: ${(props) => props.marginBottom || null};
+`;
 
 // ===== component =====
 const NoticeListContainer = () => {
@@ -119,8 +122,8 @@ const NoticeListContainer = () => {
   return (
     <>
       <BoardTitle type="notice" />
-      <Noticewrapper row="end">
-        <SearchBar />
+      <Noticewrapper row="end" marginBottom="25px">
+        <SearchBar searchType="제목" />
       </Noticewrapper>
       {listData?.map((listData) => (
         <BoardItem
@@ -131,11 +134,13 @@ const NoticeListContainer = () => {
           onClick={() => onDetailOpen(listData.id)}
         />
       ))}
-      <Pagination
-        currPage={currPage}
-        setCurrPage={setCurrPage}
-        lastPageIdx={lastPageIdx}
-      />
+      <Noticewrapper marginTop="25px">
+        <Pagination
+          currPage={currPage}
+          setCurrPage={setCurrPage}
+          lastPageIdx={lastPageIdx}
+        />
+      </Noticewrapper>
     </>
   );
 };

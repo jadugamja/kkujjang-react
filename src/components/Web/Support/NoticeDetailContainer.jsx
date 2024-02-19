@@ -12,7 +12,7 @@ import Button from "@/components/Web/Shared/Buttons/Button";
 
 // ===== style =====
 const NoticeDeatalFlexBox = styled(FlexBox)`
-  width: ${(props) => props.width || "1105px"};
+  width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "fit-content"};
   border-top: ${(props) => props.borderTop || null};
   border-bottom: ${(props) => props.borderBottom || null};
@@ -21,7 +21,7 @@ const NoticeDeatalFlexBox = styled(FlexBox)`
 `;
 
 const NoticeDetailBox = styled.div`
-  width: ${(props) => props.width || "1105px"};
+  width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "fit-content"};
   border-top: ${(props) => props.borderTop || null};
   border-bottom: ${(props) => props.borderBottom || null};
@@ -98,7 +98,7 @@ const NoticeDetailContainer = () => {
 
         {/* 공지 본문 */}
         <NoticeDeatalFlexBox borderTop="1px solid #C2C2C2" dir="col" marginBottom="10px">
-          <NoticeDetailBox height="400px" marginTop="15px">
+          <NoticeDetailBox height="390px" marginTop="15px">
             {detailData.content}
           </NoticeDetailBox>
           <NoticeDeatalFlexBox row="end">

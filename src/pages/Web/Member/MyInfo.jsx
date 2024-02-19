@@ -11,6 +11,11 @@ import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 // ===== style =====
 const MyInfoWrapper = styled.div`
   margin-top: ${(props) => props.marginTop || "150px"};
+  margin-left: 250px;
+`;
+
+const MyInfoMain = styled(Main)`
+  background-color: ${({ theme }) => theme.colors.content};
 `;
 
 const MyInfo = () => {
@@ -18,12 +23,12 @@ const MyInfo = () => {
     <>
       <ContentWrapper row="center" col="center">
         <Header type="detail" />
-        <WideContent width="1000px">
-          <Main>
+        <WideContent width="100%">
+          <MyInfoMain>
             <MyInfoWrapper>
               <MyInfoContainer />
             </MyInfoWrapper>
-          </Main>
+          </MyInfoMain>
         </WideContent>
       </ContentWrapper>
     </>

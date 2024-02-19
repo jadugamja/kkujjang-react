@@ -8,10 +8,11 @@ import viewsIcon from "@/assets/images/views.png";
 
 // ===== style ======
 const BoardItemWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "82rem"};
+  width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "fit-content"};
   justify-content: space-between;
   align-items: center;
+  margin-bottom: ${(props) => props.marginBottom || null};
 `;
 
 export const BoardItemImage = styled.img`
@@ -33,7 +34,7 @@ const FlexBoardText = styled(BoardItemText)`
 // data: { id, title, createdAt, views, type, needAnswer, onClick }
 const BoardItem = ({ boardType, data, onClick }) => {
   return (
-    <BoardItemWrapper onClick={onClick}>
+    <BoardItemWrapper marginBottom="10px" onClick={onClick}>
       {boardType === "notice" && (
         <>
           <FlexBoardText basis={4}>{data.title}</FlexBoardText>

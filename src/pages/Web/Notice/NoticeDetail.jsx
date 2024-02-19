@@ -1,17 +1,30 @@
 import React from "react";
+import styled from "styled-components";
 
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
 import NoticeDetailContainer from "@/components/Web/Support/NoticeDetailContainer";
 
+const NoticeDetailMain = styled(Main)`
+  background-color: ${({ theme }) => theme.colors.content};
+  height: 100vh;
+`;
+
+const NoticeDetailWrapper = styled.div`
+  width: 75rem;
+  margin-left: 170px;
+`;
+
 const NoticeDetail = () => {
   return (
     <ContentWrapper row="center" col="center">
-      <WideContent dir="col">
-        <Header type="detail" />
-        <Main row="center">
-          <NoticeDetailContainer />
-        </Main>
+      <Header type="detail" />
+      <WideContent dir="col" width="100%">
+        <NoticeDetailMain row="center">
+          <NoticeDetailWrapper>
+            <NoticeDetailContainer />
+          </NoticeDetailWrapper>
+        </NoticeDetailMain>
       </WideContent>
     </ContentWrapper>
   );

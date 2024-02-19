@@ -10,20 +10,13 @@ const NoticeDetailMain = styled(Main)`
   height: 100vh;
 `;
 
-const NoticeDetailWrapper = styled.div`
-  width: 75rem;
-  margin-left: 170px;
-`;
-
 const NoticeDetail = () => {
   return (
     <ContentWrapper row="center" col="center">
       <Header type="detail" />
       <WideContent dir="col" width="100%">
-        <NoticeDetailMain row="center">
-          <NoticeDetailWrapper>
-            <NoticeDetailContainer />
-          </NoticeDetailWrapper>
+        <NoticeDetailMain>
+          <NoticeDetailContainer />
         </NoticeDetailMain>
       </WideContent>
     </ContentWrapper>

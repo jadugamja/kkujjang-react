@@ -55,7 +55,6 @@ const FindidForm = () => {
   // === state ===
   const [hasUserInfo, setHasUserInfo] = useState(false); // 아이디 조회 state
   const [userId, setUserId] = useState("jephpp123"); // 아이디 출력 state
-  const [isVerified, setIsVerified] = useState(false); // 검증 성공 여부 전달 state
   // (modal 관련)
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
@@ -63,11 +62,9 @@ const FindidForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
-  // 인증번호 검증
-  const handlePhoneNumberAuth = (isVerified) => {
-    setIsVerified(isVerified);
-
-    if (!isVerified) {
+  // 전화번호 인증
+  const handlePhoneNumberAuth = (result) => {
+    if (!result) {
       // 경고 모달 출력
       setAuthModalOpen(true);
     } else {

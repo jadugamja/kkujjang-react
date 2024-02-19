@@ -50,7 +50,6 @@ const SignupForm = () => {
   const [confirmPwError, setConfirmPwError] = useState(""); // 비밀번호 일치 검사 에러 메시지 state
   const [duplicationError, setDuplicationError] = useState(""); // 아이디 중복 확인 에러 메시지 state
   // (인증번호 관련)
-  const [isVerified, setIsVerified] = useState(false); // 검증 성공 여부 전달 state
   const [isAuthMath, setIsAuthMath] = useState(false); // 검증 성공 여부 state
   // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 알림 modal state
@@ -81,10 +80,8 @@ const SignupForm = () => {
   };
 
   // 인증번호 검증
-  const handlePhoneNumberAuth = (isVerified) => {
-    setIsVerified(isVerified);
-
-    if (!isVerified) {
+  const handlePhoneNumberAuth = (result) => {
+    if (!result) {
       // 경고 모달 출력
       setAuthModalOpen(true);
     } else {

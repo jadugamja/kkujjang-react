@@ -8,16 +8,15 @@ import viewsIcon from "@/assets/images/views.png";
 
 // ===== style ======
 const BoardItemWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "100%"};
+  width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: ${(props) => props.marginBottom || null};
 `;
 
 export const BoardItemImage = styled.img`
   width: ${(props) => props.width || "24px"};
   height: ${(props) => props.height || "24px"};
+  margin-right: ${(props) => props.marginRight || null};
 `;
 
 const BoardItemText = styled.p`
@@ -27,25 +26,31 @@ const BoardItemText = styled.p`
 `;
 
 const FlexBoardText = styled(BoardItemText)`
-  flex: ${(props) => props.basis || 1};
+  width: ${(props) => props.width || "fit-content"};
 `;
 
 // ===== component ======
 // data: { id, title, createdAt, views, type, needAnswer, onClick }
 const BoardItem = ({ boardType, data, onClick }) => {
   return (
-    <BoardItemWrapper marginBottom="10px" onClick={onClick}>
+    <BoardItemWrapper row="between" width="100%" marginBottom="10px" onClick={onClick}>
       {boardType === "notice" && (
         <>
-          <FlexBoardText basis={4}>{data.title}</FlexBoardText>
-          <BoardItemImage src={createdAtIcon} />
-          <FlexBoardText color="#A7A7A7" fontSize="20px">
-            {data.createdAt}
-          </FlexBoardText>
-          <BoardItemImage src={viewsIcon} />
-          <FlexBoardText color="#A7A7A7" fontSize="20px">
-            {data.views}
-          </FlexBoardText>
+          <FlexBoardText>{data.title}</FlexBoardText>
+          <BoardItemWrapper row="between" width="300px">
+            <BoardItemWrapper col="center">
+              <BoardItemImage src={createdAtIcon} marginRight="10px" />
+              <FlexBoardText color="#A7A7A7" fontSize="20px">
+                {data.createdAt}
+              </FlexBoardText>
+            </BoardItemWrapper>
+            <BoardItemWrapper col="center">
+              <BoardItemImage src={viewsIcon} marginRight="10px" />
+              <FlexBoardText color="#A7A7A7" fontSize="20px">
+                {data.views}
+              </FlexBoardText>
+            </BoardItemWrapper>
+          </BoardItemWrapper>
         </>
       )}
       {boardType === "inquiry" && (

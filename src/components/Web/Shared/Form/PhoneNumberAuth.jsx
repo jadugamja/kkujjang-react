@@ -25,7 +25,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [timeOut, setTimeOut] = useState(false); // 인증 번호 유효시간 만료 여부
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false); // 전화번호 인증 성공 여부
 
   // 전화 번호
   const numbersRef = Array(3)
@@ -84,9 +84,8 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   const sendVerification = () => {
     const verification = verificationRef.current.value;
     const regex = /^\d{4}$/;
-    const isVerified = regex.test(verification);
 
-    if (!isVerified) {
+    if (!regex.test(verification)) {
       setIsModalOpen(true);
       setModalMessage("인증 번호가 일치하지 않습니다.");
     } else {
@@ -94,12 +93,13 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 
       // 프론트엔드 테스트를 위한 백엔드 임시 코드
       const result = true;
+
       if (!result) {
         setIsModalOpen(true);
         setModalMessage("인증 번호가 일치하지 않습니다.");
       } else {
         setIsVerifying(true);
-        onVerificationResult(isVerified);
+        onVerificationResult(result);
         setValidMessage("");
       }
     }

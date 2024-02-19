@@ -9,12 +9,8 @@ import MyInfoContainer from "@/components/Web/Member/MyInfoContainer";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 
 // ===== style =====
-const MyInfoWrapper = styled.div`
-  margin-top: ${(props) => props.marginTop || "150px"};
-  margin-left: 250px;
-`;
-
 const MyInfoMain = styled(Main)`
+  padding-top: ${(props) => props.marginTop || "150px"};
   background-color: ${({ theme }) => theme.colors.content};
 `;
 
@@ -25,9 +21,7 @@ const MyInfo = () => {
         <Header type="detail" />
         <WideContent width="100%">
           <MyInfoMain>
-            <MyInfoWrapper>
-              <MyInfoContainer />
-            </MyInfoWrapper>
+            <MyInfoContainer />
           </MyInfoMain>
         </WideContent>
       </ContentWrapper>

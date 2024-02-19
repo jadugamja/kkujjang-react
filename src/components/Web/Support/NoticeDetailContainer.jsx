@@ -27,6 +27,8 @@ const NoticeDetailBox = styled.div`
   border-bottom: ${(props) => props.borderBottom || null};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
+  margin-left: ${(props) => props.marginLeft || null};
+  margin-right: ${(props) => props.marginRight || null};
 `;
 
 const NoticeDetailText = styled.p`
@@ -38,6 +40,7 @@ const NoticeDetailText = styled.p`
 const NoticeDetailImage = styled.img`
   width: ${(props) => props.width || "24px"};
   height: ${(props) => props.height || "24px"};
+  margin-right: ${(props) => props.marginRight || null};
 `;
 
 // ===== component =====
@@ -67,44 +70,50 @@ const NoticeDetailContainer = () => {
 
   return (
     <>
-      <BoardTitle type="notice" />
-      <NoticeDetailBox borderTop="5px solid #C2C2C2" borderBottom="5px solid #C2C2C2">
-        {/* 공지 헤더 */}
-        <NoticeDeatalFlexBox dir="col">
-          {/* 공지 제목 */}
-          <NoticeDetailBox marginTop="15px" marginBottom="10px">
-            <NoticeDetailText>{detailData.title}</NoticeDetailText>
-          </NoticeDetailBox>
+      <NoticeDetailBox width="75rem" marginLeft="auto" marginRight="auto">
+        <BoardTitle type="notice" />
+        <NoticeDetailBox borderTop="5px solid #C2C2C2" borderBottom="5px solid #C2C2C2">
+          {/* 공지 헤더 */}
+          <NoticeDeatalFlexBox dir="col">
+            {/* 공지 제목 */}
+            <NoticeDetailBox marginTop="15px" marginBottom="10px">
+              <NoticeDetailText>{detailData.title}</NoticeDetailText>
+            </NoticeDetailBox>
 
-          {/* 공지 관련 정보 */}
-          <NoticeDeatalFlexBox width="400px" marginBottom="15px">
-            {/* 게시 날짜 */}
-            <NoticeDeatalFlexBox col="center">
-              <NoticeDetailImage src={createdAtIcon} />
-              <NoticeDetailText color="#A7A7A7" fontSize="20px">
-                {detailData.createdAt}
-              </NoticeDetailText>
-            </NoticeDeatalFlexBox>
+            {/* 공지 관련 정보 */}
+            <NoticeDeatalFlexBox width="400px" marginBottom="15px">
+              {/* 게시 날짜 */}
+              <NoticeDeatalFlexBox col="center">
+                <NoticeDetailImage src={createdAtIcon} marginRight="10px" />
+                <NoticeDetailText color="#A7A7A7" fontSize="20px">
+                  {detailData.createdAt}
+                </NoticeDetailText>
+              </NoticeDeatalFlexBox>
 
-            {/* 조회수 */}
-            <NoticeDeatalFlexBox col="center">
-              <NoticeDetailImage src={viewsIcon} />
-              <NoticeDetailText color="#A7A7A7" fontSize="20px">
-                {detailData.views}
-              </NoticeDetailText>
+              {/* 조회수 */}
+              <NoticeDeatalFlexBox col="center">
+                <NoticeDetailImage src={viewsIcon} marginRight="10px" />
+                <NoticeDetailText color="#A7A7A7" fontSize="20px">
+                  {detailData.views}
+                </NoticeDetailText>
+              </NoticeDeatalFlexBox>
             </NoticeDeatalFlexBox>
           </NoticeDeatalFlexBox>
-        </NoticeDeatalFlexBox>
 
-        {/* 공지 본문 */}
-        <NoticeDeatalFlexBox borderTop="1px solid #C2C2C2" dir="col" marginBottom="10px">
-          <NoticeDetailBox height="390px" marginTop="15px">
-            {detailData.content}
-          </NoticeDetailBox>
-          <NoticeDeatalFlexBox row="end">
-            <Button type="smallGray" message="목록" onClick={handleMoveList} />
+          {/* 공지 본문 */}
+          <NoticeDeatalFlexBox
+            borderTop="1px solid #C2C2C2"
+            dir="col"
+            marginBottom="10px"
+          >
+            <NoticeDetailBox height="390px" marginTop="15px">
+              {detailData.content}
+            </NoticeDetailBox>
+            <NoticeDeatalFlexBox row="end">
+              <Button type="smallGray" message="목록" onClick={handleMoveList} />
+            </NoticeDeatalFlexBox>
           </NoticeDeatalFlexBox>
-        </NoticeDeatalFlexBox>
+        </NoticeDetailBox>
       </NoticeDetailBox>
     </>
   );

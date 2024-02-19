@@ -21,10 +21,8 @@ const Find = () => {
         <Header type="big" />
         <NarrowContent>
           <Main>
-            <FindidForm />
-            {/* <FindpwForm /> */}
-            {/* {type === "id" && <FindidForm />} */}
-            {/* {type === "pw" && <FindpwForm />} */}
+            {type === "id" && <FindidForm />}
+            {type === "pw" && <FindpwForm />}
           </Main>
         </NarrowContent>
       </ContentWrapper>

@@ -122,7 +122,7 @@ const SignupForm = () => {
     const password = passwordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
 
-    if (password !== confirmPassword || !confirmPassword.trim()) {
+    if (password !== confirmPassword || confirmPassword.trim() === "") {
       setConfirmPwError("비밀번호가 일치하지 않습니다");
     } else {
       setConfirmPwError("");
@@ -179,6 +179,7 @@ const SignupForm = () => {
                 hasLabel={true}
                 name="id"
                 inputRef={idRef}
+                isDataForm={true}
                 onBlur={handleIdValidation}
               />
             </SignupInputFieldWrapper>
@@ -194,6 +195,7 @@ const SignupForm = () => {
             hasLabel={true}
             name="password"
             inputRef={passwordRef}
+            isDataForm={true}
             onBlur={handlePasswordValidation}
           />
           {pwError && <ValidationMessage message={pwError} />}

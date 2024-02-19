@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 // ===== components import ======
 import Button from "@/components/Web/Shared/Buttons/Button";
 import Avartar from "@/assets/images/avatar.png";
+import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const InfoFlexBox = styled(FlexBox)`
@@ -55,10 +56,15 @@ const Table = styled.table`
 
 // ===== component ======
 const MyInfoContainer = () => {
+  // === ref ===
+  const inputRef = useRef(null);
+
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
   const [nickname, setNickname] = useState("닉네임이랑께"); // 백엔드 state
-  const inputRef = useRef(null);
+  // (modal 관련)
+  const [nicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 변경 실패 modal state
+  const [message, setMessage] = useState(""); // 닉네임 modal 의 message 설정 state
 
   // 프로필 조회 API 호출
 
@@ -72,13 +78,20 @@ const MyInfoContainer = () => {
     const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
 
     if (nickname.trim() === "") {
-      alert("닉네임을 입력해 주세요.");
+      setNicknameModalOpen(true);
+      setMessage("닉네임을 입력해 주세요.");
     } else if (!ninknameRegex.test(nickname)) {
-      alert("닉네임을 확인해 주세요.");
+      setNicknameModalOpen(true);
+      setMessage("닉네임을 확인해 주세요.");
     } else {
       setEditMode(false);
     }
     // 회원 정보 수정 API 코드
+  };
+
+  // 취소 버튼 눌렀을 때
+  const handleClickCancelButton = () => {
+    setEditMode(false);
   };
 
   // 수정 상태일 때 input에 focus 주기
@@ -95,6 +108,10 @@ const MyInfoContainer = () => {
 
   return (
     <>
+      {nicknameModalOpen && (
+        <WebModal setIsOpen={setNicknameModalOpen} hasButton={true} message={message} />
+      )}
+
       <InfoFlexBox>
         {/* 아바타 img */}
         <InfoBox>
@@ -116,7 +133,7 @@ const MyInfoContainer = () => {
                       value={nickname}
                       onChange={handleInputChange}
                       ref={inputRef}
-                      placeholder="영어, 한글 1 ~ 15자 입력 가능합니다"
+                      placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
                       marginLeft="100px"
                     />
                   ) : (
@@ -166,7 +183,11 @@ const MyInfoContainer = () => {
             {
               <InfoFlexBox row="between" width="200px">
                 <Button type="smallDark" message="확인" onClick={handleClickSaveButton} />
-                <Button type="smallGray" message="취소" onClick={handleClickSaveButton} />
+                <Button
+                  type="smallGray"
+                  message="취소"
+                  onClick={handleClickCancelButton}
+                />
               </InfoFlexBox>
             }
           </>

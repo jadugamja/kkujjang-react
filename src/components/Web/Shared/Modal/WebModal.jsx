@@ -1,8 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-
-import { useRecoilState } from "recoil";
-import { isModalOpenState } from "@/recoil/modalState";
 
 import {
   ModalBackground,
@@ -22,7 +20,13 @@ import {
 } from "./WebModalStyle";
 import Button from "../Buttons/Button.jsx";
 
-const WebModal = ({ setIsOpen, hasButton, isVan, isMoving, message }) => {
+const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, message }) => {
+  // === navigate ===
+  const navigate = useNavigate();
+
+  const handleMoveChangepw = () => {
+    navigate(`/member/change-pw`);
+  };
   return (
     <>
       <ModalBackground onClick={() => setIsOpen(false)}></ModalBackground>
@@ -36,11 +40,26 @@ const WebModal = ({ setIsOpen, hasButton, isVan, isMoving, message }) => {
               <ModalMessage>{message}</ModalMessage>
               {isMoving ? (
                 <ButtonContainer row="evenly">
-                  <Button key="change" type="modal" message="비밀번호 변경" />
-                  <Button key="exit" type="modal" message="취소" />
+                  <Button
+                    key="change"
+                    type="modal"
+                    message="비밀번호 변경"
+                    onClick={handleMoveChangepw}
+                  />
+                  <Button
+                    key="exit"
+                    type="modal"
+                    message="취소"
+                    onClick={() => setIsOpen(false)}
+                  />
                 </ButtonContainer>
               ) : (
-                <Button key="confirm" type="modal" message="확인" />
+                <Button
+                  key="confirm"
+                  type="modal"
+                  message="확인"
+                  onClick={() => setIsOpen(false)}
+                />
               )}
             </>
           )}
@@ -56,7 +75,7 @@ const WebModal = ({ setIsOpen, hasButton, isVan, isMoving, message }) => {
                   <VanTextArea></VanTextArea>
                 </VanTextAreaWrapper>
                 <VanButtonWrapper row="center">
-                  <VanButton>밴</VanButton>
+                  <VanButton onClick={onClick}>밴</VanButton>
                 </VanButtonWrapper>
               </VanWrapper>
             </>
@@ -68,6 +87,7 @@ const WebModal = ({ setIsOpen, hasButton, isVan, isMoving, message }) => {
 };
 
 WebModal.propTypes = {
+  onClick: PropTypes.func,
   setIsOpen: PropTypes.func,
   isVan: PropTypes.bool,
   hasButton: PropTypes.bool,

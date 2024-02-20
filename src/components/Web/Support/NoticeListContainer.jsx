@@ -10,7 +10,17 @@ import BoardItem from "@/components/Web/Shared/Board/BoardItem";
 import Pagination from "@/components/Web/Shared/Board/Pagination";
 
 // ===== style =====
-const Noticewrapper = styled(FlexBox)``;
+const Noticewrapper = styled(FlexBox)`
+  margin-top: ${(props) => props.marginTop || null};
+  margin-bottom: ${(props) => props.marginBottom || null};
+`;
+
+const NoticeListBox = styled.div`
+  width: ${(props) => props.width || "fit-content"};
+  height: ${(props) => props.height || "fit-content"};
+  margin-left: ${(props) => props.marginLeft || null};
+  margin-right: ${(props) => props.marginRight || null};
+`;
 
 // ===== component =====
 const NoticeListContainer = () => {
@@ -18,6 +28,7 @@ const NoticeListContainer = () => {
   const [listData, setListData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   // === navigate ===
   const navigate = useNavigate();
@@ -116,26 +127,48 @@ const NoticeListContainer = () => {
     navigate(`/notice/${noticeId}`);
   };
 
+  useEffect(() => {
+    const getNoticeSearchHandler = async () => {
+      try {
+        const data = await getNoticeSearch(currPage, searchKeyword);
+        if (data.list.length === 0) {
+          setLastPageIdx(data.lastPage);
+          setListData([]);
+        } else {
+          setLastPageIdx(data.lastPage);
+          setListData(data.list);
+        }
+      } catch (err) {
+        console.error(`[Error]: ${err}`);
+      }
+    };
+    getNoticeSearchHandler();
+  }, [currPage, searchKeyword]);
+
   return (
     <>
-      <BoardTitle type="notice" />
-      <Noticewrapper row="end">
-        <SearchBar />
-      </Noticewrapper>
-      {listData?.map((listData) => (
-        <BoardItem
-          boardType="notice"
-          key={listData.id}
-          id={listData.id}
-          data={listData}
-          onClick={() => onDetailOpen(listData.id)}
-        />
-      ))}
-      <Pagination
-        currPage={currPage}
-        setCurrPage={setCurrPage}
-        lastPageIdx={lastPageIdx}
-      />
+      <NoticeListBox width="75rem" marginLeft="auto" marginRight="auto">
+        <BoardTitle type="notice" />
+        <Noticewrapper row="end" marginBottom="25px">
+          <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
+        </Noticewrapper>
+        {listData?.map((listData) => (
+          <BoardItem
+            boardType="notice"
+            key={listData.id}
+            id={listData.id}
+            data={listData}
+            onClick={() => onDetailOpen(listData.id)}
+          />
+        ))}
+        <Noticewrapper marginTop="25px">
+          <Pagination
+            currPage={currPage}
+            setCurrPage={setCurrPage}
+            lastPageIdx={lastPageIdx}
+          />
+        </Noticewrapper>
+      </NoticeListBox>
     </>
   );
 };

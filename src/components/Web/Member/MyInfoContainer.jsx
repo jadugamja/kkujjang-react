@@ -17,7 +17,9 @@ const InfoFlexBox = styled(FlexBox)`
 const InfoBox = styled.div`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
-  border: 1px solid #000000;
+  border: ${(props) => props.border || null};
+  margin-left: ${(props) => props.marginLeft || null};
+  margin-right: ${(props) => props.marginRight || null};
 `;
 const InfoImg = styled.img``;
 const InfoLinkButton = styled.a`
@@ -112,89 +114,95 @@ const MyInfoContainer = () => {
         <WebModal setIsOpen={setNicknameModalOpen} hasButton={true} message={message} />
       )}
 
-      <InfoFlexBox>
-        {/* 아바타 img */}
-        <InfoBox>
-          <InfoImg src={Avartar} />
-        </InfoBox>
+      <InfoBox marginLeft="auto" marginRight="auto">
+        <InfoFlexBox>
+          {/* 아바타 img */}
+          <InfoBox border="1px solid #000000">
+            <InfoImg src={Avartar} />
+          </InfoBox>
 
-        <Table marginLeft="80px">
-          <tbody>
-            {/* 닉네임 출력부 */}
-            <tr>
-              <td>
-                <InfoText>닉네임</InfoText>
-              </td>
-              <td>
-                <>
-                  {editMode ? (
-                    <InfoInput
-                      type="text"
-                      value={nickname}
-                      onChange={handleInputChange}
-                      ref={inputRef}
-                      placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
-                      marginLeft="100px"
-                    />
-                  ) : (
-                    <InfoText color="#32250F" marginLeft="100px">
-                      {nickname}
-                    </InfoText>
-                  )}
-                </>
-              </td>
-            </tr>
+          <Table marginLeft="80px">
+            <tbody>
+              {/* 닉네임 출력부 */}
+              <tr>
+                <td>
+                  <InfoText>닉네임</InfoText>
+                </td>
+                <td>
+                  <>
+                    {editMode ? (
+                      <InfoInput
+                        type="text"
+                        value={nickname}
+                        onChange={handleInputChange}
+                        ref={inputRef}
+                        placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
+                        marginLeft="100px"
+                      />
+                    ) : (
+                      <InfoText color="#32250F" marginLeft="100px">
+                        {nickname}
+                      </InfoText>
+                    )}
+                  </>
+                </td>
+              </tr>
 
-            {/* 레벨 출력부 */}
-            <tr>
-              <td>
-                <InfoText>레벨</InfoText>
-              </td>
-              <td>
-                <InfoText color="#32250F" marginLeft="100px">
-                  40
-                </InfoText>
-              </td>
-            </tr>
+              {/* 레벨 출력부 */}
+              <tr>
+                <td>
+                  <InfoText>레벨</InfoText>
+                </td>
+                <td>
+                  <InfoText color="#32250F" marginLeft="100px">
+                    40
+                  </InfoText>
+                </td>
+              </tr>
 
-            {/* 승률 출력부 */}
-            <tr>
-              <td>
-                <InfoText>승률</InfoText>
-              </td>
-              <td>
-                <InfoText color="#32250F" marginLeft="100px">
-                  16.2%
-                </InfoText>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
-      </InfoFlexBox>
-      <InfoFlexBox col="center" row="between" width="1000px">
-        {/* Link 버튼 */}
-        <Link to="/member/out">
-          <InfoLinkButton>회원 탈퇴</InfoLinkButton>
-        </Link>
+              {/* 승률 출력부 */}
+              <tr>
+                <td>
+                  <InfoText>승률</InfoText>
+                </td>
+                <td>
+                  <InfoText color="#32250F" marginLeft="100px">
+                    16.2%
+                  </InfoText>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </InfoFlexBox>
+        <InfoFlexBox col="center" row="between" width="1000px">
+          {/* Link 버튼 */}
+          <Link to="/member/out">
+            <InfoLinkButton>회원 탈퇴</InfoLinkButton>
+          </Link>
 
-        {/* 버튼 */}
-        {editMode ? (
-          <>
-            {
-              <InfoFlexBox row="between" width="200px">
-                <Button type="smallDark" message="확인" onClick={handleClickSaveButton} />
-                <Button
-                  type="smallGray"
-                  message="취소"
-                  onClick={handleClickCancelButton}
-                />
-              </InfoFlexBox>
-            }
-          </>
-        ) : (
-          <Button type="smallDark" message="수정" onClick={handleClickEditButton} />
-        )}
-      </InfoFlexBox>
+          {/* 버튼 */}
+          {editMode ? (
+            <>
+              {
+                <InfoFlexBox row="between" width="200px">
+                  <Button
+                    type="smallDark"
+                    message="확인"
+                    onClick={handleClickSaveButton}
+                  />
+                  <Button
+                    type="smallGray"
+                    message="취소"
+                    onClick={handleClickCancelButton}
+                  />
+                </InfoFlexBox>
+              }
+            </>
+          ) : (
+            <Button type="smallDark" message="수정" onClick={handleClickEditButton} />
+          )}
+        </InfoFlexBox>
+      </InfoBox>
     </>
   );
 };

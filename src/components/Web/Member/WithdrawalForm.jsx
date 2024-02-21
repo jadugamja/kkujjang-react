@@ -65,11 +65,9 @@ const WithdrawalForm = () => {
     <>
       {/* 탈퇴 실패 Modal */}
       {withdrawalModalOpen && (
-        <WebModal
-          setIsOpen={setWithdrawalModalOpen}
-          hasButton={true}
-          message="회원 정보를 확인해 주세요."
-        />
+        <WebModal setIsOpen={setWithdrawalModalOpen} hasButton={true}>
+          회원 정보를 확인해 주세요.
+        </WebModal>
       )}
 
       <WithdrawalFormFlexContainer dir="col">

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
@@ -10,20 +11,33 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { EditorWrapper } from "./NoticeManagementCreate";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import Button from "../Shared/Buttons/Button";
-import WebModal from "../Shared/Modal/WebModal";
-
-import { useRecoilState } from "recoil";
+import Modal from "../Shared/Modal/WebModal";
 import { isModalOpenState } from "@/recoil/modalState";
+import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
-  const { id, title, createdAt, views, content } = data;
+  const { id, title, content, createdAt, views } = data;
   const [editTitle, setEditTitle] = useState(title);
   const [editContent, setEditContent] = useState(content);
   const [isOpenModal, setIsOpenModal] = useRecoilState(isModalOpenState);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   const contentRef = useRef();
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setIsEditMode(false);
+    }
+  }, [response]);
 
   const onClickEditModeOn = () => {
     setIsEditMode(true);
@@ -55,12 +69,31 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   // 수정
   const updateNotice = (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", editTitle);
+    formData.append("content", editContent);
+    // formData.append("files", images);
+
+    setApiConfig({
+      method: "put",
+      url: `/notice/${id}`,
+      headers: { "Content-Type": "multipart/form-data" },
+      data: formData
+    });
   };
 
   // 삭제
   const deleteNotice = () => {
     // 경고 메시지 모달 출력
     setIsOpenModal(true);
+
+    // 확인 버튼 클릭 시 삭제 요청
+    setApiConfig({
+      method: "delete",
+      url: `/notice/${id}`,
+      data: id
+    });
   };
 
   // 서버에서 받은 데이터의 이미지 url을 img src 속성에 적용
@@ -147,7 +180,11 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
       <DetailWrapper key={id}>
         {isEditMode ? renderUpdateView() : renderDetailView()}
       </DetailWrapper>
-      {isOpenModal && <WebModal hasButton={true} message="게시물을 삭제하시겠습니까?" />}
+      {isOpenModal && (
+        <Modal hasButton={true} setIsOpen={setIsOpenModal}>
+          게시물을 삭제하시겠습니까?
+        </Modal>
+      )}
     </>
   );
 };

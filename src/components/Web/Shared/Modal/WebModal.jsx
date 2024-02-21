@@ -20,7 +20,7 @@ import {
 } from "./WebModalStyle";
 import Button from "../Buttons/Button.jsx";
 
-const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, message }) => {
+const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, children }) => {
   // === navigate ===
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, message }) =
         <ModalContent dir="col" row="center" col="center" height={isVan && "25.438rem"}>
           {hasButton && (
             <>
-              <ModalMessage>{message}</ModalMessage>
+              <ModalMessage>{children}</ModalMessage>
               {isMoving ? (
                 <ButtonContainer row="evenly">
                   <Button
@@ -92,7 +92,7 @@ WebModal.propTypes = {
   isVan: PropTypes.bool,
   hasButton: PropTypes.bool,
   isMoving: PropTypes.bool,
-  message: PropTypes.string
+  children: PropTypes.node
 };
 
 export default WebModal;

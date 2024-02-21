@@ -9,14 +9,20 @@ import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import useAxios from "@/hooks/useAxios";
 
 const InquiryManagementList = ({ type, onThreadOpen }) => {
   const [listData, setListData] = useState([]);
-  const [selectedFilterOptions, setSelectedFilterOptions] = useState({});
+  const [selectedFilterOptions, setSelectedFilterOptions] = useState(null);
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/inquiry/list?page=${currPage}`
+  });
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   // 필터 key 데이터 추출
   const filterKeys = ["type", "needsAnswer"];
@@ -33,7 +39,22 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
   });
 
   useEffect(() => {
-    // 문의 목록 조회 api 호출
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setIsAnswerCompleted(
+        tmp.reduce((acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }), {})
+      );
+      setListData(response.list);
+    } else {
+      setLastPageIdx(1);
+      setListData([]);
+    }
 
     // 임시 데이터
     const tmp = [
@@ -72,15 +93,20 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
       );
       setListData(tmp);
     }
-  }, []);
+  }, [response]);
 
   // 페이지, 필터 변경 시 호출
   useEffect(() => {
-    const queryString = Object.entries(selectedFilterOptions)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&");
+    if (selectedFilterOptions !== null) {
+      const queryString = Object.entries(selectedFilterOptions)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
 
-    // 필터 적용 문의 목록 조회 api 호출
+      setApiConfig({
+        ...apiConfig,
+        url: `/inquiry/search?page=${currPage}&${queryString}`
+      });
+    }
   }, [currPage, selectedFilterOptions]);
 
   return (
@@ -92,6 +118,7 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
             <FilterWrapper marginTop="1.313rem" marginRight="0.75rem">
               <Filter
                 filterOptions={filterOptions}
+                selectedFilterOptions={selectedFilterOptions}
                 setSelectedFilterOptions={setSelectedFilterOptions}
               />
             </FilterWrapper>

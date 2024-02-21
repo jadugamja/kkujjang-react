@@ -4,10 +4,40 @@ import styled from "styled-components";
 
 import FlexBox from "@/styles/FlexStyle";
 import ReportManagementDetailTable from "./ReportManagementDetailTable";
+import useAxios from "@/hooks/useAxios";
 
 const ReportManagementDetail = ({ data }) => {
   const [gameroomData, setGameroomData] = useState({});
   const [gameroomChatData, setGameroomChatData] = useState();
+  // 임시
+  const roomId = 1;
+  const {
+    response: roomRes,
+    loading: roomLoading,
+    error: roomErr
+  } = useAxios({
+    method: "get",
+    url: `/room/${data?.roomId}`
+  });
+  const {
+    response: chatRes,
+    loading: chatLoading,
+    error: chatErr
+  } = useAxios({
+    method: "get",
+    url: `/chat/search?roomId=${roomId}`
+  });
+
+  useEffect(() => {
+    if (roomRes !== null) {
+      setGameroomData(roomRes);
+    }
+  }, [roomRes]);
+
+  useEffect(() => {
+    if (chatRes !== null) {
+    }
+  }, [chatRes]);
 
   useEffect(() => {
     // 신고 게임방 로그 조회 api 호출 (room/:roomId)

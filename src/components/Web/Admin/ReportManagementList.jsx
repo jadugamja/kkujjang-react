@@ -7,12 +7,18 @@ import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import useAxios from "@/hooks/useAxios";
 
 const ReportManagementList = ({ type, onSideOpen }) => {
   const [data, setData] = useState([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState({});
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(25);
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/report/search?page=${currPage}`
+  });
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   // 필터 key 데이터 추출
   const filterKeys = ["createdAt", "types"];
@@ -26,6 +32,18 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   });
 
   useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setData(response.list);
+    } else {
+      setLastPageIdx(1);
+      setData([]);
+    }
+
     const tmp = [
       {
         id: 1,
@@ -87,7 +105,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
     // createMultiSelectedFilterKeys(listData);
     setData(listData);
-  }, []);
+  }, [response]);
 
   // 페이지, 필터 변경 시 호출
   useEffect(() => {
@@ -105,17 +123,33 @@ const ReportManagementList = ({ type, onSideOpen }) => {
             : new Date(b[key]) - new Date(a[key])
         );
       } else if (key === "types") {
-        filteredData = filteredData.filter((item) => item[key] === value);
+        filteredData = filteredData.filter((item) => {
+          return Object.entries(value).every(([typeKey, typeValue]) => {
+            return typeValue === null || item[typeKey] === typeValue;
+          });
+        });
       }
     });
 
     setData(filteredData);
 
     const queryString = Object.entries(selectedFilterOptions)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => {
+        if (key === "types") {
+          return Object.entries(value)
+            ?.filter(([typeValue]) => typeValue !== null)
+            ?.map(([typeKey, typeValue]) => `${typeKey}=${typeValue ? 1 : 0}`)
+            ?.join("&");
+        } else {
+          return `${key}=${value}`;
+        }
+      })
       .join("&");
 
-    // 필터 적용 문의 목록 조회 api 호출
+    setApiConfig({
+      ...apiConfig,
+      url: `/report/search?page=${currPage}&${queryString}`
+    });
   }, [currPage, selectedFilterOptions]);
 
   return (

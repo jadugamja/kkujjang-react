@@ -39,7 +39,7 @@ export const SmallSubmitBrownButton = styled.button`
 
 // Modal에서 주로 사용하는 회색 Submit 버튼
 export const ModalGrayButton = styled.button`
-  width: ${(props) => props.width || "13.063rem"};
+  width: 11rem;
   height: ${(props) => props.width || "3.625rem"};
   background-color: ${({ theme }) => theme.colors.gray100};
   border: 1px solid ${({ theme }) => theme.colors.gray500};

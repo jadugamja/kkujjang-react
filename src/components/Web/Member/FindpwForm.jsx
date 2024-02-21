@@ -76,8 +76,7 @@ const FindpwForm = () => {
         <WebModal
           setIsOpen={setAuthModalOpen}
           hasButton={true}
-          message="인증번호가 일치하지 않습니다."
-        />
+        >인증번호가 일치하지 않습니다.</WebModal>
       )}
 
       {/* 비밀번호 변경 modal */}
@@ -86,8 +85,7 @@ const FindpwForm = () => {
           setIsOpen={setChangePwModalOpen}
           hasButton={true}
           isMoving={true}
-          message="비밀번호를 변경하시겠습니까?"
-        />
+        >비밀번호를 변경하시겠습니까?</WebModal>
       )}
 
       {/* 아이디 찾기 실패 modal */}
@@ -95,8 +93,7 @@ const FindpwForm = () => {
         <WebModal
           setIsOpen={setFindidModalOpen}
           hasButton={true}
-          message="아이디가 존재하지 않습니다."
-        />
+        >아이디가 존재하지 않습니다.</WebModal>
       )}
 
       <FindpwFormFlexContainer dir="col">

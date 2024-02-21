@@ -8,7 +8,6 @@ import Button from "../Shared/Buttons/Button";
 import SearchBar from "../Shared/Board/SearchBar";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
-import { getNoticeList, getNoticeSearch } from "@/services/api";
 import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
@@ -16,23 +15,24 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/notice/list?page=${currPage}`
+  });
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
-    const getNoticeListHandler = async () => {
-      try {
-        const data = await getNoticeList(currPage);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeListHandler();
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setListData(response.list);
+    } else {
+      setLastPageIdx(1);
+      setListData([]);
+    }
 
     // 임시 데이터
     const list = [
@@ -103,63 +103,66 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
     } else {
       setListData(list);
     }
-  }, []);
+  }, [response]);
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
-    const getNoticeSearchHandler = async () => {
-      try {
-        const data = await getNoticeSearch(currPage, searchKeyword);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeSearchHandler();
+    if (searchKeyword !== "") {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+      });
+    } else {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/list?page=${currPage}`
+      });
+    }
   }, [currPage, searchKeyword]);
 
   return (
     <>
-      {type !== "home" ? (
-        <Box>
-          <HeaderWrapper row="between" col="center">
-            <ManagementTitle title="notice" />
-            <SearchBarWrapper marginTop="14px" marginRight="10px">
-              <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
-            </SearchBarWrapper>
-          </HeaderWrapper>
-          <ManagementList
-            isHome={false}
-            title="notice"
-            data={listData}
-            onSideOpen={onDetailOpen}
-          />
-          <Pagination
-            currPage={currPage}
-            setCurrPage={setCurrPage}
-            lastPageIdx={lastPageIdx}
-          />
-          <ButtonWrapper row="end">
-            <CreateButton onClick={onCreateOpen} />
-          </ButtonWrapper>
-        </Box>
-      ) : (
-        <Box type={type}>
-          <ManagementTitle type={type} title="notice" />
-          <ManagementList
-            isHome={true}
-            title="notice"
-            data={listData}
-            onSideOpen={onDetailOpen}
-          />
-        </Box>
-      )}
+      {
+        /* loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+        ) : */
+        type !== "home" ? (
+          <Box>
+            <HeaderWrapper row="between" col="center">
+              <ManagementTitle title="notice" />
+              <SearchBarWrapper marginTop="14px" marginRight="10px">
+                <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
+              </SearchBarWrapper>
+            </HeaderWrapper>
+            <ManagementList
+              isHome={false}
+              title="notice"
+              data={listData}
+              onSideOpen={onDetailOpen}
+            />
+            <Pagination
+              currPage={currPage}
+              setCurrPage={setCurrPage}
+              lastPageIdx={lastPageIdx}
+            />
+            <ButtonWrapper row="end">
+              <CreateButton onClick={onCreateOpen} />
+            </ButtonWrapper>
+          </Box>
+        ) : (
+          <Box type={type}>
+            <ManagementTitle type={type} title="notice" />
+            <ManagementList
+              isHome={true}
+              title="notice"
+              data={listData}
+              onSideOpen={onDetailOpen}
+            />
+          </Box>
+        )
+      }
     </>
   );
 };

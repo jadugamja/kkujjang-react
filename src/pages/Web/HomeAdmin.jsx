@@ -9,19 +9,18 @@ import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
 import UserManagementList from "@/components/Web/Admin/UserManagementList";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { isAnswerCompletedState } from "@/recoil/boardState";
 import { itemIdState } from "@/recoil/boardState";
 
 const HomeAdmin = () => {
-  const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
   const setItemId = useSetRecoilState(itemIdState);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
-
   const navigate = useNavigate();
 
   const onSideOpen = (page, id) => {
+    setItemId(id);
+
     switch (page) {
       case "notice":
         navigate("/admin/notice");
@@ -38,9 +37,6 @@ const HomeAdmin = () => {
       default:
         break;
     }
-
-    setIsActiveSideContentType(1);
-    setItemId(id);
   };
 
   return (

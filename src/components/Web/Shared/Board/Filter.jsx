@@ -13,29 +13,42 @@ const filterLabels = {
   createdAt: "정렬"
 };
 
-const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
+const Filter = ({ filterOptions, selectedFilterOptions, setSelectedFilterOptions }) => {
   const [isClicked, setIsClicked] = useState(
     filterOptions?.reduce((acc, key) => ({ ...acc, [key]: false }), {})
   );
   const [isChecked, setIsChecked] = useState(
     filterOptions
-      ?.filter(({ key }) => key === "types")
-      ?.reduce((acc, option) => ({ ...acc, [option.key]: [] }), {})
+      ?.filter((option) => option.key === "types")
+      ?.reduce(
+        (acc, option) => ({
+          ...acc,
+          [option.key]: option.values.reduce(
+            (obj, value) => ({ ...obj, [value]: false }),
+            {}
+          )
+        }),
+        {}
+      )
   );
 
   const onApplyFilter = (key, item) => {
-    setSelectedFilterOptions((prev) => ({ ...prev, [key]: item }));
+    const newFilterOptions = { ...selectedFilterOptions, [key]: item };
+    setSelectedFilterOptions(newFilterOptions);
     if (key !== "types") {
       setIsClicked((prev) => ({ ...prev, [key]: !prev[key] }));
     }
   };
 
   const onCheckboxChange = (key, item) => {
+    setSelectedFilterOptions((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], [item]: !prev[key][item] }
+    }));
+
     setIsChecked((prev) => ({
       ...prev,
-      [key]: prev[key].includes(item)
-        ? prev[key].filter((i) => i !== item)
-        : [...prev[key], item]
+      [key]: { ...prev[key], [item]: !prev[key][item] }
     }));
   };
 
@@ -62,7 +75,7 @@ const Filter = ({ filterOptions, setSelectedFilterOptions }) => {
                     <>
                       <input
                         type="checkbox"
-                        checked={isChecked[key].includes(item)}
+                        checked={isChecked[key][item]}
                         onChange={() => onCheckboxChange(key, item)}
                       />
                       {getFilterItemText(key, item)}
@@ -131,6 +144,7 @@ const getFilterItemText = (key, item) => {
 
 Filter.propTypes = {
   filterOptions: PropTypes.array,
+  selectedFilterOptions: PropTypes.object,
   setSelectedFilterOptions: PropTypes.func
 };
 

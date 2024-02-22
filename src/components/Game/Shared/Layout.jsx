@@ -22,6 +22,7 @@ export const Wrapper = styled(FlexBox)`
   height: ${({ height }) => height};
   margin: ${({ margin }) => margin};
   padding: ${({ padding }) => padding};
+  border-radius: ${({ borderRadius }) => borderRadius};
 `;
 
 export const SpacingWrapper = styled(FlexBox)`

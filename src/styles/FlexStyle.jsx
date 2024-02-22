@@ -5,6 +5,10 @@ export const FlexBox = styled.div`
   flex-direction: ${({ dir }) => setFlexDirection(dir)};
   justify-content: ${({ row }) => setJustifyContent(row)};
   align-items: ${({ col }) => setAlignItems(col)};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  margin: ${({ margin }) => margin};
+  padding: ${({ padding }) => padding};
 `;
 
 // flex-box의 flex-direction 설정

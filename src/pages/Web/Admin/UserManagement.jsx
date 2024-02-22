@@ -9,6 +9,7 @@ import UserManagementDetail from "@/components/Web/Admin/UserManagementDetail";
 import Header from "@/components/Web/Shared/Layout/Header";
 import { FlexBox } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
+import useAxios from "@/hooks/useAxios";
 
 const UserManagement = () => {
   const [isActiveSideContentType, setIsActiveSideContentType] = useRecoilState(
@@ -16,10 +17,42 @@ const UserManagement = () => {
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
   const [userData, setUserData] = useState();
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+
+  useEffect(() => {
+    if (itemId === null) {
+      setIsActiveSideContentType(0);
+    } else {
+      setIsActiveSideContentType(1);
+      setApiConfig({
+        method: "get",
+        url: `/user/${itemId}`
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setUserData(userRes);
+      setIsActiveSideContentType(1);
+      setItemId(id);
+    }
+  }, [response]);
 
   const onSideOpen = (id) => {
-    // 사용자 상세 조회 api 호출 (user/:userId)
+    setApiConfig({
+      method: "get",
+      url: `/user/${id}`
+    });
 
+    // 임시 데이터
     const userRes = {
       id: 5,
       nickname: "someNickname#5",
@@ -32,25 +65,6 @@ const UserManagement = () => {
     setIsActiveSideContentType(1);
     setItemId(id);
   };
-
-  useEffect(() => {
-    if (itemId !== null) {
-      const userRes = {
-        id: itemId,
-        nickname: "someNickname#5",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        isBanned: true
-        // 추가적인 사용자 정보...
-      };
-      setUserData(userRes);
-    }
-  }, [itemId]);
-
-  useEffect(() => {
-    if (itemId === null) {
-      setIsActiveSideContentType(0);
-    }
-  }, []);
 
   return (
     <ContentWrapper row="center" col="center">

@@ -106,7 +106,6 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 
     // 인증 번호 유효 시간 초과
     if (timeOut) {
-      // 임시 경고
       setIsModalOpen(true);
       setModalMessage("인증 번호가 만료되었습니다.");
       return;
@@ -185,11 +184,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
         )}
       </>
       {isModalOpen && (
-        <WebModal
-          setIsOpen={setIsModalOpen}
-          message="인증번호가 일치하지 않습니다."
-          hasButton={true}
-        />
+        <WebModal setIsOpen={setIsModalOpen} hasButton={true}>
+          인증번호가 일치하지 않습니다.
+        </WebModal>
       )}
     </ItemWrapper>
   );

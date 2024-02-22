@@ -1,32 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../services/const";
 
 axios.defaults.baseURL = BASE_URL;
 
-const useAxios = ({ path, method, body = null, headers = null }) => {
+// config = { method, url, headers, data }
+const useAxios = (config, executeOnMount = true) => {
   const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchData = () => {
-    axios[method](path, JSON.parse(headers), JSON.parse(body))
-      .then((res) => {
-        setResponse(res.data);
-      })
-      .catch((err) => {
-        setError(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axios.request(config);
+      setResponse(res?.data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [config]);
 
   useEffect(() => {
-    fetchData();
-  }, [method, path, body, headers]);
+    if (executeOnMount) {
+      fetchData();
+    }
+  }, []);
 
-  return { response, error, loading };
+  return { response, error, loading, fetchData };
 };
 
 export default useAxios;

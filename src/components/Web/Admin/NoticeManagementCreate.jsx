@@ -7,16 +7,20 @@ import "react-quill/dist/quill.snow.css";
 import FlexBox from "@/styles/FlexStyle";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
-import { postNotice } from "@/services/api";
+import useAxios from "@/hooks/useAxios";
+import { isActiveSideContentTypeState } from "@/recoil/displayState";
 
 const MAX_IMAGE_COUNT = 3;
 
 const NoticeManagementCreate = () => {
+  const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
 
   const editorRef = useRef(null);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // 텍스트 에디터 옵션
   const modules = {
@@ -31,7 +35,20 @@ const NoticeManagementCreate = () => {
   };
 
   useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setIsActiveSideContentType(0);
+    }
+  }, [response]);
+
+  useEffect(() => {
     const handleImage = () => {
+      if (!editorRef.current) return;
       const editor = editorRef.current.getEditor();
 
       // input[type="file"] 있는지 확인
@@ -88,6 +105,7 @@ const NoticeManagementCreate = () => {
 
   // 이미지 삭제 처리
   useEffect(() => {
+    if (!editorRef.current) return;
     const editor = editorRef.current.getEditor();
 
     // text-change 이벤트 핸들러
@@ -121,7 +139,7 @@ const NoticeManagementCreate = () => {
     }
   }, [content]);
 
-  const noticeSubmitHandler = async (e) => {
+  const noticeSubmitHandler = (e) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -129,50 +147,56 @@ const NoticeManagementCreate = () => {
     formData.append("content", content);
     formData.append("files", images);
 
-    try {
-      const data = await postNotice(formData);
-      if (data === "success") {
-        // NoticeManagementCreate 닫고 + NoticeManagementList 업데이트
-      }
-    } catch (e) {
-      console.error(`[Error]: ${err}`);
-    }
+    setApiConfig({
+      method: "post",
+      url: "/notice",
+      headers: { "Content-Type": "multipart/form-data" },
+      data: formData
+    });
   };
 
   return (
-    <NoticeCreateForm>
-      <TitleInput
-        type="text"
-        name="title"
-        hasLabel={false}
-        maxLength="100"
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="제목을 입력하세요."
-      />
-      <EditorWrapper>
-        <ReactQuill
-          style={{ height: "29rem" }}
-          ref={editorRef}
-          theme="snow"
-          modules={modules}
-          onChange={(_content) => {
-            const _contentWithEmptySrc = _content.replace(
-              /<img[^>]*src="[^"]*"[^>]*>/g,
-              (match) => {
-                return match.replace(/src="[^"]*"/, 'src=""');
-              }
-            );
-            setContent(_contentWithEmptySrc);
-          }}
-          placeholder="내용을 입력하세요."
-        />
-      </EditorWrapper>
-      <ButtonWrapper row="end">
-        <SaveButton width="7rem" onClick={(e) => noticeSubmitHandler(e)}>
-          저장
-        </SaveButton>
-      </ButtonWrapper>
-    </NoticeCreateForm>
+    <>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <NoticeCreateForm>
+          <TitleInput
+            type="text"
+            name="title"
+            hasLabel={false}
+            maxLength="100"
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목을 입력하세요."
+          />
+          <EditorWrapper>
+            <ReactQuill
+              style={{ height: "29rem" }}
+              ref={editorRef}
+              theme="snow"
+              modules={modules}
+              onChange={(_content) => {
+                const _contentWithEmptySrc = _content.replace(
+                  /<img[^>]*src="[^"]*"[^>]*>/g,
+                  (match) => {
+                    return match.replace(/src="[^"]*"/, 'src=""');
+                  }
+                );
+                setContent(_contentWithEmptySrc);
+              }}
+              placeholder="내용을 입력하세요."
+            />
+          </EditorWrapper>
+          <ButtonWrapper row="end">
+            <SaveButton width="7rem" onClick={(e) => noticeSubmitHandler(e)}>
+              저장
+            </SaveButton>
+          </ButtonWrapper>
+        </NoticeCreateForm>
+      )}
+    </>
   );
 };
 

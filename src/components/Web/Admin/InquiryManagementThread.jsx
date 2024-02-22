@@ -15,6 +15,7 @@ import {
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 import ImageFileUpload from "../Shared/Board/ImageFileUpload";
 import { Input } from "../Shared/Form/InputFieldStyle";
+import useAxios from "../../../hooks/useAxios";
 
 const InquiryManagementThread = ({ data }) => {
   const { id, type, threadTitle, nickname, updatedAt, content, file } = data;
@@ -26,6 +27,7 @@ const InquiryManagementThread = ({ data }) => {
   const [replyAnswer, setReplyAnswer] = useState("");
   const [replyAnswerFiles, setReplyAnswerFiles] = useState([]);
   const [replyAnswers, setReplyAnswers] = useState([]);
+  const { response, error, loading, fetchData } = useAxios(null, false);
 
   const replyAnswerRef = useRef(null);
 
@@ -79,10 +81,18 @@ const InquiryManagementThread = ({ data }) => {
       }
 
       const formData = new FormData();
-      formData.append("answer", answer);
-      formData.append("file", answerFiles);
+      formData.append("content", answer);
+      formData.append("files", answerFiles);
 
       // 문의 답변 등록 api 호출
+      const apiConfig = {
+        method: "post",
+        url: `inquiry/${id}`,
+        headers: { "Content-Type": "multipart/form-data" },
+        data: formData
+      };
+
+      fetchData(apiConfig);
 
       // 등록 성공 시
       updateAnswerStatus(id, true);
@@ -100,12 +110,21 @@ const InquiryManagementThread = ({ data }) => {
       }
 
       const formData = new FormData();
-      formData.append("answer", replyAnswer);
-      replyAnswerFiles.forEach((file, idx) => {
-        formData.append(`file[${idx}]`, file);
-      });
+      formData.append("content", replyAnswer);
+      formData.append("files", replyAnswerFiles);
+      // replyAnswerFiles.forEach((file, idx) => {
+      //   formData.append(`file[${idx}]`, file);
+      // });
 
       // 문의 추가 답변 등록 api 호출
+      const apiConfig = {
+        method: "post",
+        url: `inquiry/${id}`,
+        headers: { "Content-Type": "multipart/form-data" },
+        data: formData
+      };
+
+      fetchData(apiConfig);
 
       // 호출 성공 시
       setReplyAnswers((prevReplyAnswers) => [

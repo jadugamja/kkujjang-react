@@ -111,7 +111,9 @@ const MyInfoContainer = () => {
   return (
     <>
       {nicknameModalOpen && (
-        <WebModal setIsOpen={setNicknameModalOpen} hasButton={true} message={message} />
+        <WebModal setIsOpen={setNicknameModalOpen} hasButton={true}>
+          {message}
+        </WebModal>
       )}
 
       <InfoBox marginLeft="auto" marginRight="auto">

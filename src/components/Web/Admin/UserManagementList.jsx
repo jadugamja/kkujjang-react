@@ -9,6 +9,7 @@ import SearchBar from "../Shared/Board/SearchBar";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
 import { isActiveAccountState } from "@/recoil/userState";
+import useAxios from "@/hooks/useAxios";
 
 const UserManagementList = ({ type, onSideOpen }) => {
   const [data, setData] = useState([]);
@@ -18,6 +19,28 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const [showBanned, setShowBanned] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const setAccountStates = useSetRecoilState(isActiveAccountState);
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/user/search?page=${currPage}`
+  });
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
+
+  useEffect(() => {
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setData(response.list);
+      data.forEach((user) => {
+        setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
+      });
+    } else {
+      setLastPageIdx(1);
+      setData([]);
+    }
+  }, [response]);
+
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
 
   useEffect(() => {
     const tmp = [
@@ -60,7 +83,7 @@ const UserManagementList = ({ type, onSideOpen }) => {
     data?.forEach((user) => {
       setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
     });
-  }, [data, setAccountStates]);
+  }, [setAccountStates]);
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
@@ -68,10 +91,12 @@ const UserManagementList = ({ type, onSideOpen }) => {
       return;
     }
 
-    let queryString = `?page=${currPage}${
-      searchKeyword !== "" ? `&q=${searchKeyword}` : ""
-    }`;
-    // 공지사항 목록 조회 api 호출
+    let queryString = `?page=${currPage}${searchKeyword !== "" && `&q=${searchKeyword}`}`;
+
+    setApiConfig({
+      ...apiConfig,
+      url: `/user/search${queryString}`
+    });
   }, [currPage, searchKeyword]);
 
   // 밴 여부 체크박스 클릭 제어

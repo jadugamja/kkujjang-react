@@ -17,7 +17,7 @@ const ReportManagementDetail = ({ data }) => {
     error: roomErr
   } = useAxios({
     method: "get",
-    url: `/room/${data?.roomId}`
+    url: `/room/${roomId}`
   });
   const {
     response: chatRes,
@@ -30,12 +30,14 @@ const ReportManagementDetail = ({ data }) => {
 
   useEffect(() => {
     if (roomRes !== null) {
-      setGameroomData(roomRes);
+      const { roomId, createdAt, expiredAt } = roomRes;
+      setGameroomData({ roomId, createdAt, expiredAt });
     }
   }, [roomRes]);
 
   useEffect(() => {
     if (chatRes !== null) {
+      setGameroomChatData(chatRes);
     }
   }, [chatRes]);
 

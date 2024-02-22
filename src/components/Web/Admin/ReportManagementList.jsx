@@ -103,7 +103,6 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       })
     );
 
-    // createMultiSelectedFilterKeys(listData);
     setData(listData);
   }, [response]);
 
@@ -137,7 +136,6 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       .map(([key, value]) => {
         if (key === "types") {
           return Object.entries(value)
-            ?.filter(([typeValue]) => typeValue !== null)
             ?.map(([typeKey, typeValue]) => `${typeKey}=${typeValue ? 1 : 0}`)
             ?.join("&");
         } else {

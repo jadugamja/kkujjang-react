@@ -19,7 +19,7 @@ const Filter = ({ filterOptions, selectedFilterOptions, setSelectedFilterOptions
   );
   const [isChecked, setIsChecked] = useState(
     filterOptions
-      ?.filter((option) => option.key === "types")
+      ?.filter(({ key }) => key === "types")
       ?.reduce(
         (acc, option) => ({
           ...acc,
@@ -33,23 +33,22 @@ const Filter = ({ filterOptions, selectedFilterOptions, setSelectedFilterOptions
   );
 
   const onApplyFilter = (key, item) => {
-    const newFilterOptions = { ...selectedFilterOptions, [key]: item };
-    setSelectedFilterOptions(newFilterOptions);
     if (key !== "types") {
+      const newFilterOptions = { ...selectedFilterOptions, [key]: item };
+      setSelectedFilterOptions(newFilterOptions);
       setIsClicked((prev) => ({ ...prev, [key]: !prev[key] }));
     }
   };
 
   const onCheckboxChange = (key, item) => {
-    setSelectedFilterOptions((prev) => ({
-      ...prev,
-      [key]: { ...prev[key], [item]: !prev[key][item] }
-    }));
-
-    setIsChecked((prev) => ({
-      ...prev,
-      [key]: { ...prev[key], [item]: !prev[key][item] }
-    }));
+    setIsChecked((prev) => {
+      const updated = { ...prev, [key]: { ...prev[key], [item]: !prev[key][item] } };
+      setSelectedFilterOptions((prevOptions) => ({
+        ...prevOptions,
+        [key]: updated[key]
+      }));
+      return updated;
+    });
   };
 
   return (

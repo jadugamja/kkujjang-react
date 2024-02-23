@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "@/services/const";
 
 import {
   initialCharacterState,
@@ -13,9 +14,6 @@ import {
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
-
-// 환경 변수 가져오기
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
   const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);

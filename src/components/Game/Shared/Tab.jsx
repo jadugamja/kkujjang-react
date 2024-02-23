@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
+import { joinRoom, onJoinRoom, onUserJoinRoom } from "../../../services/socket";
 
 const TAB_TYPES = {
   CREATE: "create",
@@ -117,8 +118,17 @@ export const Tab = ({ children, type, rooms, onClick }) => {
       const pickedRoom =
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
+      joinRoom({ roomId: pickedRoom.id, password: null });
+
+      onJoinRoom(() => {
+        navigate(`/game/${pickedRoom.id}`);
+      });
+
+      onUserJoinRoom((userId) => {
+        // 방에 참가한 사용자의 userId를 배열에 추가
+        console.log(userId);
+      });
       // setRoomId(pickedRoom.id);
-      navigate(`/game/${pickedRoom.id}`);
     }
   }, [rooms]);
 

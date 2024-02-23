@@ -11,6 +11,7 @@ import WaitingTab from "@/components/Game/Waiting/WaitingTab";
 import PlayingTab from "@/components/Game/Playing/PlayingTab";
 import WaitingContainer from "@/components/Game/Waiting/WaitingContainer";
 import PlayingContainer from "@/components/Game/Playing/PlayingContainer";
+import { loadRoom } from "../../services/socket";
 
 const GameRoom = () => {
   const [roomInfo, setRoomInfo] = useState({});
@@ -25,7 +26,9 @@ const GameRoom = () => {
   const { roomId } = useParams();
 
   useEffect(() => {
-    // roomInfo 조회 GET API 호출 (query: roomId)
+    // 방 조회
+    loadRoom(roomId, setRoomInfo);
+
     const tmp = {
       id: roomId,
       title: "테스트123",

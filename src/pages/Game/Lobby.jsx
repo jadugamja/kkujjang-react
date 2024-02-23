@@ -17,18 +17,48 @@ import {
   MainContentWrapper,
   SpacingWrapper
 } from "@/components/Game/Shared/Layout";
+import {
+  initSocket,
+  disconnectSocket,
+  loadRoomList,
+  onLoadNewRoom,
+  onDestroyRoom
+} from "@/services/socket";
 
 const Lobby = () => {
+  // 첫 로그인 사용자
   const avatarUrl = useRecoilValue(avatarUrlState);
+  const [error, setError] = useState(null);
   const [rooms, setRooms] = useState([]);
+  const [modalType, setModalType] = useState(!avatarUrl ? "avatar" : null);
   const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
 
   // 플레이어 정보
-  useEffect(() => {}, []);
+  useEffect(() => {
+    initSocket(setError);
+
+    return () => disconnectSocket();
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      setModalType("error");
+      setIsModalOpen(true);
+    }
+  }, [error]);
 
   // 방 정보
   useEffect(() => {
-    // 방 목록 정보 불러오기 api 호출
+    loadRoomList(setRooms);
+
+    onLoadNewRoom((newRoom) => {
+      setRooms((prev) => [newRoom, ...prev]);
+    });
+
+    onDestroyRoom((roomId) => {
+      setRooms((prev) => prev.filter((room) => room.id !== roomId));
+    });
+
     const storedRoomInfoList = localStorage.getItem("roomInfoList");
     const bgVolume = localStorage.getItem("bgVolume");
     const fxVolume = localStorage.getItem("fxVolume");
@@ -37,6 +67,7 @@ const Lobby = () => {
     if (storedRoomInfoList) {
       const roomList = JSON.parse(storedRoomInfoList);
       roomList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      debugger;
       setRooms(roomList);
     }
 
@@ -48,7 +79,9 @@ const Lobby = () => {
   return (
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
-        <Modal type="avatar" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+        <Modal type={modalType} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          {modalType === "error" && "에러가 발생했습니다. 다시 시도해주세요."}
+        </Modal>
       )}
       <WideContent dir="col">
         <GameHeader />

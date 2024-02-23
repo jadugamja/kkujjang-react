@@ -33,8 +33,9 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
+import { createRoom, updateRoom } from "../../../services/socket";
 
-const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
+const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -174,17 +175,25 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       return;
     }
 
+    // 임시 roomId
     const roomId = roomInfoList.length + 1;
 
     if (roomInfoList.some((room) => room.id === roomId)) {
-      // 방 정보 PUT API 호출
+      updateRoom(roomInfo, (room) => {
+        setRoomInfo(room);
+      });
+
       setRoomInfoList((prev) =>
         prev.map((room) =>
           room.id === roomId ? { ...room, ...roomInfo, id: roomId } : room
         )
       );
     } else {
-      // 방 정보 POST API 호출
+      createRoom(roomInfo, (room) => {
+        setRoomId(roomId);
+        setRoomInfo(room);
+      });
+
       // (최초 방 생성 시, 생성한 플레이어의 username을 같이 보내어 roomInfo에 hostId를 같이 저장해둬야 함)
       setRoomId(roomId);
       setRoomInfo((prev) => ({
@@ -444,6 +453,24 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
               </ButtonWrapper>
             </GameModalBody>
           )}
+
+          {type === "error" && (
+            <GameModalBody top="43px">
+              <GameModalMessage fontSize="20px" fontWeight="500">
+                {children}
+              </GameModalMessage>
+              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+                <GameModalButton
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate("/");
+                  }}
+                >
+                  확인
+                </GameModalButton>
+              </ButtonWrapper>
+            </GameModalBody>
+          )}
         </GameModalContent>
       </>
     )
@@ -460,12 +487,14 @@ GameModal.propTypes = {
     "setting",
     "help",
     "exit",
-    "avatar"
+    "avatar",
+    "error"
   ]),
-  message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
-  roomId: PropTypes.number
+  roomId: PropTypes.number,
+  children: PropTypes.node,
+  message: PropTypes.string
 };
 
 export default GameModal;

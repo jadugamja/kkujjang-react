@@ -10,7 +10,7 @@ import BoardItem from "@/components/Web/Shared/Board/BoardItem";
 import Pagination from "@/components/Web/Shared/Board/Pagination";
 
 // ===== style =====
-const Noticewrapper = styled(FlexBox)`
+const NoticeWrapper = styled(FlexBox)`
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
 `;
@@ -32,8 +32,6 @@ const NoticeListContainer = () => {
 
   // === navigate ===
   const navigate = useNavigate();
-
-  useEffect(() => {}, [currPage]);
 
   useEffect(() => {
     const getNoticeListHandler = async () => {
@@ -123,10 +121,7 @@ const NoticeListContainer = () => {
     }
   }, []);
 
-  const onDetailOpen = (noticeId) => {
-    navigate(`/notice/${noticeId}`);
-  };
-
+  // 백엔드 코드, 수정될 부분
   useEffect(() => {
     const getNoticeSearchHandler = async () => {
       try {
@@ -145,29 +140,35 @@ const NoticeListContainer = () => {
     getNoticeSearchHandler();
   }, [currPage, searchKeyword]);
 
+  const onDetailOpen = (noticeId) => {
+    navigate(`/notice/${noticeId}`);
+  };
+
   return (
     <>
       <NoticeListBox width="75rem" marginLeft="auto" marginRight="auto">
         <BoardTitle type="notice" />
-        <Noticewrapper row="end" marginBottom="25px">
+        <NoticeWrapper row="end" marginBottom="25px">
           <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
-        </Noticewrapper>
-        {listData?.map((listData) => (
-          <BoardItem
-            boardType="notice"
-            key={listData.id}
-            id={listData.id}
-            data={listData}
-            onClick={() => onDetailOpen(listData.id)}
-          />
-        ))}
-        <Noticewrapper marginTop="25px">
+        </NoticeWrapper>
+        <NoticeListBox width="100%" height="460px">
+          {listData?.map((listData, index) => (
+            <BoardItem
+              boardType="notice"
+              key={index}
+              id={listData.id}
+              data={listData}
+              onClick={() => onDetailOpen(listData.id)}
+            />
+          ))}
+        </NoticeListBox>
+        <NoticeWrapper marginTop="25px">
           <Pagination
             currPage={currPage}
             setCurrPage={setCurrPage}
             lastPageIdx={lastPageIdx}
           />
-        </Noticewrapper>
+        </NoticeWrapper>
       </NoticeListBox>
     </>
   );

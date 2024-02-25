@@ -74,7 +74,6 @@ const SignupForm = () => {
         setIdError("");
       } else {
         setDuplicationModalOpen(true);
-        // alert("사용 가능한 아이디입니다.");
       }
     }
   };

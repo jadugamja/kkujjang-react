@@ -13,6 +13,7 @@ const BoardTitleText = styled.p`
   font-family: "Gugi";
   font-size: ${(props) => props.fontSize || "32px"};
   font-weight: ${(props) => props.fontWeight || "500"};
+  margin-bottom: 0;
 `;
 
 // ===== component ======
@@ -23,6 +24,8 @@ const BoardTitle = ({ type }) => {
         return "공지사항";
       case "inquiry":
         return "문의사항";
+      case "create":
+        return "문의 등록";
     }
   };
 

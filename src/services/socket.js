@@ -211,8 +211,8 @@ export const onRoundEnd = (callBack) => {
 
 // ====== 게임 종료 ======
 export const onGameEnd = (callBack) => {
-  client.on("game end", (gameResult) => {
-    callBack(gameResult);
+  client.on("game end", (ranking) => {
+    callBack(ranking);
   });
 };
 

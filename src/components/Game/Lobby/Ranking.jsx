@@ -4,16 +4,30 @@ import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import { StyledMiniButton as Button } from "../Shared/Button";
 import TitleBar from "../Shared/TitleBar";
+import useAxios from "@/hooks/useAxios";
 
 const Ranking = () => {
   const [rankData, setRankData] = useState([]);
   const [myRank, setMyRank] = useState(31);
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
+  const { response, loading, error, fetchData } = useAxios({
+    method: "get",
+    url: "/ranking"
+  });
 
   useEffect(() => {
-    // 랭킹 목록 조회 api 호출
+    if (response !== null) {
+      const pageSize = 15;
+      const startIndex = (currPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const pageData = response.slice(startIndex, endIndex);
+      setLastPageIdx(Math.ceil(response.length / pageSize));
+      setRankData(pageData);
+    }
+  }, [response, currPage]);
 
+  useEffect(() => {
     const rankings = Array.from({ length: 15 }, (_, i) => ({
       rank: (currPage - 1) * 15 + i + 1,
       level: Math.floor(Math.random() * 100),

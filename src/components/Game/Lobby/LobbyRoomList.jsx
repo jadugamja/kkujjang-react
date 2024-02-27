@@ -24,7 +24,7 @@ const LobbyRoomList = ({ rooms }) => {
       <RoomItemWrapper row="between">
         {rooms
           ?.filter((room) => {
-            if (showWaitingRoom && room.isPlaying) {
+            if (showWaitingRoom && room.state === "playing") {
               return false;
             }
             if (showOpenRoom && room.password !== "") {

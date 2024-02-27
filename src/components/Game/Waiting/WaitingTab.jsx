@@ -2,38 +2,55 @@ import { useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 
+import { gameStart, switchReadyState } from "@/services/socket";
 import { roomIdState, isPlayingRoomState } from "@/recoil/roomState";
-import { waitingPlayerListState } from "@/recoil/userState";
+import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
 import { userNameState } from "@/recoil/userState";
 import { SpacingWrapper } from "../Shared/Layout";
 import { MainTab, Tab } from "../Shared/Tab";
 import Modal from "../Shared/GameModal";
+import {
+  randomWordState,
+  initialCharacterState,
+  currentRoundState,
+  myTurnPlayerIndexState
+} from "../../../recoil/gameState";
 
-const WaitingTab = ({ isHost, roomId, playerCount }) => {
+const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const userName = useRecoilValue(userNameState);
-  const setPlayerList = useSetRecoilState(waitingPlayerListState);
   const [isReady, setIsReady] = useState(false);
-
+  const userName = useRecoilValue(userNameState);
   const setRoomId = useSetRecoilState(roomIdState);
-  const setIsPlaying = useSetRecoilState(isPlayingRoomState);
+  const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
+  const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
+  const setRandomWord = useSetRecoilState(randomWordState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+  const setCurrRound = useSetRecoilState(currentRoundState);
+  const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
 
   const onStartGame = () => {
-    if (playerCount === 1) {
-      setIsPlaying(true);
-    }
-
-    // 모든 플레이어가 준비 상태인지 확인
-    // if (isReady.every((ready) => ready)) {
-    //   setIsPlaying(true);
-    // } else {
-    //   setModalType("alert");
-    //   setModalMessage("모든 플레이어가 준비 상태여야 합니다.");
-    //   setIsModalOpen(true);
-    // }
+    gameStart(
+      (room) => {
+        const updatedPlayerList = room.usersSequence.map((user, idx) => ({
+          id: user.userId,
+          score: user.score,
+          myTurn: idx === room.currentTurnUserIndex
+        }));
+        setMyTurnPlayerIndex(room.currentTurnUserIndex);
+        setPlayingPlayerList(updatedPlayerList);
+        setCurrRound(room.currentRound);
+        setRandomWord(room.roundWord);
+        setInitialCharacter(room.wordStartsWith);
+        setIsPlaying(true);
+      },
+      (error) => {
+        setModalType("alert");
+        setModalMessage(error);
+        setIsModalOpen(true);
+      }
+    );
   };
 
   const onUpdateRoomConfig = () => {
@@ -43,16 +60,15 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
   };
 
   const onReadyToggle = () => {
-    setIsReady(!isReady);
-    setPlayerList((prevList) => {
-      return prevList?.map((player) =>
-        // player.id === userName ? { ...player, isReady: !player.isReady } : player
-        // 임시
-        player.id === 3 ? { ...player, isReady: !player.isReady } : player
-      );
+    switchReadyState(!isReady, (data) => {
+      const { index, state } = data;
+      setIsReady(state);
+      setWaitingPlayerList((prevList) => {
+        return prevList?.map((player, idx) =>
+          idx === index ? { ...player, isReady: state } : player
+        );
+      });
     });
-
-    // 준비 상태 변경 PUT api 호출
   };
 
   return (
@@ -77,11 +93,12 @@ const WaitingTab = ({ isHost, roomId, playerCount }) => {
       {isModalOpen ? (
         <Modal
           type={modalType}
-          message={modalMessage}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={roomId}
-        />
+        >
+          {modalMessage}
+        </Modal>
       ) : null}
     </>
   );
@@ -92,7 +109,7 @@ WaitingTab.propTypes = {
   isReady: PropTypes.bool,
   setIsReady: PropTypes.func,
   roomId: PropTypes.number,
-  playerCount: PropTypes.number
+  setIsPlaying: PropTypes.func
 };
 
 export default WaitingTab;

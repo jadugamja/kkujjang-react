@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import { avatarUrlState } from "../../recoil/userState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
@@ -17,18 +16,58 @@ import {
   MainContentWrapper,
   SpacingWrapper
 } from "@/components/Game/Shared/Layout";
+import {
+  initSocket,
+  disconnectSocket,
+  loadRoomList,
+  onLoadNewRoom,
+  onDestroyRoom
+} from "@/services/socket";
+import { onUpdateRoomConfig } from "../../services/socket";
 
 const Lobby = () => {
+  // 첫 로그인 사용자
   const avatarUrl = useRecoilValue(avatarUrlState);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [rooms, setRooms] = useState([]);
+  const [modalType, setModalType] = useState(!avatarUrl ? "avatar" : null);
   const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
 
-  // 플레이어 정보
-  useEffect(() => {}, []);
+  useEffect(() => {
+    initSocket((error) => {
+      setModalType("error");
+      setErrorMessage(error);
+      setIsModalOpen(true);
+    });
+
+    return () => disconnectSocket();
+  }, []);
 
   // 방 정보
   useEffect(() => {
-    // 방 목록 정보 불러오기 api 호출
+    loadRoomList(setRooms);
+
+    onLoadNewRoom((newRoom) => {
+      setRooms((prev) => [newRoom, ...prev]);
+    });
+
+    onDestroyRoom((roomId) => {
+      setRooms((prev) => prev.filter((room) => room.id !== roomId));
+    });
+
+    onUpdateCurrentPlayerCount((data) => {
+      const { roomId, currentPlayerCount } = data;
+      setRooms((prev) =>
+        prev.map((room) => (room.id === roomId ? { ...room, currentPlayerCount } : room))
+      );
+    });
+
+    onUpdateRoomConfig((newRoom) => {
+      setRooms((prev) =>
+        prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
+      );
+    });
+
     const storedRoomInfoList = localStorage.getItem("roomInfoList");
     const bgVolume = localStorage.getItem("bgVolume");
     const fxVolume = localStorage.getItem("fxVolume");
@@ -48,7 +87,9 @@ const Lobby = () => {
   return (
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
-        <Modal type="avatar" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+        <Modal type={modalType} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          {modalType === "errorMessage" && errorMessage}
+        </Modal>
       )}
       <WideContent dir="col">
         <GameHeader />

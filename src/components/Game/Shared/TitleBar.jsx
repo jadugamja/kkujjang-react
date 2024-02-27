@@ -12,7 +12,7 @@ const TitleBar = ({
   showOpenRoom,
   setShowOpenRoom
 }) => {
-  const { id, title, playerCount, maxPlayerCount, roundCount, roundTime } = info;
+  const { id, title, currentUserCount, maxUserCount, maxRound, roundTimeLimit } = info;
   return (
     <StyledTitleBar row="between">
       {/* Left */}
@@ -59,9 +59,9 @@ const TitleBar = ({
       )}
       {type === "room" && (
         <TitleRightSideWrapper left="28px">
-          <span>{`참여자 ${playerCount}/${maxPlayerCount}`}</span>
-          <span>{`라운드 ${roundCount}`}</span>
-          <span>{`${roundTime}초`}</span>
+          <span>{`참여자 ${currentUserCount}/${maxUserCount}`}</span>
+          <span>{`라운드 ${maxRound}`}</span>
+          <span>{`${roundTimeLimit}초`}</span>
         </TitleRightSideWrapper>
       )}
     </StyledTitleBar>
@@ -73,10 +73,10 @@ TitleBar.propTypes = {
   info: PropTypes.shape({
     id: PropTypes.number,
     title: PropTypes.string,
-    playerCount: PropTypes.number,
-    maxPlayerCount: PropTypes.number,
-    roundCount: PropTypes.number,
-    roundTime: PropTypes.number
+    currentUserCount: PropTypes.number,
+    maxUserCount: PropTypes.number,
+    maxRound: PropTypes.number,
+    roundTimeLimit: PropTypes.number
   }),
   showWaitingRoom: PropTypes.bool,
   setShowWaitingRoom: PropTypes.func,

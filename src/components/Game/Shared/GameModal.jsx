@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 
-import { userState } from "@/recoil/userState";
+import { userState, userNameState, waitingPlayerListState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
@@ -33,8 +33,10 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
+import { createRoom, changeRoomConfig, leaveRoom } from "../../../services/socket";
+import useAxios from "@/hooks/useAxios";
 
-const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
+const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -45,7 +47,10 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
   const setUser = useSetRecoilState(userState);
+  const userId = useRecoilValue(userNameState);
   const setRoomId = useSetRecoilState(roomIdState);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   let titleText = "";
   let buttonMessage = "확인";
@@ -174,17 +179,26 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       return;
     }
 
+    // 임시 roomId
     const roomId = roomInfoList.length + 1;
 
     if (roomInfoList.some((room) => room.id === roomId)) {
-      // 방 정보 PUT API 호출
+      changeRoomConfig(roomInfo, (room) => {
+        setRoomInfo(room);
+      });
       setRoomInfoList((prev) =>
         prev.map((room) =>
           room.id === roomId ? { ...room, ...roomInfo, id: roomId } : room
         )
       );
     } else {
-      // 방 정보 POST API 호출
+      createRoom(roomInfo, (room) => {
+        setRoomId(roomId);
+        setRoomInfo(room);
+      });
+
+      // setWaitingPlayerList();
+
       // (최초 방 생성 시, 생성한 플레이어의 username을 같이 보내어 roomInfo에 hostId를 같이 저장해둬야 함)
       setRoomId(roomId);
       setRoomInfo((prev) => ({
@@ -211,6 +225,13 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
       setIsOpen(false);
       navigate(`/game/${roomId}`);
     }
+  };
+
+  const onExitRoom = () => {
+    leaveRoom(roomId, userId, () => {
+      setIsOpen(false);
+      navigate("/game");
+    });
   };
 
   return (
@@ -410,13 +431,13 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
           )}
 
           {/* 도움말 modal */}
-          {type === "help" && <GameModalLongMessage>{message}</GameModalLongMessage>}
+          {type === "help" && <GameModalLongMessage>{children}</GameModalLongMessage>}
 
           {/* 경고 modal */}
           {type === "alert" && (
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
-                {message}
+                {children}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
                 <GameModalButton onClick={() => setIsOpen(false)}>
@@ -430,13 +451,24 @@ const GameModal = ({ type, message, isOpen, setIsOpen, roomId }) => {
           {type === "exit" && (
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
-                {message}
+                {children}
+              </GameModalMessage>
+              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+                <GameModalButton onClick={onExitRoom}>확인</GameModalButton>
+              </ButtonWrapper>
+            </GameModalBody>
+          )}
+
+          {type === "error" && (
+            <GameModalBody top="43px">
+              <GameModalMessage fontSize="20px" fontWeight="500">
+                {children}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
                 <GameModalButton
                   onClick={() => {
                     setIsOpen(false);
-                    navigate("/game");
+                    navigate("/");
                   }}
                 >
                   확인
@@ -460,12 +492,13 @@ GameModal.propTypes = {
     "setting",
     "help",
     "exit",
-    "avatar"
+    "avatar",
+    "error"
   ]),
-  message: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
-  roomId: PropTypes.number
+  roomId: PropTypes.number,
+  children: PropTypes.node
 };
 
 export default GameModal;

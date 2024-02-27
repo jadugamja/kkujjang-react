@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 import { userNameState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
@@ -11,44 +11,131 @@ import WaitingTab from "@/components/Game/Waiting/WaitingTab";
 import PlayingTab from "@/components/Game/Playing/PlayingTab";
 import WaitingContainer from "@/components/Game/Waiting/WaitingContainer";
 import PlayingContainer from "@/components/Game/Playing/PlayingContainer";
+import {
+  initSocket,
+  disconnectSocket,
+  loadRoom,
+  onChangeRoomOwner,
+  onUserJoinRoom,
+  onUserLeaveRoom
+} from "../../services/socket";
+import { waitingPlayerListState } from "../../recoil/userState";
+import Modal from "../../components/Game/Shared/GameModal";
+import useAxios from "@/hooks/useAxios";
 
 const GameRoom = () => {
-  const [roomInfo, setRoomInfo] = useState({});
   const userName = useRecoilValue(userNameState);
-  const [isHost, setIsHost] = useState(true);
+  const [waitingPlayerList, setWaitingPlayerList] =
+    useRecoilState(waitingPlayerListState);
+  const [roomInfo, setRoomInfo] = useState({});
   const [isPlaying, setIsPlaying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // ready Status API 호출
-  const [isReady, setIsReady] = useState(false);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   // 경로의 roomId값 추출
   const { roomId } = useParams();
 
   useEffect(() => {
-    // roomInfo 조회 GET API 호출 (query: roomId)
+    initSocket((error) => {
+      setErrorMessage(error);
+      setIsModalOpen(true);
+    });
+
+    return () => disconnectSocket();
+  }, []);
+
+  useEffect(() => {
+    // 방 조회
+    loadRoom(roomId, (room) => {
+      setRoomInfo(room);
+      setIsPlaying(room.state === "playing" ? true : false);
+
+      // 방장
+      setWaitingPlayerList((prev) => [
+        { userId: room.roomOwnerUserId, isHost: true, isReady: true },
+        ...prev
+      ]);
+
+      // 방장이 아닌 플레이어
+      room.userList?.forEach((user) => {
+        setWaitingPlayerList((prev) => [...prev, user]);
+      });
+    });
+
+    // 타 플레이어 입장 알림
+    onUserJoinRoom((user) => {
+      setWaitingPlayerList((prev) => [...prev, user]);
+    });
+
+    // 타 플레이어 퇴장 알림
+    onUserLeaveRoom((userId) => {
+      setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
+    });
+
+    // 방장 변경
+    onChangeRoomOwner((newOwnerIdx) => {
+      setWaitingPlayerList((prev) => {
+        const updatedList = [...prev];
+        updatedList[newOwnerIdx].isHost = true;
+        return updatedList;
+      });
+    });
+
+    // 임시
     const tmp = {
       id: roomId,
       title: "테스트123",
       password: "", // 비밀번호 X
-      playerCount: 1,
-      maxPlayerCount: 8,
-      roundCount: 5,
-      roundTime: 90,
-      hostUserName: "abcd1234",
-      isPlaying: false
+      currentUserCount: 1,
+      maxUserCount: 8,
+      maxRound: 5,
+      roundTimeLimit: 90,
+      roomOwnerUserId: "abcd1234",
+      state: "playing"
     };
 
-    // 1. roomInfo 전체를 state에 저장
-    // 2. 현재 플레이어의 username과 roomInfo 내 host userId 비교
     setRoomInfo(tmp);
-    setIsPlaying(tmp.isPlaying);
-    setIsHost(userName === tmp.hostUserName ? true : false);
+    setIsPlaying(tmp.state === "playing" ? true : false);
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    waitingPlayerList.forEach((user) => {
+      setApiConfig({
+        method: "get",
+        url: `/user/${user.userId}`
+      });
+    });
+  }, [waitingPlayerList]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setWaitingPlayerList((prev) => {
+        const userIndex = prev.findIndex(
+          (user) => user.userId === apiConfig.url.split("/").pop()
+        );
+        if (userIndex !== -1) {
+          const updatedUser = { ...prev[userIndex], ...response };
+          return [...prev.slice(0, userIndex), updatedUser, ...prev.slice(userIndex + 1)];
+        }
+        return prev;
+      });
+    }
+  }, [response]);
 
   return (
     <ContentWrapper row="center" col="center">
+      {isModalOpen && (
+        <Modal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          {errorMessage}
+        </Modal>
+      )}
       <WideContent dir="col">
         <GameHeader />
         <Main>
@@ -59,9 +146,9 @@ const GameRoom = () => {
                   <PlayingTab />
                 ) : (
                   <WaitingTab
-                    isHost={isHost}
+                    isHost={roomInfo.roomOwnerUserId === userName ? true : false}
                     roomId={roomInfo.id}
-                    playerCount={roomInfo.playerCount}
+                    setIsPlaying={setIsPlaying}
                   />
                 )}
                 <div>
@@ -71,9 +158,12 @@ const GameRoom = () => {
                 </div>
               </Wrapper>
               {isPlaying ? (
-                <PlayingContainer roomInfo={roomInfo} />
+                <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
-                <WaitingContainer roomInfo={roomInfo} />
+                <WaitingContainer
+                  isHost={roomInfo.roomOwnerUserId === userName ? true : false}
+                  roomInfo={roomInfo}
+                />
               )}
             </MainContentWrapper>
           </Box>

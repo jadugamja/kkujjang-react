@@ -5,42 +5,37 @@ import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
-
-import { playingPlayerState } from "@/recoil/userState";
 import {
+  playingPlayerListState,
+  playingPlayerState,
+  syncPlayingPlayerToListState
+} from "@/recoil/userState";
+import {
+  randomWordState,
   initialCharacterState,
   thisTurnLeftTimeState,
   thisRoundLeftTimeState,
   currentPoints
 } from "@/recoil/gameState";
+import { currentRoundState } from "../../../recoil/gameState";
 import {
-  playingPlayerListState,
-  syncPlayingPlayerToListState
-} from "../../../recoil/userState";
+  receiveSayWordFail,
+  receiveSayWordSucceed,
+  sendMessage
+} from "../../../services/socket";
 
 const WordInput = ({ roundCount, roundTime }) => {
-  const [roundInitialCharacter, setRoundInitialCharacter] = useState("");
+  const randomWord = useRecoilValue(randomWordState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
-  const [currRound, setCurrRound] = useState(0);
+  const [currRound, setCurrRound] = useRecoilState(currentRoundState);
   const [inputWord, setInputWord] = useState("");
   const setCurrPoints = useSetRecoilState(currentPoints);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
 
   const [timeoutIds, setTimeoutIds] = useState([]);
-
-  // 1. 게임 시작
-  useEffect(() => {
-    // 랜덤 단어 POST API 호출 (roundCount)
-    setRoundInitialCharacter("테스트임당");
-  }, []);
-
-  // 2. 라운드 시작: 첫 글자 제시
-  useEffect(() => {
-    setInitialCharacter(roundInitialCharacter?.split("")[currRound]);
-  }, [roundInitialCharacter, currRound]);
 
   // 3. 라운드 변경
   useEffect(() => {
@@ -65,71 +60,63 @@ const WordInput = ({ roundCount, roundTime }) => {
 
     setInputWord("");
 
-    if (
-      !inputWord.startsWith(roundInitialCharacter?.split("")[currRound]) &&
-      thisTurnLeftTime <= 0
-    )
+    if (!inputWord.startsWith(randomWord?.split("")[currRound]) && thisTurnLeftTime <= 0)
       return;
 
     // 서버로 단어 전송 및 유효 단어 여부 판별 요청
-    // payload: inputWord, thisTurnLeftTime
+    // payload: inputWord
+    sendMessage(inputWord);
 
-    // 서버로부터 1) 유효성 검사 결과 및 2) 점수 받기
+    // 끝말잇기 실패 시
+    receiveSayWordFail((word) => {});
 
     // 임시 점수
     const score = 10;
 
-    // 끝말잇기 실패 시
-
     // 끝말잇기 성공 시
-    const inputWordCharacters = inputWord?.split("");
+    receiveSayWordSucceed((word) => {
+      setInitialCharacter((prevChar) => prevChar + word.split("")[word.length - 1]);
+      const inputWordCharacters = inputWord?.split("");
 
-    const delay = 500; // 0.5초
-    inputWordCharacters.forEach((char, idx) => {
-      const id1 = setTimeout(
+      const delay = 500; // 0.5초
+      inputWordCharacters.forEach((char, idx) => {
+        const id1 = setTimeout(
+          () => {
+            if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
+          },
+          delay * (idx + 1)
+        );
+        timeoutIds.push(id1);
+      });
+
+      // 득점 저장
+      setCurrPoints(score);
+      setPlayer((prev) => {
+        const newRoundScore = [...(prev.roundScore || [])];
+        newRoundScore[currRound] = score;
+        return {
+          ...prev,
+          roundScore: newRoundScore,
+          totalScore: prev.totalScore + score
+        };
+      });
+
+      const id2 = setTimeout(
         () => {
-          if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
+          setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
         },
-        delay * (idx + 1)
+        delay * 1.5 * inputWordCharacters?.length
       );
-      timeoutIds.push(id1);
+
+      timeoutIds.push(id2);
+      setTimeoutIds(timeoutIds);
     });
-
-    // 득점 저장
-    setCurrPoints(score);
-    setPlayer((prev) => {
-      const newRoundScore = [...(prev.roundScore || [])];
-      newRoundScore[currRound] = score;
-      return { ...prev, roundScore: newRoundScore, totalScore: prev.totalScore + score };
-    });
-
-    const id2 = setTimeout(
-      () => {
-        setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
-      },
-      delay * 1.5 * inputWordCharacters?.length
-    );
-
-    timeoutIds.push(id2);
-    setTimeoutIds(timeoutIds);
   };
-
-  // const calculateTurnTime = (roundTime) => {
-  //   const minTime = 10;
-  //   const maxTime = 20;
-  //   const minRoundTime = 60;
-  //   const maxRoundTime = 150;
-
-  //   return (
-  //     ((roundTime - minRoundTime) / (maxRoundTime - minRoundTime)) * (maxTime - minTime) +
-  //     minTime
-  //   );
-  // };
 
   return (
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
-        {roundInitialCharacter?.split("").map((char, i) => (
+        {randomWord?.split("").map((char, i) => (
           <FirstWordSpan key={i} type={i === currRound && "this"}>
             {char}
           </FirstWordSpan>

@@ -11,13 +11,14 @@ import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
 const LobbyRoomItem = ({
   roomInfo: {
     id,
+    roomNumber,
     title,
     password,
-    roundCount,
-    roundTime,
-    playerCount,
-    maxPlayerCount,
-    isPlaying
+    maxRound,
+    roundTimeLimit,
+    currentUserCount,
+    maxUserCount,
+    state
   }
 }) => {
   const [modalType, setModalType] = useState("");
@@ -26,21 +27,21 @@ const LobbyRoomItem = ({
   const navigate = useNavigate();
 
   const onEnterRoom = (roomId) => {
-    if (isPlaying) {
+    if (state === "playing") {
       setModalType("alert");
       setModalMessage("게임이 진행 중인 방입니다.");
       setIsModalOpen(true);
       return;
     }
 
-    if (playerCount === maxPlayerCount) {
+    if (currentUserCount === maxUserCount) {
       setModalType("alert");
       setModalMessage("방이 찼습니다.");
       setIsModalOpen(true);
       return;
     }
 
-    if (!isPlaying && password !== "") {
+    if (state !== "playing" && password !== "") {
       setModalType("password");
       setIsModalOpen(true);
       return;
@@ -51,23 +52,23 @@ const LobbyRoomItem = ({
 
   return (
     <>
-      <RoomItem key={id} isPlaying={isPlaying} onClick={() => onEnterRoom(id)}>
-        <RoomPlayingShadowText isPlaying={isPlaying}>
-          {isPlaying ? "PLAYING" : "WAITING"}
+      <RoomItem key={id} isPlaying={state === "playing"} onClick={() => onEnterRoom(id)}>
+        <RoomPlayingShadowText isPlaying={state === "playing"}>
+          {state === "playing" ? "PLAYING" : "WAITING"}
         </RoomPlayingShadowText>
         <RoomItemInfoWrapper row="between">
           <LeftInfoWrapper row="center" col="center">
-            <RoomNumber>{id}</RoomNumber>
+            <RoomNumber>{roomNumber}</RoomNumber>
           </LeftInfoWrapper>
           <CenterInfoWrapper dir="col" row="center">
             <RoomName>{title}</RoomName>
             <CenterBottomInfoWrapper>
-              <RoomSubText>{`라운드 ${roundCount}`}</RoomSubText>
-              <RoomSubText>{`${roundTime}초`}</RoomSubText>
+              <RoomSubText>{`라운드 ${maxRound}`}</RoomSubText>
+              <RoomSubText>{`${roundTimeLimit}초`}</RoomSubText>
             </CenterBottomInfoWrapper>
           </CenterInfoWrapper>
           <RightInfoWrapper dir="col" row="evenly" col="center">
-            <PlayerCount>{`${playerCount}/${maxPlayerCount}`}</PlayerCount>
+            <PlayerCount>{`${currentUserCount}/${maxUserCount}`}</PlayerCount>
             <FlexBox row="center" col="center">
               <LockIcon icon={password !== "" ? faLock : faLockOpen} />
             </FlexBox>
@@ -77,11 +78,10 @@ const LobbyRoomItem = ({
       {isModalOpen ? (
         <Modal
           type={modalType}
-          message={modalMessage}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={id}
-        />
+        >{modalMessage}</Modal>
       ) : null}
     </>
   );
@@ -89,14 +89,15 @@ const LobbyRoomItem = ({
 
 LobbyRoomItem.propTypes = {
   roomInfo: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
+    roomNumber: PropTypes.number,
     title: PropTypes.string,
     password: PropTypes.string,
-    roundCount: PropTypes.number,
-    roundTime: PropTypes.number,
-    playerCount: PropTypes.number,
-    maxPlayerCount: PropTypes.number,
-    isPlaying: PropTypes.bool
+    maxRound: PropTypes.number,
+    roundTimeLimit: PropTypes.number,
+    currentUserCount: PropTypes.number,
+    maxUserCount: PropTypes.number,
+    state: PropTypes.oneOf(["waiting", "playing"]).isRequired
   }).isRequired
 };
 

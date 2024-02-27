@@ -80,12 +80,9 @@ export const Button = ({ type, location }) => {
         <StyledButtonIcon type={type} icon={getIcon(type)} />
       </StyledSmallButton>
       {isModalOpen ? (
-        <Modal
-          type={type}
-          message={getMessage(type)}
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
-        />
+        <Modal type={type} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          {getMessage(type)}
+        </Modal>
       ) : null}
     </>
   );

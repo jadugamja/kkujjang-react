@@ -4,6 +4,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { thisTurnLeftTimeState, thisRoundLeftTimeState } from "@/recoil/gameState";
+import { onTimer } from "../../../services/socket";
 
 const TimerBar = ({ type, totalTime }) => {
   const [leftTime, setLeftTime] = useState(totalTime);
@@ -14,8 +15,14 @@ const TimerBar = ({ type, totalTime }) => {
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   useEffect(() => {
-    if (type === "turn") setThisTurnLeftTime(totalTime);
-    else if (type === "round") setThisRoundLeftTime(totalTime);
+    onTimer((data) => {
+      const { roundTimeLeft, personalTimeLeft } = data;
+      const roundTimeLeftSec = roundTimeLeft / 1000;
+      const personalTimeLeftSec = personalTimeLeft / 1000;
+
+      if (type === "turn") setThisTurnLeftTime(roundTimeLeftSec);
+      else if (type === "round") setThisRoundLeftTime(totalTime);
+    });
   }, []);
 
   // useEffect(() => {

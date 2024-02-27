@@ -1,20 +1,73 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 
-import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
+import {
+  userNameState,
+  playingPlayerListState,
+  playingPlayerState
+} from "@/recoil/userState";
+import { turnCountState } from "@/recoil/gameState";
 import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
 import TitleBar from "../Shared/TitleBar";
 import Chat from "../Shared/Chat";
 import WordInput from "./WordInput";
 import PlayingPlayerList from "./PlayingPlayerList";
+import {
+  onGameEnd,
+  onRoundEnd,
+  onTurnEnd,
+  roundStart,
+  turnStart
+} from "../../../services/socket";
+import GameModal from "../Shared/GameModal";
 
-const PlayingContainer = ({ roomInfo }) => {
+const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
+  const userName = useRecoilValue(userNameState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
+  const setTurnCount = useSetRecoilState(turnCountState);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const prevRoundScoreRef = useRef();
 
   useEffect(() => {
+    const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
+
+    if (myTurnPlayer && myTurnPlayer.id === userName) {
+      roundStart(
+        (room) => {
+          setTurnCount(room.turnElapsed);
+        },
+        (error) => {
+          setErrorMessage(error);
+          setIsModalOpen(true);
+        }
+      );
+    }
+
+    onTurnEnd(() => {});
+
+    onRoundEnd((roundResult) => {
+      const { defeatedUserIndex, scoreDelta } = roundResult;
+      const defeatedUser = playerList[defeatedUserIndex];
+      if (defeatedUser && defeatedUser.id === userName) {
+        roundStart(
+          (room) => {
+            setTurnCount(room.turnElapsed);
+          },
+          (error) => {
+            setErrorMessage(error);
+            setIsModalOpen(true);
+          }
+        );
+      }
+    });
+
+    onGameEnd((gameResult) => {
+      setIsPlaying(false);
+    });
+
     // 임시 플레이어 배열
     const players = [
       {
@@ -64,7 +117,7 @@ const PlayingContainer = ({ roomInfo }) => {
       }
     ];
 
-    // 게임 시작 시
+    // 게임 시작 시 (임시, 소켓 성공 시 삭제)
     players?.map((player, idx) => {
       if (idx === 0) player.myTurn = true;
     });
@@ -72,8 +125,19 @@ const PlayingContainer = ({ roomInfo }) => {
   }, []);
 
   useEffect(() => {
-    debugger;
     setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
+
+    if (player.myTurn) {
+      turnStart(
+        (room) => {
+          setTurnCount(room.turnElapsed);
+        },
+        (error) => {
+          setErrorMessage(error);
+          setIsModalOpen(true);
+        }
+      );
+    }
   }, [player]);
 
   useEffect(() => {
@@ -85,7 +149,6 @@ const PlayingContainer = ({ roomInfo }) => {
       );
 
       if (isScored) updateNextTurn();
-
       prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
     }
   }, [playerList]);
@@ -110,6 +173,11 @@ const PlayingContainer = ({ roomInfo }) => {
 
   return (
     <BodyWrapper dir="col">
+      {isModalOpen && (
+        <GameModal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          {errorMessage}
+        </GameModal>
+      )}
       <UpperWrapper dir="col" type="play">
         <TitleBar type="room" info={roomInfo} />
         <WordInput roundCount={roomInfo.roundCount} roundTime={roomInfo.roundTime} />
@@ -123,7 +191,8 @@ const PlayingContainer = ({ roomInfo }) => {
 };
 
 PlayingContainer.propTypes = {
-  roomInfo: PropTypes.object
+  roomInfo: PropTypes.object,
+  setIsPlaying: PropTypes.func
 };
 
 export default PlayingContainer;

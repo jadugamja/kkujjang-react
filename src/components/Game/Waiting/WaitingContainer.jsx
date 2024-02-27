@@ -7,13 +7,11 @@ import Profile from "../Shared/Profile";
 import Chat from "../Shared/Chat";
 
 const WaitingContainer = ({ roomInfo }) => {
-  const isReady = false;
-  
   return (
     <BodyWrapper dir="col">
       <UpperWrapper dir="col" type="wait">
         <TitleBar type="room" info={roomInfo} />
-        <WaitingPlayerList isHost={roomInfo.hostUserName} isReady={isReady} />
+        <WaitingPlayerList />
       </UpperWrapper>
       <Wrapper>
         <Profile />

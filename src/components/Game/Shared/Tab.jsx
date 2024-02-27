@@ -109,7 +109,9 @@ export const Tab = ({ children, type, rooms, onClick }) => {
   const onTryEnterRoom = useCallback(() => {
     const availableRooms = rooms?.filter(
       (room) =>
-        !room.isPlaying && room.password === "" && room.playerCount < room.maxPlayerCount
+        room.state !== "playing" &&
+        room.password === "" &&
+        room.currentUserCount < room.maxUserCount
     );
 
     if (availableRooms.length === 0) {
@@ -118,10 +120,8 @@ export const Tab = ({ children, type, rooms, onClick }) => {
       const pickedRoom =
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
-      joinRoom({ roomId: pickedRoom.id, password: null });
-
-      onJoinRoom(() => {
-        navigate(`/game/${pickedRoom.id}`);
+      joinRoom({ roomId: pickedRoom.id, password: null }, () => {
+        navigate(`/game/${pickedRoom.roomNumber}`);
       });
 
       onUserJoinRoom((userId) => {
@@ -155,10 +155,11 @@ export const Tab = ({ children, type, rooms, onClick }) => {
       {isModalOpen ? (
         <Modal
           type={TAB_TEXTS[type].type}
-          message={TAB_TEXTS[type].message}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
-        />
+        >
+          {TAB_TEXTS[type].message}
+        </Modal>
       ) : null}
     </>
   );

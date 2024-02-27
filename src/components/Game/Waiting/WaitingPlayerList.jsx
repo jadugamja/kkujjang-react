@@ -9,8 +9,8 @@ import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
-const WaitingPlayerList = ({ isHost, isReady, info }) => {
-  const [playerList, setPlayerList] = useRecoilState(waitingPlayerListState);
+const WaitingPlayerList = ({ info }) => {
+  const playerList = useRecoilValue(waitingPlayerListState);
 
   useEffect(() => {
     // 임시 플레이어 배열
@@ -21,9 +21,6 @@ const WaitingPlayerList = ({ isHost, isReady, info }) => {
       { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
       { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
     ];
-
-    // 플레이어 정보 목록 조회 api 호출
-    setPlayerList(players);
   }, []);
 
   return (
@@ -47,8 +44,6 @@ const WaitingPlayerList = ({ isHost, isReady, info }) => {
 };
 
 WaitingPlayerList.propTypes = {
-  isHost: PropTypes.bool,
-  isReady: PropTypes.bool,
   info: PropTypes.object
 };
 

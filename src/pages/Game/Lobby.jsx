@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import { avatarUrlState } from "../../recoil/userState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
@@ -24,28 +23,25 @@ import {
   onLoadNewRoom,
   onDestroyRoom
 } from "@/services/socket";
+import { onUpdateRoomConfig } from "../../services/socket";
 
 const Lobby = () => {
   // 첫 로그인 사용자
   const avatarUrl = useRecoilValue(avatarUrlState);
-  const [error, setError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [modalType, setModalType] = useState(!avatarUrl ? "avatar" : null);
   const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
 
-  // 플레이어 정보
   useEffect(() => {
-    initSocket(setError);
+    initSocket((error) => {
+      setModalType("error");
+      setErrorMessage(error);
+      setIsModalOpen(true);
+    });
 
     return () => disconnectSocket();
   }, []);
-
-  useEffect(() => {
-    if (error) {
-      setModalType("error");
-      setIsModalOpen(true);
-    }
-  }, [error]);
 
   // 방 정보
   useEffect(() => {
@@ -59,6 +55,19 @@ const Lobby = () => {
       setRooms((prev) => prev.filter((room) => room.id !== roomId));
     });
 
+    onUpdateCurrentPlayerCount((data) => {
+      const { roomId, currentPlayerCount } = data;
+      setRooms((prev) =>
+        prev.map((room) => (room.id === roomId ? { ...room, currentPlayerCount } : room))
+      );
+    });
+
+    onUpdateRoomConfig((newRoom) => {
+      setRooms((prev) =>
+        prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
+      );
+    });
+
     const storedRoomInfoList = localStorage.getItem("roomInfoList");
     const bgVolume = localStorage.getItem("bgVolume");
     const fxVolume = localStorage.getItem("fxVolume");
@@ -67,7 +76,6 @@ const Lobby = () => {
     if (storedRoomInfoList) {
       const roomList = JSON.parse(storedRoomInfoList);
       roomList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      debugger;
       setRooms(roomList);
     }
 
@@ -80,7 +88,7 @@ const Lobby = () => {
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
         <Modal type={modalType} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
-          {modalType === "error" && "에러가 발생했습니다. 다시 시도해주세요."}
+          {modalType === "errorMessage" && errorMessage}
         </Modal>
       )}
       <WideContent dir="col">

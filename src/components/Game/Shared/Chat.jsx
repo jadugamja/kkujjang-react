@@ -14,6 +14,12 @@ import {
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
+import {
+  receiveMessage,
+  receiveSayWordFail,
+  receiveSayWordSucceed,
+  sendMessage
+} from "../../../services/socket";
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
   const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
@@ -27,51 +33,33 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   const cs = useRef(null);
 
   const sendChatMessage = () => {
-    if (cs.current && toMessage) {
-      const _chat = {
-        type: "CHAT",
-        sessionId: sessionId,
-        roomId: roomId,
-        nickname: "테스트",
-        message: toMessage
-      };
-
-      // 소켓 전송
-      cs.current.emit("message", _chat);
-
+    if (toMessage) {
+      // const _chat = {
+      //   type: "CHAT",
+      //   sessionId: sessionId,
+      //   roomId: roomId,
+      //   nickname: "테스트",
+      //   message: toMessage
+      // };
+      sendMessage(toMessage);
       setChats([...chats, { nickname: "테스트", message: toMessage }]);
       setToMessage("");
       chatInput.current.focus();
     }
   };
 
-  const sendGameWord = (word) => {
-    if (toMessage.length > 1) {
-      if (leftTime > 0) {
-        // 유효 단어 여부 확인 API 호출
-      } else {
-        // 현재 차례 시간 만료
-      }
-    }
-
-    sendChatMessage(word);
-  };
-
   const handleMessage = (e) => {
     e.preventDefault();
 
     if (toMessage) {
-      // myTurn 임시 index 부여
-      if (
-        initialCharacter !== "" &&
-        myTurn === 0 &&
-        toMessage.startsWith(initialCharacter)
-      ) {
-        sendGameWord(toMessage);
-      } else {
-        sendChatMessage(toMessage);
-      }
+      sendChatMessage(toMessage);
     }
+    // if (
+    //   initialCharacter !== "" &&
+    //   toMessage.startsWith(initialCharacter)
+    // ) {
+    //   sendGameWord(toMessage);
+    // }
   };
 
   // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
@@ -83,13 +71,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
 
   // 다른 사용자가 메시지를 입력한 경우
   useEffect(() => {
-    // 소켓 연결 초기화
-    cs.current = io(SOCKET_URL);
-
-    // 소켓으로부터 받은 메시지
-    cs.current.on("message", (data) => {
-      const { fromNickname, fromMessage } = data;
-
+    receiveMessage((message) => {
       // 사용자가 스크롤 제어하는지 확인
       const isUserScrolling =
         chatResult.current.scrollHeight - chatResult.current.scrollTop !==
@@ -101,13 +83,12 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         chatResult.current.scrollTop = chatResult.current.scrollHeight;
       }
 
-      setChats((prevChat) => [
-        ...prevChat,
-        { nickname: fromNickname, message: fromMessage }
-      ]);
+      setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
     });
-    // 컴포넌트 언마운트될 때 소켓 연결 종료
-    return () => cs.current.disconnect();
+
+    receiveSayWordFail((word) => {});
+
+    receiveSayWordSucceed((data) => {});
   }, [chats]);
 
   return (

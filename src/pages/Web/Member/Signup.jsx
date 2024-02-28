@@ -1,24 +1,15 @@
 import React from "react";
 
 // ===== components import =====
-import Header from "@/components/Web/Shared/Layout/Header";
+import Member from "@/components/Web/Member/Member";
 import SignupForm from "@/components/Web/Member/SignupForm";
 
-// ===== style import =====
-import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
-
+// ===== component =====
 const Signup = () => {
   return (
-    <>
-      <ContentWrapper row="center" col="center">
-        <Header type="big" />
-        <NarrowContent>
-          <Main row="center">
-            <SignupForm />
-          </Main>
-        </NarrowContent>
-      </ContentWrapper>
-    </>
+    <Member type="big">
+      <SignupForm />
+    </Member>
   );
 };
 

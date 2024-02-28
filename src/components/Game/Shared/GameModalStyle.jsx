@@ -36,8 +36,8 @@ export const GameModalHeader = styled(FlexBox)`
 `;
 
 export const GameModalBody = styled(FlexBox)`
-  /* position: relative;
-  top: ${({ top }) => top || "26px"}; */
+  position: relative;
+  top: ${({ top }) => top || "26px"};
   flex-direction: column;
   width: 100%;
   padding: 10px 14px;

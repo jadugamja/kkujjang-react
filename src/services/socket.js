@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import { SOCKET_URL } from "./const";
 
-const client = io(`${SOCKET_URL}/socket`, {
+const client = io(SOCKET_URL, {
   transports: ["websocket"]
 });
 

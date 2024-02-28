@@ -3,6 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../services/const";
 
 axios.defaults.baseURL = BASE_URL;
+axios.defaults.withCredentials = true;
 
 // config = { method, url, headers, data }
 const useAxios = (config, executeOnMount = true) => {

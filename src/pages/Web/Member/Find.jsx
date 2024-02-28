@@ -2,13 +2,11 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 // ===== components import =====
-import Header from "@/components/Web/Shared/Layout/Header";
+import Member from "@/components/Web/Member/Member";
 import FindidForm from "@/components/Web/Member/FindidForm";
 import FindpwForm from "@/components/Web/Member/FindpwForm";
 
-// ===== style import =====
-import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
-
+// ===== component =====
 const Find = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -16,17 +14,10 @@ const Find = () => {
   const type = query.get("type");
 
   return (
-    <>
-      <ContentWrapper row="center" col="center">
-        <Header type="big" />
-        <NarrowContent>
-          <Main>
-            {type === "id" && <FindidForm />}
-            {type === "pw" && <FindpwForm />}
-          </Main>
-        </NarrowContent>
-      </ContentWrapper>
-    </>
+    <Member type="big">
+      {type === "id" && <FindidForm />}
+      {type === "pw" && <FindpwForm />}
+    </Member>
   );
 };
 

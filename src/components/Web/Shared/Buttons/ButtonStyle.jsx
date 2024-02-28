@@ -1,13 +1,4 @@
 import styled from "styled-components";
-// import { FlexBox } from "@/styles/FlexStyle";
-
-// 메인 갈색 버튼
-// export const PrimaryButtonWrapper = styled(FlexBox)`
-//   width: 100%;
-//   height: 4.5rem;
-// `;
-
-// ======= Button =======
 
 // Web에서 주로 사용하는 갈색 Big Submit 버튼 (회원가입, 로그인, 탈퇴하기, 비밀번호 변경하기)
 export const BigSubmitBrownButton = styled.button`

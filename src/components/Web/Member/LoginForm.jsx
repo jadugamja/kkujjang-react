@@ -55,6 +55,11 @@ const LoginForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === kakao ===
+  const REST_API_KEY = process.env.REACT_APP_KAKAO_CLIENT_ID;
+  const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
   // 로그인
   const handleLogin = () => {
     const id = idRef.current.value;
@@ -70,11 +75,12 @@ const LoginForm = () => {
       // 로그인 API 코드 추가
 
       // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = false;
+      const result = true;
       if (!result) {
         setError("해당 계정이 존재하지 않습니다.");
       } else {
         // 홈으로 이동
+        setError("");
         navigate(`/`);
       }
     }
@@ -82,7 +88,7 @@ const LoginForm = () => {
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
-    // 카카오 로그인 API 코드
+    window.location.href = link;
   };
 
   return (

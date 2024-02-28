@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
 export const GameModalBackground = styled.div`
-  width: 1920px;
-  height: 1072px;
+  width: 100%;
+  height: 100%;
   background-color: #000000;
   opacity: 0.7;
   position: fixed;
@@ -35,9 +35,10 @@ export const GameModalHeader = styled(FlexBox)`
   flex-shrink: 0;
 `;
 
-export const GameModalBody = styled.div`
-  position: relative;
-  top: ${({ top }) => top || "26px"};
+export const GameModalBody = styled(FlexBox)`
+  /* position: relative;
+  top: ${({ top }) => top || "26px"}; */
+  flex-direction: column;
   width: 100%;
   padding: 10px 14px;
   flex-grow: 1;
@@ -150,6 +151,7 @@ export const ExitMiniCircle = styled.button`
 
 export const Table = styled.table`
   max-width: 100%;
+  width: 100%;
   margin: 1.3rem 0;
 `;
 
@@ -159,13 +161,18 @@ export const Tbody = styled.tbody`
   }
 `;
 
-export const Tr = styled(FlexBox).attrs({ as: "tr", col: "center" })``;
+export const Tr = styled(FlexBox).attrs({ as: "tr", col: "center" })`
+  background-color: ${({ bgColor }) => bgColor || "transparent"};
+`;
 
 export const TdLabel = styled.td`
-  width: 7.5rem;
+  width: ${({ width }) => width || "7.5rem"};
+  text-align: ${({ textAlign }) => textAlign || "left"};
   flex-shrink: 0;
 `;
 
 export const TdContent = styled(FlexBox).attrs({ as: "td" })`
-  flex-grow: 1;
+  padding: ${({ padding }) => padding};
+  flex-basis: ${({ flexBasis }) => flexBasis};
+  flex-grow: ${({ flexGrow }) => flexGrow || 1};
 `;

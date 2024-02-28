@@ -27,7 +27,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const setTurnCount = useSetRecoilState(turnCountState);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [modalType, setModalType] = useState("error");
+  const [modalChildren, setModalChildren] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const prevRoundScoreRef = useRef();
 
@@ -40,7 +41,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
           setTurnCount(room.turnElapsed);
         },
         (error) => {
-          setErrorMessage(error);
+          setModalType("error");
+          setModalChildren(error);
           setIsModalOpen(true);
         }
       );
@@ -57,15 +59,17 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
             setTurnCount(room.turnElapsed);
           },
           (error) => {
-            setErrorMessage(error);
+            setModalChildren(error);
             setIsModalOpen(true);
           }
         );
       }
     });
 
-    onGameEnd((gameResult) => {
-      setIsPlaying(false);
+    onGameEnd((ranking) => {
+      setModalType("result");
+      setModalChildren(ranking);
+      setIsModalOpen(true);
     });
 
     // 임시 플레이어 배열
@@ -133,7 +137,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
           setTurnCount(room.turnElapsed);
         },
         (error) => {
-          setErrorMessage(error);
+          setModalType("error");
+          setModalChildren(error);
           setIsModalOpen(true);
         }
       );
@@ -174,8 +179,13 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   return (
     <BodyWrapper dir="col">
       {isModalOpen && (
-        <GameModal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
-          {errorMessage}
+        <GameModal
+          type={modalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          setIsPlaying={setIsPlaying}
+        >
+          {modalChildren}
         </GameModal>
       )}
       <UpperWrapper dir="col" type="play">

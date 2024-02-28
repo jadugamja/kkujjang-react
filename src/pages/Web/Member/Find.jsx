@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 // ===== components import =====
-import Member from "@/pages/Web/Member/Member";
+import Member from "@/components/Web/Member/Member";
 import FindidForm from "@/components/Web/Member/FindidForm";
 import FindpwForm from "@/components/Web/Member/FindpwForm";
 

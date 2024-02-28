@@ -1,7 +1,7 @@
 import React from "react";
 
 // ===== components import =====
-import Member from "@/pages/Web/Member/Member";
+import Member from "@/components/Web/Member/Member";
 import WithdrawalForm from "@/components/Web/Member/WithdrawalForm";
 
 // ===== component =====

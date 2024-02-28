@@ -1,7 +1,7 @@
 import React from "react";
 
 // ===== components import =====
-import Member from "@/pages/Web/Member/Member";
+import Member from "@/components/Web/Member/Member";
 import MyInfoContainer from "@/components/Web/Member/MyInfoContainer";
 
 // ===== component =====

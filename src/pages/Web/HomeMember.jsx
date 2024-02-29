@@ -6,7 +6,7 @@ import styled from "styled-components";
 import FlexBox from "@/styles/FlexStyle";
 import Title from "@/components/Web/Shared/Layout/Title";
 import useAxios from "@/hooks/useAxios";
-import GameButton from "@/components/Web/Shared/Buttons/GameButton";
+import HomeButton from "@/components/Web/Shared/Buttons/HomeButton";
 
 const HomeMember = () => {
   const [listData, setListData] = useState([]);
@@ -102,7 +102,7 @@ const HomeMember = () => {
             row="end"
             col="center"
           >
-            <GameButton />
+            <HomeButton type="member" />
           </FlexBox>
           <FlexGrow dir="col">
             <Link to="/notice/list">

@@ -1,3 +1,4 @@
+import { useSetRecoilState } from "recoil";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
@@ -8,8 +9,10 @@ import HeaderTab from "./HeaderTab";
 import logo from "@/assets/images/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { userState } from "@/recoil/userState";
 
 const Header = ({ type = "default" }) => {
+  const setUser = useSetRecoilState(userState);
   const [headerBgColor, setHeaderBgColor] = useState("transparent");
   const [headerShadow, setHeaderShadow] = useState();
 
@@ -39,11 +42,9 @@ const Header = ({ type = "default" }) => {
           <Link to="/game">
             <GameButton>게임 시작</GameButton>
           </Link>
-          <Link to="/member/out">
-            <LogoutButton>
-              <LogoutIcon icon={faSignOut} />
-            </LogoutButton>
-          </Link>
+          <LogoutButton onClick={() => setUser(null)}>
+            <LogoutIcon icon={faSignOut} />
+          </LogoutButton>
         </ButtonWrapper>
       )}
     </FixedHeader>

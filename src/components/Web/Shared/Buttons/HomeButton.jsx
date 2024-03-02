@@ -1,3 +1,4 @@
+import { useRecoilState } from "recoil";
 import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -5,8 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FlexBox from "@/styles/FlexStyle";
 import { Wrapper, Span } from "../../../Game/Shared/Layout";
 import { faArrowRightFromBracket, faComment } from "@fortawesome/free-solid-svg-icons";
+import { LevelBadge } from "../../../Game/Shared/Player";
+import { KAKAO_LOGIN_LINK } from "@/services/const";
+import { userState } from "@/recoil/userState";
 
 const HomeButton = ({ type }) => {
+  const [user, setUser] = useRecoilState(userState);
+
   return (
     <Wrapper dir="col" width="18.75rem" height="14rem" margin="0 72px 0 0">
       {type === "guest" ? (
@@ -26,7 +32,7 @@ const HomeButton = ({ type }) => {
               </Span>
             </FlexBox>
           </Link>
-          <Link to="/">
+          <a href={KAKAO_LOGIN_LINK}>
             <FlexBox
               as="button"
               row="center"
@@ -41,7 +47,7 @@ const HomeButton = ({ type }) => {
                 카카오로 로그인하기
               </Span>
             </FlexBox>
-          </Link>
+          </a>
         </>
       ) : (
         <>
@@ -60,6 +66,7 @@ const HomeButton = ({ type }) => {
             </FlexBox>
           </Link>
           <FlexBox row="between" col="center" height="4rem">
+            {/* User Info */}
             <FlexBox
               col="center"
               flex="1"
@@ -68,28 +75,24 @@ const HomeButton = ({ type }) => {
               bgColor="#E6E6E6"
               borderRadius="0 0  0 30px"
             >
-              <Span
-                font="Noto Sans KR"
-                fontSize="1.375rem"
-                fontWeight="700"
-                margin="0 5px"
-              >
-                닉네임~~~
+              <LevelBadge>{user?.level}</LevelBadge>
+              <Span font="Noto Sans KR" fontSize="1.2rem" fontWeight="700">
+                {user?.nickname}
               </Span>
             </FlexBox>
-            <Link to="/" height="100%">
-              <FlexBox
-                as="button"
-                row="center"
-                col="center"
-                width="5rem"
-                height="100%"
-                bgColor="#FBFBFB"
-                borderRadius="0 0 30px 0"
-              >
-                <FontAwesomeIcon icon={faArrowRightFromBracket} size="xl" />
-              </FlexBox>
-            </Link>
+            {/* logout */}
+            <FlexBox
+              as="button"
+              row="center"
+              col="center"
+              width="5rem"
+              height="100%"
+              bgColor="#FBFBFB"
+              borderRadius="0 0 30px 0"
+              onClick={() => setUser(null)}
+            >
+              <FontAwesomeIcon icon={faArrowRightFromBracket} size="xl" />
+            </FlexBox>
           </FlexBox>
         </>
       )}

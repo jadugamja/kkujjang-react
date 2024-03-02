@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import { SOCKET_URL } from "./const";
 
-const client = io(`${SOCKET_URL}/socket`, {
+const client = io(SOCKET_URL, {
   transports: ["websocket"]
 });
 
@@ -211,8 +211,8 @@ export const onRoundEnd = (callBack) => {
 
 // ====== 게임 종료 ======
 export const onGameEnd = (callBack) => {
-  client.on("game end", (gameResult) => {
-    callBack(gameResult);
+  client.on("game end", (ranking) => {
+    callBack(ranking);
   });
 };
 

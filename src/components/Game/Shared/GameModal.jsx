@@ -36,7 +36,7 @@ import AvatarCanvas from "../Shared/AvatarCanvas";
 import { createRoom, changeRoomConfig, leaveRoom } from "../../../services/socket";
 import useAxios from "@/hooks/useAxios";
 
-const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
+const GameModal = ({ type, isOpen, setIsOpen, setIsPlaying, roomId, children }) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -53,7 +53,6 @@ const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   let titleText = "";
-  let buttonMessage = "확인";
   let height = "";
 
   switch (type) {
@@ -80,12 +79,15 @@ const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
       break;
     case "setting":
       titleText = "환경설정";
-      buttonMessage = "저장";
       height = "20rem";
       break;
     case "help":
       titleText = "도움말";
       height = "25.625rem";
+      break;
+    case "result":
+      titleText = "게임 결과";
+      height = "20rem";
       break;
   }
 
@@ -241,7 +243,9 @@ const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
         <GameModalContent dir="col" col="center" height={height}>
           <GameModalHeader row={titleText !== "" ? "between" : "end"} col="center">
             {titleText !== "" && <span>{titleText}</span>}
-            {type !== "avatar" && <ExitMiniCircle onClick={() => setIsOpen(false)} />}
+            {!["avatar", "result"].includes(type) && (
+              <ExitMiniCircle onClick={() => setIsOpen(false)} />
+            )}
           </GameModalHeader>
 
           {/* 아바타 설정 modal */}
@@ -440,9 +444,7 @@ const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
                 {children}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
-                <GameModalButton onClick={() => setIsOpen(false)}>
-                  {buttonMessage}
-                </GameModalButton>
+                <GameModalButton onClick={() => setIsOpen(false)}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}
@@ -459,6 +461,38 @@ const GameModal = ({ type, isOpen, setIsOpen, roomId, children }) => {
             </GameModalBody>
           )}
 
+          {/* 게임 결과 modal */}
+          {type === "result" && (
+            <GameModalBody>
+              <Table>
+                <Tbody>
+                  {children?.map(({ userId, score }, idx) => (
+                    <Tr key={idx} bgColor="#fff">
+                      <TdLabel width="2.5rem" textAlign="center">
+                        {idx + 1}
+                      </TdLabel>
+                      <TdContent flexBasis="18rem" flexGrow="0" padding="0 5px">
+                        {userId}
+                      </TdContent>
+                      <TdContent>{score}점</TdContent>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+                <GameModalButton
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsPlaying(false);
+                  }}
+                >
+                  확인
+                </GameModalButton>
+              </ButtonWrapper>
+            </GameModalBody>
+          )}
+
+          {/* 에러 modal */}
           {type === "error" && (
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
@@ -493,10 +527,12 @@ GameModal.propTypes = {
     "help",
     "exit",
     "avatar",
-    "error"
+    "error",
+    "result"
   ]),
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
+  setIsPlaying: PropTypes.func,
   roomId: PropTypes.number,
   children: PropTypes.node
 };

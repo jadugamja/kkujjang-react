@@ -21,9 +21,10 @@ import {
   disconnectSocket,
   loadRoomList,
   onLoadNewRoom,
-  onDestroyRoom
+  onDestroyRoom,
+  onUpdateCurrentPlayerCount,
+  onUpdateRoomConfig
 } from "@/services/socket";
-import { onUpdateRoomConfig } from "../../services/socket";
 
 const Lobby = () => {
   // 첫 로그인 사용자

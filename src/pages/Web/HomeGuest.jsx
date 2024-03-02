@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
-import styled from "styled-components";
 import FlexBox from "../../styles/FlexStyle";
 import { Link, useNavigate } from "react-router-dom";
 import Title from "../../components/Web/Shared/Layout/Title";
 import useAxios from "../../hooks/useAxios";
-import GameButton from "../../components/Web/Shared/Buttons/GameButton";
+import HomeButton from "../../components/Web/Shared/Buttons/HomeButton";
 
 const HomeGuest = () => {
   const [listData, setListData] = useState([]);
@@ -102,7 +102,7 @@ const HomeGuest = () => {
             row="end"
             col="center"
           >
-            <GameButton />
+            <HomeButton type="guest" />
           </FlexBox>
           <FlexGrow dir="col">
             <Link to="/notice/list">

@@ -2,9 +2,7 @@ import { atom, selector, selectorFamily } from "recoil";
 
 export const userState = atom({
   key: "userState",
-  default: {
-    id: 1
-  } // e.g., { username: "username", nickname: "nickname", role: "admin", level: 1, winRate: 0.0, exp: 0, avatarUrl: "" }
+  default: null // e.g., { username: "username", nickname: "nickname", role: "admin", level: 1, winRate: 0.0, exp: 0, avatarUrl: "" }
 });
 
 // userState -> username만 추출

@@ -44,3 +44,11 @@ export const UpperWrapper = styled(FlexBox)`
   padding: 3px 5px;
   background-color: ${({ type }) => (type === "play" ? "#889E7D" : "#f3f3f3")};
 `;
+
+export const Span = styled.span`
+  margin: ${({ margin }) => margin || "0"};
+  font-family: ${({ font }) => font || "Gugi"};
+  font-size: ${({ fontSize }) => fontSize || "21px"};
+  font-weight: ${({ fontWeight }) => fontWeight || "normal"};
+  color: ${({ color }) => color || "inherit"};
+`;

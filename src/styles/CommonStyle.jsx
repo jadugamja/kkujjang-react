@@ -6,6 +6,12 @@ export const fadeIn = keyframes`
   to {opacity: 1;}
 `;
 
+export const blink = keyframes`
+  50% {
+      opacity: 0;
+  }
+`;
+
 // 숨겨진 요소
 export const Hidden = styled.div`
   display: none;

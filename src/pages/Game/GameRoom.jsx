@@ -102,6 +102,7 @@ const GameRoom = () => {
   }, []);
 
   useEffect(() => {
+    if (apiConfig === null) return;
     fetchData();
   }, [apiConfig]);
 

@@ -9,6 +9,18 @@ export const FlexBox = styled.div`
   height: ${({ height }) => height};
   margin: ${({ margin }) => margin};
   padding: ${({ padding }) => padding};
+  flex: ${({ flex }) => flex};
+  background-color: ${({ bgColor }) => bgColor};
+  box-shadow: ${({ shadow }) => shadow};
+  border-radius: ${({ borderRadius }) => borderRadius};
+
+  ${({ clicky }) =>
+    clicky &&
+    `
+    :hover {
+      cursor: pointer;
+    }
+  `}
 `;
 
 // flex-box의 flex-direction 설정

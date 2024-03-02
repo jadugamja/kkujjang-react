@@ -40,7 +40,7 @@ const PlayerInfoWrapper = styled(FlexBox)`
   font-size: ${(props) => props.size || "16px"};
 `;
 
-const LevelBadge = styled(FlexBox).attrs({
+export const LevelBadge = styled(FlexBox).attrs({
   row: "center",
   col: "center"
 })`

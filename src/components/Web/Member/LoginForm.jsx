@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
+import { KAKAO_LOGIN_LINK } from "@/services/const";
 
 // ===== components & image import =====
 import KakaoIcon from "@/assets/images/kakao.png";
@@ -55,11 +56,6 @@ const LoginForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
-  // === kakao ===
-  const REST_API_KEY = process.env.REACT_APP_KAKAO_CLIENT_ID;
-  const REDIRECT_URI = `${process.env.REACT_APP_BASE_URL}/user/auth/kakao`;
-  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-
   // 로그인
   const handleLogin = () => {
     const id = idRef.current.value;
@@ -88,7 +84,7 @@ const LoginForm = () => {
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
-    window.location.href = link;
+    window.location.href = KAKAO_LOGIN_LINK;
   };
 
   return (

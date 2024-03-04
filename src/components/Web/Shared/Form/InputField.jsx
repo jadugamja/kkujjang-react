@@ -8,27 +8,7 @@ import { Label, Input } from "./InputFieldStyle";
 
 // const InputField = forwardRef(({ hasLabel, isLoginForm, width, name, onChange }, ref) => {
 const InputField = (props) => {
-  const { hasLabel, isLoginForm, isDataForm, name, inputRef, onBlur } = props;
-
-  // === props ===
-  // hasLabel : true, false
-  // isLoginForm : true, false
-  // name : id, password, confirmPassword
-  // inputRef : ref setting
-  // onChange : function setting
-
-  // === ref ===
-  // const inputRef = useRef(null);
-
-  // Form 에서 사용할 함수
-  // useImperativeHandle(ref, () => ({
-  //   getValue
-  // }));
-
-  // input의 값을 가져오는 함수
-  // const getValue = () => {
-  //   return inputRef.current.value;
-  // };
+  const { hasLabel, isLoginForm, isDataForm, name, inputRef, disabled, onBlur } = props;
 
   const handleUpdateValue = (e) => {
     const value = e.target.value;
@@ -46,7 +26,7 @@ const InputField = (props) => {
     isLoginForm && name === "password"
       ? "비밀번호를 입력해 주세요"
       : isDataForm && name === "password"
-        ? "7~30자의 영문 대/소문자, 숫자, 특수문자 사용 가능"
+        ? "7~30자의 영문 대/소문자, 숫자 필수, 특수문자 사용 가능"
         : "비밀번호 입력";
   const confirmPasswordPlaceholder = "비밀번호 확인";
 
@@ -85,6 +65,7 @@ const InputField = (props) => {
                 : null
         }
         onChange={handleUpdateValue}
+        disabled={disabled}
         onBlur={onBlur}
         minLength={7}
         maxLength={30}
@@ -97,11 +78,10 @@ InputField.propTypes = {
   hasLabel: PropTypes.bool,
   isLoginForm: PropTypes.bool,
   isDataForm: PropTypes.bool,
+  disabled: PropTypes.bool,
   name: PropTypes.string,
-  inputRef: PropTypes.string,
+  inputRef: PropTypes.object,
   onBlur: PropTypes.func
 };
-
-InputField.displayName = "InputField";
 
 export default InputField;

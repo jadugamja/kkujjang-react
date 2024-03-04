@@ -1,7 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -41,9 +44,18 @@ const ChangepwForm = () => {
   const [confirmPwError, setConfirmPwError] = useState(""); // confirm pw validton error state
   // (modal 관련)
   const [failModalOpen, setFailModalOpen] = useState(false); // 비밀번호 변경 실패 modal state
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === navigate ===
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   // 비밀번호 유효성 검사
   const handlePasswordValidation = () => {
@@ -72,18 +84,39 @@ const ChangepwForm = () => {
   // 비밀번호 변경
   const handleChange = () => {
     if (!pwError && !confirmPwError) {
+      const password = passwordRef.current.value;
+      const confirmPassword = confirmPasswordRef.current.value;
+
       setPwError("");
       setConfirmPwError("");
-      // 비밀번호 변경 API 호출
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = false;
-      if (!result) {
-        setFailModalOpen(true);
-      } else {
+      // 비밀번호 변경 API 호출
+      setApiConfig({
+        method: "put",
+        url: "/user/find/pw",
+        // headers: {
+        //   Cookie: `passwordChangeAuthId=${uuid}`
+        // },
+        data: {
+          newPassword: password,
+          newPasswordAgain: confirmPassword
+        }
+      });
+
+      if (response !== null) {
         // 로그인 페이지로 이동
         navigate(`/member/login`);
+      } else {
+        setFailModalOpen(true);
       }
+
+      // const result = true;
+      // if (!result) {
+      //   setFailModalOpen(true);
+      // } else {
+      //   // 로그인 페이지로 이동
+      //   navigate(`/member/login`);
+      // }
     } else {
       setFailModalOpen(true);
     }
@@ -91,43 +124,51 @@ const ChangepwForm = () => {
 
   return (
     <>
-      {/* {비밀번호 변경 실패 modal} */}
-      {failModalOpen && (
-        <WebModal setIsOpen={setFailModalOpen} hasButton={true}>
-          비밀번호 변경에 실패했습니다.
-        </WebModal>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          {/* {비밀번호 변경 실패 modal} */}
+          {failModalOpen && (
+            <WebModal setIsOpen={setFailModalOpen} hasButton={true}>
+              비밀번호 변경에 실패했습니다.
+            </WebModal>
+          )}
+
+          <ChangepwFormFlexContainer dir="col">
+            <FormTitle type="changepw" marginTop="0px" marginBottom="0px"></FormTitle>
+
+            {/* 비밀번호 input field */}
+            <ChangepwText>새로운 비밀번호를 입력해 주세요.</ChangepwText>
+            <ChangepwFormContainer marginBottom="24px">
+              <InputField
+                name="password"
+                inputRef={passwordRef}
+                isDataForm={true}
+                onBlur={handlePasswordValidation}
+              />
+              {pwError && <ValidationMessage message={pwError} />}
+            </ChangepwFormContainer>
+
+            {/* 비밀번호 확인 input field */}
+            <ChangepwFormContainer marginBottom="24px">
+              <InputField
+                name="confirmPassword"
+                inputRef={confirmPasswordRef}
+                onBlur={handleConfirmPassword}
+              />
+              {confirmPwError && <ValidationMessage message={confirmPwError} />}
+            </ChangepwFormContainer>
+
+            {/* 비밀번호 변경 button */}
+            <ChangepwFormContainer marginTop="10px">
+              <Button type="bigBrown" message="변경하기" onClick={handleChange} />
+            </ChangepwFormContainer>
+          </ChangepwFormFlexContainer>
+        </>
       )}
-
-      <ChangepwFormFlexContainer dir="col">
-        <FormTitle type="changepw" marginTop="0px" marginBottom="0px"></FormTitle>
-
-        {/* 비밀번호 input field */}
-        <ChangepwText>새로운 비밀번호를 입력해 주세요.</ChangepwText>
-        <ChangepwFormContainer marginBottom="24px">
-          <InputField
-            name="password"
-            inputRef={passwordRef}
-            isDataForm={true}
-            onBlur={handlePasswordValidation}
-          />
-          {pwError && <ValidationMessage message={pwError} />}
-        </ChangepwFormContainer>
-
-        {/* 비밀번호 확인 input field */}
-        <ChangepwFormContainer marginBottom="24px">
-          <InputField
-            name="confirmPassword"
-            inputRef={confirmPasswordRef}
-            onBlur={handleConfirmPassword}
-          />
-          {confirmPwError && <ValidationMessage message={confirmPwError} />}
-        </ChangepwFormContainer>
-
-        {/* 비밀번호 변경 button */}
-        <ChangepwFormContainer marginTop="10px">
-          <Button type="bigBrown" message="변경하기" onClick={handleChange} />
-        </ChangepwFormContainer>
-      </ChangepwFormFlexContainer>
     </>
   );
 };

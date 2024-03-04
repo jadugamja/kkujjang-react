@@ -2,7 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import ======
 import Button from "@/components/Web/Shared/Buttons/Button";
@@ -46,16 +49,6 @@ const Table = styled.table`
   margin-left: ${(props) => props.marginLeft || "0"};
 `;
 
-// const init = {
-//   avatarUrl: Avartar,
-//   nickname: "메롱메롱",
-//   level: 40,
-//   winRate: ["승률", 0],
-//   exp: ["경험치", "30%"],
-//   isBanned: "false",
-//   bannedReson: ""
-// };
-
 // ===== component ======
 const MyInfoContainer = () => {
   // === ref ===
@@ -67,6 +60,18 @@ const MyInfoContainer = () => {
   // (modal 관련)
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 변경 실패 modal state
   const [message, setMessage] = useState(""); // 닉네임 modal 의 message 설정 state
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/user/:userId/=${userId}`
+  });
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   // 프로필 조회 API 호출
 
@@ -110,101 +115,109 @@ const MyInfoContainer = () => {
 
   return (
     <>
-      {nicknameModalOpen && (
-        <WebModal setIsOpen={setNicknameModalOpen} hasButton={true}>
-          {message}
-        </WebModal>
-      )}
-
-      <InfoBox marginLeft="auto" marginRight="auto">
-        <InfoFlexBox>
-          {/* 아바타 img */}
-          <InfoBox border="1px solid #000000">
-            <InfoImg src={Avartar} />
-          </InfoBox>
-
-          <Table marginLeft="80px">
-            <tbody>
-              {/* 닉네임 출력부 */}
-              <tr>
-                <td>
-                  <InfoText>닉네임</InfoText>
-                </td>
-                <td>
-                  <>
-                    {editMode ? (
-                      <InfoInput
-                        type="text"
-                        value={nickname}
-                        onChange={handleInputChange}
-                        ref={inputRef}
-                        placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
-                        marginLeft="100px"
-                      />
-                    ) : (
-                      <InfoText color="#32250F" marginLeft="100px">
-                        {nickname}
-                      </InfoText>
-                    )}
-                  </>
-                </td>
-              </tr>
-
-              {/* 레벨 출력부 */}
-              <tr>
-                <td>
-                  <InfoText>레벨</InfoText>
-                </td>
-                <td>
-                  <InfoText color="#32250F" marginLeft="100px">
-                    40
-                  </InfoText>
-                </td>
-              </tr>
-
-              {/* 승률 출력부 */}
-              <tr>
-                <td>
-                  <InfoText>승률</InfoText>
-                </td>
-                <td>
-                  <InfoText color="#32250F" marginLeft="100px">
-                    16.2%
-                  </InfoText>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </InfoFlexBox>
-        <InfoFlexBox col="center" row="between" width="1000px">
-          {/* Link 버튼 */}
-          <Link to="/member/out">
-            <InfoLinkButton>회원 탈퇴</InfoLinkButton>
-          </Link>
-
-          {/* 버튼 */}
-          {editMode ? (
-            <>
-              {
-                <InfoFlexBox row="between" width="200px">
-                  <Button
-                    type="smallDark"
-                    message="확인"
-                    onClick={handleClickSaveButton}
-                  />
-                  <Button
-                    type="smallGray"
-                    message="취소"
-                    onClick={handleClickCancelButton}
-                  />
-                </InfoFlexBox>
-              }
-            </>
-          ) : (
-            <Button type="smallDark" message="수정" onClick={handleClickEditButton} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          {nicknameModalOpen && (
+            <WebModal setIsOpen={setNicknameModalOpen} hasButton={true}>
+              {message}
+            </WebModal>
           )}
-        </InfoFlexBox>
-      </InfoBox>
+
+          <InfoBox marginLeft="auto" marginRight="auto">
+            <InfoFlexBox>
+              {/* 아바타 img */}
+              <InfoBox border="1px solid #000000">
+                <InfoImg src={Avartar} />
+              </InfoBox>
+
+              <Table marginLeft="80px">
+                <tbody>
+                  {/* 닉네임 출력부 */}
+                  <tr>
+                    <td>
+                      <InfoText>닉네임</InfoText>
+                    </td>
+                    <td>
+                      <>
+                        {editMode ? (
+                          <InfoInput
+                            type="text"
+                            value={nickname}
+                            onChange={handleInputChange}
+                            ref={inputRef}
+                            placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
+                            marginLeft="100px"
+                          />
+                        ) : (
+                          <InfoText color="#32250F" marginLeft="100px">
+                            {nickname}
+                          </InfoText>
+                        )}
+                      </>
+                    </td>
+                  </tr>
+
+                  {/* 레벨 출력부 */}
+                  <tr>
+                    <td>
+                      <InfoText>레벨</InfoText>
+                    </td>
+                    <td>
+                      <InfoText color="#32250F" marginLeft="100px">
+                        40
+                      </InfoText>
+                    </td>
+                  </tr>
+
+                  {/* 승률 출력부 */}
+                  <tr>
+                    <td>
+                      <InfoText>승률</InfoText>
+                    </td>
+                    <td>
+                      <InfoText color="#32250F" marginLeft="100px">
+                        16.2%
+                      </InfoText>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </InfoFlexBox>
+            <InfoFlexBox col="center" row="between" width="1000px">
+              {/* Link 버튼 */}
+              <Link to="/member/out">
+                <InfoLinkButton>회원 탈퇴</InfoLinkButton>
+              </Link>
+
+              {/* 버튼 */}
+              {editMode ? (
+                <>
+                  {
+                    <InfoFlexBox row="between" width="200px">
+                      <Button
+                        type="smallDark"
+                        message="확인"
+                        onClick={handleClickSaveButton}
+                      />
+                      <Button
+                        type="smallGray"
+                        message="취소"
+                        onClick={handleClickCancelButton}
+                      />
+                    </InfoFlexBox>
+                  }
+                </>
+              ) : (
+                <Button type="smallDark" message="수정" onClick={handleClickEditButton} />
+              )}
+            </InfoFlexBox>
+          </InfoBox>
+        </>
+      )}
     </>
   );
 };

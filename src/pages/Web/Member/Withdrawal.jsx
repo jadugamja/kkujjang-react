@@ -1,15 +1,25 @@
 import React from "react";
 
+// ===== style import =====
+import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
+
 // ===== components import =====
-import Member from "@/components/Web/Member/Member";
+import Header from "@/components/Web/Shared/Layout/Header";
 import WithdrawalForm from "@/components/Web/Member/WithdrawalForm";
 
 // ===== component =====
 const Withdrawal = () => {
   return (
-    <Member type="big" marginTop="10rem">
-      <WithdrawalForm />
-    </Member>
+    <>
+      <ContentWrapper row="center" col="center">
+        <Header />
+        <NarrowContent>
+          <Main>
+            <WithdrawalForm />
+          </Main>
+        </NarrowContent>
+      </ContentWrapper>
+    </>
   );
 };
 

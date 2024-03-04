@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import useAxios from "@/hooks/useAxios";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
 // ===== components import =====
@@ -56,13 +57,20 @@ const Thread = ({ inquiryId }) => {
   // === state ===
   const [threadData, setThreadData] = useState([]);
   const [files, setFiles] = useState([]);
-  // const [content, setContent] = useState("");
 
   // (modal 관련)
   const [createModalOpen, setCreateModalOpen] = useState(false); // 문의 등록 실패 알림 modal state
 
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, loading, error, fetchData } = useAxios(apiConfig);
+
   useEffect(() => {
-    // 문의 스레드 상세 조회 api 호출 (inquirys/:inquiryId)
+    // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
+    setApiConfig({
+      method: "get",
+      url: `/inquiry/${inquiryId}`
+    });
 
     // 임시 데이터
     const tmp = [
@@ -123,24 +131,28 @@ const Thread = ({ inquiryId }) => {
       formData.append("files", files);
 
       // 문의 등록 API 호출
+      setApiConfig({
+        method: "post",
+        url: `/inquiry/${inquiryId}`,
+        headers: { "Content-Type": "multipart/form-data" },
+        data: formData
+      });
+
+      fetchData(apiConfig);
 
       // 프론트엔드 테스트를 위한 백엔드 임시 코드
       const result = true;
       if (!result) {
         setCreateModalOpen(true);
       } else {
-        // 통신 성공 시, 백엔드 통신 다시
-        // 문의 스레드 상세 조회 api 호출 (inquirys/:inquiryId)
         content === "";
         setFiles([]);
-
-        // const newThreadData = {
-        //   isAnswer: false,
-        //   authorId: 86,
-        //   content: content,
-        //   createdAt: formattedDate,
-        //   file: files
-        // };
+        // 등록 성공 시, 백엔드 통신 다시 하기
+        // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
+        setApiConfig({
+          method: "get",
+          url: `/inquiry/${inquiryId}`
+        });
       }
     }
   };

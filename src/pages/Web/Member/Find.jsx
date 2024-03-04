@@ -1,8 +1,11 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
+// ===== style import =====
+import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
+
 // ===== components import =====
-import Member from "@/components/Web/Member/Member";
+import Header from "@/components/Web/Shared/Layout/Header";
 import FindidForm from "@/components/Web/Member/FindidForm";
 import FindpwForm from "@/components/Web/Member/FindpwForm";
 
@@ -14,10 +17,17 @@ const Find = () => {
   const type = query.get("type");
 
   return (
-    <Member type="big">
-      {type === "id" && <FindidForm />}
-      {type === "pw" && <FindpwForm />}
-    </Member>
+    <>
+      <ContentWrapper row="center" col="center">
+        <Header type="big" />
+        <NarrowContent>
+          <Main>
+            {type === "id" && <FindidForm />}
+            {type === "pw" && <FindpwForm />}
+          </Main>
+        </NarrowContent>
+      </ContentWrapper>
+    </>
   );
 };
 

@@ -1,7 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ====== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -49,42 +52,71 @@ const SignupForm = () => {
   const [pwError, setPwError] = useState(""); // 비밀번호 유효성 검사 에러 메시지 state
   const [confirmPwError, setConfirmPwError] = useState(""); // 비밀번호 일치 검사 에러 메시지 state
   const [duplicationError, setDuplicationError] = useState(""); // 아이디 중복 확인 에러 메시지 state
-  // (인증번호 관련)
-  const [isAuthMath, setIsAuthMath] = useState(false); // 검증 성공 여부 state
   // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 알림 modal state
   const [signupModalOpen, setSignupModalOpen] = useState(false); // 회원 가입 실패 알림 modal state
   const [duplicationModalOpen, setDuplicationModalOpen] = useState(false); // 중복 확인 성공 modal state
+  // (인증번호 관련)
+  const [isAuthMath, setIsAuthMath] = useState(false); // 검증 성공 여부 state
+  const [phoneNumber, setPhoneNumber] = useState(""); // 전화번호
+  // (입력 필드 관련)
+  const [inputDisabled, setInputDisabled] = useState(false); // 입력 필드 활성/비활성 상태
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === navigate ===
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
   // 아이디 중복 확인
   const handleDuplicateId = () => {
+    const id = idRef.current.value;
+
     // 아이디 유효성 검사 진행
     if (idError) {
       console.log("Fail");
     } else {
-      // 아이디 중복확인 API 코드 추가
+      // 아이디 중복확인 API 코드
+      setApiConfig({
+        method: "get",
+        url: `/user/username/availability?username=${id}`
+      });
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
-      if (!result) {
+      if (response !== null) {
+        setDuplicationError("");
+        setDuplicationModalOpen(true);
+        setInputDisabled(true);
+      } else {
         setDuplicationError("사용할 수 없는 아이디입니다.");
         setIdError("");
-      } else {
-        setDuplicationModalOpen(true);
       }
+
+      // const result = true;
+      // if (!result) {
+      //   setDuplicationError("사용할 수 없는 아이디입니다.");
+      //   setIdError("");
+      // } else {
+      //   setDuplicationError("");
+      //   setDuplicationModalOpen(true);
+      //   setInputDisabled(true);
+      // }
     }
   };
 
   // 인증번호 검증
-  const handlePhoneNumberAuth = (result) => {
-    if (!result) {
+  const handlePhoneNumberAuth = (response, phoneNumber) => {
+    if (response !== null) {
+      setIsAuthMath(true);
+      setPhoneNumber(phoneNumber);
+    } else {
       // 경고 모달 출력
       setAuthModalOpen(true);
-    } else {
-      setIsAuthMath(true);
     }
   };
 
@@ -125,20 +157,37 @@ const SignupForm = () => {
     }
   };
 
-  // 통신 완료됐다는 걸 가정하고 회원가입 완료됐을 때 코드 작성
   // 회원가입
   const handleSignup = () => {
     if (!idError && !pwError && !confirmPwError && !duplicationError && isAuthMath) {
-      // 회원가입 API 코드
+      const id = idRef.current.value;
+      const password = passwordRef.current.value;
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
-      if (!result) {
-        setSignupModalOpen(true);
-      } else {
+      // 회원가입 API 코드
+      setApiConfig({
+        method: "post",
+        url: "/user",
+        data: {
+          username: id,
+          password: password,
+          phone: phoneNumber
+        }
+      });
+
+      if (response !== null) {
         // 로그인 페이지로 이동
         navigate(`/member/login`);
+      } else {
+        setSignupModalOpen(true);
       }
+
+      // const result = true;
+      // if (!result) {
+      //   setSignupModalOpen(true);
+      // } else {
+      //   // 로그인 페이지로 이동
+      //   navigate(`/member/login`);
+      // }
     } else {
       setSignupModalOpen(true);
     }
@@ -146,79 +195,90 @@ const SignupForm = () => {
 
   return (
     <>
-      {/* 인증 실패 Modal */}
-      {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-          인증번호가 일치하지 않습니다.
-        </WebModal>
-      )}
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          {/* 인증 실패 Modal */}
+          {authModalOpen && (
+            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+              인증번호가 일치하지 않습니다.
+            </WebModal>
+          )}
 
-      {/* 회원가입 실패 Modal */}
-      {signupModalOpen && (
-        <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
-          회원 정보를 확인해 주세요.
-        </WebModal>
-      )}
+          {/* 회원가입 실패 Modal */}
+          {signupModalOpen && (
+            <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
+              회원 정보를 확인해 주세요.
+            </WebModal>
+          )}
 
-      {/* 중복 확인 Modal */}
-      {duplicationModalOpen && (
-        <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
-          사용 가능한 아이디입니다.
-        </WebModal>
-      )}
+          {/* 중복 확인 Modal */}
+          {duplicationModalOpen && (
+            <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
+              사용 가능한 아이디입니다.
+            </WebModal>
+          )}
 
-      <SignupFormContainer dir="col">
-        <FormTitle type="signup" />
+          <SignupFormContainer dir="col">
+            <FormTitle type="signup" />
 
-        {/* {아이디 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <SignupInputFieldWrapper row="between" col="end">
-            <SignupInputFieldWrapper flexGrow="0.75" dir="col">
+            {/* {아이디 input field} */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
+              <SignupInputFieldWrapper row="between" col="end">
+                <SignupInputFieldWrapper flexGrow="0.75" dir="col">
+                  <InputField
+                    hasLabel={true}
+                    name="id"
+                    inputRef={idRef}
+                    isDataForm={true}
+                    onBlur={handleIdValidation}
+                    disabled={inputDisabled}
+                  />
+                </SignupInputFieldWrapper>
+                <DuplicationButton onClick={handleDuplicateId}>
+                  중복 확인
+                </DuplicationButton>
+              </SignupInputFieldWrapper>
+              {duplicationError && <ValidationMessage message={duplicationError} />}
+              {idError && <ValidationMessage message={idError} />}
+            </SignupInputFieldWrapper>
+
+            {/* {비밀번호 input field} */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
               <InputField
                 hasLabel={true}
-                name="id"
-                inputRef={idRef}
+                name="password"
+                inputRef={passwordRef}
                 isDataForm={true}
-                onBlur={handleIdValidation}
+                onBlur={handlePasswordValidation}
               />
+              {pwError && <ValidationMessage message={pwError} />}
             </SignupInputFieldWrapper>
-            <DuplicationButton onClick={handleDuplicateId}>중복 확인</DuplicationButton>
-          </SignupInputFieldWrapper>
-          {duplicationError && <ValidationMessage message={duplicationError} />}
-          {idError && <ValidationMessage message={idError} />}
-        </SignupInputFieldWrapper>
 
-        {/* {비밀번호 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <InputField
-            hasLabel={true}
-            name="password"
-            inputRef={passwordRef}
-            isDataForm={true}
-            onBlur={handlePasswordValidation}
-          />
-          {pwError && <ValidationMessage message={pwError} />}
-        </SignupInputFieldWrapper>
+            {/* 비밀번호 확인 input field */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
+              <InputField
+                hasLabel={true}
+                name="confirmPassword"
+                inputRef={confirmPasswordRef}
+                onBlur={handleConfirmPassword}
+              />
+              {confirmPwError && <ValidationMessage message={confirmPwError} />}
+            </SignupInputFieldWrapper>
 
-        {/* 비밀번호 확인 input field */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <InputField
-            hasLabel={true}
-            name="confirmPassword"
-            inputRef={confirmPasswordRef}
-            onBlur={handleConfirmPassword}
-          />
-          {confirmPwError && <ValidationMessage message={confirmPwError} />}
-        </SignupInputFieldWrapper>
+            {/* 전화번호 인증 */}
+            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
 
-        {/* 전화번호 인증 */}
-        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-
-        {/* 회원가입 button */}
-        <SignupInputFieldWrapper marginTop="15px">
-          <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
-        </SignupInputFieldWrapper>
-      </SignupFormContainer>
+            {/* 회원가입 button */}
+            <SignupInputFieldWrapper marginTop="15px">
+              <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
+            </SignupInputFieldWrapper>
+          </SignupFormContainer>
+        </>
+      )}
     </>
   );
 };

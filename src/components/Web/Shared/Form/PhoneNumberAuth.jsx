@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import Timer from "./Timer";
@@ -17,6 +17,8 @@ import ValidationMessage from "./ValidationMessage";
 import WebModal from "../Modal/WebModal";
 import CheckIcon from "@/assets/images/white-check.png";
 
+import useAxios from "@/hooks/useAxios";
+
 const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
   const [validMessage, setValidMessage] = useState("");
@@ -26,6 +28,16 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false); // 전화번호 인증 성공 여부
+
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   // 전화 번호
   const numbersRef = Array(3)
@@ -72,16 +84,23 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
     }
 
     // SMS API 호출 코드
+    setApiConfig({
+      method: "get",
+      url: `/user/auth-code?receiverNumber=${phoneNumber}`
+    });
 
-    // res.ok 시 호출
-    setIsValidPhoneNumber(true);
-    setIsSentPhoneNumber(true);
-    setValidMessage("인증번호가 발송되었습니다.");
-    setInitialTime(180);
+    if (response !== null) {
+      // res.ok 시 호출
+      setIsValidPhoneNumber(true);
+      setIsSentPhoneNumber(true);
+      setValidMessage("인증번호가 발송되었습니다.");
+      setInitialTime(180);
+    }
   };
 
   // 인증 번호 전달
   const sendVerification = () => {
+    const phoneNumber = numbersRef.map((ref) => ref.current.value).join("-");
     const verification = verificationRef.current.value;
     const regex = /^\d{4}$/;
 
@@ -90,18 +109,36 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       setModalMessage("인증 번호가 일치하지 않습니다.");
     } else {
       // 인증 번호 검증 API 호출 코드
+      setApiConfig({
+        method: "post",
+        url: "/user/auth-code/check",
+        // headers: {
+        //   Cookie: `smsAuthId=${uuid}`
+        // },
+        data: {
+          authNumber: verification,
+          phoneNumber: phoneNumber
+        }
+      });
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
-
-      if (!result) {
+      if (response !== null) {
+        setIsVerifying(true);
+        onVerificationResult(response, phoneNumber);
+        setValidMessage("");
+      } else {
         setIsModalOpen(true);
         setModalMessage("인증 번호가 일치하지 않습니다.");
-      } else {
-        setIsVerifying(true);
-        onVerificationResult(result);
-        setValidMessage("");
       }
+
+      // const result = true;
+      // if (!result) {
+      //   setIsModalOpen(true);
+      //   setModalMessage("인증 번호가 일치하지 않습니다.");
+      // } else {
+      //   setIsVerifying(true);
+      //   onVerificationResult(result);
+      //   setValidMessage("");
+      // }
     }
 
     // 인증 번호 유효 시간 초과
@@ -193,7 +230,8 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 };
 
 PhoneNumberAuth.propTypes = {
-  onVerificationResult: PropTypes.func
+  onVerificationResult: PropTypes.func,
+  onPhoneNumber: PropTypes.func
 };
 
 export default PhoneNumberAuth;

@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -54,90 +57,123 @@ const FindButton = styled.button`
 const FindidForm = () => {
   // === state ===
   const [hasUserInfo, setHasUserInfo] = useState(false); // 아이디 조회 state
-  const [userId, setUserId] = useState("jephpp123"); // 아이디 출력 state
+  const [userId, setUserId] = useState(""); // 아이디 출력 state
   // (modal 관련)
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === navigate ===
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
   // 전화번호 인증
-  const handlePhoneNumberAuth = (result) => {
-    if (!result) {
+  const handlePhoneNumberAuth = (response, phoneNumber) => {
+    if (response !== null) {
+      // 성공 시, 아이디 조회 함수 호출
+      handleFindid(phoneNumber);
+    } else {
       // 경고 모달 출력
       setAuthModalOpen(true);
-    } else {
-      // 성공 시, 아이디 조회 함수 호출
-      handleFindid();
     }
   };
 
   // 아이디 조회
-  const handleFindid = () => {
+  const handleFindid = (phoneNumber) => {
     // 아이디 조회 API 코드
+    setApiConfig({
+      method: "post",
+      url: "/user/find/id",
+      data: {
+        phone: phoneNumber
+      }
+    });
 
-    // 프론트엔드 테스트를 위한 백엔드 임시 코드
-    const result = true;
+    const { id } = response.data;
 
-    if (!result) {
-      setFindidModalOpen(true);
-    } else {
+    if (response !== null) {
       setHasUserInfo(true);
+      setUserId(id);
+    } else {
+      setFindidModalOpen(true);
     }
+
+    // const result = true;
+    // if (!result) {
+    //   setFindidModalOpen(true);
+    // } else {
+    //   setHasUserInfo(true);
+    // }
   };
 
+  // 로그인 페이지로 이동
   const handleMoveLogin = () => {
     navigate(`/member/login`);
   };
 
+  // 비밀번호 찾기 페이지로 이동
   const handleMoveFindpw = () => {
     navigate(`/member/find?type=pw`);
   };
 
   return (
     <>
-      {/* 인증 실패 modal */}
-      {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-          인증번호가 일치하지 않습니다.
-        </WebModal>
-      )}
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          {/* 인증 실패 modal */}
+          {authModalOpen && (
+            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+              인증번호가 일치하지 않습니다.
+            </WebModal>
+          )}
 
-      {/* 아이디 찾기 실패 modal */}
-      {findidModalOpen && (
-        <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
-          아이디가 존재하지 않습니다.
-        </WebModal>
-      )}
+          {/* 아이디 찾기 실패 modal */}
+          {findidModalOpen && (
+            <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
+              아이디가 존재하지 않습니다.
+            </WebModal>
+          )}
 
-      <FindidFormFlexContainer dir="col">
-        <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
-        {hasUserInfo ? (
-          <>
-            {/* 아이디 찾기 성공 시, 결과 출력부 */}
-            <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
-            <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
-              <IdLabel marginLeft="20px">아이디</IdLabel>
-              <IdText marginRight="20px">{userId}</IdText>
-            </FindidFormFlexContainer>
-            <FindidFormFlexContainer marginTop="50px">
-              <Button type="smallBrown" message="로그인" onClick={handleMoveLogin} />
-              <FindButton marginLeft="15px" onClick={handleMoveFindpw}>
-                비밀번호 찾기
-              </FindButton>
-            </FindidFormFlexContainer>
-          </>
-        ) : (
-          <>
-            {/* 전화번호 인증 */}
-            <FindidText>
-              회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
-            </FindidText>
-            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-          </>
-        )}
-      </FindidFormFlexContainer>
+          <FindidFormFlexContainer dir="col">
+            <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
+            {hasUserInfo ? (
+              <>
+                {/* 아이디 찾기 성공 시, 결과 출력부 */}
+                <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
+                <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
+                  <IdLabel marginLeft="20px">아이디</IdLabel>
+                  <IdText marginRight="20px">{userId}</IdText>
+                </FindidFormFlexContainer>
+                <FindidFormFlexContainer marginTop="50px">
+                  <Button type="smallBrown" message="로그인" onClick={handleMoveLogin} />
+                  <FindButton marginLeft="15px" onClick={handleMoveFindpw}>
+                    비밀번호 찾기
+                  </FindButton>
+                </FindidFormFlexContainer>
+              </>
+            ) : (
+              <>
+                {/* 전화번호 인증 */}
+                <FindidText>
+                  회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
+                </FindidText>
+                <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
+              </>
+            )}
+          </FindidFormFlexContainer>
+        </>
+      )}
     </>
   );
 };

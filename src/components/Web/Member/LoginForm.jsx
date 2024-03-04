@@ -1,9 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components & image import =====
 import KakaoIcon from "@/assets/images/kakao.png";
@@ -51,10 +54,19 @@ const LoginForm = () => {
   const passwordRef = useRef(""); // 비밀번호
 
   // === state ===
-  const [error, setError] = useState(""); // error state
+  const [loginError, setLoginError] = useState(""); // error state
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === navigate ===
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   // 로그인
   const handleLogin = () => {
@@ -65,20 +77,35 @@ const LoginForm = () => {
     const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
 
     if (!idRegex.test(id) || !pwRegex.test(password)) {
-      setError("아이디 또는 비밀번호를 잘못 입력했습니다.");
+      setLoginError("아이디 또는 비밀번호를 잘못 입력했습니다.");
     } else {
-      setError("");
-      // 로그인 API 코드 추가
+      setLoginError("");
+      // 로그인 API 코드
+      setApiConfig({
+        method: "post",
+        url: "/user/signin",
+        data: {
+          username: id,
+          password: password
+        }
+      });
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
-      if (!result) {
-        setError("해당 계정이 존재하지 않습니다.");
-      } else {
+      if (response !== null) {
         // 홈으로 이동
-        setError("");
+        setLoginError("");
         navigate(`/`);
+      } else {
+        setLoginError("해당 계정이 존재하지 않습니다.");
       }
+
+      // const result = true;
+      // if (!result) {
+      //   setLoginError("해당 계정이 존재하지 않습니다.");
+      // } else {
+      //   // 홈으로 이동
+      //   setLoginError("");
+      //   navigate(`/`);
+      // }
     }
   };
 
@@ -88,56 +115,66 @@ const LoginForm = () => {
   };
 
   return (
-    <LoginFormFlexContainer dir="col" marginTop="4rem">
-      <FormTitle type="login"></FormTitle>
+    <>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          <LoginFormFlexContainer dir="col" marginTop="4rem">
+            <FormTitle type="login"></FormTitle>
 
-      {/* 아이디 input */}
-      <LoginFormFlexContainer marginBottom="25px">
-        <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
-      </LoginFormFlexContainer>
+            {/* 아이디 input */}
+            <LoginFormFlexContainer marginBottom="25px">
+              <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
+            </LoginFormFlexContainer>
 
-      {/* 비밀번호 input */}
-      <LoginFormFlexContainer marginBottom="15px">
-        <InputField
-          name="password"
-          isLoginForm={true}
-          inputRef={passwordRef}
-        ></InputField>
-      </LoginFormFlexContainer>
+            {/* 비밀번호 input */}
+            <LoginFormFlexContainer marginBottom="15px">
+              <InputField
+                name="password"
+                isLoginForm={true}
+                inputRef={passwordRef}
+              ></InputField>
+            </LoginFormFlexContainer>
 
-      {/* 경고 문구 */}
-      {error && <ValidationMessage message={error} />}
+            {/* 경고 문구 */}
+            {loginError && <ValidationMessage message={loginError} />}
 
-      {/* 로그인 button */}
-      <LoginFormFlexContainer marginTop="28px" marginBottom="15px">
-        <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
-      </LoginFormFlexContainer>
+            {/* 로그인 button */}
+            <LoginFormFlexContainer marginTop="28px" marginBottom="15px">
+              <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
+            </LoginFormFlexContainer>
 
-      {/* Link button */}
-      <LoginFormFlexContainer row="between" marginBottom="30px">
-        <LoginFormFlexContainer width="fit-content">
-          <Link to="/member/find?type=id">
-            <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
-          </Link>
-          <Link to="/member/find?type=pw">
-            <LinkSpan>비밀번호 찾기</LinkSpan>
-          </Link>
-        </LoginFormFlexContainer>
-        <Link to="/member/join">
-          <LinkSpan color="#413014">회원가입</LinkSpan>
-        </Link>
-      </LoginFormFlexContainer>
+            {/* Link button */}
+            <LoginFormFlexContainer row="between" marginBottom="30px">
+              <LoginFormFlexContainer width="fit-content">
+                <Link to="/member/find?type=id">
+                  <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
+                </Link>
+                <Link to="/member/find?type=pw">
+                  <LinkSpan>비밀번호 찾기</LinkSpan>
+                </Link>
+              </LoginFormFlexContainer>
+              <Link to="/member/join">
+                <LinkSpan color="#413014">회원가입</LinkSpan>
+              </Link>
+            </LoginFormFlexContainer>
 
-      {/* 카카오 로그인 button */}
-      <KakaoLoginButton onClick={handleKakaoLogin}>
-        <LoginFormFlexContainer col="center">
-          <KakaoIconImage src={KakaoIcon} />
-          <LinkSpan color="#413014" fontWeight="700">
-            카카오 계정으로 로그인하기
-          </LinkSpan>
-        </LoginFormFlexContainer>
-      </KakaoLoginButton>
-    </LoginFormFlexContainer>
+            {/* 카카오 로그인 button */}
+            <KakaoLoginButton onClick={handleKakaoLogin}>
+              <LoginFormFlexContainer col="center">
+                <KakaoIconImage src={KakaoIcon} />
+                <LinkSpan color="#413014" fontWeight="700">
+                  카카오 계정으로 로그인하기
+                </LinkSpan>
+              </LoginFormFlexContainer>
+            </KakaoLoginButton>
+          </LoginFormFlexContainer>
+        </>
+      )}
+    </>
   );
 };
 

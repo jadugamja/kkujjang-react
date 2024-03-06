@@ -16,7 +16,7 @@ const ValidationMessage = ({ message, fontSize, fontWeight, color }) => {
 ValidationMessage.propTypes = {
   message: PropTypes.string,
   fontSize: PropTypes.string,
-  fontWeight: PropTypes.number,
+  fontWeight: PropTypes.string,
   color: PropTypes.string
 };
 

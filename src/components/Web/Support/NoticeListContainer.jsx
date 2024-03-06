@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
+
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
 import SearchBar from "@/components/Web/Shared/Board/SearchBar";
@@ -29,115 +32,43 @@ const NoticeListContainer = () => {
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/notice/list?page=${currPage}`
+  });
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === navigate ===
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getNoticeListHandler = async () => {
-      try {
-        const data = await getNoticeList(currPage);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeListHandler();
+    fetchData();
+  }, [apiConfig]);
 
-    // 임시 데이터
-    const list = [
-      {
-        id: 0,
-        title: "제목1",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 1,
-        title: "제목2",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 2,
-        title: "제목3",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 3,
-        title: "제목4",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 4,
-        title: "제목5",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 5,
-        title: "제목6",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 6,
-        title: "제목7",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 7,
-        title: "제목8",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 8,
-        title: "제목9",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 9,
-        title: "제목10",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      }
-    ];
-
-    if (list.length === 0) {
-      setListData([]);
-    } else {
-      setListData(list);
-    }
-  }, []);
-
-  // 백엔드 코드, 수정될 부분
   useEffect(() => {
-    const getNoticeSearchHandler = async () => {
-      try {
-        const data = await getNoticeSearch(currPage, searchKeyword);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeSearchHandler();
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setListData(response.list);
+    } else {
+      setLastPageIdx(1);
+      setListData([]);
+    }
+  }, [response]);
+
+  // 페이지 변경, 검색 시 호출
+  useEffect(() => {
+    if (searchKeyword !== "") {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+      });
+    } else {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/list?page=${currPage}`
+      });
+    }
   }, [currPage, searchKeyword]);
 
   const onDetailOpen = (noticeId) => {

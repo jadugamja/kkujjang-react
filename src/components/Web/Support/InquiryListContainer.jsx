@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
-import PropTypes from "prop-types";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
@@ -36,66 +37,37 @@ const InquiryListContainer = () => {
   const [listData, setListData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
-
-  // const [isAnswer, setIsAnswer] = useState(false);
   const [selectedInquiryId, setSelectedInquiryId] = useState(null);
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/inquiry/list?page=${currPage}`
+  });
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === navigate ===
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 문의 목록 조회 api 호출
+    fetchData();
+  }, [apiConfig]);
 
-    // 임시 데이터
-    const tmp = [
-      {
-        id: 0,
-        type: 1,
-        title: "제목1",
-        createdAt: "2024-01-01",
-        needsAnswer: false
-      },
-      {
-        id: 1,
-        type: 2,
-        title: "제목2",
-        createdAt: "2024-01-01",
-        needsAnswer: false
-      },
-      {
-        id: 2,
-        type: 3,
-        title: "제목3",
-        createdAt: "2024-01-01",
-        needsAnswer: false
-      },
-      {
-        id: 3,
-        type: 3,
-        title: "제목4",
-        createdAt: "2024-01-01",
-        needsAnswer: false
-      },
-      {
-        id: 4,
-        type: 1,
-        title: "제목5",
-        createdAt: "2024-01-01",
-        needsAnswer: false
-      }
-    ];
-
-    if (tmp.length === 0) {
-      setListData([]);
+  useEffect(() => {
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setListData(response.list);
     } else {
-      setListData(tmp);
+      setLastPageIdx(1);
+      setListData([]);
     }
-  }, []);
+  }, [response]);
 
-  // const updateIsAnswer = (value) => {
-  //   setIsAnswer(value);
-  //   console.log("문의", isAnswer);
-  // };
+  useEffect(() => {
+    setApiConfig({
+      ...apiConfig,
+      url: `/inquiry/list?page=${currPage}`
+    });
+  }, [currPage]);
 
   const handleMoveCreate = () => {
     navigate(`/inquiry/create`);

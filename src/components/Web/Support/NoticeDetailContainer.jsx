@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
 import createdAtIcon from "@/assets/images/clock.png";
 import viewsIcon from "@/assets/images/views.png";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
@@ -47,21 +51,30 @@ const NoticeDetailImage = styled.img`
 const NoticeDetailContainer = () => {
   // === state ===
   const [detailData, setDetailData] = useState([]);
+  // (api 관련)
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/notice/=${noticeId}`
+  });
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === navigate ===
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 임시 데이터
-    const detail = {
-      id: 0,
-      title: "제목1111",
-      content: "본문1111",
-      createdAt: "2024-01-01 03:10",
-      views: 10
-    };
+  // === params ===
+  const { noticeId } = useParams();
 
-    setDetailData(detail);
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setDetailData(response);
+    } else {
+      setDetailData([]);
+    }
   }, []);
 
   const handleMoveList = () => {
@@ -106,8 +119,15 @@ const NoticeDetailContainer = () => {
             dir="col"
             marginBottom="10px"
           >
-            <NoticeDetailBox height="390px" marginTop="15px">
-              {detailData.content}
+            <NoticeDetailBox dir="col" height="390px" marginTop="15px">
+              <div>{detailData.content}</div>
+              {detailData.files && (
+                <>
+                  {detailData.files?.map((file, index) => (
+                    <img key={index} src={file} />
+                  ))}
+                </>
+              )}
             </NoticeDetailBox>
             <NoticeDeatalFlexBox row="end">
               <Button type="smallGray" message="목록" onClick={handleMoveList} />

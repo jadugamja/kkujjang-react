@@ -72,50 +72,34 @@ const WithdrawalForm = () => {
       } else {
         setWithdrawalModalOpen(true);
       }
-
-      // const result = true;
-      // if (!result) {
-      //   setWithdrawalModalOpen(true);
-      // } else {
-      //   // 홈으로 이동
-      //   navigate(`/`);
-      // }
     }
   };
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : (
-        <>
-          {/* 탈퇴 실패 Modal */}
-          {withdrawalModalOpen && (
-            <WebModal setIsOpen={setWithdrawalModalOpen} hasButton={true}>
-              회원 정보를 확인해 주세요.
-            </WebModal>
-          )}
-
-          <WithdrawalFormFlexContainer dir="col">
-            <FormTitle type="withdrawal" />
-
-            {/* 아이디 input */}
-            <WithdrawalFormContainer marginBottom="7px">
-              <InputField name="id" inputRef={idRef} />
-            </WithdrawalFormContainer>
-
-            {/* 비밀번호 input */}
-            <WithdrawalFormContainer marginBottom="15px">
-              <InputField name="password" inputRef={passwordRef} />
-            </WithdrawalFormContainer>
-
-            {/* 탈퇴하기 button */}
-            <Button type="bigBrown" message="탈퇴하기" onClick={handleWithdrawal} />
-          </WithdrawalFormFlexContainer>
-        </>
+      {/* 탈퇴 실패 Modal */}
+      {withdrawalModalOpen && (
+        <WebModal setIsOpen={setWithdrawalModalOpen} hasButton={true}>
+          회원 정보를 확인해 주세요.
+        </WebModal>
       )}
+
+      <WithdrawalFormFlexContainer dir="col">
+        <FormTitle type="withdrawal" />
+
+        {/* 아이디 input */}
+        <WithdrawalFormContainer marginBottom="7px">
+          <InputField name="id" inputRef={idRef} />
+        </WithdrawalFormContainer>
+
+        {/* 비밀번호 input */}
+        <WithdrawalFormContainer marginBottom="15px">
+          <InputField name="password" inputRef={passwordRef} />
+        </WithdrawalFormContainer>
+
+        {/* 탈퇴하기 button */}
+        <Button type="bigBrown" message="탈퇴하기" onClick={handleWithdrawal} />
+      </WithdrawalFormFlexContainer>
     </>
   );
 };

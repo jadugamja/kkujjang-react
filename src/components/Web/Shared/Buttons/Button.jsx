@@ -113,7 +113,7 @@ const getFonts = (type) => {
   switch (type) {
     case "bigBrown":
       return {
-        size: "26px",
+        size: "27px",
         weight: "700"
       };
     case "smallBrown":

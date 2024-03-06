@@ -10,7 +10,7 @@ export const userNameState = selector({
   key: "userNameState",
   get: ({ get }) => {
     const user = get(userState);
-    return user.username;
+    return user?.username;
   }
 });
 
@@ -19,7 +19,7 @@ export const avatarUrlState = selector({
   key: "avatarUrlState",
   get: ({ get }) => {
     const user = get(userState);
-    return user.avatarUrl;
+    return user?.avatarUrl;
   }
 });
 

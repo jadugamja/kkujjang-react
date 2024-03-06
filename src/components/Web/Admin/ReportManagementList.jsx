@@ -37,7 +37,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage);
+      setLastPageIdx(response.lastPage + 1);
       setData(response.list);
     } else {
       setLastPageIdx(1);
@@ -138,6 +138,8 @@ const ReportManagementList = ({ type, onSideOpen }) => {
           return Object.entries(value)
             ?.map(([typeKey, typeValue]) => `${typeKey}=${typeValue ? 1 : 0}`)
             ?.join("&");
+        } else if (key === "createdAt") {
+          return `order=${value}`;
         } else {
           return `${key}=${value}`;
         }

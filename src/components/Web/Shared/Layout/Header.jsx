@@ -32,21 +32,25 @@ const Header = ({ type = "default" }) => {
   }, []);
 
   return (
-    <FixedHeader type={type} color={headerBgColor} shadow={headerShadow}>
-      <Link to="/">
-        <LogoImg src={logo} type={type} />
-      </Link>
-      {(type === "detail" || type === "clearTab") && <HeaderTab type={type}></HeaderTab>}
-      {type === "admin" && (
-        <ButtonWrapper>
-          <Link to="/game">
-            <GameButton>게임 시작</GameButton>
-          </Link>
-          <LogoutButton onClick={() => setUser(null)}>
-            <LogoutIcon icon={faSignOut} />
-          </LogoutButton>
-        </ButtonWrapper>
-      )}
+    <FixedHeader color={headerBgColor} shadow={headerShadow}>
+      <HeaderContent type={type}>
+        <Link to="/">
+          <LogoImg src={logo} type={type} />
+        </Link>
+        {(type === "detail" || type === "clearTab") && (
+          <HeaderTab type={type}></HeaderTab>
+        )}
+        {type === "admin" && (
+          <ButtonWrapper>
+            <Link to="/game">
+              <GameButton>게임 시작</GameButton>
+            </Link>
+            <LogoutButton onClick={() => setUser(null)}>
+              <LogoutIcon icon={faSignOut} />
+            </LogoutButton>
+          </ButtonWrapper>
+        )}
+      </HeaderContent>
     </FixedHeader>
   );
 };
@@ -55,18 +59,27 @@ Header.propTypes = {
   type: PropTypes.string
 };
 
-const FixedHeader = styled(FlexBox).attrs(({ type }) => ({
+const FixedHeader = styled(FlexBox).attrs(() => ({
   as: "header",
-  row: type === "big" ? "center" : "between",
-  col: "center"
+  row: "center"
 }))`
   position: fixed;
   top: 0;
-  width: ${({ type }) => (type === "detail" ? "75rem" : "inherit")};
-  height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")};
+  left: 0;
+  width: 100%;
+  /* height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")}; */
   background-color: ${({ color }) => color};
   box-shadow: ${({ shadow }) => shadow};
   z-index: 3;
+`;
+
+const HeaderContent = styled(FlexBox).attrs(({ type }) => ({
+  row: type === "big" ? "center" : "between",
+  col: "center"
+}))`
+  width: 75rem;
+  height: ${({ type }) =>
+    type === "big" ? "10rem" : type === "admin" ? "6.5rem" : "7.5rem"};
 `;
 
 // 로고 이미지 사이즈 조정

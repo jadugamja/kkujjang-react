@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
@@ -14,6 +15,7 @@ import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
+import { userState } from "@/recoil/userState";
 
 // ===== style ======
 const LoginFormFlexContainer = styled(FlexBox)`
@@ -25,14 +27,14 @@ const LoginFormFlexContainer = styled(FlexBox)`
 `;
 
 const KakaoLoginButton = styled.button`
-  height: 4.688rem;
+  height: 4.3rem;
   background-color: ${({ theme }) => theme.colors.kakao};
   color: #413014;
 `;
 
 const LinkSpan = styled.span`
   color: ${(props) => props.color || "#929292"};
-  font-size: 21px;
+  font-size: ${(props) => props.fontSize || "19px"};
   font-weight: ${(props) => props.fontWeight || "600"};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
@@ -55,6 +57,7 @@ const LoginForm = () => {
 
   // === state ===
   const [loginError, setLoginError] = useState(""); // error state
+  const setUser = useSetRecoilState(userState);
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -68,7 +71,25 @@ const LoginForm = () => {
     }
   }, [apiConfig]);
 
-  // 로그인
+  useEffect(() => {
+    if (response !== null) {
+      setLoginError("");
+      // 세션 스토리지에 유저 정보 저장
+      sessionStorage.setItem("user", {
+        username: idRef.current.value,
+        password: passwordRef.current.value
+      });
+      // 전역 상태에 유저 정보 저장
+      setUser({
+        username: idRef.current.value,
+        password: passwordRef.current.value
+      });
+      navigate("/");
+    } else {
+      setLoginError(error);
+    }
+  }, [response]);
+
   const handleLogin = () => {
     const id = idRef.current.value;
     const password = passwordRef.current.value;
@@ -89,23 +110,6 @@ const LoginForm = () => {
           password: password
         }
       });
-
-      if (response !== null) {
-        // 홈으로 이동
-        setLoginError("");
-        navigate(`/`);
-      } else {
-        setLoginError("해당 계정이 존재하지 않습니다.");
-      }
-
-      // const result = true;
-      // if (!result) {
-      //   setLoginError("해당 계정이 존재하지 않습니다.");
-      // } else {
-      //   // 홈으로 이동
-      //   setLoginError("");
-      //   navigate(`/`);
-      // }
     }
   };
 
@@ -119,7 +123,7 @@ const LoginForm = () => {
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p>{error.message}</p>
+        <p>{setLoginError(error)}</p>
       ) : (
         <>
           <LoginFormFlexContainer dir="col" marginTop="4rem">
@@ -166,7 +170,7 @@ const LoginForm = () => {
             <KakaoLoginButton onClick={handleKakaoLogin}>
               <LoginFormFlexContainer col="center">
                 <KakaoIconImage src={KakaoIcon} />
-                <LinkSpan color="#413014" fontWeight="700">
+                <LinkSpan color="#413014" fontSize="20px" fontWeight="700">
                   카카오 계정으로 로그인하기
                 </LinkSpan>
               </LoginFormFlexContainer>

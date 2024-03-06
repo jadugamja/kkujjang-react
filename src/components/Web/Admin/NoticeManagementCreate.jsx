@@ -150,7 +150,9 @@ const NoticeManagementCreate = () => {
     setApiConfig({
       method: "post",
       url: "/notice",
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
       data: formData
     });
   };

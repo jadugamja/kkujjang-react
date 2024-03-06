@@ -46,7 +46,7 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage);
+      setLastPageIdx(response.lastPage + 1);
       setIsAnswerCompleted(
         tmp.reduce((acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }), {})
       );

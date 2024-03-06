@@ -9,9 +9,32 @@ import { faArrowRightFromBracket, faComment } from "@fortawesome/free-solid-svg-
 import { LevelBadge } from "../../../Game/Shared/Player";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
 import { userState } from "@/recoil/userState";
+import useAxios from "@/hooks/useAxios";
+import { useEffect } from "react";
 
 const HomeButton = ({ type }) => {
   const [user, setUser] = useRecoilState(userState);
+  const { response, loading, error, fetchData } = useAxios(
+    {
+      method: "get",
+      url: "/user/signout",
+      data: {
+        nickname: "admin13245",
+        password: "!@#123admin"
+      }
+    },
+    false
+  );
+
+  useEffect(() => {
+    if (response !== null) {
+      setUser(null);
+    }
+  }, [response]);
+
+  const onLogout = () => {
+    fetchData();
+  };
 
   return (
     <Wrapper dir="col" width="18.75rem" height="14rem" margin="0 72px 0 0">
@@ -89,7 +112,7 @@ const HomeButton = ({ type }) => {
               height="100%"
               bgColor="#FBFBFB"
               borderRadius="0 0 30px 0"
-              onClick={() => setUser(null)}
+              onClick={() => fetchData()}
             >
               <FontAwesomeIcon icon={faArrowRightFromBracket} size="xl" />
             </FlexBox>

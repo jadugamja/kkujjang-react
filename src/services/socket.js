@@ -2,7 +2,9 @@ import io from "socket.io-client";
 import { SOCKET_URL } from "./const";
 
 const client = io(SOCKET_URL, {
-  transports: ["websocket"]
+  path: "/game/socket.io/",
+  withCredentials: false
+  // transports: ["websocket"]
 });
 
 // ====== 소켓 초기화 ======
@@ -22,6 +24,7 @@ export const loadRoomList = (callBack) => {
   client.emit("load room list");
 
   client.on("complete load room list", (roomList) => {
+    console.log("[log] Complete Load Room List: ", roomList);
     callBack(roomList);
   });
 };

@@ -74,16 +74,13 @@ const LoginForm = () => {
   useEffect(() => {
     if (response !== null) {
       setLoginError("");
-      // 세션 스토리지에 유저 정보 저장
-      sessionStorage.setItem("user", {
-        username: idRef.current.value,
-        password: passwordRef.current.value
-      });
       // 전역 상태에 유저 정보 저장
       setUser({
         username: idRef.current.value,
         password: passwordRef.current.value
       });
+      // 세션 스토리지에 유저 정보 저장
+      sessionStorage.setItem("user", JSON.stringify(user));
       navigate("/");
     } else {
       setLoginError(error);

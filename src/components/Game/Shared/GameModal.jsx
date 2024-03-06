@@ -342,7 +342,7 @@ const GameModal = ({
                         type="text"
                         placeholder="비밀번호"
                         maxLength={30}
-                        value={roomInfo?.password}
+                        value={!roomInfo?.isSecure}
                         onChange={(e) =>
                           setRoomInfo({ ...roomInfo, password: e.target.value })
                         }

@@ -110,7 +110,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
     const availableRooms = rooms?.filter(
       (room) =>
         room.state !== "playing" &&
-        room.password === "" &&
+        room.isSecure === false &&
         room.currentUserCount < room.maxUserCount
     );
 

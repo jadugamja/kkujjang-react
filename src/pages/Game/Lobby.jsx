@@ -73,13 +73,6 @@ const Lobby = () => {
     const bgVolume = localStorage.getItem("bgVolume");
     const fxVolume = localStorage.getItem("fxVolume");
 
-    // 임시: 로컬 스토리지에서 불러오기
-    if (storedRoomInfoList) {
-      const roomList = JSON.parse(storedRoomInfoList);
-      roomList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setRooms(roomList);
-    }
-
     // 볼륨 조절
     // Audio.volume = bgVolume
     // Audio.volume = fxVolume

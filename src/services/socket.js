@@ -2,8 +2,8 @@ import io from "socket.io-client";
 import { SOCKET_URL } from "./const";
 
 const client = io(SOCKET_URL, {
-  path: "/game/socket.io/",
-  withCredentials: false
+  path: "/game/socket.io/"
+  // withCredentials: true
   // transports: ["websocket"]
 });
 

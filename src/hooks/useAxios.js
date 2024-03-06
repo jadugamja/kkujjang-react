@@ -17,7 +17,7 @@ const useAxios = (config, executeOnMount = true) => {
       const res = await axios.request(config);
       setResponse(res.data);
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data.error);
     } finally {
       setLoading(false);
     }

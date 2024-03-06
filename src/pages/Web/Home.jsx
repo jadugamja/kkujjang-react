@@ -1,23 +1,21 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 import { userState } from "../../recoil/userState";
 import { Gradation } from "@/styles/CommonStyle";
 import Footer from "@/components/Web/Shared/Layout/Footer";
-import HomeGuest from "./HomeGuest";
-import HomeMember from "./HomeMember";
+import HomeUser from "./HomeUser";
 import HomeAdmin from "./HomeAdmin";
 
 const Home = () => {
   const location = useLocation();
-  const user = useRecoilValue(userState);
-  const isAuthenticated = user != null;
+  const [user, setUser] = useRecoilState(userState);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(user);
+    if (sessionStorage.length > 0) {
+      setUser(storedUser);
     }
   }, []);
 
@@ -28,15 +26,7 @@ const Home = () => {
       <Outlet />
 
       {location.pathname === "/" && (
-        <>
-          {!isAuthenticated ? (
-            <HomeGuest />
-          ) : user?.role !== "admin" ? (
-            <HomeMember />
-          ) : (
-            <HomeAdmin />
-          )}
-        </>
+        <>{user?.role !== "admin" ? <HomeUser /> : <HomeAdmin />}</>
       )}
     </>
   );

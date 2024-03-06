@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import Header from "@/components/Web/Shared/Layout/Header";
-import styled from "styled-components";
-import FlexBox from "@/styles/FlexStyle";
-import Title from "@/components/Web/Shared/Layout/Title";
 import useAxios from "@/hooks/useAxios";
+import Header from "@/components/Web/Shared/Layout/Header";
+import FlexBox from "@/styles/FlexStyle";
+import { Span } from "../../components/Game/Shared/Layout";
+import Title from "@/components/Web/Shared/Layout/Title";
 import HomeButton from "@/components/Web/Shared/Buttons/HomeButton";
+import Banner from "@/components/Web/Shared/Layout/Banner";
 
 const HomeMember = () => {
   const [listData, setListData] = useState([]);
   const { response, loading, error } = useAxios({
     method: "get",
-    url: "/notice/list"
+    url: "/notice/list?page=1"
   });
   const navigate = useNavigate();
 
@@ -22,72 +23,6 @@ const HomeMember = () => {
     } else {
       setListData([]);
     }
-
-    // 임시 데이터
-    const list = [
-      {
-        id: 0,
-        title: "제목1",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 1,
-        title: "제목2",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 2,
-        title: "제목3",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 3,
-        title: "제목4",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 4,
-        title: "제목5",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 5,
-        title: "제목6",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 6,
-        title: "제목7",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 7,
-        title: "제목8",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 8,
-        title: "제목9",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 9,
-        title: "제목10",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      }
-    ];
-
-    setListData(list);
   }, [response]);
 
   return (
@@ -102,9 +37,10 @@ const HomeMember = () => {
             row="end"
             col="center"
           >
+            <Banner />
             <HomeButton type="member" />
           </FlexBox>
-          <FlexGrow dir="col">
+          <FlexBox dir="col" width="100%" flex="1" border="1px solid #e5e5e5">
             <Link to="/notice/list">
               <Title>공지사항</Title>
             </Link>
@@ -118,29 +54,19 @@ const HomeMember = () => {
                 key={item.id}
                 id={item.id}
                 onClick={() => navigate(`/notice/${item.id}`)}
+                clicky
               >
                 <Span>{item.title}</Span>
-                <Span fontSize="18px" color="#8F692B">
+                <Span font="Noto Sans KR" fontSize="18px" color="#8F692B">
                   {item.createdAt?.split(" ")[0]}
                 </Span>
               </FlexBox>
             ))}
-          </FlexGrow>
+          </FlexBox>
         </FlexBox>
       </WideContent>
     </ContentWrapper>
   );
 };
-
-const Span = styled.span`
-  font-size: ${({ fontSize }) => fontSize || "21px"};
-  color: ${({ color }) => color || "inherit"};
-`;
-
-const FlexGrow = styled(FlexBox)`
-  width: 100%;
-  flex-grow: 1;
-  border: 1px solid #e5e5e5;
-`;
 
 export default HomeMember;

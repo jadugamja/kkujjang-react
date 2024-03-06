@@ -21,21 +21,11 @@ const Ranking = () => {
       const pageSize = 15;
       const startIndex = (currPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      const pageData = response.slice(startIndex, endIndex);
-      setLastPageIdx(Math.ceil(response.length / pageSize));
+      const pageData = response.result?.slice(startIndex, endIndex);
+      setLastPageIdx(Math.ceil(response.result?.length / pageSize));
       setRankData(pageData);
     }
   }, [response, currPage]);
-
-  useEffect(() => {
-    const rankings = Array.from({ length: 15 }, (_, i) => ({
-      rank: (currPage - 1) * 15 + i + 1,
-      level: Math.floor(Math.random() * 100),
-      nickname: `User${(currPage - 1) * 15 + i + 1}`
-    }));
-
-    setRankData(rankings);
-  }, [currPage]);
 
   const getTopRankColor = (rank) => {
     if (rank === 1) {

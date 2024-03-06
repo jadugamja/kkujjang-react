@@ -1,18 +1,24 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { FlexBox } from "@/styles/FlexStyle";
 import gameLogo from "@/assets/images/logo-game.png";
+import Modal from "./GameModal";
 
 const GameHeader = ({ nickname = "" }) => {
-  const handleClick = (e) => {
-    alert("게임에서 홈으로 넘어갈라 할 때 나오는 경고창");
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <FixedHeader>
-      <Link to="/" onClick={handleClick}>
+      {isModalOpen && (
+        <Modal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+          홈으로 이동하면 진행 중인 게임이 저장되지 않을 수 있습니다. <br />
+          그래도 계속하시겠습니까?
+        </Modal>
+      )}
+      <Link onClick={() => setIsModalOpen(true)}>
         <LogoImg src={gameLogo} />
       </Link>
       <span>{nickname}</span>
@@ -30,7 +36,7 @@ const FixedHeader = styled(FlexBox).attrs({
   width: inherit;
   height: 7rem;
   background-color: transparent;
-  z-index: 3;
+  z-index: 10;
 `;
 
 // 로고 이미지

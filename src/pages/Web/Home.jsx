@@ -14,6 +14,13 @@ const Home = () => {
   const user = useRecoilValue(userState);
   const isAuthenticated = user != null;
 
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(user);
+    }
+  }, []);
+
   return (
     <>
       <Gradation />

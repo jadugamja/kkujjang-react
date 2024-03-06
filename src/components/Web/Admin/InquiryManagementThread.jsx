@@ -18,7 +18,15 @@ import { Input } from "../Shared/Form/InputFieldStyle";
 import useAxios from "../../../hooks/useAxios";
 
 const InquiryManagementThread = ({ data }) => {
-  const { id, type, threadTitle, nickname, updatedAt, content, file } = data;
+  const {
+    id = "aldfka-123812lk-dklfal",
+    type,
+    threadTitle,
+    nickname,
+    updatedAt,
+    content,
+    file
+  } = data;
 
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
@@ -27,9 +35,16 @@ const InquiryManagementThread = ({ data }) => {
   const [replyAnswer, setReplyAnswer] = useState("");
   const [replyAnswerFiles, setReplyAnswerFiles] = useState([]);
   const [replyAnswers, setReplyAnswers] = useState([]);
-  const { response, error, loading, fetchData } = useAxios(null, false);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   const replyAnswerRef = useRef(null);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   // 임시
   const getTypeName = (type) => {
@@ -48,6 +63,7 @@ const InquiryManagementThread = ({ data }) => {
   const appendFilesToFormData = useCallback(
     (_files) => {
       if (!isAnswerCompleted[id]) {
+        debugger;
         setAnswerFiles(_files);
       } else {
         setReplyAnswerFiles((prevFiles) => {
@@ -85,14 +101,21 @@ const InquiryManagementThread = ({ data }) => {
       formData.append("files", answerFiles);
 
       // 문의 답변 등록 api 호출
-      const apiConfig = {
+      // const apiConfig = {
+      //   method: "post",
+      //   url: `/inquiry/${id}`,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      //   data: formData
+      // };
+
+      setApiConfig({
         method: "post",
-        url: `inquiry/${id}`,
+        url: `/inquiry/${id}`,
         headers: { "Content-Type": "multipart/form-data" },
         data: formData
-      };
+      });
 
-      fetchData(apiConfig);
+      // fetchData(apiConfig);
 
       // 등록 성공 시
       updateAnswerStatus(id, true);
@@ -117,14 +140,21 @@ const InquiryManagementThread = ({ data }) => {
       // });
 
       // 문의 추가 답변 등록 api 호출
-      const apiConfig = {
+      // const apiConfig = {
+      //   method: "post",
+      //   url: `/inquiry/${id}`,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      //   data: formData
+      // };
+
+      setApiConfig({
         method: "post",
-        url: `inquiry/${id}`,
+        url: `/inquiry/${id}`,
         headers: { "Content-Type": "multipart/form-data" },
         data: formData
-      };
+      });
 
-      fetchData(apiConfig);
+      // fetchData(apiConfig);
 
       // 호출 성공 시
       setReplyAnswers((prevReplyAnswers) => [
@@ -209,7 +239,11 @@ const InquiryManagementThread = ({ data }) => {
             <AttachedImgWrapper>
               {answerFiles.length > 0 &&
                 answerFiles?.map((file, idx) => (
-                  <AttachedImg key={idx} src={URL.createObjectURL(file)} alt="첨부파일" />
+                  <AttachedImg
+                    key={idx}
+                    src={URL.createObjectURL(file[idx])}
+                    alt="첨부파일"
+                  />
                 ))}
             </AttachedImgWrapper>
 

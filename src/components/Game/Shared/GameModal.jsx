@@ -33,10 +33,18 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
-import { createRoom, changeRoomConfig, leaveRoom } from "../../../services/socket";
+import { createRoom, changeRoomConfig, leaveRoom } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
 
-const GameModal = ({ type, isOpen, setIsOpen, setIsPlaying, roomId, children }) => {
+const GameModal = ({
+  type,
+  isOpen,
+  setIsOpen,
+  setIsPlaying,
+  roomId,
+  height = "",
+  children
+}) => {
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -53,7 +61,6 @@ const GameModal = ({ type, isOpen, setIsOpen, setIsPlaying, roomId, children }) 
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   let titleText = "";
-  let height = "";
 
   switch (type) {
     case "alert":
@@ -88,6 +95,10 @@ const GameModal = ({ type, isOpen, setIsOpen, setIsPlaying, roomId, children }) 
     case "result":
       titleText = "게임 결과";
       height = "20rem";
+      break;
+    case "error":
+      titleText = "경고";
+      height !== "" ? "18rem" : height;
       break;
   }
 
@@ -243,7 +254,7 @@ const GameModal = ({ type, isOpen, setIsOpen, setIsPlaying, roomId, children }) 
         <GameModalContent dir="col" col="center" height={height}>
           <GameModalHeader row={titleText !== "" ? "between" : "end"} col="center">
             {titleText !== "" && <span>{titleText}</span>}
-            {!["avatar", "result"].includes(type) && (
+            {!["avatar", "result", "error"].includes(type) && (
               <ExitMiniCircle onClick={() => setIsOpen(false)} />
             )}
           </GameModalHeader>
@@ -534,6 +545,7 @@ GameModal.propTypes = {
   setIsOpen: PropTypes.func,
   setIsPlaying: PropTypes.func,
   roomId: PropTypes.number,
+  height: PropTypes.string,
   children: PropTypes.node
 };
 

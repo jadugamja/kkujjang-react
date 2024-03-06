@@ -27,7 +27,7 @@ const UserManagementList = ({ type, onSideOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage);
+      setLastPageIdx(response.lastPage + 1);
       setData(response.list);
       data.forEach((user) => {
         setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));

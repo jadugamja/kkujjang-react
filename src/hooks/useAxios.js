@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../services/const";
 
 axios.defaults.baseURL = BASE_URL;
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 // config = { method, url, headers, data }
 const useAxios = (config, executeOnMount = true) => {
@@ -15,9 +15,9 @@ const useAxios = (config, executeOnMount = true) => {
     setLoading(true);
     try {
       const res = await axios.request(config);
-      setResponse(res?.data);
+      setResponse(res.data);
     } catch (error) {
-      setError(error);
+      setError(error.response.data.error);
     } finally {
       setLoading(false);
     }

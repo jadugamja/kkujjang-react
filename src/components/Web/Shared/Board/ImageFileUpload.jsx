@@ -63,7 +63,7 @@ const ImageFileUpload = ({ appendFilesToFormData, width, height, mode = 0 }) => 
   const previewImg = previewImgs?.map((image, idx) => (
     <div key={idx}>
       <ThumbnailImage src={image.url} alt={image.name} />
-      <DeleteButton onClick={() => onDeleteFile(image.name)}>
+      <DeleteButton mode={mode} onClick={() => onDeleteFile(image.name)}>
         <DeleteIcon icon={faX} />
       </DeleteButton>
     </div>
@@ -127,7 +127,7 @@ const CommonWrapper = styled(FlexBox)`
 const ImageFileUploadWrapper = styled(CommonWrapper)`
   width: ${({ mode }) => mode !== 0 && "100%"};
   margin-left: ${({ mode }) => mode !== 0 && "5px"};
-  overflow-x: auto;
+  overflow-x: ${({ mode }) => mode !== 0 && "auto"};
 `;
 
 const PreviewImgWrapper = styled(CommonWrapper)``;
@@ -161,9 +161,8 @@ const ThumbnailImage = styled.img`
 
 const DeleteButton = styled.button`
   position: relative;
-  top: ${({ mode }) => mode !== 0 && "0"};
-  bottom: ${({ mode }) => mode === 0 && "78%"};
-  right: ${({ mode }) => (mode === 0 ? "calc(16% + 2px)" : "-12px")};
+  top: ${({ mode }) => (mode !== 0 ? "0" : "-96px")};
+  right: ${({ mode }) => (mode === 0 ? "-73%" : "-12px")};
   background-color: #000;
   opacity: 0.7;
   border-radius: ${({ mode }) => mode !== 0 && "50%"};

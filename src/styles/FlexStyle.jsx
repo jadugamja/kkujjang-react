@@ -12,6 +12,7 @@ export const FlexBox = styled.div`
   flex: ${({ flex }) => flex};
   background-color: ${({ bgColor }) => bgColor};
   box-shadow: ${({ shadow }) => shadow};
+  border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};
 
   ${({ clicky }) =>

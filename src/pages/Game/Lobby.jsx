@@ -88,8 +88,13 @@ const Lobby = () => {
   return (
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
-        <Modal type={modalType} isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
-          {modalType === "errorMessage" && errorMessage}
+        <Modal
+          type={modalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          height="14rem"
+        >
+          {modalType === "error" && errorMessage}
         </Modal>
       )}
       <WideContent dir="col">

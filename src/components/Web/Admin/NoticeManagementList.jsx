@@ -13,7 +13,7 @@ import useAxios from "@/hooks/useAxios";
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const [listData, setListData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
-  const [lastPageIdx, setLastPageIdx] = useState(30);
+  const [lastPageIdx, setLastPageIdx] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [apiConfig, setApiConfig] = useState({
     method: "get",
@@ -21,103 +21,41 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
-  useEffect(() => {
-    fetchData();
-  }, [apiConfig]);
+  // useEffect(() => {}, [apiConfig]);
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage);
+      setLastPageIdx(response.lastPage + 1);
       setListData(response.list);
     } else {
       setLastPageIdx(1);
       setListData([]);
-    }
-
-    // 임시 데이터
-    const list = [
-      {
-        id: 0,
-        title: "제목1",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 1,
-        title: "제목2",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 2,
-        title: "제목3",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 3,
-        title: "제목4",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 4,
-        title: "제목5",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 5,
-        title: "제목6",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 6,
-        title: "제목7",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 7,
-        title: "제목8",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 8,
-        title: "제목9",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      },
-      {
-        id: 9,
-        title: "제목10",
-        createdAt: "2024-01-01 03:10",
-        views: 0
-      }
-    ];
-
-    if (list.length === 0) {
-      setListData([]);
-    } else {
-      setListData(list);
     }
   }, [response]);
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
     if (searchKeyword !== "") {
-      setApiConfig({
+      fetchData({
         ...apiConfig,
         url: `/notice/search?q=${searchKeyword}&page=${currPage}`
       });
+      // setApiConfig({
+      //   ...apiConfig,
+      //   url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+      // });
     } else {
-      setApiConfig({
+      fetchData({
         ...apiConfig,
         url: `/notice/list?page=${currPage}`
       });
+
+      // setApiConfig({
+      //   ...apiConfig,
+      //   url: `/notice/list?page=${currPage}`
+      // });
     }
+    fetchData(apiConfig);
   }, [currPage, searchKeyword]);
 
   return (

@@ -16,7 +16,7 @@ const Title = ({ children }) => {
       >
         {children}
       </StyledTitle>
-      <FontAwesomeIcon icon={faChevronRight} size="l" />
+      <FontAwesomeIcon icon={faChevronRight} size="lg" />
     </FlexBox>
   );
 };

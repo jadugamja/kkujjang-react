@@ -43,7 +43,7 @@ SearchBar.propTypes = {
 const SearchInputWrapper = styled(FlexBox)`
   border: 2px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 10px;
-  width: ${({ field }) => (field !== "닉네임" ? "26.5rem" : "18.5rem")};
+  width: ${({ field }) => (field !== "닉네임" ? "16.5rem" : "18.5rem")};
   height: ${(props) => props.height || "3.2rem"};
 `;
 
@@ -66,7 +66,7 @@ const SearchTypeInput = styled(TransparentInput)`
 const SearchKeywordInput = styled(TransparentInput)`
   flex: 1;
   margin: 0 10px;
-  width: ${({ field }) => field === "닉네임" && "9.25rem"};
+  width: ${({ field }) => (field === "닉네임" ? "9.25rem" : "70%")};
 
   &::placeholder {
     color: #a7a7a7;

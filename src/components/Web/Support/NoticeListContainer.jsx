@@ -11,6 +11,7 @@ import Pagination from "@/components/Web/Shared/Board/Pagination";
 
 // ===== style =====
 const NoticeWrapper = styled(FlexBox)`
+  margin-right: ${(props) => props.marginRight};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
 `;
@@ -20,6 +21,7 @@ const NoticeListBox = styled.div`
   height: ${(props) => props.height || "fit-content"};
   margin-left: ${(props) => props.marginLeft || null};
   margin-right: ${(props) => props.marginRight || null};
+  padding: ${(props) => props.padding};
 `;
 
 // ===== component =====
@@ -54,63 +56,69 @@ const NoticeListContainer = () => {
     const list = [
       {
         id: 0,
-        title: "제목1",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
+        createdAt: "2024-01-01",
+        views: 1
       },
       {
         id: 1,
-        title: "제목2",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
+        createdAt: "2024-01-01",
+        views: 2
       },
       {
         id: 2,
-        title: "제목3",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
+        createdAt: "2024-01-01",
+        views: 3
       },
       {
         id: 3,
-        title: "제목4",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
+        createdAt: "2024-01-01",
+        views: 1
       },
       {
         id: 4,
-        title: "제목5",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
+        createdAt: "2024-01-01",
+        views: 2
       },
       {
         id: 5,
-        title: "제목6",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
+        createdAt: "2024-01-01",
+        views: 3
       },
       {
         id: 6,
-        title: "제목7",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
+        createdAt: "2024-01-01",
+        views: 1
       },
       {
         id: 7,
-        title: "제목8",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
+        createdAt: "2024-01-01",
+        views: 2
       },
       {
         id: 8,
-        title: "제목9",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
+        createdAt: "2024-01-01",
+        views: 3
       },
       {
         id: 9,
-        title: "제목10",
-        createdAt: "2024-01-01 03:10",
-        views: 0
+        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
+        createdAt: "2024-01-01",
+        views: 1
+      },
+      {
+        id: 1,
+        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
+        createdAt: "2024-01-01",
+        views: 2
       }
     ];
 
@@ -148,10 +156,10 @@ const NoticeListContainer = () => {
     <>
       <NoticeListBox width="75rem" marginLeft="auto" marginRight="auto">
         <BoardTitle type="notice" />
-        <NoticeWrapper row="end" marginBottom="25px">
+        <NoticeWrapper row="end" marginBottom="25px" marginRight="56px">
           <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
         </NoticeWrapper>
-        <NoticeListBox width="100%" height="460px">
+        <NoticeListBox width="100%" height="fit-content" padding="10px 72px">
           {listData?.map((listData, index) => (
             <BoardItem
               boardType="notice"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -12,6 +13,7 @@ import { isActiveAccountState } from "@/recoil/userState";
 import useAxios from "@/hooks/useAxios";
 
 const UserManagementList = ({ type, onSideOpen }) => {
+  const [cookies] = useCookies(["sessionId"]);
   const [data, setData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
@@ -21,7 +23,10 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const setAccountStates = useSetRecoilState(isActiveAccountState);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/user/search?page=${currPage}`
+    url: `/user/search?page=${currPage}`,
+    headers: {
+      Authorization: `Bearer ${cookies.sessionId}`
+    }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
@@ -162,10 +167,13 @@ UserManagementList.propTypes = {
 
 const Box = styled.div`
   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
+  height: ${({ type }) => (type === "home" ? "43.6rem" : "49.6rem")};
   padding: 10px;
   background-color: ${({ type, theme }) =>
     type === "home" ? "#fff" : theme.colors.content};
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
 `;
 
 const HeaderWrapper = styled(FlexBox)`

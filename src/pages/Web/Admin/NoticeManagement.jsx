@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { itemIdState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
+import { Box } from "../../../components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
 import NoticeManagementList from "@/components/Web/Admin/NoticeManagementList";
@@ -100,8 +101,8 @@ const NoticeManagement = () => {
 
   return (
     <ContentWrapper row="center" col="center">
-      <WideContent width="80rem" dir="col">
-        <Header type="admin" />
+      <WideContent width="82rem" dir="col">
+        <Header type="admin-detail" />
         <Main type="admin" row="between">
           <ListWrapper row="between">
             <NoticeManagementList
@@ -118,12 +119,12 @@ const NoticeManagement = () => {
 
 const ListWrapper = styled(FlexBox)``;
 
-const Box = styled.div`
-  width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
-  padding: 10px;
-  background-color: ${({ type, theme }) =>
-    type === "home" ? "#fff" : theme.colors.content};
-`;
+// const Box = styled.div`
+//   width: ${({ type }) => (type === "home" ? "28rem" : "40.5rem")};
+//   height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
+//   padding: 10px;
+//   background-color: ${({ type, theme }) =>
+//     type === "home" ? "#fff" : theme.colors.content};
+// `;
 
 export default NoticeManagement;

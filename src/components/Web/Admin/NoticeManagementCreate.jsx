@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -14,6 +15,7 @@ const MAX_IMAGE_COUNT = 3;
 
 const NoticeManagementCreate = () => {
   const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
+  const [cookies] = useCookies(["sessionId"]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
@@ -146,11 +148,12 @@ const NoticeManagementCreate = () => {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("files", images);
-
+    debugger;
     setApiConfig({
       method: "post",
       url: "/notice",
       headers: {
+        Authorization: `Bearer ${cookies.sessionId}`,
         "Content-Type": "multipart/form-data"
       },
       data: formData
@@ -162,7 +165,7 @@ const NoticeManagementCreate = () => {
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p>{error.message}</p>
+        <p>{error}</p>
       ) : (
         <NoticeCreateForm>
           <TitleInput

@@ -1,7 +1,7 @@
 import React from "react";
 
 // ===== style import =====
-import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
+import { FlexBox } from "@/styles/FlexStyle";
 
 // ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -11,14 +11,14 @@ import SignupForm from "@/components/Web/Member/SignupForm";
 const Signup = () => {
   return (
     <>
-      <ContentWrapper row="center" col="center">
+      <FlexBox row="center" col="center">
         <Header type="big" />
-        <NarrowContent>
-          <Main row="center">
+        <FlexBox width="35.75rem" height="fit-content">
+          <FlexBox as="main" row="center" width="100%" margin="10.1rem 0 3.5rem">
             <SignupForm />
-          </Main>
-        </NarrowContent>
-      </ContentWrapper>
+          </FlexBox>
+        </FlexBox>
+      </FlexBox>
     </>
   );
 };

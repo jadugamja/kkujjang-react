@@ -94,7 +94,7 @@ const GameRoom = () => {
       maxRound: 5,
       roundTimeLimit: 90,
       roomOwnerUserId: "abcd1234",
-      state: "playing"
+      state: "preparing"
     };
 
     setRoomInfo(tmp);

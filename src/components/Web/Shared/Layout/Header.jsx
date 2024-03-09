@@ -18,8 +18,8 @@ const Header = ({ type = "default" }) => {
 
   const checkScrollTop = () => {
     if (window.scrollY > 0) {
-      setHeaderBgColor("#E9EBF0");
-      setHeaderShadow("-14px 15px 30px #E9EBF0");
+      setHeaderBgColor("#EAEFF9");
+      setHeaderShadow("-14px 15px 30px #EAEFF9");
     } else {
       setHeaderBgColor("transparent");
       setHeaderShadow("none");
@@ -37,19 +37,20 @@ const Header = ({ type = "default" }) => {
         <Link to="/">
           <LogoImg src={logo} type={type} />
         </Link>
-        {(type === "detail" || type === "clearTab") && (
+        {(type === "detail" || type === "clearTab" || type === "guest") && (
           <HeaderTab type={type}></HeaderTab>
         )}
-        {type === "admin" && (
-          <ButtonWrapper>
-            <Link to="/game">
-              <GameButton>게임 시작</GameButton>
-            </Link>
-            <LogoutButton onClick={() => setUser(null)}>
-              <LogoutIcon icon={faSignOut} />
-            </LogoutButton>
-          </ButtonWrapper>
-        )}
+        {type === "admin" ||
+          (type === "admin-detail" && (
+            <ButtonWrapper>
+              <Link to="/game">
+                <GameButton>게임 시작</GameButton>
+              </Link>
+              <LogoutButton onClick={() => setUser(null)}>
+                <LogoutIcon icon={faSignOut} />
+              </LogoutButton>
+            </ButtonWrapper>
+          ))}
       </HeaderContent>
     </FixedHeader>
   );
@@ -67,7 +68,6 @@ const FixedHeader = styled(FlexBox).attrs(() => ({
   top: 0;
   left: 0;
   width: 100%;
-  /* height: ${({ type }) => (type === "big" ? "10rem" : "7.5rem")}; */
   background-color: ${({ color }) => color};
   box-shadow: ${({ shadow }) => shadow};
   z-index: 3;
@@ -77,9 +77,17 @@ const HeaderContent = styled(FlexBox).attrs(({ type }) => ({
   row: type === "big" ? "center" : "between",
   col: "center"
 }))`
-  width: 75rem;
+  width: ${({ type }) =>
+    type === "admin" ? "100%" : type === "admin-detail" ? "84rem" : "75rem"};
   height: ${({ type }) =>
-    type === "big" ? "10rem" : type === "admin" ? "6.5rem" : "7.5rem"};
+    type === "big"
+      ? "10rem"
+      : type === "guest"
+        ? "8.5rem"
+        : type === "admin-detail"
+          ? "6.5rem"
+          : "7.5rem"};
+  padding: ${({ type }) => (type === "admin" ? "0 60px" : "0 30px")};
 `;
 
 // 로고 이미지 사이즈 조정
@@ -91,15 +99,6 @@ const setLogoSize = (type) => {
       return ` width: 4rem; `;
   }
 };
-
-// const setHeaderSize = (type) => {
-//   switch (type) {
-//     case "detail":
-//       return {
-//         width:
-//       }
-//   }
-// }
 
 // 로고 이미지
 const LogoImg = styled.img`
@@ -115,15 +114,29 @@ const ButtonWrapper = styled(FlexBox)``;
 const GameButton = styled.button`
   width: 14.5rem;
   height: 5.25rem;
-  font-family: "Gugi";
-  font-size: ${({ theme }) => theme.fontSize.xl};
-  color: ${({ theme }) => theme.colors.gray700};
+  font-family: "Pretendard Variable";
+  font-size: 36px;
+  font-weight: 800;
+  background-color: rgb(255, 253, 163);
+  border: 2px solid rgb(237, 234, 101);
+  color: ${({ theme }) => theme.colors.button.main.background};
+
+  &:hover {
+    background-color: #fffb6a;
+  }
 `;
 
 const LogoutButton = styled.button`
-  background-color: ${({ theme }) => theme.colors.gray100};
   width: 4.75rem;
   height: 5.25rem;
+  background-color: rgb(239, 239, 239);
+  border-top: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+
+  &:hover {
+    background-color: rgb(229, 228, 228);
+  }
 `;
 
 const LogoutIcon = styled(FontAwesomeIcon)`

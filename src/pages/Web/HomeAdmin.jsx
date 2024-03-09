@@ -8,7 +8,8 @@ import InquiryManagementList from "@/components/Web/Admin/InquiryManagementList"
 import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
 import UserManagementList from "@/components/Web/Admin/UserManagementList";
 import { FlexBox } from "@/styles/FlexStyle";
-import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
+import { Main } from "@/components/Game/Shared/Layout";
+import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import { isAnswerCompletedState } from "@/recoil/boardState";
 import { itemIdState } from "@/recoil/boardState";
 
@@ -43,7 +44,7 @@ const HomeAdmin = () => {
     <ContentWrapper row="center" col="center">
       <WideContent width="114rem" dir="col">
         <Header type="admin" />
-        <Main>
+        <Main width="100%" margin="8.8rem 0 0">
           <ListWrapper row="between">
             <NoticeManagementList
               type="home"

@@ -35,7 +35,6 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 
   useEffect(() => {
     if (apiConfig !== null) {
-      debugger;
       fetchData();
     }
   }, [apiConfig]);
@@ -151,9 +150,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
             <InputFieldsWrapper row="between" col="center" onChange={handleChange}>
               <PhoneNumberInput type="text" placeholder="010" ref={numbersRef[0]} />
               <Seperator>-</Seperator>
-              <PhoneNumberInput type="text" ref={numbersRef[1]} />
+              <PhoneNumberInput type="text" placeholder="1234" ref={numbersRef[1]} />
               <Seperator>-</Seperator>
-              <PhoneNumberInput type="text" ref={numbersRef[2]} />
+              <PhoneNumberInput type="text" placeholder="5678" ref={numbersRef[2]} />
             </InputFieldsWrapper>
             {isVerifying ? (
               <>
@@ -185,7 +184,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       </ItemWrapper>
       <>
         {!isVerifying && isSentPhoneNumber && (
-          <ItemWrapper marginBottom="24px">
+          <ItemWrapper marginBottom="20px">
             <Label>
               인증
               <ItemWrapper

@@ -1,4 +1,5 @@
 import { useRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -14,13 +15,14 @@ import { useEffect } from "react";
 
 const HomeButton = ({ type }) => {
   const [user, setUser] = useRecoilState(userState);
+  const [cookies] = useCookies(["sessionId"]);
   const { response, loading, error, fetchData } = useAxios(
     {
       method: "get",
       url: "/user/signout",
-      data: {
-        nickname: "admin13245",
-        password: "!@#123admin"
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cookies.sessionId}`
       }
     },
     false
@@ -37,7 +39,7 @@ const HomeButton = ({ type }) => {
   };
 
   return (
-    <Wrapper dir="col" width="18.75rem" height="14rem" margin="0 72px 0 0">
+    <Wrapper dir="col" width="19.75rem" height="14rem" margin="0 72px 0 0">
       {type === "guest" ? (
         <>
           <Link to="/member/login" flex="1">
@@ -48,9 +50,15 @@ const HomeButton = ({ type }) => {
               flex="1"
               padding="15px 0 0"
               bgColor="rgba(0,0,0, 0.7)"
+              shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="30px 30px 0 0"
             >
-              <Span fontSize="3rem" color="#fff">
+              <Span
+                font="Pretendard Variable"
+                fontSize="60px"
+                fontWeight="800"
+                color="#fff"
+              >
                 로그인
               </Span>
             </FlexBox>
@@ -63,6 +71,7 @@ const HomeButton = ({ type }) => {
               width="100%"
               height="4rem"
               bgColor="#FFDE00"
+              shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="0 0 30px 30px"
             >
               <FontAwesomeIcon icon={faComment} size="lg" />
@@ -81,11 +90,13 @@ const HomeButton = ({ type }) => {
               col="center"
               flex="1"
               padding="15px 0 0"
-              bgColor="#DAF24C"
-              shadow="inset 0 4px 35px 10px #FBFFE3"
+              bgColor="#FFFB6A"
+              shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="30px 30px 0 0"
             >
-              <Span fontSize="2.8rem">게임 시작</Span>
+              <Span font="Pretendard Variable" fontSize="60px" fontWeight="800">
+                게임 시작
+              </Span>
             </FlexBox>
           </Link>
           <FlexBox row="between" col="center" height="4rem">
@@ -96,11 +107,12 @@ const HomeButton = ({ type }) => {
               height="100%"
               padding="0 18px"
               bgColor="#E6E6E6"
+              shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="0 0  0 30px"
             >
-              <LevelBadge>{user?.level}</LevelBadge>
+              <LevelBadge>{!user?.level ? 3 : user?.level}</LevelBadge>
               <Span font="Noto Sans KR" fontSize="1.2rem" fontWeight="700">
-                {user?.nickname}
+                {!user?.nickname ? "끝짱1" : user?.nickname}
               </Span>
             </FlexBox>
             {/* logout */}
@@ -111,8 +123,9 @@ const HomeButton = ({ type }) => {
               width="5rem"
               height="100%"
               bgColor="#FBFBFB"
+              shadow=" 3px 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="0 0 30px 0"
-              onClick={() => fetchData()}
+              onClick={onLogout}
             >
               <FontAwesomeIcon icon={faArrowRightFromBracket} size="xl" />
             </FlexBox>

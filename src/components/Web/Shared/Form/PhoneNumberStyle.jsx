@@ -11,7 +11,7 @@ export const Input = styled.input.attrs((props) => ({
     height: 3.8rem;
     padding: 10px 20px;
     background-color: #fff;
-    border: 2px solid ${theme.colors.gray100};
+    border: 1px solid #ccc;
     color: ${theme.colors.text.sub};
     font-size: ${theme.fontSize.s};
     font-weight: 500;

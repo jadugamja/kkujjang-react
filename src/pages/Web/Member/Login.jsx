@@ -1,7 +1,8 @@
 import React from "react";
 
 // ===== style import =====
-import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
+import { FlexBox } from "@/styles/FlexStyle";
+import { Main } from "@/styles/CommonStyle";
 
 // ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -11,14 +12,14 @@ import LoginForm from "@/components/Web/Member/LoginForm";
 const Login = () => {
   return (
     <>
-      <ContentWrapper row="center" col="center">
+      <FlexBox row="center" col="center">
         <Header type="big" />
-        <NarrowContent>
+        <FlexBox width="28.75rem" height="fit-content">
           <Main>
             <LoginForm />
           </Main>
-        </NarrowContent>
-      </ContentWrapper>
+        </FlexBox>
+      </FlexBox>
     </>
   );
 };

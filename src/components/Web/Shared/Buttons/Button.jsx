@@ -196,6 +196,10 @@ const getBorder = (type) => {
         color: "#ff6c6c"
         // border: "1px solid #ff6c6c"
       };
+    case "smallDark":
+      return {
+        radius: "10px"
+      };
     default:
       return {
         style: null,
@@ -217,9 +221,11 @@ const StyledButton = styled.button`
 
   // border: ${({ type }) => getBorder(type).border};
 
-  border-style: ${({ type }) => getBorder(type).style};
-  border-width: ${({ type }) => getBorder(type).width};
-  border-color: ${({ type }) => getBorder(type).color};
+  border-style: ${({ type }) => getBorder(type)?.style};
+  border-width: ${({ type }) => getBorder(type)?.width};
+  border-color: ${({ type }) => getBorder(type)?.color};
+
+  border-radius: ${({ type }) => getBorder(type)?.radius};
 
   &:hover {
     ${({ type }) => getColors(type).hoverBgColor};

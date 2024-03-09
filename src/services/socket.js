@@ -1,10 +1,17 @@
 import io from "socket.io-client";
+import { Cookies } from "react-cookie";
 import { SOCKET_URL } from "./const";
 
+const cookies = new Cookies();
+
 const client = io(SOCKET_URL, {
-  path: "/game/socket.io/"
-  // withCredentials: true
-  // transports: ["websocket"]
+  path: "/game/socket.io/",
+  extraHeaders: {
+    sessionId: cookies.get("sessionId")
+  }
+  // auth: {
+  //   sessionId: cookies.get("sessionId")
+  // }
 });
 
 // ====== 소켓 초기화 ======

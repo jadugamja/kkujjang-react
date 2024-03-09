@@ -41,13 +41,14 @@ const TitleWrapper = styled(FlexBox)`
 `;
 
 const Title = styled.h2`
-  font-family: "Gugi";
+  font-family: "Pretendard Variable";
   font-size: ${({ theme }) => theme.fontSize.xl};
-  font-weight: 500;
+  font-weight: 700;
   width: ${({ type }) => type !== "home" && "6.25rem"};
-  margin-left: ${({ type }) => (type !== "home" ? "24px" : "14px")};
-  margin-right: 16px;
+  margin-left: ${({ type }) => (type !== "home" ? "24px" : "12px")};
+  margin-right: 12px;
   white-space: ${({ type }) => type !== "home" && "pre-wrap"};
+  color: ${({ type }) => type !== "home" && "#000"};
 `;
 
 const ArrowRightIcon = styled(FontAwesomeIcon)`

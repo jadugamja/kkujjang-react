@@ -1,21 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
-
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
 
 // ===== components & image import =====
+import { userState } from "@/recoil/userState";
 import KakaoIcon from "@/assets/images/kakao.png";
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
-import { userState } from "@/recoil/userState";
 
 // ===== style ======
 const LoginFormFlexContainer = styled(FlexBox)`
@@ -59,6 +59,7 @@ const LoginForm = () => {
   const [loginError, setLoginError] = useState(""); // error state
   const setUser = useSetRecoilState(userState);
   // (api 관련)
+  const [, setCookie] = useCookies(["sessionId"]);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
@@ -77,10 +78,9 @@ const LoginForm = () => {
       // 전역 상태에 유저 정보 저장
       setUser({
         username: idRef.current.value,
-        password: passwordRef.current.value
+        role: response.authorityLevel === 100 ? "admin" : "member"
       });
-      // 세션 스토리지에 유저 정보 저장
-      sessionStorage.setItem("user", JSON.stringify(user));
+      setCookie("sessionId", response.sessionId);
       navigate("/");
     } else {
       setLoginError(error);
@@ -120,19 +120,19 @@ const LoginForm = () => {
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p>{setLoginError(error)}</p>
+        <p>{error}</p>
       ) : (
         <>
           <LoginFormFlexContainer dir="col" marginTop="4rem">
             <FormTitle type="login"></FormTitle>
 
             {/* 아이디 input */}
-            <LoginFormFlexContainer marginBottom="25px">
+            <LoginFormFlexContainer marginBottom="12px">
               <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
             </LoginFormFlexContainer>
 
             {/* 비밀번호 input */}
-            <LoginFormFlexContainer marginBottom="15px">
+            <LoginFormFlexContainer marginBottom="12px">
               <InputField
                 name="password"
                 isLoginForm={true}
@@ -144,12 +144,12 @@ const LoginForm = () => {
             {loginError && <ValidationMessage message={loginError} />}
 
             {/* 로그인 button */}
-            <LoginFormFlexContainer marginTop="28px" marginBottom="15px">
+            <LoginFormFlexContainer marginTop="18px" marginBottom="6px">
               <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
             </LoginFormFlexContainer>
 
             {/* Link button */}
-            <LoginFormFlexContainer row="between" marginBottom="30px">
+            <LoginFormFlexContainer row="between" marginBottom="20px">
               <LoginFormFlexContainer width="fit-content">
                 <Link to="/member/find?type=id">
                   <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>

@@ -13,7 +13,12 @@ const GameHeader = ({ nickname = "" }) => {
   return (
     <FixedHeader>
       {isModalOpen && (
-        <Modal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+        <Modal
+          type="error"
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          height="17.625rem"
+        >
           홈으로 이동하면 진행 중인 게임이 저장되지 않을 수 있습니다. <br />
           그래도 계속하시겠습니까?
         </Modal>

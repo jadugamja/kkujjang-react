@@ -2,7 +2,8 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 // ===== style import =====
-import { ContentWrapper, NarrowContent, Main } from "@/styles/CommonStyle";
+import { FlexBox } from "@/styles/FlexStyle";
+import { ContentWrapper, NarrowContent } from "@/styles/CommonStyle";
 
 // ===== components import =====
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -21,10 +22,10 @@ const Find = () => {
       <ContentWrapper row="center" col="center">
         <Header type="big" />
         <NarrowContent>
-          <Main>
+          <FlexBox as="main" width="100%" margin="15.5rem 0 3.5rem">
             {type === "id" && <FindidForm />}
             {type === "pw" && <FindpwForm />}
-          </Main>
+          </FlexBox>
         </NarrowContent>
       </ContentWrapper>
     </>

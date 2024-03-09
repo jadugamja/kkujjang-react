@@ -37,8 +37,8 @@ ProfileActiveToggle.propTypes = {
 };
 
 const ActiveToggle = styled(FlexBox)`
-  width: 74px;
-  height: 40px;
+  width: 64px;
+  height: 36px;
   background-color: ${({ active }) => (active ? "#fff" : "#D9D9D9")};
   border: 3px solid ${({ active }) => (active ? "#34E250" : "#787878")};
   border-radius: 40px;
@@ -55,8 +55,8 @@ const ActiveToggle = styled(FlexBox)`
 `;
 
 const ActiveCircle = styled.div`
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
 `;
 

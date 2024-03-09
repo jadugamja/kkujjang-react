@@ -273,7 +273,7 @@ const SignupForm = () => {
             <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
 
             {/* 회원가입 button */}
-            <SignupInputFieldWrapper marginTop="15px">
+            <SignupInputFieldWrapper marginTop="21px">
               <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
             </SignupInputFieldWrapper>
           </SignupFormContainer>

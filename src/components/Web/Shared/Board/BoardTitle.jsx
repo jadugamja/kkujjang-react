@@ -11,9 +11,9 @@ const BoardTitleWrapper = styled.div`
 const BoardTitleText = styled.p`
   color: ${(props) => props.color || "#828282"};
   font-family: "Gugi";
-  font-size: ${(props) => props.fontSize || "32px"};
+  font-size: ${(props) => props.fontSize || "30px"};
   font-weight: ${(props) => props.fontWeight || "500"};
-  margin-bottom: 0;
+  margin: 53px 0px 0 64px;
 `;
 
 // ===== component ======

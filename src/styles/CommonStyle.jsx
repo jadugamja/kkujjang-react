@@ -41,7 +41,7 @@ export const WideContent = styled(FlexBox)`
 // 좁은 콘텐츠 영역 (width: 652px)
 export const NarrowContent = styled(FlexBox)`
   width: 36.75rem; // 기존 40.75rem
-  height: ${(props) => props.width || "fit-content"};
+  height: ${(props) => props.height || "fit-content"};
 `;
 
 // 페이지의 핵심 콘텐츠

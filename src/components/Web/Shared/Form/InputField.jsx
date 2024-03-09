@@ -18,13 +18,13 @@ const InputField = (props) => {
   // === placeholder setting ===
   const idPlaceholder =
     isLoginForm && name === "id"
-      ? "아이디를 입력해 주세요"
+      ? "아이디를 입력하세요"
       : isDataForm && name === "id"
         ? "7~30자의 영문 소문자, 숫자만 입력 가능"
         : "아이디 입력";
   const passwordPlaceholder =
     isLoginForm && name === "password"
-      ? "비밀번호를 입력해 주세요"
+      ? "비밀번호를 입력하세요"
       : isDataForm && name === "password"
         ? "7~30자의 영문 대/소문자, 숫자 필수, 특수문자 사용 가능"
         : "비밀번호 입력";

@@ -14,9 +14,8 @@ import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const FindidFormFlexContainer = styled(FlexBox)`
-  width: ${(props) => props.width || "42rem"};
+  width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "fit-content"};
-
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
   margin-left: ${(props) => props.marginLeft || null};
@@ -28,6 +27,7 @@ const FindidText = styled.p`
   font-family: "Noto Sans KR";
   font-size: ${(props) => props.fontSize || "19px"};
   font-weight: ${(props) => props.fontWeight || "200"};
+  margin-bottom: 36px;
 `;
 
 const IdLabel = styled.label`

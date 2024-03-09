@@ -5,6 +5,11 @@ export const FlexBox = styled.div`
   flex-direction: ${({ dir }) => setFlexDirection(dir)};
   justify-content: ${({ row }) => setJustifyContent(row)};
   align-items: ${({ col }) => setAlignItems(col)};
+  position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  bottom: ${({ bottom }) => bottom};
+  left: ${({ left }) => left};
+  right: ${({ right }) => right};
   width: ${({ width }) => width};
   height: ${({ height }) => height};
   margin: ${({ margin }) => margin};
@@ -13,7 +18,13 @@ export const FlexBox = styled.div`
   background-color: ${({ bgColor }) => bgColor};
   box-shadow: ${({ shadow }) => shadow};
   border: ${({ border }) => border};
+  border-top: ${({ borderTop }) => borderTop};
+  border-right: ${({ borderRight }) => borderRight};
+  border-bottom: ${({ borderBottom }) => borderBottom};
+  border-left: ${({ borderLeft }) => borderLeft};
   border-radius: ${({ borderRadius }) => borderRadius};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  z-index: ${({ zIndex }) => zIndex};
 
   ${({ clicky }) =>
     clicky &&

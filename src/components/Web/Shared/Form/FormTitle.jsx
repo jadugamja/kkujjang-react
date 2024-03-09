@@ -13,7 +13,7 @@ const FormTitleText = styled.p`
   font-family: "Gugi";
   font-size: ${(props) => props.fontSize || "32px"};
   font-weight: ${(props) => props.fontWeight || "500"};
-  margin: ${(props) => props.margin || "28px 0"};
+  margin: ${(props) => props.margin || "30px 0 20px"};
 `;
 
 // ===== component ======

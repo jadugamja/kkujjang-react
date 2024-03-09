@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -9,9 +10,11 @@ import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import { Box } from "../../Game/Shared/Layout";
 import useAxios from "@/hooks/useAxios";
 
 const InquiryManagementList = ({ type, onThreadOpen }) => {
+  const [cookies] = useCookies(["sessionId"]);
   const [listData, setListData] = useState([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState(null);
   const [currPage, setCurrPage] = useState(1);
@@ -20,7 +23,10 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
     useRecoilState(isAnswerCompletedState);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/inquiry/list?page=${currPage}`
+    url: `/inquiry/list?page=${currPage}`,
+    headers: {
+      Authorization: `Bearer ${cookies.sessionId}`
+    }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
@@ -158,14 +164,6 @@ InquiryManagementList.propTypes = {
   isAnswerCompleted: PropTypes.object,
   setIsAnswerCompleted: PropTypes.func
 };
-
-const Box = styled.div`
-  width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
-  padding: 10px;
-  background-color: ${({ type, theme }) =>
-    type === "home" ? "#fff" : theme.colors.content};
-`;
 
 const HeaderWrapper = styled(FlexBox)`
   padding-bottom: 14px;

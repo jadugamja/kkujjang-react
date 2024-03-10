@@ -29,19 +29,37 @@ const HomeUser = () => {
     } else {
       setListData([]);
     }
+
+    const list = [
+      {
+        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
+        createdAt: "2024-02-01",
+        id: 1
+      },
+      {
+        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
+        createdAt: "2024-01-20",
+        id: 2
+      },
+      {
+        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
+        createdAt: "2021-09-01",
+        id: 3
+      }
+    ];
+    setListData(list);
   }, [response]);
 
   return (
     <ContentWrapper row="center" col="center">
       <WideContent dir="col">
-        <Header type={!isAuthenticated ? "default" : "clearTab"} />
+        <Header type={!isAuthenticated ? "guest" : "clearTab"} />
         <FlexBox as="main" dir="col" height="100%" margin="7.5rem 0 0" padding="10px">
           {/* upper */}
           <FlexBox
-            height="33.125rem"
-            border="1px solid #e5e5e5"
+            height="25rem"
             padding="10px"
-            margin="0 0 5px"
+            margin="30px 0 5px"
             row="end"
             col="center"
           >
@@ -50,7 +68,15 @@ const HomeUser = () => {
           </FlexBox>
 
           {/* lower */}
-          <FlexBox dir="col" width="100%" flex="1" border="1px solid #e5e5e5">
+          <FlexBox
+            dir="col"
+            width="100%"
+            height="fit-content"
+            margin="80px 0 0 0"
+            padding="0 0 15px 0"
+            flex="0 1 0%"
+            border="1px solid #e5e5e5"
+          >
             {loading ? (
               <Span>Loading...</Span>
             ) : error ? (
@@ -72,8 +98,10 @@ const HomeUser = () => {
                     onClick={() => navigate(`/notice/${item.id}`)}
                     clicky
                   >
-                    <Span font="Noto Sans KR">{item.title}</Span>
-                    <Span font="Noto Sans KR" fontSize="18px" color="#8F692B">
+                    <Span font="Noto Sans KR" fontSize="18px">
+                      {item.title}
+                    </Span>
+                    <Span font="Noto Sans KR" fontSize="17px" color="#8F692B">
                       {item.createdAt?.split(" ")[0]}
                     </Span>
                   </FlexBox>

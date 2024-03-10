@@ -30,7 +30,7 @@ export const webTheme = {
   ...sharedTheme,
   colors: {
     ...sharedTheme.colors,
-    background: "#F1EFE9",
+    background: "#fff",
     content: "#FAF9F4",
     button: {
       main: {

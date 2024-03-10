@@ -8,15 +8,10 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 const Title = ({ children }) => {
   return (
     <FlexBox col="center" height="4rem" padding="15px 0 4px 0">
-      <StyledTitle
-        fontSize="26px"
-        fontWeight="800"
-        color="#413014"
-        margin="0 12px 0 33px"
-      >
+      <StyledTitle fontSize="24px" fontWeight="800" color="#413014" margin="0 10px 0 33px">
         {children}
       </StyledTitle>
-      <FontAwesomeIcon icon={faChevronRight} size="lg" />
+      <FontAwesomeIcon icon={faChevronRight} />
     </FlexBox>
   );
 };

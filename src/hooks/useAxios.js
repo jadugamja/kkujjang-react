@@ -2,8 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../services/const";
 
-axios.defaults.baseURL = BASE_URL;
-// axios.defaults.withCredentials = true;
+const instance = axios.create({
+  baseURL: BASE_URL
+  // withCredentials: true
+});
 
 // config = { method, url, headers, data }
 const useAxios = (config, executeOnMount = true) => {
@@ -14,7 +16,7 @@ const useAxios = (config, executeOnMount = true) => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.request(config);
+      const res = await instance.request(config);
       setResponse(res.data);
     } catch (error) {
       setError(error.response?.data.error);
@@ -27,7 +29,7 @@ const useAxios = (config, executeOnMount = true) => {
     if (executeOnMount) {
       fetchData();
     }
-  }, []);
+  }, [executeOnMount]);
 
   return { response, error, loading, fetchData };
 };

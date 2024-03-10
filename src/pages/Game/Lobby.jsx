@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
-
+import { useCookies } from "react-cookie";
 import { avatarUrlState } from "../../recoil/userState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";

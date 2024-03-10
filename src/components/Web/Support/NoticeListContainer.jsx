@@ -14,6 +14,7 @@ import Pagination from "@/components/Web/Shared/Board/Pagination";
 
 // ===== style =====
 const NoticeWrapper = styled(FlexBox)`
+  margin-right: ${(props) => props.marginRight};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
 `;
@@ -23,6 +24,7 @@ const NoticeListBox = styled.div`
   height: ${(props) => props.height || "fit-content"};
   margin-left: ${(props) => props.marginLeft || null};
   margin-right: ${(props) => props.marginRight || null};
+  padding: ${(props) => props.padding};
 `;
 
 // ===== component =====
@@ -79,10 +81,10 @@ const NoticeListContainer = () => {
     <>
       <NoticeListBox width="75rem" marginLeft="auto" marginRight="auto">
         <BoardTitle type="notice" />
-        <NoticeWrapper row="end" marginBottom="25px">
+        <NoticeWrapper row="end" marginBottom="25px" marginRight="56px">
           <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
         </NoticeWrapper>
-        <NoticeListBox width="100%" height="460px">
+        <NoticeListBox width="100%" height="fit-content" padding="10px 72px">
           {listData?.map((listData, index) => (
             <BoardItem
               boardType="notice"

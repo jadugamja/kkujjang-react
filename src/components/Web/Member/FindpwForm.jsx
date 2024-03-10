@@ -14,7 +14,7 @@ import WebModal from "@/components/Web/Shared/Modal/WebModal";
 
 // ===== style ======
 const FindpwFormFlexContainer = styled(FlexBox)`
-  width: ${(props) => props.width || "42rem"};
+  width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "fit-content"};
 
   margin-top: ${(props) => props.marginTop || null};

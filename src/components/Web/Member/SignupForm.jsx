@@ -5,7 +5,6 @@ import { FlexBox } from "@/styles/FlexStyle";
 
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
-import { BASE_URL } from "@/services/const";
 
 // ====== components import =====
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
@@ -78,7 +77,6 @@ const SignupForm = () => {
   // 아이디 중복 확인
   const handleDuplicateId = () => {
     const id = idRef.current.value;
-    const idRegex = /^[a-z0-9]{7,30}$/;
 
     // 아이디 유효성 검사 진행
     if (!idRegex.test(id)) {
@@ -94,7 +92,6 @@ const SignupForm = () => {
         setDuplicationError("");
         setDuplicationModalOpen(true);
         setInputDisabled(true);
-        console.log(id);
       } else {
         setDuplicationError("사용할 수 없는 아이디입니다.");
         setIdError("");
@@ -180,80 +177,90 @@ const SignupForm = () => {
 
   return (
     <>
-      {/* 인증 실패 Modal */}
-      {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-          인증번호가 일치하지 않습니다.
-        </WebModal>
-      )}
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : (
+        <>
+          {/* 인증 실패 Modal */}
+          {authModalOpen && (
+            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+              인증번호가 일치하지 않습니다.
+            </WebModal>
+          )}
 
-      {/* 회원가입 실패 Modal */}
-      {signupModalOpen && (
-        <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
-          회원 정보를 확인해 주세요.
-        </WebModal>
-      )}
+          {/* 회원가입 실패 Modal */}
+          {signupModalOpen && (
+            <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
+              회원 정보를 확인해 주세요.
+            </WebModal>
+          )}
 
-      {/* 중복 확인 Modal */}
-      {duplicationModalOpen && (
-        <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
-          사용 가능한 아이디입니다.
-        </WebModal>
-      )}
+          {/* 중복 확인 Modal */}
+          {duplicationModalOpen && (
+            <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
+              사용 가능한 아이디입니다.
+            </WebModal>
+          )}
 
-      <SignupFormContainer dir="col">
-        <FormTitle type="signup" />
+          <SignupFormContainer dir="col">
+            <FormTitle type="signup" />
 
-        {/* {아이디 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <SignupInputFieldWrapper row="between" col="end">
-            <SignupInputFieldWrapper flexGrow="0.75" dir="col">
+            {/* {아이디 input field} */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
+              <SignupInputFieldWrapper row="between" col="end">
+                <SignupInputFieldWrapper flexGrow="0.75" dir="col">
+                  <InputField
+                    hasLabel={true}
+                    name="id"
+                    inputRef={idRef}
+                    isDataForm={true}
+                    onBlur={handleIdValidation}
+                    disabled={inputDisabled}
+                  />
+                </SignupInputFieldWrapper>
+                <DuplicationButton onClick={handleDuplicateId}>
+                  중복 확인
+                </DuplicationButton>
+              </SignupInputFieldWrapper>
+              {duplicationError && <ValidationMessage message={duplicationError} />}
+              {idError && <ValidationMessage message={idError} />}
+            </SignupInputFieldWrapper>
+
+            {/* {비밀번호 input field} */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
               <InputField
                 hasLabel={true}
-                name="id"
-                inputRef={idRef}
+                name="password"
+                inputRef={passwordRef}
                 isDataForm={true}
-                onBlur={handleIdValidation}
-                disabled={inputDisabled}
+                onBlur={handlePasswordValidation}
               />
+              {pwError && <ValidationMessage message={pwError} />}
             </SignupInputFieldWrapper>
-            <DuplicationButton onClick={handleDuplicateId}>중복 확인</DuplicationButton>
-          </SignupInputFieldWrapper>
-          {duplicationError && <ValidationMessage message={duplicationError} />}
-          {idError && <ValidationMessage message={idError} />}
-        </SignupInputFieldWrapper>
 
-        {/* {비밀번호 input field} */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <InputField
-            hasLabel={true}
-            name="password"
-            inputRef={passwordRef}
-            isDataForm={true}
-            onBlur={handlePasswordValidation}
-          />
-          {pwError && <ValidationMessage message={pwError} />}
-        </SignupInputFieldWrapper>
+            {/* 비밀번호 확인 input field */}
+            <SignupInputFieldWrapper dir="col" marginBottom="24px">
+              <InputField
+                hasLabel={true}
+                name="confirmPassword"
+                inputRef={confirmPasswordRef}
+                onBlur={handleConfirmPassword}
+              />
+              {confirmPwError && <ValidationMessage message={confirmPwError} />}
+            </SignupInputFieldWrapper>
 
-        {/* 비밀번호 확인 input field */}
-        <SignupInputFieldWrapper dir="col" marginBottom="24px">
-          <InputField
-            hasLabel={true}
-            name="confirmPassword"
-            inputRef={confirmPasswordRef}
-            onBlur={handleConfirmPassword}
-          />
-          {confirmPwError && <ValidationMessage message={confirmPwError} />}
-        </SignupInputFieldWrapper>
+            {/* 전화번호 인증 */}
+            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
 
-        {/* 전화번호 인증 */}
-        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-
-        {/* 회원가입 button */}
-        <SignupInputFieldWrapper marginTop="15px">
-          <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
-        </SignupInputFieldWrapper>
-      </SignupFormContainer>
+            {/* 회원가입 button */}
+            <SignupInputFieldWrapper marginTop="21px">
+              <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
+            </SignupInputFieldWrapper>
+          </SignupFormContainer>
+        </>
+      )}
     </>
   );
 };

@@ -86,6 +86,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   input, select {
+    background-color: #fff;
     outline: 0;
   }
 

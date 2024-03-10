@@ -179,8 +179,7 @@ const GameModal = ({
 
     setRoomInfo({
       ...roomInfo,
-      [t.name]: v,
-      createdAt: new Date().toISOString() // 임시 추가
+      [t.name]: v
     });
   };
 
@@ -342,7 +341,7 @@ const GameModal = ({
                         type="text"
                         placeholder="비밀번호"
                         maxLength={30}
-                        value={!roomInfo?.isSecure}
+                        value={roomInfo?.isSecure && "1234"}
                         onChange={(e) =>
                           setRoomInfo({ ...roomInfo, password: e.target.value })
                         }

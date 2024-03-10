@@ -73,20 +73,31 @@ const BoardItem = ({ boardType, data, onClick }) => {
             row="between"
             col="center"
             width="100%"
+            height="40px"
             marginBottom="10px"
             onClick={onClick}
           >
-            <FlexBoardText>{data.title}</FlexBoardText>
-            <BoardItemWrapper row="between" width="300px">
+            <FlexBoardText fontSize="20px">{data.title}</FlexBoardText>
+            <BoardItemWrapper row="between" width="13.5rem">
               <BoardItemWrapper col="center">
-                <BoardItemImage src={createdAtIcon} marginRight="10px" />
-                <FlexBoardText color="#A7A7A7" fontSize="20px">
+                <BoardItemImage
+                  width="20px"
+                  height="20px"
+                  src={createdAtIcon}
+                  marginRight="10px"
+                />
+                <FlexBoardText color="#A7A7A7" fontSize="18px">
                   {data.createdAt}
                 </FlexBoardText>
               </BoardItemWrapper>
               <BoardItemWrapper col="center">
-                <BoardItemImage src={viewsIcon} marginRight="10px" />
-                <FlexBoardText color="#A7A7A7" fontSize="20px">
+                <BoardItemImage
+                  width="20px"
+                  height="20px"
+                  src={viewsIcon}
+                  marginRight="10px"
+                />
+                <FlexBoardText color="#A7A7A7" fontSize="18px">
                   {data.views}
                 </FlexBoardText>
               </BoardItemWrapper>

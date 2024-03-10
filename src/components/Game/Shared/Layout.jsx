@@ -11,6 +11,35 @@ export const MainContentWrapper = styled(FlexBox)`
   flex-grow: 1;
 `;
 
+export const Box = styled.div`
+  width: ${({ type }) => (type === "home" ? "28rem" : "40.5rem")};
+  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
+  padding: 10px;
+  background-color: #fff;
+  border-radius: ${({ type }) => (type === "home" ? "25px" : "10px")};
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.25);
+`
+
+export const Main = styled.main`
+  position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  bottom: ${({ bottom }) => bottom};
+  left: ${({ left }) => left};
+  right: ${({ right }) => right};
+  max-width: ${({ maxWidth }) => maxWidth};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  margin: ${({ margin }) => margin};
+  padding: ${({ padding }) => padding};
+  background-color: ${({ bgColor }) => bgColor};
+  border-top: ${({ borderTop }) => borderTop};
+  border-right: ${({ borderRight }) => borderRight};
+  border-bottom: ${({ borderBottom }) => borderBottom};
+  border-left: ${({ borderLeft }) => borderLeft};
+  border-radius: ${({ borderRadius }) => borderRadius};
+  z-index: ${({ zIndex }) => zIndex};
+`;
+
 export const Wrapper = styled(FlexBox)`
   position: ${({ position }) => position};
   top: ${({ top }) => top};
@@ -22,7 +51,13 @@ export const Wrapper = styled(FlexBox)`
   height: ${({ height }) => height};
   margin: ${({ margin }) => margin};
   padding: ${({ padding }) => padding};
+  background-color: ${({ bgColor }) => bgColor};
+  border-top: ${({ borderTop }) => borderTop};
+  border-right: ${({ borderRight }) => borderRight};
+  border-bottom: ${({ borderBottom }) => borderBottom};
+  border-left: ${({ borderLeft }) => borderLeft};
   border-radius: ${({ borderRadius }) => borderRadius};
+  z-index: ${({ zIndex }) => zIndex};
 `;
 
 export const SpacingWrapper = styled(FlexBox)`

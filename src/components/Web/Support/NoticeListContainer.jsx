@@ -48,6 +48,7 @@ const NoticeListContainer = () => {
     fetchData();
   }, [apiConfig]);
 
+  // 백엔드 코드, 수정될 부분
   useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.lastPage);

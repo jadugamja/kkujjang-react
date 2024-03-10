@@ -1,7 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
@@ -9,8 +12,6 @@ import ImageFileUpload from "@/components/Web/Shared/Board/ImageFileUpload";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 import WebModal from "@/components/Web/Shared/Modal/WebModal";
-
-// import { isInquiryAnswerCompletedState } from "@/recoil/boardState";
 
 // ===== style =====
 const InquiryCreateWrapper = styled(FlexBox)`
@@ -50,34 +51,44 @@ export const InquiryCreateTextArea = styled.textarea`
 // ===== component =====
 const InquiryCreateContainer = () => {
   // === ref ===
-  // const inputRef = useRef("");
-  // const textareaRef = useRef("");
+  const titleRef = useRef("");
+  const contentRef = useRef("");
 
   // === state ===
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
-
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
   // (modal 관련)
   const [createModalOpen, setCreateModalOpen] = useState(false); // 문의 등록 실패 알림 modal state
 
   // === navigate ===
   const navigate = useNavigate();
 
-  const handleChangeTitle = (e) => {
-    setTitle(e.target.value);
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  // const handleChangeTitle = (e) => {
+  //   setTitle(e.target.value);
+  // };
+  // const handleChangeContent = (e) => {
+  //   setContent(e.target.value);
+  // };
+
+  const appendFilesToFormData = (_files) => {
+    if (_files) {
+      setFiles(_files);
+    } else {
+      setFiles([]);
+    }
   };
 
-  const handleChangeContent = (e) => {
-    setContent(e.target.value);
-  };
-
-  const appendFilesToFormData = useCallback((_files) => {
-    setFiles(_files);
-  }, []);
-
-  const handleClickSaveButton = (e) => {
-    e.preventDefault();
+  const handleClickSaveButton = () => {
+    const title = titleRef.current.value;
+    const content = contentRef.current.value;
 
     if (title.length < 1 || title.length > 100) {
       setCreateModalOpen(true);
@@ -91,14 +102,17 @@ const InquiryCreateContainer = () => {
         formData.append("files", files);
 
         // 문의 등록 API 호출
+        setApiConfig({
+          method: "post",
+          url: "/inquiry/new",
+          headers: { "Content-Type": "multipart/form-data" },
+          data: formData
+        });
 
-        // 프론트엔드 테스트를 위한 백엔드 임시 코드
-        const result = true;
-        if (!result) {
-          setCreateModalOpen(true);
-        } else {
-          // 문의 등록 성공 시
+        if (response !== null) {
           navigate(`/inquiry/list`);
+        } else {
+          setCreateModalOpen(true);
         }
       }
     }
@@ -136,14 +150,8 @@ const InquiryCreateContainer = () => {
               marginTop="10px"
               marginBottom="10px"
             >
-              <InquiryCreateInput
-                placeholder="제목을 입력하세요."
-                onChange={handleChangeTitle}
-              />
-              <InquiryCreateTextArea
-                placeholder="내용을 입력하세요."
-                onChange={handleChangeContent}
-              />
+              <InquiryCreateInput placeholder="제목을 입력하세요." ref={titleRef} />
+              <InquiryCreateTextArea placeholder="내용을 입력하세요." ref={contentRef} />
             </InquiryCreateWrapper>
 
             {/* 이미지 업로드 */}

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
 import createdAtIcon from "@/assets/images/clock.png";
 import viewsIcon from "@/assets/images/views.png";
+
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
 
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
@@ -50,6 +54,9 @@ const NoticeDetailContainer = () => {
 
   // === navigate ===
   const navigate = useNavigate();
+
+  // === params ===
+  const { noticeId } = useParams();
 
   useEffect(() => {
     // 임시 데이터
@@ -113,8 +120,15 @@ const NoticeDetailContainer = () => {
             dir="col"
             marginBottom="10px"
           >
-            <NoticeDetailBox height="390px" marginTop="15px">
-              {detailData.content}
+            <NoticeDetailBox dir="col" height="390px" marginTop="15px">
+              <div>{detailData.content}</div>
+              {detailData.files && (
+                <>
+                  {detailData.files?.map((file, index) => (
+                    <img key={index} src={file} />
+                  ))}
+                </>
+              )}
             </NoticeDetailBox>
             <NoticeDeatalFlexBox row="end">
               <Button type="smallGray" message="목록" onClick={handleMoveList} />

@@ -79,7 +79,7 @@ const SignupForm = () => {
     const id = idRef.current.value;
 
     // 아이디 유효성 검사 진행
-    if (idError) {
+    if (!idRegex.test(id)) {
       console.log("Fail");
     } else {
       // 아이디 중복확인 API 코드
@@ -96,16 +96,6 @@ const SignupForm = () => {
         setDuplicationError("사용할 수 없는 아이디입니다.");
         setIdError("");
       }
-
-      // const result = true;
-      // if (!result) {
-      //   setDuplicationError("사용할 수 없는 아이디입니다.");
-      //   setIdError("");
-      // } else {
-      //   setDuplicationError("");
-      //   setDuplicationModalOpen(true);
-      //   setInputDisabled(true);
-      // }
     }
   };
 
@@ -180,14 +170,6 @@ const SignupForm = () => {
       } else {
         setSignupModalOpen(true);
       }
-
-      // const result = true;
-      // if (!result) {
-      //   setSignupModalOpen(true);
-      // } else {
-      //   // 로그인 페이지로 이동
-      //   navigate(`/member/login`);
-      // }
     } else {
       setSignupModalOpen(true);
     }

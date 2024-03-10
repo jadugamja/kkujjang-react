@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
+// ===== hooks import =====
+import useAxios from "@/hooks/useAxios";
+
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
 import SearchBar from "@/components/Web/Shared/Board/SearchBar";
@@ -31,121 +34,44 @@ const NoticeListContainer = () => {
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/notice/list?page=${currPage}`
+  });
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === navigate ===
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getNoticeListHandler = async () => {
-      try {
-        const data = await getNoticeList(currPage);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeListHandler();
-
-    // 임시 데이터
-    const list = [
-      {
-        id: 0,
-        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-        createdAt: "2024-01-01",
-        views: 1
-      },
-      {
-        id: 1,
-        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
-        createdAt: "2024-01-01",
-        views: 2
-      },
-      {
-        id: 2,
-        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
-        createdAt: "2024-01-01",
-        views: 3
-      },
-      {
-        id: 3,
-        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-        createdAt: "2024-01-01",
-        views: 1
-      },
-      {
-        id: 4,
-        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
-        createdAt: "2024-01-01",
-        views: 2
-      },
-      {
-        id: 5,
-        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
-        createdAt: "2024-01-01",
-        views: 3
-      },
-      {
-        id: 6,
-        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-        createdAt: "2024-01-01",
-        views: 1
-      },
-      {
-        id: 7,
-        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
-        createdAt: "2024-01-01",
-        views: 2
-      },
-      {
-        id: 8,
-        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
-        createdAt: "2024-01-01",
-        views: 3
-      },
-      {
-        id: 9,
-        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-        createdAt: "2024-01-01",
-        views: 1
-      },
-      {
-        id: 1,
-        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
-        createdAt: "2024-01-01",
-        views: 2
-      }
-    ];
-
-    if (list.length === 0) {
-      setListData([]);
-    } else {
-      setListData(list);
-    }
-  }, []);
+    fetchData();
+  }, [apiConfig]);
 
   // 백엔드 코드, 수정될 부분
   useEffect(() => {
-    const getNoticeSearchHandler = async () => {
-      try {
-        const data = await getNoticeSearch(currPage, searchKeyword);
-        if (data.list.length === 0) {
-          setLastPageIdx(data.lastPage);
-          setListData([]);
-        } else {
-          setLastPageIdx(data.lastPage);
-          setListData(data.list);
-        }
-      } catch (err) {
-        console.error(`[Error]: ${err}`);
-      }
-    };
-    getNoticeSearchHandler();
+    if (response !== null) {
+      setLastPageIdx(response.lastPage);
+      setListData(response.list);
+    } else {
+      setLastPageIdx(1);
+      setListData([]);
+    }
+  }, [response]);
+
+  // 페이지 변경, 검색 시 호출
+  useEffect(() => {
+    if (searchKeyword !== "") {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+      });
+    } else {
+      setApiConfig({
+        ...apiConfig,
+        url: `/notice/list?page=${currPage}`
+      });
+    }
   }, [currPage, searchKeyword]);
 
   const onDetailOpen = (noticeId) => {

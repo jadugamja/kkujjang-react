@@ -87,64 +87,47 @@ const FindpwForm = () => {
         navigate(`/member/change-pw`);
       } else {
         setFindidModalOpen(true);
-        // navigate(`/member/login`);
       }
-
-      // const result = true;
-      // if (!result) {
-      //   setFindidModalOpen(true);
-      // } else {
-      //   // 비밀번호 변경 페이지로 이동
-      //   navigate(`/member/change-pw`);
-      // }
     }
   };
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : (
-        <>
-          {/* 인증 실패 modal */}
-          {authModalOpen && (
-            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-              인증번호가 일치하지 않습니다.
-            </WebModal>
-          )}
+      {/* 인증 실패 modal */}
+      {authModalOpen && (
+        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+          인증번호가 일치하지 않습니다.
+        </WebModal>
+      )}
 
-          {/* 비밀번호 변경 modal */}
-          {/* {changePwModalOpen && (
+      {/* 비밀번호 변경 modal */}
+      {/* {changePwModalOpen && (
             <WebModal setIsOpen={setChangePwModalOpen} hasButton={true} isMoving={true}>
               비밀번호를 변경하시겠습니까?
             </WebModal>
-          )} */}
+      )} */}
 
-          {/* 아이디 찾기 실패 modal */}
-          {findidModalOpen && (
-            <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
-              아이디가 존재하지 않습니다.
-            </WebModal>
-          )}
-
-          <FindpwFormFlexContainer dir="col">
-            <FormTitle type="findpw" marginTop="0px" marginBottom="0px"></FormTitle>
-            <FindpwText>
-              회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
-            </FindpwText>
-
-            {/* 아이디 input */}
-            <FindpwFormFlexContainer dir="col" marginBottom="15px">
-              <InputField hasLabel={true} name="id" inputRef={idRef} />
-            </FindpwFormFlexContainer>
-
-            {/* 전화번호 인증 */}
-            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-          </FindpwFormFlexContainer>
-        </>
+      {/* 아이디 찾기 실패 modal */}
+      {findidModalOpen && (
+        <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
+          아이디가 존재하지 않습니다.
+        </WebModal>
       )}
+
+      <FindpwFormFlexContainer dir="col">
+        <FormTitle type="findpw" marginTop="0px" marginBottom="0px"></FormTitle>
+        <FindpwText>
+          회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
+        </FindpwText>
+
+        {/* 아이디 input */}
+        <FindpwFormFlexContainer dir="col" marginBottom="15px">
+          <InputField hasLabel={true} name="id" inputRef={idRef} />
+        </FindpwFormFlexContainer>
+
+        {/* 전화번호 인증 */}
+        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
+      </FindpwFormFlexContainer>
     </>
   );
 };

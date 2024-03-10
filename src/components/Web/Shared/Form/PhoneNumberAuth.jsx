@@ -40,6 +40,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   }, [apiConfig]);
 
   useEffect(() => {
+    debugger;
     if (response === null) return;
 
     if (response !== null) {
@@ -200,9 +201,12 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
                   placeholder="인증번호"
                 />
                 <Timer initialTime={initialTime} onTimeOut={handleTimeOut} />
-                {/* <SmallTransparentButton type="verification" onClick={sendVerification}>
+                <SmallTransparentButton
+                  type="verification"
+                  onClick={(e) => sendVerification(e)}
+                >
                   확인
-                </SmallTransparentButton> */}
+                </SmallTransparentButton>
               </ItemWrapper>
             </Label>
           </ItemWrapper>

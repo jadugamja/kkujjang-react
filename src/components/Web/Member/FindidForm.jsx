@@ -76,6 +76,9 @@ const FindidForm = () => {
 
   // 전화번호 인증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
+    console.log(response);
+    console.log(phoneNumber);
+
     if (response !== null) {
       // 성공 시, 아이디 조회 함수 호출
       handleFindid(phoneNumber);
@@ -87,6 +90,8 @@ const FindidForm = () => {
 
   // 아이디 조회
   const handleFindid = (phoneNumber) => {
+    console.log(phoneNumber);
+
     // 아이디 조회 API 코드
     setApiConfig({
       method: "post",
@@ -96,21 +101,16 @@ const FindidForm = () => {
       }
     });
 
-    const { id } = response.data;
-
     if (response !== null) {
+      const { id } = response;
+
       setHasUserInfo(true);
       setUserId(id);
     } else {
       setFindidModalOpen(true);
+      // window.location.reload();
+      // console.log("아이디 조회");
     }
-
-    // const result = true;
-    // if (!result) {
-    //   setFindidModalOpen(true);
-    // } else {
-    //   setHasUserInfo(true);
-    // }
   };
 
   // 로그인 페이지로 이동
@@ -125,55 +125,47 @@ const FindidForm = () => {
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : (
-        <>
-          {/* 인증 실패 modal */}
-          {authModalOpen && (
-            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-              인증번호가 일치하지 않습니다.
-            </WebModal>
-          )}
-
-          {/* 아이디 찾기 실패 modal */}
-          {findidModalOpen && (
-            <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
-              아이디가 존재하지 않습니다.
-            </WebModal>
-          )}
-
-          <FindidFormFlexContainer dir="col">
-            <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
-            {hasUserInfo ? (
-              <>
-                {/* 아이디 찾기 성공 시, 결과 출력부 */}
-                <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
-                <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
-                  <IdLabel marginLeft="20px">아이디</IdLabel>
-                  <IdText marginRight="20px">{userId}</IdText>
-                </FindidFormFlexContainer>
-                <FindidFormFlexContainer marginTop="50px">
-                  <Button type="smallBrown" message="로그인" onClick={handleMoveLogin} />
-                  <FindButton marginLeft="15px" onClick={handleMoveFindpw}>
-                    비밀번호 찾기
-                  </FindButton>
-                </FindidFormFlexContainer>
-              </>
-            ) : (
-              <>
-                {/* 전화번호 인증 */}
-                <FindidText>
-                  회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
-                </FindidText>
-                <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-              </>
-            )}
-          </FindidFormFlexContainer>
-        </>
+      {/* 인증 실패 modal */}
+      {authModalOpen && (
+        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+          인증번호가 일치하지 않습니다.
+        </WebModal>
       )}
+
+      {/* 아이디 찾기 실패 modal */}
+      {findidModalOpen && (
+        <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
+          아이디가 존재하지 않습니다.
+        </WebModal>
+      )}
+
+      <FindidFormFlexContainer dir="col">
+        <FormTitle type="findid" marginTop="0px" marginBottom="0px" />
+        {hasUserInfo ? (
+          <>
+            {/* 아이디 찾기 성공 시, 결과 출력부 */}
+            <FindidText>다음 정보로 가입된 아이디가 총 1개 있습니다.</FindidText>
+            <FindidFormFlexContainer row="between" width="30rem" marginTop="50px">
+              <IdLabel marginLeft="20px">아이디</IdLabel>
+              <IdText marginRight="20px">{userId}</IdText>
+            </FindidFormFlexContainer>
+            <FindidFormFlexContainer marginTop="50px">
+              <Button type="smallBrown" message="로그인" onClick={handleMoveLogin} />
+              <FindButton marginLeft="15px" onClick={handleMoveFindpw}>
+                비밀번호 찾기
+              </FindButton>
+            </FindidFormFlexContainer>
+          </>
+        ) : (
+          <>
+            {/* 전화번호 인증 */}
+            <FindidText>
+              회원 가입 시 등록하신 휴대전화 번호로 인증을 진행해 주세요.
+            </FindidText>
+            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
+          </>
+        )}
+      </FindidFormFlexContainer>
     </>
   );
 };

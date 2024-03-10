@@ -72,44 +72,49 @@ const Thread = ({ inquiryId }) => {
       url: `/inquiry/${inquiryId}`
     });
 
-    // 임시 데이터
-    const tmp = [
-      {
-        needAnswer: false,
-        threadId: "252b1d9b-3e83-4951-983e-59932f625222",
-        authorId: 86,
-        type: 5,
-        threadTitle: "렉 걸립니다.",
-        nickname: "스테이지어스#86",
-        createdAt: "2024-01-15 16:44:44",
-        lastPage: 1,
-        list: [
-          {
-            isAnswer: false,
-            authorId: 86,
-            content: "해결해 주세요.",
-            createdAt: "2024-01-15 16:44:44",
-            file: null
-          },
-          {
-            isAnswer: false,
-            authorId: 86,
-            content: "사진 첨부합니다.",
-            createdAt: "2024-01-15 16:44:44",
-            file: null
-          },
-          {
-            isAnswer: true,
-            authorId: 87,
-            content: "운영자입니다. 제보 감사합니다.",
-            createdAt: "2024-01-15 16:44:44",
-            file: null
-          }
-        ]
-      }
-    ];
+    if (response !== null) {
+      setListData(response);
+    } else {
+      setListData([]);
+    }
 
-    setThreadData(tmp);
+    // // 임시 데이터
+    // const tmp = [
+    //   {
+    //     needAnswer: false,
+    //     threadId: "252b1d9b-3e83-4951-983e-59932f625222",
+    //     authorId: 86,
+    //     type: 5,
+    //     threadTitle: "렉 걸립니다.",
+    //     nickname: "스테이지어스#86",
+    //     createdAt: "2024-01-15 16:44:44",
+    //     lastPage: 1,
+    //     list: [
+    //       {
+    //         isAnswer: false,
+    //         authorId: 86,
+    //         content: "해결해 주세요.",
+    //         createdAt: "2024-01-15 16:44:44",
+    //         file: null
+    //       },
+    //       {
+    //         isAnswer: false,
+    //         authorId: 86,
+    //         content: "사진 첨부합니다.",
+    //         createdAt: "2024-01-15 16:44:44",
+    //         file: null
+    //       },
+    //       {
+    //         isAnswer: true,
+    //         authorId: 87,
+    //         content: "운영자입니다. 제보 감사합니다.",
+    //         createdAt: "2024-01-15 16:44:44",
+    //         file: null
+    //       }
+    //     ]
+    //   }
+    // ];
+    // setThreadData(tmp);
   }, [inquiryId]);
 
   const appendFilesToFormData = (_files) => {
@@ -140,19 +145,22 @@ const Thread = ({ inquiryId }) => {
 
       fetchData(apiConfig);
 
-      // 프론트엔드 테스트를 위한 백엔드 임시 코드
-      const result = true;
-      if (!result) {
-        setCreateModalOpen(true);
-      } else {
+      if (response !== null) {
         content === "";
         setFiles([]);
-        // 등록 성공 시, 백엔드 통신 다시 하기
-        // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
+
         setApiConfig({
           method: "get",
           url: `/inquiry/${inquiryId}`
         });
+
+        if (response !== null) {
+          setListData(response);
+        } else {
+          setListData([]);
+        }
+      } else {
+        setCreateModalOpen(true);
       }
     }
   };

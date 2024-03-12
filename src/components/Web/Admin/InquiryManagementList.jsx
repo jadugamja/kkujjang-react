@@ -23,9 +23,9 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
     useRecoilState(isAnswerCompletedState);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/inquiry/list?page=${currPage}`,
+    url: `/inquiry/search?page=${currPage}`,
     headers: {
-      Authorization: `Bearer ${cookies.sessionId}`
+      sessionId: cookies.sessionId
     }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
@@ -52,52 +52,17 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage + 1);
+      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
       setIsAnswerCompleted(
-        tmp.reduce((acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }), {})
+        response.list?.reduce(
+          (acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }),
+          {}
+        )
       );
       setListData(response.list);
     } else {
       setLastPageIdx(1);
       setListData([]);
-    }
-
-    // 임시 데이터
-    const tmp = [
-      {
-        id: "aldfka-123812lk-dklfal",
-        type: 1,
-        title: "제목1",
-        needsAnswer: true
-      },
-      {
-        id: "aldfka-123812lk-dadkfml",
-        type: 2,
-        title: "제목2",
-        needsAnswer: true
-      },
-      {
-        id: "aldfka-1238194809-dadkfml",
-        type: 3,
-        title: "제목3",
-        needsAnswer: true
-      },
-      {
-        id: "aldfka-908194809-dadkfml",
-        type: 3,
-        title: "제목4",
-        needsAnswer: false
-      }
-    ];
-
-    if (tmp.length === 0) {
-      setListData([]);
-    } else {
-      // 각 문의 아이템 id마다 답변 여부 매핑
-      setIsAnswerCompleted(
-        tmp.reduce((acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }), {})
-      );
-      setListData(tmp);
     }
   }, [response]);
 

@@ -17,7 +17,10 @@ const ReportManagementDetail = ({ data }) => {
     error: roomErr
   } = useAxios({
     method: "get",
-    url: `/room/${roomId}`
+    url: `/room/${roomId}`,
+    headers: {
+      sessionId: "sessionId"
+    }
   });
   const {
     response: chatRes,
@@ -25,7 +28,10 @@ const ReportManagementDetail = ({ data }) => {
     error: chatErr
   } = useAxios({
     method: "get",
-    url: `/chat/search?roomId=${roomId}`
+    url: `/chat/search?roomId=${roomId}`,
+    headers: {
+      sessionId: "sessionId"
+    }
   });
 
   useEffect(() => {

@@ -13,12 +13,12 @@ export const MainContentWrapper = styled(FlexBox)`
 
 export const Box = styled.div`
   width: ${({ type }) => (type === "home" ? "28rem" : "40.5rem")};
-  height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
+  height: ${({ type }) => (type === "home" ? "43.6rem" : "49.6rem")};
   padding: 10px;
   background-color: #fff;
   border-radius: ${({ type }) => (type === "home" ? "25px" : "10px")};
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.25);
-`
+`;
 
 export const Main = styled.main`
   position: ${({ position }) => position};

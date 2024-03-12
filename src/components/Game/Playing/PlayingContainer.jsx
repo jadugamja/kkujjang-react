@@ -76,7 +76,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     const players = [
       {
         id: 1,
-        nickname: "닉네임#1",
+        nickname: "테스트#3",
         level: 3,
         myTurn: false,
         roundScore: [],

@@ -1,28 +1,27 @@
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket, faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import { Wrapper, Span } from "../../../Game/Shared/Layout";
-import { faArrowRightFromBracket, faComment } from "@fortawesome/free-solid-svg-icons";
 import { LevelBadge } from "../../../Game/Shared/Player";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
-import { userState } from "@/recoil/userState";
+import { userInfoState } from "@/recoil/userState";
 import useAxios from "@/hooks/useAxios";
-import { useEffect } from "react";
 
 const HomeButton = ({ type }) => {
-  const [user, setUser] = useRecoilState(userState);
-  const [cookies] = useCookies(["sessionId"]);
+  const [user, setUser] = useRecoilState(userInfoState);
+  const [cookies, , removeCookie] = useCookies(["sessionId"]);
   const { response, loading, error, fetchData } = useAxios(
     {
       method: "get",
       url: "/user/signout",
       headers: {
-        "Content-Type": "application/json",
-        headers: { sessionId: cookies.sessionId }
+        sessionId: cookies.sessionId
       }
     },
     false
@@ -31,12 +30,12 @@ const HomeButton = ({ type }) => {
   useEffect(() => {
     if (response !== null) {
       setUser(null);
+      removeCookie("sessionId");
+      if (cookies?.userRole) {
+        removeCookie("userRole");
+      }
     }
   }, [response]);
-
-  const onLogout = () => {
-    fetchData();
-  };
 
   return (
     <Wrapper dir="col" width="19.75rem" height="14rem" margin="0 72px 0 0">
@@ -55,7 +54,7 @@ const HomeButton = ({ type }) => {
             >
               <Span
                 font="Pretendard Variable"
-                fontSize="60px"
+                fontSize="54px"
                 fontWeight="800"
                 color="#fff"
               >
@@ -94,7 +93,7 @@ const HomeButton = ({ type }) => {
               shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="30px 30px 0 0"
             >
-              <Span font="Pretendard Variable" fontSize="60px" fontWeight="800">
+              <Span font="Pretendard Variable" fontSize="54px" fontWeight="800">
                 게임 시작
               </Span>
             </FlexBox>
@@ -110,9 +109,9 @@ const HomeButton = ({ type }) => {
               shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="0 0  0 30px"
             >
-              <LevelBadge>{!user?.level ? 3 : user?.level}</LevelBadge>
+              <LevelBadge>{user?.level}</LevelBadge>
               <Span font="Noto Sans KR" fontSize="1.2rem" fontWeight="700">
-                {!user?.nickname ? "끝짱1" : user?.nickname}
+                {user?.nickname}
               </Span>
             </FlexBox>
             {/* logout */}
@@ -125,7 +124,7 @@ const HomeButton = ({ type }) => {
               bgColor="#FBFBFB"
               shadow=" 3px 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="0 0 30px 0"
-              onClick={onLogout}
+              onClick={() => fetchData()}
             >
               <FontAwesomeIcon icon={faArrowRightFromBracket} size="xl" />
             </FlexBox>

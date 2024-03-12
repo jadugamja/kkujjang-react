@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { useCookies } from "react-cookie";
-import { avatarUrlState } from "../../recoil/userState";
+import io from "socket.io-client";
+import { Cookies } from "react-cookie";
+
+import { SOCKET_URL } from "@/services/const";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
@@ -25,57 +27,99 @@ import {
   onUpdateCurrentPlayerCount,
   onUpdateRoomConfig
 } from "@/services/socket";
+import { getCurrentUserInfo } from "../../services/user";
+import { userInfoState } from "../../recoil/userState";
 
 const Lobby = () => {
-  // 첫 로그인 사용자
-  const avatarUrl = useRecoilValue(avatarUrlState);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [rooms, setRooms] = useState([]);
-  const [modalType, setModalType] = useState(!avatarUrl ? "avatar" : null);
-  const [isModalOpen, setIsModalOpen] = useState(!avatarUrl);
+  const [modalType, setModalType] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const user = useRecoilValue(userInfoState);
+  const cookies = new Cookies();
+  const [socket, setSocket] = useState();
 
   useEffect(() => {
-    initSocket((error) => {
+    const clientSocket = io(SOCKET_URL, {
+      path: "/game/socket.io/",
+      extraHeaders: {
+        // "my-header": "1234"
+        sessionId: cookies.get("sessionId")
+      }
+    });
+
+    let isErrorOccured = false;
+
+    clientSocket.on("connect", () => {
+      console.log("[log] Connect to the Server...");
+    });
+
+    clientSocket.on("error", (error) => {
+      console.log(`[Error]: ${error}`);
+      isErrorOccured = true;
       setModalType("error");
       setErrorMessage(error);
       setIsModalOpen(true);
+      return;
     });
 
-    return () => disconnectSocket();
-  }, []);
+    clientSocket.emit("load room list", {}, (res) => {
+      if (!isErrorOccured) getUserInfo();
+      console.log(`[log] load room list: ${res}`);
+    });
 
-  // 방 정보
-  useEffect(() => {
-    loadRoomList(setRooms);
+    clientSocket.on("complete load room list", (roomList) => {
+      console.log("[log] Complete Load Room List: ", roomList);
+      setRooms(roomList);
+    });
 
-    onLoadNewRoom((newRoom) => {
+    clientSocket.on("load new room", (newRoom) => {
+      console.log("[log] Load New Room: ", newRoom);
       setRooms((prev) => [newRoom, ...prev]);
     });
 
-    onDestroyRoom((roomId) => {
+    clientSocket.on("destroy room", (roomId) => {
+      console.log("[log] Destroy Room: ", roomId);
       setRooms((prev) => prev.filter((room) => room.id !== roomId));
     });
 
-    onUpdateCurrentPlayerCount((data) => {
+    clientSocket.on("update room member count", (data) => {
+      console.log("[log] update room member count: ", data);
       const { roomId, currentPlayerCount } = data;
       setRooms((prev) =>
         prev.map((room) => (room.id === roomId ? { ...room, currentPlayerCount } : room))
       );
     });
 
-    onUpdateRoomConfig((newRoom) => {
+    clientSocket.on("update room config", (newRoom) => {
+      console.log("[log] update room config: ", newRoom);
       setRooms((prev) =>
         prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
       );
     });
 
-    const storedRoomInfoList = localStorage.getItem("roomInfoList");
-    const bgVolume = localStorage.getItem("bgVolume");
-    const fxVolume = localStorage.getItem("fxVolume");
+    setSocket(clientSocket);
+  }, []);
 
-    // 볼륨 조절
-    // Audio.volume = bgVolume
-    // Audio.volume = fxVolume
+  useEffect(() => {
+    return () => {
+      if (socket) {
+        socket.disconnect("[log] Disconnected from the Server...");
+      }
+    };
+  }, [socket]);
+
+  const getUserInfo = useCallback(async () => {
+    const userInfo = await getCurrentUserInfo();
+
+    // 아바타 설정되어 있지 않은 경우 아바타 선택 모달 띄우기
+    if (userInfo.avatarAccessoryIndex === 0) {
+      setModalType("avatar");
+      setIsModalOpen(true);
+    } else {
+      setModalType(null);
+      setIsModalOpen(false);
+    }
   }, []);
 
   return (

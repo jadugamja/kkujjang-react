@@ -1,7 +1,7 @@
 import { atom, selector, selectorFamily } from "recoil";
 
-export const userState = atom({
-  key: "userState",
+export const userInfoState = atom({
+  key: "userInfoState",
   default: null // e.g., { username: "username", nickname: "nickname", role: "admin", level: 1, winRate: 0.0, exp: 0, avatarUrl: "" }
 });
 
@@ -9,7 +9,7 @@ export const userState = atom({
 export const userNameState = selector({
   key: "userNameState",
   get: ({ get }) => {
-    const user = get(userState);
+    const user = get(userInfoState);
     return user?.username;
   }
 });
@@ -18,7 +18,7 @@ export const userNameState = selector({
 export const avatarUrlState = selector({
   key: "avatarUrlState",
   get: ({ get }) => {
-    const user = get(userState);
+    const user = get(userInfoState);
     return user?.avatarUrl;
   }
 });
@@ -33,7 +33,7 @@ export const isActiveAccountState = atom({
 // export const isActiveAccountState = selector({
 //   key: "isActiveAccountState",
 //   get: ({ get }) => {
-//     const user = get(userState);
+//     const user = get(userInfoState);
 //     return user.isActive;
 //   }
 // });
@@ -79,7 +79,7 @@ export const playingPlayerState = atom({
   // get:
   //   () =>
   //   ({ get }) => {
-  //     const user = get(userState);
+  //     const user = get(userInfoState);
   //     return {
   //       ...user,
   //       myTurn: false,

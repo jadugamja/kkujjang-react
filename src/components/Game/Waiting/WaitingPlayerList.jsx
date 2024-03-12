@@ -10,7 +10,7 @@ import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
 const WaitingPlayerList = ({ info }) => {
-  const playerList = useRecoilValue(waitingPlayerListState);
+  const [playerList, setPlayerList] = useRecoilState(waitingPlayerListState);
 
   useEffect(() => {
     // 임시 플레이어 배열
@@ -21,6 +21,7 @@ const WaitingPlayerList = ({ info }) => {
       { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
       { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
     ];
+    setPlayerList(players);
   }, []);
 
   return (

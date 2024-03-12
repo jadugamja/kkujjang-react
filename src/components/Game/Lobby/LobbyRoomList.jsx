@@ -27,7 +27,7 @@ const LobbyRoomList = ({ rooms }) => {
             if (showWaitingRoom && room.state === "playing") {
               return false;
             }
-            if (showOpenRoom && room.isSecure === false) {
+            if (showOpenRoom && room.isSecure === true) {
               return false;
             }
             return true;

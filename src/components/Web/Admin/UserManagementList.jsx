@@ -9,6 +9,7 @@ import ManagementList from "./ManagementList";
 import SearchBar from "../Shared/Board/SearchBar";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import { Box } from "../../Game/Shared/Layout";
 import { isActiveAccountState } from "@/recoil/userState";
 import useAxios from "@/hooks/useAxios";
 
@@ -25,16 +26,16 @@ const UserManagementList = ({ type, onSideOpen }) => {
     method: "get",
     url: `/user/search?page=${currPage}`,
     headers: {
-      Authorization: `Bearer ${cookies.sessionId}`
+      sessionId: cookies.sessionId
     }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage + 1);
+      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
       setData(response.list);
-      data.forEach((user) => {
+      data?.forEach((user) => {
         setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
       });
     } else {
@@ -47,52 +48,9 @@ const UserManagementList = ({ type, onSideOpen }) => {
     fetchData();
   }, [apiConfig]);
 
+  // 페이지 변경, 검색 시
   useEffect(() => {
-    const tmp = [
-      {
-        id: 0,
-        nickname: "닉네임1",
-        username: "아이디1",
-        createdAt: "2024-01-01 03:10",
-        isBanned: false
-      },
-      {
-        id: 1,
-        nickname: "닉네임2",
-        username: "아이디2",
-        createdAt: "2024-01-01 03:10",
-        isBanned: false
-      },
-      {
-        id: 2,
-        nickname: "닉네임3",
-        username: "아이디3",
-        createdAt: "2024-01-01 03:10",
-        isBanned: true
-      }
-    ];
-
-    // 사용자 목록 조회 api 호출 및 성공 시 값 세팅
-    // setLastPageIdx(data.result.lastPage)
-    if (tmp.length === 0) {
-      setData([]);
-    } else {
-      setData(tmp);
-      data?.forEach((user) => {
-        setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    data?.forEach((user) => {
-      setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
-    });
-  }, [setAccountStates]);
-
-  // 페이지 변경, 검색 시 호출
-  useEffect(() => {
-    if (data.length === 0) {
+    if (data?.length === 0) {
       return;
     }
 
@@ -165,20 +123,8 @@ UserManagementList.propTypes = {
   onSideOpen: PropTypes.func
 };
 
-const Box = styled.div`
-  width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: ${({ type }) => (type === "home" ? "43.6rem" : "49.6rem")};
-  padding: 10px;
-  background-color: ${({ type, theme }) =>
-    type === "home" ? "#fff" : theme.colors.content};
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
-`;
-
 const HeaderWrapper = styled(FlexBox)`
   padding-bottom: 14px;
-  border-bottom: 5px solid ${({ theme }) => theme.colors.gray400};
 `;
 
 const SearchBarWrapper = styled.div`

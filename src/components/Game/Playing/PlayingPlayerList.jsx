@@ -11,9 +11,6 @@ const PlayingPlayerList = ({ playerList }) => {
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
       {playerList?.map((player) => (
         <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
-          <StyledBalloon>
-            <span>{/* 채팅 메시지 */}</span>
-          </StyledBalloon>
           <Player
             type="play"
             avatarUrl={avatarUrl}

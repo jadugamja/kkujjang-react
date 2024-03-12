@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -20,6 +21,7 @@ const InquiryManagement = ({ type }) => {
     isActiveSideContentTypeState
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
+  const [cookies] = useCookies(["sessionId"]);
   const [questionData, setQuestionData] = useState({});
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
@@ -33,7 +35,10 @@ const InquiryManagement = ({ type }) => {
       setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
-        url: `/inquiry/${itemId}`
+        url: `/inquiry/${itemId}`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
       });
     }
   }, []);
@@ -60,7 +65,10 @@ const InquiryManagement = ({ type }) => {
     // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
     setApiConfig({
       method: "get",
-      url: `/inquiry/${id}`
+      url: `/inquiry/${id}`,
+      headers: {
+        sessionId: cookies.sessionId
+      }
     });
 
     // 임시 데이터

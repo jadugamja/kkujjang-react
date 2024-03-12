@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { itemIdState } from "@/recoil/boardState";
-import { FlexBox } from "@/styles/FlexStyle";
+import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
 import { Box } from "../../../components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import Header from "@/components/Web/Shared/Layout/Header";
@@ -14,6 +15,8 @@ import NoticeManagementCreate from "@/components/Web/Admin/NoticeManagementCreat
 import useAxios from "@/hooks/useAxios";
 
 const NoticeManagement = () => {
+  const [cookies] = useCookies(["sessionId"]);
+  const navigate = useNavigate();
   // 0: not active, 1: Detail, 2: Create
   const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
     isActiveSideContentTypeState
@@ -25,13 +28,22 @@ const NoticeManagement = () => {
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   useEffect(() => {
+    if (!cookies.sessionId) {
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
     if (itemId === null) {
       setIsActiveSideContentType(0);
     } else {
       setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
-        url: `/notice/${itemId}`
+        url: `/notice/${itemId}`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
       });
     }
   }, []);
@@ -42,34 +54,25 @@ const NoticeManagement = () => {
     }
   }, [apiConfig]);
 
+  // 게시물 상세 조회
   useEffect(() => {
     if (response !== null) {
       setIsEditMode(false);
-      setDetailData(response);
+      setDetailData(response.result);
       setIsActiveSideContentType(1);
-      setItemId(id);
+      setItemId(response.result.id);
     }
   }, [response]);
 
   const onDetailOpen = (id) => {
+    setIsActiveSideContentType(2);
     setApiConfig({
       method: "get",
-      url: `/notice/${id}`
+      url: `/notice/${id}`,
+      headers: {
+        sessionId: cookies.sessionId
+      }
     });
-
-    // 임시 데이터
-    const detail = {
-      id: id,
-      title: "제목1111",
-      content: "본문1111",
-      createdAt: "2024-01-01 03:10",
-      views: 10
-    };
-
-    setIsEditMode(false);
-    setDetailData(detail);
-    setIsActiveSideContentType(1);
-    setItemId(id);
   };
 
   const onCreateOpen = () => {
@@ -116,15 +119,5 @@ const NoticeManagement = () => {
     </ContentWrapper>
   );
 };
-
-const ListWrapper = styled(FlexBox)``;
-
-// const Box = styled.div`
-//   width: ${({ type }) => (type === "home" ? "28rem" : "40.5rem")};
-//   height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
-//   padding: 10px;
-//   background-color: ${({ type, theme }) =>
-//     type === "home" ? "#fff" : theme.colors.content};
-// `;
 
 export default NoticeManagement;

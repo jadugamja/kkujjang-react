@@ -3,23 +3,30 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 
-import { userState } from "../../recoil/userState";
+import { userInfoState } from "../../recoil/userState";
 import { Gradation } from "@/styles/CommonStyle";
 import Footer from "@/components/Web/Shared/Layout/Footer";
 import HomeUser from "./HomeUser";
 import HomeAdmin from "./HomeAdmin";
+import { getCurrentUserInfo } from "../../services/user";
 
 const Home = () => {
   const location = useLocation();
-  const [cookies] = useCookies(["sessionId"]);
-  const [user, setUser] = useRecoilState(userState);
+  const [cookies] = useCookies(["sessionId", "userRole"]);
+  const [user, setUser] = useRecoilState(userInfoState);
 
   useEffect(() => {
     const sessionId = cookies.sessionId;
     if (sessionId) {
-      setUser({ sessionId });
+      setUser((attr) => ({ ...attr, role: cookies.userRole }));
+      if (!user) getUserInfo();
     }
   }, []);
+
+  const getUserInfo = async () => {
+    const userInfo = await getCurrentUserInfo();
+    if (userInfo) setUser({ ...userInfo, role: cookies.userRole });
+  };
 
   return (
     <>

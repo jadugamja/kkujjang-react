@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import { userState } from "@/recoil/userState";
+import { userInfoState } from "@/recoil/userState";
 import Player from "./Player";
 import ProfileActiveToggle from "./ProfileActiveToggle";
 import GameModal from "./GameModal";
@@ -22,7 +22,7 @@ const init = {
 };
 
 const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
-  const user = useRecoilValue(userState);
+  const user = useRecoilValue(userInfoState);
   const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);

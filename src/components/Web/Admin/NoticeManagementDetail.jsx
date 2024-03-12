@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
@@ -12,11 +13,12 @@ import { EditorWrapper } from "./NoticeManagementCreate";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
-import { isModalOpenState } from "@/recoil/ModalState";
+import { isModalOpenState } from "@/recoil/modalState";
 import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const { id, title, content, createdAt, views } = data;
+  const [cookies] = useCookies(["sessionId"]);
   const [editTitle, setEditTitle] = useState(title);
   const [editContent, setEditContent] = useState(content);
   const [isOpenModal, setIsOpenModal] = useRecoilState(isModalOpenState);
@@ -78,7 +80,10 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     setApiConfig({
       method: "put",
       url: `/notice/${id}`,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        sessionId: cookies.sessionId,
+        "Content-Type": "multipart/form-data"
+      },
       data: formData
     });
   };
@@ -92,6 +97,9 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     setApiConfig({
       method: "delete",
       url: `/notice/${id}`,
+      headers: {
+        sessionId: cookies.sessionId
+      },
       data: id
     });
   };
@@ -197,6 +205,7 @@ NoticeManagementDetail.propTypes = {
 
 const DetailWrapper = styled.div`
   margin: 0 14px;
+  overflow-y: auto;
 `;
 
 const HeaderTextWrapper = styled(FlexBox)`

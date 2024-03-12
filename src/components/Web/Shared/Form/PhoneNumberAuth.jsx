@@ -118,12 +118,13 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   // 인증 번호 전달
   const sendVerification = () => {
     const phoneNumber = numbersRef.map((ref) => ref.current.value).join("-");
-    const verification = verificationRef.current.value;
+    const verification = Number(verificationRef.current.value);
     const regex = /^\d{6}$/;
 
     if (!regex.test(verification)) {
       setIsModalOpen(true);
       setModalMessage("인증 번호가 일치하지 않습니다.");
+      return;
     } else {
       // 인증 번호 검증 API 호출 코드
       setApiConfig({

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
-import styled from "styled-components";
 
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { itemIdState } from "@/recoil/boardState";
 import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
 import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
 import Header from "@/components/Web/Shared/Layout/Header";
-import { FlexBox } from "@/styles/FlexStyle";
-import { Box } from "../../../components/Game/Shared/Layout";
+import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
+import { Box } from "@/components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import useAxios from "@/hooks/useAxios";
 
@@ -17,6 +17,7 @@ const ReportManagement = () => {
     isActiveSideContentTypeState
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
+  const [cookies] = useCookies(["sessionId"]);
   const [reportData, setReportData] = useState();
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
@@ -28,7 +29,8 @@ const ReportManagement = () => {
       setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
-        url: `/report/${itemId}`
+        url: `/report/${itemId}`,
+        headers: { sessionId: cookies.sessionId }
       });
     }
   }, []);
@@ -55,7 +57,8 @@ const ReportManagement = () => {
     // 신고 상세 조회 api 호출 (report/:reportId)
     setApiConfig({
       method: "get",
-      url: `/report/${id}`
+      url: `/report/${id}`,
+      headers: { sessionId: cookies.sessionId }
     });
 
     const reportRes = {
@@ -98,16 +101,5 @@ const ReportManagement = () => {
     </ContentWrapper>
   );
 };
-
-const ListWrapper = styled(FlexBox)``;
-
-// const Box = styled.div`
-//   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-//   height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
-//   padding: 10px;
-//   background-color: ${({ type, theme }) =>
-//     type === "home" ? "#fff" : theme.colors.content};
-//   overflow-y: auto;
-// `;
 
 export default ReportManagement;

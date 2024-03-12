@@ -107,6 +107,7 @@ const SignupForm = () => {
     // 아이디 유효성 검사 진행
     if (!idRegex.test(id)) {
       console.log("Fail");
+      return;
     } else {
       // 아이디 중복확인 API 코드
       setApiConfig({
@@ -169,7 +170,7 @@ const SignupForm = () => {
     if (!idError && !pwError && !confirmPwError && !duplicationError && isAuthMath) {
       const id = idRef.current.value;
       const password = passwordRef.current.value;
-
+      debugger;
       // 회원가입 API 코드
       setApiConfig({
         method: "post",

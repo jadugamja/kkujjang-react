@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 
@@ -7,8 +8,8 @@ import { itemIdState } from "@/recoil/boardState";
 import UserManagementList from "@/components/Web/Admin/UserManagementList";
 import UserManagementDetail from "@/components/Web/Admin/UserManagementDetail";
 import Header from "@/components/Web/Shared/Layout/Header";
-import { FlexBox } from "@/styles/FlexStyle";
-import { Box } from "../../../components/Game/Shared/Layout";
+import { Box } from "@/components/Game/Shared/Layout";
+import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
 import useAxios from "@/hooks/useAxios";
 
@@ -17,6 +18,7 @@ const UserManagement = () => {
     isActiveSideContentTypeState
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
+  const [cookies] = useCookies(["sessionId"]);
   const [userData, setUserData] = useState();
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -28,7 +30,10 @@ const UserManagement = () => {
       setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
-        url: `/user/${itemId}`
+        url: `/user/${itemId}`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
       });
     }
   }, []);
@@ -50,21 +55,9 @@ const UserManagement = () => {
   const onSideOpen = (id) => {
     setApiConfig({
       method: "get",
-      url: `/user/${id}`
+      url: `/user/${id}`,
+      headers: { sessionId: cookies.sessionId }
     });
-
-    // 임시 데이터
-    const userRes = {
-      id: 5,
-      nickname: "someNickname#5",
-      createdAt: "yyyy-MM-dd hh:mm:ss",
-      isBanned: true
-      // 추가적인 사용자 정보...
-    };
-
-    setUserData(userRes);
-    setIsActiveSideContentType(1);
-    setItemId(id);
   };
 
   return (
@@ -87,16 +80,5 @@ const UserManagement = () => {
     </ContentWrapper>
   );
 };
-
-const ListWrapper = styled(FlexBox)``;
-
-// const Box = styled.div`
-//   width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-//   height: ${({ type }) => (type === "home" ? "48.6rem" : "49.6rem")};
-//   padding: 10px;
-//   background-color: ${({ type, theme }) =>
-//     type === "home" ? "#fff" : theme.colors.content};
-//   overflow-y: auto;
-// `;
 
 export default UserManagement;

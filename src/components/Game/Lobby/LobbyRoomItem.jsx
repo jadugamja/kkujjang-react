@@ -13,7 +13,7 @@ const LobbyRoomItem = ({
     id,
     roomNumber,
     title,
-    password,
+    isSecure,
     maxRound,
     roundTimeLimit,
     currentUserCount,
@@ -41,7 +41,7 @@ const LobbyRoomItem = ({
       return;
     }
 
-    if (state !== "playing" && password !== "") {
+    if (state !== "playing" && isSecure === true) {
       setModalType("password");
       setIsModalOpen(true);
       return;
@@ -70,7 +70,7 @@ const LobbyRoomItem = ({
           <RightInfoWrapper dir="col" row="evenly" col="center">
             <PlayerCount>{`${currentUserCount}/${maxUserCount}`}</PlayerCount>
             <FlexBox row="center" col="center">
-              <LockIcon icon={password !== "" ? faLock : faLockOpen} />
+              <LockIcon icon={isSecure === true ? faLock : faLockOpen} />
             </FlexBox>
           </RightInfoWrapper>
         </RoomItemInfoWrapper>
@@ -81,7 +81,9 @@ const LobbyRoomItem = ({
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={id}
-        >{modalMessage}</Modal>
+        >
+          {modalMessage}
+        </Modal>
       ) : null}
     </>
   );
@@ -92,7 +94,7 @@ LobbyRoomItem.propTypes = {
     id: PropTypes.string,
     roomNumber: PropTypes.number,
     title: PropTypes.string,
-    password: PropTypes.string,
+    isSecure: PropTypes.bool,
     maxRound: PropTypes.number,
     roundTimeLimit: PropTypes.number,
     currentUserCount: PropTypes.number,

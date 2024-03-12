@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 
-import { userState, userNameState, waitingPlayerListState } from "@/recoil/userState";
+import { userInfoState, userNameState, waitingPlayerListState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
@@ -35,6 +35,7 @@ import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
 import { createRoom, changeRoomConfig, leaveRoom } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
+import { updateCurrentUserAvatar } from "../../../services/user";
 
 const GameModal = ({
   type,
@@ -54,7 +55,7 @@ const GameModal = ({
   const [isCorrectPassword, setIsCorrectPassword] = useState(true);
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
-  const setUser = useSetRecoilState(userState);
+  const [user, setUser] = useRecoilState(userInfoState);
   const userId = useRecoilValue(userNameState);
   const setRoomId = useSetRecoilState(roomIdState);
   const [apiConfig, setApiConfig] = useState(null);
@@ -152,9 +153,13 @@ const GameModal = ({
     setCurrAvatar(index);
   };
 
-  const onConfirmAvatarUrl = () => {
-    setUser((prev) => ({ ...prev, avatarUrl: avatarImage }));
-    setIsOpen(false);
+  const onConfirmAvatarUrl = async () => {
+    const res = await updateCurrentUserAvatar(currAvatar, user.nickname);
+
+    if (res) {
+      setUser((prev) => ({ ...prev, avatarUrl: avatarImage }));
+      setIsOpen(false);
+    }
   };
 
   const navigate = useNavigate();
@@ -204,6 +209,7 @@ const GameModal = ({
         )
       );
     } else {
+      debugger;
       createRoom(roomInfo, (room) => {
         setRoomId(roomId);
         setRoomInfo(room);
@@ -358,8 +364,8 @@ const GameModal = ({
                         max={8}
                         min={1}
                         step={1}
-                        name="maxPlayerCount"
-                        value={roomInfo?.maxPlayerCount}
+                        name="maxUserCount"
+                        value={roomInfo?.maxUserCount}
                         onChange={(e) => onValidateChange(e)}
                       />
                     </TdContent>
@@ -374,8 +380,8 @@ const GameModal = ({
                         max={8}
                         min={2}
                         step={1}
-                        name="roundCount"
-                        value={roomInfo?.roundCount}
+                        name="maxRound"
+                        value={roomInfo?.maxRound}
                         onChange={(e) => onValidateChange(e)}
                       />
                     </TdContent>
@@ -386,8 +392,8 @@ const GameModal = ({
                     </TdLabel>
                     <TdContent>
                       <GameModalSelect
-                        name="roundTime"
-                        value={roomInfo?.roundTime}
+                        name="roundTimeLimit"
+                        value={roomInfo?.roundTimeLimit}
                         onChange={(e) => onValidateChange(e)}
                       >
                         <option value="60">60초</option>

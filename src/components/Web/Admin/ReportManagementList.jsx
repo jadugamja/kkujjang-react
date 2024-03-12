@@ -8,6 +8,7 @@ import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
 import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
+import { Box } from "../../Game/Shared/Layout";
 import useAxios from "@/hooks/useAxios";
 
 const ReportManagementList = ({ type, onSideOpen }) => {
@@ -20,7 +21,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
     method: "get",
     url: `/report/search?page=${currPage}`,
     headers: {
-      Authorization: `Bearer ${cookies.sessionId}`
+      sessionId: cookies.sessionId
     }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
@@ -42,73 +43,12 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage + 1);
+      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
       setData(response.list);
     } else {
       setLastPageIdx(1);
       setData([]);
     }
-
-    const tmp = [
-      {
-        id: 1,
-        isOffensive: true,
-        isCheating: false,
-        isPoorManner: true,
-        note: "지속적인 욕설 사용",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        reporterId: 5,
-        reporterNickname: "someNickname#5",
-        reporteeId: 4,
-        reporteeNickname: "someNickname#4"
-      },
-      {
-        id: 2,
-        isOffensive: true,
-        isCheating: false,
-        isPoorManner: false,
-        note: "지속적인 욕설 사용",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        reporterId: 5,
-        reporterNickname: "someNickname#5",
-        reporteeId: 4,
-        reporteeNickname: "someNickname#4"
-      },
-      {
-        id: 3,
-        isOffensive: false,
-        isCheating: false,
-        isPoorManner: true,
-        note: "지속적인 욕설 사용",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        reporterId: 5,
-        reporterNickname: "someNickname#5",
-        reporteeId: 4,
-        reporteeNickname: "someNickname#4"
-      }
-    ];
-
-    const listData = tmp.map(
-      ({
-        reporterNickname,
-        reporteeNickname,
-        createdAt,
-        isOffensive,
-        isCheating,
-        isPoorManner
-      }) => ({
-        reporterNickname,
-        types: {
-          isOffensive,
-          isCheating,
-          isPoorManner
-        },
-        reporteeNickname,
-        createdAt
-      })
-    );
-
-    setData(listData);
   }, [response]);
 
   // 페이지, 필터 변경 시 호출
@@ -202,19 +142,8 @@ ReportManagementList.propTypes = {
   onSideOpen: PropTypes.func
 };
 
-const Box = styled.div`
-  width: ${({ type }) => (type === "home" ? "28rem" : "37.5rem")};
-  height: ${({ type }) => (type === "home" ? "43.6rem" : "49.6rem")};
-  padding: 10px;
-  background-color: ${({ type, theme }) =>
-    type === "home" ? "#fff" : theme.colors.content};
-  border-radius: 25px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
-`;
-
 const HeaderWrapper = styled(FlexBox)`
   padding-bottom: 14px;
-  border-bottom: 5px solid ${({ theme }) => theme.colors.gray400};
 `;
 
 const FilterWrapper = styled.div`

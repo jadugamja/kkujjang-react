@@ -196,10 +196,6 @@ const getBorder = (type) => {
         color: "#ff6c6c"
         // border: "1px solid #ff6c6c"
       };
-    case "smallDark":
-      return {
-        radius: "10px"
-      };
     default:
       return {
         style: null,

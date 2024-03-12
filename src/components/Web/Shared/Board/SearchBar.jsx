@@ -43,7 +43,7 @@ SearchBar.propTypes = {
 const SearchInputWrapper = styled(FlexBox)`
   border: 2px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 10px;
-  width: ${({ field }) => (field !== "닉네임" ? "16.5rem" : "18.5rem")};
+  width: 18.5rem;
   height: ${(props) => props.height || "3.2rem"};
 `;
 

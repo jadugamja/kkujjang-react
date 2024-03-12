@@ -13,17 +13,13 @@ export const TurnScore = () => {
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
 
   useEffect(() => {
-    setCurrPoints(-10);
-  }, []);
-
-  useEffect(() => {
     if (currPoints !== 0) {
       if (currPoints > 0) setPointType("score");
       else if (currPoints < 0) setPointType("penalty");
 
       const disappered = setTimeout(() => {
         setCurrPoints(0);
-      }, 6000);
+      }, 1500);
 
       if (player.myTurn) {
         const updatedPlayer = {
@@ -51,7 +47,8 @@ export const TurnScore = () => {
       type={pointType}
     >
       <StyledSpan type={pointType}>
-        {currPoints !== 0 && (pointType === "score" ? `+${currPoints}` : `${currPoints}`)}
+        {currPoints !== 0 &&
+          (pointType === "score" ? `+${currPoints}` : `-${currPoints}`)}
       </StyledSpan>
     </Wrapper>
   );

@@ -27,7 +27,7 @@ import {
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
-  const [tempRandomWord, setTempRandomWord] = useState("라이터");
+  // const [tempRandomWord, setTempRandomWord] = useState("라이터");
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
@@ -41,11 +41,11 @@ const WordInput = ({ roundCount, roundTime }) => {
   const [timeoutIds, setTimeoutIds] = useState([]);
 
   // 임시
-  useEffect(() => {
-    if (tempRandomWord) {
-      setInitialCharacter(tempRandomWord[0]);
-    }
-  }, [tempRandomWord]);
+  // useEffect(() => {
+  //   if (tempRandomWord) {
+  //     setInitialCharacter(tempRandomWord[0]);
+  //   }
+  // }, [tempRandomWord]);
 
   // 3. 라운드 변경
   useEffect(() => {
@@ -139,12 +139,7 @@ const WordInput = ({ roundCount, roundTime }) => {
   return (
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
-        {/* {randomWord?.split("").map((char, i) => (
-          <FirstWordSpan key={i} type={i === currRound && "this"}>
-            {char}
-          </FirstWordSpan>
-        ))} */}
-        {tempRandomWord?.split("").map((char, i) => (
+        {randomWord?.split("").map((char, i) => (
           <FirstWordSpan key={i} type={i === currRound && "this"}>
             {char}
           </FirstWordSpan>
@@ -158,6 +153,7 @@ const WordInput = ({ roundCount, roundTime }) => {
             <DisplayWord>{initialCharacter}</DisplayWord>
           )}
         </DisplayWordWrapper>
+        {/* 변경 必 */}
         <TimerBar type="turn" totalTime={30} />
         <TimerBar type="round" totalTime={150} />
       </WordTimerInfo>

@@ -20,6 +20,8 @@ const Home = () => {
     if (sessionId) {
       setUser((attr) => ({ ...attr, role: cookies.userRole }));
       if (!user) getUserInfo();
+    } else {
+      setUser(null);
     }
   }, []);
 

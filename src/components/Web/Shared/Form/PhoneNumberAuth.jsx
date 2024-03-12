@@ -54,7 +54,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
         setIsSentPhoneNumber(true);
         setValidMessage("인증번호가 발송되었습니다.");
         setInitialTime(180);
-        setCookie("smsAuthId", response.smsAuthId);
+        setCookie("smsAuthId", response.smsAuthId, {
+          expires: new Date().getMinutes() + 3
+        });
       } else {
         setIsVerifying(true);
         onVerificationResult(response, phoneNumber);

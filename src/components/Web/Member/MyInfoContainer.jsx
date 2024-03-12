@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
@@ -53,6 +54,9 @@ const MyInfoContainer = () => {
   // === ref ===
   const inputRef = useRef(null);
 
+  // === cookie ===
+  const [cookies] = useCookies(["sessionId"]);
+
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
   const [nickname, setNickname] = useState(""); // 백엔드 state
@@ -63,7 +67,8 @@ const MyInfoContainer = () => {
   // (api 관련)
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: "/user/me"
+    url: "/user/me",
+    headers: { sessionId: cookies.sessionId }
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
@@ -79,18 +84,9 @@ const MyInfoContainer = () => {
       setUserData(response);
       setNickname(response.nickname);
     }
+  }, [response]);
 
-    // const dummyData = {
-    //   avatarAccessoryIndex: 0,
-    //   level: 23,
-    //   exp: 1000,
-    //   nickname: "끝짱#1",
-    //   winRate: 50.4
-    // };
-
-    // setUserData(dummyData);
-    // setNickname(dummyData.nickname);
-  }, []);
+  // console.log(userData.avatarAccessoryIndex);
 
   // 수정 버튼 눌렀을 때
   const handleClickEditButton = () => {
@@ -116,6 +112,7 @@ const MyInfoContainer = () => {
       ...apiConfig,
       method: "put",
       url: "/user",
+      headers: { sessionId: cookies.sessionId },
       data: {
         nickname: nickname
       }

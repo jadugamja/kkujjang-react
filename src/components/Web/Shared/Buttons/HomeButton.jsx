@@ -22,7 +22,7 @@ const HomeButton = ({ type }) => {
       url: "/user/signout",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.sessionId}`
+        headers: { sessionId: cookies.sessionId }
       }
     },
     false

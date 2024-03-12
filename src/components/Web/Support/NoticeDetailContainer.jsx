@@ -49,33 +49,31 @@ const NoticeDetailImage = styled.img`
 
 // ===== component =====
 const NoticeDetailContainer = () => {
+  // === params ===
+  const { noticeId } = useParams();
+
   // === state ===
   const [detailData, setDetailData] = useState([]);
+  // (api 관련)
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/notice/${noticeId}`
+  });
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === navigate ===
   const navigate = useNavigate();
 
-  // === params ===
-  const { noticeId } = useParams();
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
 
   useEffect(() => {
-    // 임시 데이터
-    const detail = {
-      id: 0,
-      title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-      content: `
-      안녕하세요. 끝짱 운영팀입니다. 
-      
-      본 내용은 끝짱 내의 서비스 이용약관과 공식카페 운영정책을 한 번 더 인지하실 수 있도록 강조하고
-      
-      내부에서 이용 제한 조치(제재)가 어떻게 이루어지는지, 이의제기는 어떻게 하는지 등을 안내해 드리는 내용입니다.
-      
-      1. 모든 제재는 "서비스 이용약관" 및 "공식카페 운영정책"에 따라 처리하고 있습니다.`,
-      createdAt: "2024-02-01 03:10",
-      views: 10
-    };
-
-    setDetailData(detail);
+    if (response !== null) {
+      setDetailData(response);
+    } else {
+      setDetailData([]);
+    }
   }, []);
 
   const handleMoveList = () => {

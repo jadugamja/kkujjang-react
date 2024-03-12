@@ -12,7 +12,7 @@ import { EditorWrapper } from "./NoticeManagementCreate";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
-import { isModalOpenState } from "@/recoil/modalState";
+import { isModalOpenState } from "@/recoil/ModalState";
 import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {

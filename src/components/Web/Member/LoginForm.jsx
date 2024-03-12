@@ -59,12 +59,14 @@ const LoginForm = () => {
   const [loginError, setLoginError] = useState(""); // error state
   const setUser = useSetRecoilState(userState);
   // (api 관련)
-  const [, setCookie] = useCookies(["sessionId"]);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === navigate ===
   const navigate = useNavigate();
+
+  // === cookie ===
+  const [cookies, setCookie] = useCookies(["sessionId"]);
 
   useEffect(() => {
     if (apiConfig !== null) {
@@ -102,6 +104,7 @@ const LoginForm = () => {
       setApiConfig({
         method: "post",
         url: "/user/signin",
+        headers: { sessionId: cookies.sessionId },
         data: {
           username: id,
           password: password
@@ -119,8 +122,6 @@ const LoginForm = () => {
     <>
       {loading ? (
         <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
       ) : (
         <>
           <LoginFormFlexContainer dir="col" marginTop="4rem">

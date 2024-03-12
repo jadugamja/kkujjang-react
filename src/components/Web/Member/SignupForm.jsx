@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -68,15 +69,40 @@ const SignupForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies] = useCookies(["smsAuthId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
 
+  useEffect(() => {
+    if (response === null) return;
+
+    if (response !== null) {
+      if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        setDuplicationError("");
+        setDuplicationModalOpen(true);
+        setInputDisabled(true);
+      } else {
+        navigate(`/member/login`);
+      }
+    } else {
+      if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        setDuplicationError("사용할 수 없는 아이디입니다.");
+        setIdError("");
+      } else {
+        setSignupModalOpen(true);
+      }
+    }
+  }, [response]);
+
   // 아이디 중복 확인
   const handleDuplicateId = () => {
     const id = idRef.current.value;
+    const idRegex = /^[a-z0-9]{7,30}$/;
 
     // 아이디 유효성 검사 진행
     if (!idRegex.test(id)) {
@@ -87,15 +113,6 @@ const SignupForm = () => {
         method: "get",
         url: `/user/username/availability?username=${id}`
       });
-
-      if (response !== null) {
-        setDuplicationError("");
-        setDuplicationModalOpen(true);
-        setInputDisabled(true);
-      } else {
-        setDuplicationError("사용할 수 없는 아이디입니다.");
-        setIdError("");
-      }
     }
   };
 
@@ -157,19 +174,13 @@ const SignupForm = () => {
       setApiConfig({
         method: "post",
         url: "/user",
+        headers: { smsAuthId: cookies.smsAuthId },
         data: {
           username: id,
           password: password,
           phone: phoneNumber
         }
       });
-
-      if (response !== null) {
-        // 로그인 페이지로 이동
-        navigate(`/member/login`);
-      } else {
-        setSignupModalOpen(true);
-      }
     } else {
       setSignupModalOpen(true);
     }
@@ -177,90 +188,80 @@ const SignupForm = () => {
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : (
-        <>
-          {/* 인증 실패 Modal */}
-          {authModalOpen && (
-            <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
-              인증번호가 일치하지 않습니다.
-            </WebModal>
-          )}
-
-          {/* 회원가입 실패 Modal */}
-          {signupModalOpen && (
-            <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
-              회원 정보를 확인해 주세요.
-            </WebModal>
-          )}
-
-          {/* 중복 확인 Modal */}
-          {duplicationModalOpen && (
-            <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
-              사용 가능한 아이디입니다.
-            </WebModal>
-          )}
-
-          <SignupFormContainer dir="col">
-            <FormTitle type="signup" />
-
-            {/* {아이디 input field} */}
-            <SignupInputFieldWrapper dir="col" marginBottom="24px">
-              <SignupInputFieldWrapper row="between" col="end">
-                <SignupInputFieldWrapper flexGrow="0.75" dir="col">
-                  <InputField
-                    hasLabel={true}
-                    name="id"
-                    inputRef={idRef}
-                    isDataForm={true}
-                    onBlur={handleIdValidation}
-                    disabled={inputDisabled}
-                  />
-                </SignupInputFieldWrapper>
-                <DuplicationButton onClick={handleDuplicateId}>
-                  중복 확인
-                </DuplicationButton>
-              </SignupInputFieldWrapper>
-              {duplicationError && <ValidationMessage message={duplicationError} />}
-              {idError && <ValidationMessage message={idError} />}
-            </SignupInputFieldWrapper>
-
-            {/* {비밀번호 input field} */}
-            <SignupInputFieldWrapper dir="col" marginBottom="24px">
-              <InputField
-                hasLabel={true}
-                name="password"
-                inputRef={passwordRef}
-                isDataForm={true}
-                onBlur={handlePasswordValidation}
-              />
-              {pwError && <ValidationMessage message={pwError} />}
-            </SignupInputFieldWrapper>
-
-            {/* 비밀번호 확인 input field */}
-            <SignupInputFieldWrapper dir="col" marginBottom="24px">
-              <InputField
-                hasLabel={true}
-                name="confirmPassword"
-                inputRef={confirmPasswordRef}
-                onBlur={handleConfirmPassword}
-              />
-              {confirmPwError && <ValidationMessage message={confirmPwError} />}
-            </SignupInputFieldWrapper>
-
-            {/* 전화번호 인증 */}
-            <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
-
-            {/* 회원가입 button */}
-            <SignupInputFieldWrapper marginTop="21px">
-              <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
-            </SignupInputFieldWrapper>
-          </SignupFormContainer>
-        </>
+      {/* 인증 실패 Modal */}
+      {authModalOpen && (
+        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+          인증번호가 일치하지 않습니다.
+        </WebModal>
       )}
+
+      {/* 회원가입 실패 Modal */}
+      {signupModalOpen && (
+        <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
+          회원 정보를 확인해 주세요.
+        </WebModal>
+      )}
+
+      {/* 중복 확인 Modal */}
+      {duplicationModalOpen && (
+        <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
+          사용 가능한 아이디입니다.
+        </WebModal>
+      )}
+
+      <SignupFormContainer dir="col">
+        <FormTitle type="signup" />
+
+        {/* {아이디 input field} */}
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
+          <SignupInputFieldWrapper row="between" col="end">
+            <SignupInputFieldWrapper flexGrow="0.75" dir="col">
+              <InputField
+                hasLabel={true}
+                name="id"
+                inputRef={idRef}
+                isDataForm={true}
+                onBlur={handleIdValidation}
+                disabled={inputDisabled}
+              />
+            </SignupInputFieldWrapper>
+            <DuplicationButton onClick={handleDuplicateId}>중복 확인</DuplicationButton>
+          </SignupInputFieldWrapper>
+          {duplicationError && <ValidationMessage message={duplicationError} />}
+          {idError && <ValidationMessage message={idError} />}
+        </SignupInputFieldWrapper>
+
+        {/* {비밀번호 input field} */}
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
+          <InputField
+            hasLabel={true}
+            name="password"
+            inputRef={passwordRef}
+            isDataForm={true}
+            onBlur={handlePasswordValidation}
+          />
+          {pwError && <ValidationMessage message={pwError} />}
+        </SignupInputFieldWrapper>
+
+        {/* 비밀번호 확인 input field */}
+        <SignupInputFieldWrapper dir="col" marginBottom="24px">
+          <InputField
+            hasLabel={true}
+            name="confirmPassword"
+            inputRef={confirmPasswordRef}
+            onBlur={handleConfirmPassword}
+          />
+          {confirmPwError && <ValidationMessage message={confirmPwError} />}
+        </SignupInputFieldWrapper>
+
+        {/* 전화번호 인증 */}
+        <PhoneNumberAuth onVerificationResult={handlePhoneNumberAuth} />
+
+        {/* 회원가입 button */}
+        <SignupInputFieldWrapper marginTop="21px">
+          <Button type="bigBrown" message="회원가입" onClick={handleSignup} />
+        </SignupInputFieldWrapper>
+      </SignupFormContainer>
     </>
   );
 };

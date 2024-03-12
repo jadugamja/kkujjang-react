@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -47,11 +48,23 @@ const FindpwForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies] = useCookies(["smsAuthId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      // 비밀번호 변경 페이지로 이동
+      navigate(`/member/change-pw`);
+    } else {
+      setFindidModalOpen(true);
+    }
+  }, [response]);
 
   // 인증번호 검증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
@@ -76,18 +89,12 @@ const FindpwForm = () => {
       setApiConfig({
         method: "post",
         url: "/user/find/pw",
+        headers: { smsAuthId: cookies.smsAuthId },
         data: {
           username: id,
           phone: phoneNumber
         }
       });
-
-      if (response !== null) {
-        // 비밀번호 변경 페이지로 이동
-        navigate(`/member/change-pw`);
-      } else {
-        setFindidModalOpen(true);
-      }
     }
   };
 

@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
 import { isActiveAccountState } from "@/recoil/userState";
-import { isAnswerCompletedState } from "@/recoil/boardState";
+import { isAnswerCompletedState, itemIdState } from "@/recoil/boardState";
 
 const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
+  // 전역 상태로 id 관리
+  const setItemId = useSetRecoilState(itemIdState);
   const isAnswerCompleted = useRecoilValue(isAnswerCompletedState);
   const isActiveAccount = useRecoilValue(isActiveAccountState);
   const [header, setHeader] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   const getTitleText = (title) => {
     switch (title) {
@@ -58,6 +61,12 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
             return (
               <Th key={idx} width="7rem">
                 {title === "report" ? "신고 날짜" : "작성일"}
+              </Th>
+            );
+          case "created_at":
+            return (
+              <Th key={idx} width="7rem">
+                작성일
               </Th>
             );
           case "author":
@@ -112,7 +121,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
     <TableWrapper title={title}>
       <Table title={title} isHome={isHome}>
         <thead>
-          <ThWrapper fontSize={!isHome && "20px"}>{header}</ThWrapper>
+          <ThWrapper fontSize={!isHome ? "20px" : "18px"}>{header}</ThWrapper>
         </thead>
         <Tbody>
           {data.length === 0 ? (
@@ -122,9 +131,14 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
           ) : (
             data?.map((item) => (
               <Tr
-                fontSize={!isHome && "18px"}
+                fontSize={!isHome ? "20px" : "18px"}
                 key={item.id}
-                onClick={() => onSideOpen(item.id)}
+                onClick={() => {
+                  setItemId(item.id);
+                  onSideOpen(item.id);
+                  setSelectedId(item.id);
+                }}
+                isSelected={item.id === selectedId}
               >
                 {Object.entries(item)
                   ?.filter(([key]) => key !== "id")
@@ -237,10 +251,12 @@ const Tbody = styled.tbody`
 
 const Tr = styled.tr`
   height: 3.36rem;
-  /* height: 3.25rem; */
   line-height: 0.75rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray300};
   font-size: ${({ fontSize }) => fontSize || "16px"};
+  background-color: ${({ isSelected }) =>
+    isSelected ? "rgba(107, 107, 107, 0.1)" : "transparent"};
+  font-weight: ${({ isSelected }) => (isSelected ? "700" : "normal")};
 
   &:hover {
     cursor: pointer;

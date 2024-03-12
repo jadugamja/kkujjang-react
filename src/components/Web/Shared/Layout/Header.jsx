@@ -1,20 +1,43 @@
-import { useSetRecoilState } from "recoil";
 import { useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
+import useAxios from "@/hooks/useAxios";
 import { FlexBox } from "@/styles/FlexStyle";
 import HeaderTab from "./HeaderTab";
 import logo from "@/assets/images/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOut } from "@fortawesome/free-solid-svg-icons";
-import { userState } from "@/recoil/userState";
+import { faPlay, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { userInfoState } from "@/recoil/userState";
 
 const Header = ({ type = "default" }) => {
-  const setUser = useSetRecoilState(userState);
+  const setUser = useSetRecoilState(userInfoState);
   const [headerBgColor, setHeaderBgColor] = useState("transparent");
   const [headerShadow, setHeaderShadow] = useState();
+  const [cookies, , removeCookie] = useCookies(["sessionId"]);
+  const { response, loading, error, fetchData } = useAxios(
+    {
+      method: "get",
+      url: "/user/signout",
+      headers: {
+        sessionId: cookies.sessionId
+      }
+    },
+    false
+  );
+
+  useEffect(() => {
+    if (response !== null) {
+      setUser(null);
+      removeCookie("sessionId");
+      if (cookies?.userRole) {
+        removeCookie("userRole");
+      }
+    }
+  }, [response]);
 
   const checkScrollTop = () => {
     if (window.scrollY > 0) {
@@ -40,17 +63,19 @@ const Header = ({ type = "default" }) => {
         {(type === "detail" || type === "clearTab" || type === "guest") && (
           <HeaderTab type={type}></HeaderTab>
         )}
-        {type === "admin" ||
-          (type === "admin-detail" && (
-            <ButtonWrapper>
-              <Link to="/game">
-                <GameButton>게임 시작</GameButton>
-              </Link>
-              <LogoutButton onClick={() => setUser(null)}>
-                <LogoutIcon icon={faSignOut} />
-              </LogoutButton>
-            </ButtonWrapper>
-          ))}
+        {(type === "admin" || type === "admin-detail") && (
+          <ButtonWrapper>
+            <Link to="/game">
+              <GameButton>
+                <FontAwesomeIcon icon={faPlay} color="#FAC138" />
+                게임시작
+              </GameButton>
+            </Link>
+            <LogoutButton onClick={() => fetchData()}>
+              <LogoutIcon icon={faSignOut} />
+            </LogoutButton>
+          </ButtonWrapper>
+        )}
       </HeaderContent>
     </FixedHeader>
   );
@@ -112,35 +137,46 @@ const LogoImg = styled.img`
 const ButtonWrapper = styled(FlexBox)``;
 
 const GameButton = styled.button`
-  width: 14.5rem;
-  height: 5.25rem;
+  width: 11.8rem;
+  height: 4.5rem;
   font-family: "Pretendard Variable";
-  font-size: 36px;
+  font-size: 25px;
   font-weight: 800;
-  background-color: rgb(255, 253, 163);
-  border: 2px solid rgb(237, 234, 101);
-  color: ${({ theme }) => theme.colors.button.main.background};
+  background-color: #fce8b7;
+  border: 5px solid #ffd46c;
+  border-radius: 22px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  color: #403a34;
+
+  & > svg {
+    margin-right: 12px;
+  }
 
   &:hover {
-    background-color: #fffb6a;
+    background-color: rgb(255 211 104);
   }
 `;
 
 const LogoutButton = styled.button`
-  width: 4.75rem;
-  height: 5.25rem;
-  background-color: rgb(239, 239, 239);
-  border-top: 2px solid #ccc;
-  border-right: 2px solid #ccc;
-  border-bottom: 2px solid #ccc;
+  width: 5rem;
+  height: 4.5rem;
+  font-family: "Pretendard Variable";
+  font-size: 25px;
+  font-weight: 800;
+  background-color: rgb(219 219 219);
+  border: 5px solid rgb(187 187 187);
+  border-radius: 22px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 
   &:hover {
-    background-color: rgb(229, 228, 228);
+    background-color: rgb(207 207 207);
   }
 `;
 
 const LogoutIcon = styled(FontAwesomeIcon)`
-  font-size: 27px;
+  font-size: 25px;
   color: ${({ theme }) => theme.colors.text.main};
 `;
 

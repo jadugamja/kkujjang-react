@@ -64,8 +64,8 @@ const StyledTab = styled(FlexBox)`
   }
 
   &:hover {
-    cursor: ${({ hasOnClick }) => (hasOnClick ? "pointer" : "default")};
-    transform: ${({ hasOnClick }) => hasOnClick && "translateY(-2px)"};
+    cursor: ${({ onClick }) => (onClick ? "pointer" : "default")};
+    transform: ${({ onClick }) => onClick && "translateY(-2px)"};
   }
 `;
 
@@ -85,7 +85,7 @@ export const MainTab = ({ children, bgColor, color, onClick }) => (
     col="center"
     bgColor={bgColor}
     color={color}
-    hasOnClick={onClick}
+    onClick={onClick}
   >
     <TabSpan>{children}</TabSpan>
   </StyledTab>

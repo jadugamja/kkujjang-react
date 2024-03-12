@@ -51,7 +51,7 @@ const NoticeListContainer = () => {
   // 백엔드 코드, 수정될 부분
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage);
+      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
       setListData(response.list);
     } else {
       setLastPageIdx(1);

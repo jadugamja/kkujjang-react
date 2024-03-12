@@ -5,16 +5,19 @@ import styled from "styled-components";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+import { isActiveSideContentTypeState } from "@/recoil/displayState";
+import { remoteApiConfigState } from "@/recoil/boardState";
+import useAxios from "@/hooks/useAxios";
 import FlexBox from "@/styles/FlexStyle";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
-import useAxios from "@/hooks/useAxios";
-import { isActiveSideContentTypeState } from "@/recoil/displayState";
+import { POST_TITLE_REGEX } from "@/services/regexp";
 
 const MAX_IMAGE_COUNT = 3;
 
 const NoticeManagementCreate = () => {
   const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
   const [cookies] = useCookies(["sessionId"]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -45,6 +48,13 @@ const NoticeManagementCreate = () => {
   useEffect(() => {
     if (response !== null) {
       setIsActiveSideContentType(0);
+      setRemoteApiConfig({
+        method: "get",
+        url: "/notice/list",
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
     }
   }, [response]);
 
@@ -148,13 +158,17 @@ const NoticeManagementCreate = () => {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("files", images);
-    debugger;
+
+    if (!POST_TITLE_REGEX.test(title)) {
+      alert("제목을 올바르게 입력하세요.");
+      return;
+    }
+
     setApiConfig({
       method: "post",
       url: "/notice",
       headers: {
-        Authorization: `Bearer ${cookies.sessionId}`,
-        "Content-Type": "multipart/form-data"
+        sessionId: cookies.sessionId
       },
       data: formData
     });
@@ -225,19 +239,6 @@ const TitleInput = styled(Input)`
 
 export const EditorWrapper = styled.div`
   height: 33rem;
-
-  & .ql-editor {
-    font-size: ${({ theme }) => theme.fontSize.xxxs};
-  }
-
-  & .ql-snow .ql-picker {
-    font-size: 15px;
-  }
-
-  & .ql-snow .ql-editor .ql-syntax {
-    font-family: "Consolas";
-    font-size: 16px;
-  }
 
   & .ql-snow .ql-picker.ql-header .ql-picker-label::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item::before {

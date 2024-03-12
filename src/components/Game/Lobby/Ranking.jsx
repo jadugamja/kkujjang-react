@@ -25,7 +25,7 @@ const Ranking = () => {
       setLastPageIdx(Math.ceil(response.result?.length / pageSize));
       setRankData(pageData);
     }
-  }, [response, currPage]);
+  }, [response]);
 
   const getTopRankColor = (rank) => {
     if (rank === 1) {

@@ -62,7 +62,6 @@ const GlobalStyle = createGlobalStyle`
     src: url('/fonts/PollerOne-Regular.ttf');
   }
 
-
   * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -112,6 +111,20 @@ const GlobalStyle = createGlobalStyle`
 
   a:hover, button:hover, input[type="submit"] {
     cursor: pointer;
+  }
+
+  // text editor
+  .ql-editor {
+    font-size: 18px;
+  }
+
+  .ql-snow .ql-picker {
+    font-size: 15px;
+  }
+
+  .ql-snow .ql-editor .ql-syntax {
+    font-family: "Consolas";
+    font-size: 16px;
   }
 `;
 

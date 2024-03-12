@@ -23,7 +23,6 @@ export const FlexBox = styled.div`
   border-bottom: ${({ borderBottom }) => borderBottom};
   border-left: ${({ borderLeft }) => borderLeft};
   border-radius: ${({ borderRadius }) => borderRadius};
-  border-radius: ${({ borderRadius }) => borderRadius};
   z-index: ${({ zIndex }) => zIndex};
 
   ${({ clicky }) =>

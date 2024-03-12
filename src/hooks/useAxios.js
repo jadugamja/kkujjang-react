@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../services/const";
 
@@ -9,6 +9,7 @@ const instance = axios.create({
 
 // config = { method, url, headers, data }
 const useAxios = (config, executeOnMount = true) => {
+  const isDataFetched = useRef(false);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,8 +27,11 @@ const useAxios = (config, executeOnMount = true) => {
   }, [config]);
 
   useEffect(() => {
+    if (isDataFetched.current) return;
+
     if (executeOnMount) {
       fetchData();
+      isDataFetched.current = true;
     }
   }, [executeOnMount]);
 

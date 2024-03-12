@@ -45,7 +45,7 @@ const Title = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.xl};
   font-weight: 700;
   width: ${({ type }) => type !== "home" && "6.25rem"};
-  margin-left: ${({ type }) => (type !== "home" ? "24px" : "12px")};
+  margin-left: ${({ type }) => (type !== "home" ? "12px" : "12px")};
   margin-right: 12px;
   white-space: ${({ type }) => type !== "home" && "pre-wrap"};
   color: ${({ type }) => type !== "home" && "#000"};

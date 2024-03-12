@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -10,54 +10,25 @@ import { KAKAO_LOGIN_LINK } from "@/services/const";
 import useAxios from "@/hooks/useAxios";
 
 // ===== components & image import =====
-import { userState } from "@/recoil/userState";
+import { userInfoState } from "@/recoil/userState";
 import KakaoIcon from "@/assets/images/kakao.png";
 import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
-
-// ===== style ======
-const LoginFormFlexContainer = styled(FlexBox)`
-  height: ${(props) => props.height || "fit-content"};
-  margin-top: ${(props) => props.marginTop || null};
-  margin-bottom: ${(props) => props.marginBottom || null};
-  margin-left: ${(props) => props.marginLeft || null};
-  margin-right: ${(props) => props.marginRight || null};
-`;
-
-const KakaoLoginButton = styled.button`
-  height: 4.3rem;
-  background-color: ${({ theme }) => theme.colors.kakao};
-  color: #413014;
-`;
-
-const LinkSpan = styled.span`
-  color: ${(props) => props.color || "#929292"};
-  font-size: ${(props) => props.fontSize || "19px"};
-  font-weight: ${(props) => props.fontWeight || "600"};
-  margin-top: ${(props) => props.marginTop || null};
-  margin-bottom: ${(props) => props.marginBottom || null};
-  margin-left: ${(props) => props.marginLeft || null};
-  margin-right: ${(props) => props.marginRight || null};
-`;
-
-const KakaoIconImage = styled.img`
-  width: ${(props) => props.width || "24px"};
-  height: ${(props) => props.height || "24px"};
-  margin-left: 14px;
-  margin-right: 10px;
-`;
+import { getCurrentUserInfo } from "../../../services/user";
 
 // ===== component ======
 const LoginForm = () => {
   // === ref ===
   const idRef = useRef(""); // 아이디
   const passwordRef = useRef(""); // 비밀번호
+  const isDataFetched = useRef(false);
 
   // === state ===
+  const setUser = useSetRecoilState(userInfoState);
   const [loginError, setLoginError] = useState(""); // error state
-  const setUser = useSetRecoilState(userState);
+  const [username, setUsername] = useState(null);
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -77,13 +48,16 @@ const LoginForm = () => {
   useEffect(() => {
     if (response !== null) {
       setLoginError("");
-      // 전역 상태에 유저 정보 저장
-      setUser({
-        username: idRef.current.value,
-        role: response.authorityLevel === 100 ? "admin" : "member"
-      });
-      setCookie("sessionId", response.sessionId);
+      const userRole = response.authorityLevel === 100 ? "admin" : "member";
+      const expires = new Date();
+      expires.setDate(expires.getHours() + 12);
+      setCookie("sessionId", response.sessionId, { path: "/", expires });
+      setCookie("userRole", userRole, { path: "/", expires });
       navigate("/");
+
+      if (!isDataFetched.current) {
+        getUserInfo();
+      }
     } else {
       setLoginError(error);
     }
@@ -98,13 +72,14 @@ const LoginForm = () => {
 
     if (!idRegex.test(id) || !pwRegex.test(password)) {
       setLoginError("아이디 또는 비밀번호를 잘못 입력했습니다.");
+      return;
     } else {
       setLoginError("");
+      // setUsername(id);
       // 로그인 API 코드
       setApiConfig({
         method: "post",
         url: "/user/signin",
-        headers: { sessionId: cookies.sessionId },
         data: {
           username: id,
           password: password
@@ -117,6 +92,20 @@ const LoginForm = () => {
   const handleKakaoLogin = () => {
     window.location.href = KAKAO_LOGIN_LINK;
   };
+
+  const getUserInfo = useCallback(async () => {
+    const userInfo = await getCurrentUserInfo();
+
+    if (userInfo !== null) {
+      const updatedUserInfo = {
+        // username: username,
+        role: cookies.userRole,
+        ...userInfo
+      };
+      setUser(updatedUserInfo);
+      isDataFetched.current = true;
+    }
+  }, []);
 
   return (
     <>
@@ -179,5 +168,37 @@ const LoginForm = () => {
     </>
   );
 };
+
+// ===== style ======
+const LoginFormFlexContainer = styled(FlexBox)`
+  height: ${(props) => props.height || "fit-content"};
+  margin-top: ${(props) => props.marginTop || null};
+  margin-bottom: ${(props) => props.marginBottom || null};
+  margin-left: ${(props) => props.marginLeft || null};
+  margin-right: ${(props) => props.marginRight || null};
+`;
+
+const KakaoLoginButton = styled.button`
+  height: 4.3rem;
+  background-color: ${({ theme }) => theme.colors.kakao};
+  color: #413014;
+`;
+
+const LinkSpan = styled.span`
+  color: ${(props) => props.color || "#929292"};
+  font-size: ${(props) => props.fontSize || "19px"};
+  font-weight: ${(props) => props.fontWeight || "600"};
+  margin-top: ${(props) => props.marginTop || null};
+  margin-bottom: ${(props) => props.marginBottom || null};
+  margin-left: ${(props) => props.marginLeft || null};
+  margin-right: ${(props) => props.marginRight || null};
+`;
+
+const KakaoIconImage = styled.img`
+  width: ${(props) => props.width || "24px"};
+  height: ${(props) => props.height || "24px"};
+  margin-left: 14px;
+  margin-right: 10px;
+`;
 
 export default LoginForm;

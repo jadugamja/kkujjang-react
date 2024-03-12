@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { Link, useNavigate } from "react-router-dom";
 
-import { userState } from "../../recoil/userState";
+import { userInfoState } from "../../recoil/userState";
 import useAxios from "@/hooks/useAxios";
 import FlexBox from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
@@ -13,7 +13,7 @@ import Banner from "@/components/Web/Shared/Layout/Banner";
 import { Span } from "@/components/Game/Shared/Layout";
 
 const HomeUser = () => {
-  const user = useRecoilValue(userState);
+  const user = useRecoilValue(userInfoState);
   const isAuthenticated = user != null;
 
   const [listData, setListData] = useState([]);
@@ -29,25 +29,6 @@ const HomeUser = () => {
     } else {
       setListData([]);
     }
-
-    const list = [
-      {
-        title: "[안내] 이용 제한 조치/제재 및 이의 제기 관련 업무 안내",
-        createdAt: "2024-02-01",
-        id: 1
-      },
-      {
-        title: "[단어소식] 주제별 단어 검토 기준 (ver. 20240101)",
-        createdAt: "2024-01-20",
-        id: 2
-      },
-      {
-        title: "[모집공고] 끝짱 관리 팀원 모집 공고",
-        createdAt: "2021-09-01",
-        id: 3
-      }
-    ];
-    setListData(list);
   }, [response]);
 
   return (

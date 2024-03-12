@@ -27,6 +27,7 @@ import {
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
+  // const [tempRandomWord, setTempRandomWord] = useState("라이터");
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
@@ -38,6 +39,13 @@ const WordInput = ({ roundCount, roundTime }) => {
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
   const [timeoutIds, setTimeoutIds] = useState([]);
+
+  // 임시
+  // useEffect(() => {
+  //   if (tempRandomWord) {
+  //     setInitialCharacter(tempRandomWord[0]);
+  //   }
+  // }, [tempRandomWord]);
 
   // 3. 라운드 변경
   useEffect(() => {
@@ -75,7 +83,7 @@ const WordInput = ({ roundCount, roundTime }) => {
       const id = setTimeout(() => {
         setInitialCharacter(prevInitialCharacter);
         setIsFail(false);
-      }, 500);
+      }, 1000);
 
       setTimeoutIds([id]);
     });
@@ -145,8 +153,9 @@ const WordInput = ({ roundCount, roundTime }) => {
             <DisplayWord>{initialCharacter}</DisplayWord>
           )}
         </DisplayWordWrapper>
-        <TimerBar type="turn" totalTime={15} />
-        <TimerBar type="round" totalTime={roundTime} />
+        {/* 변경 必 */}
+        <TimerBar type="turn" totalTime={30} />
+        <TimerBar type="round" totalTime={150} />
       </WordTimerInfo>
       {/* Player Who is myTurn === true */}
       <InputWrapper>

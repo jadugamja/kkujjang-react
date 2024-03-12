@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -28,6 +29,7 @@ const InquiryManagementThread = ({ data }) => {
     file
   } = data;
 
+  const [cookies] = useCookies(["sessionId"]);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
   const [answer, setAnswer] = useState("");
@@ -111,7 +113,10 @@ const InquiryManagementThread = ({ data }) => {
       setApiConfig({
         method: "post",
         url: `/inquiry/${id}`,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          sessionId: cookies.sessionId,
+          "Content-Type": "multipart/form-data"
+        },
         data: formData
       });
 
@@ -150,7 +155,10 @@ const InquiryManagementThread = ({ data }) => {
       setApiConfig({
         method: "post",
         url: `/inquiry/${id}`,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          sessionId: cookies.sessionId,
+          "Content-Type": "multipart/form-data"
+        },
         data: formData
       });
 
@@ -239,11 +247,7 @@ const InquiryManagementThread = ({ data }) => {
             <AttachedImgWrapper>
               {answerFiles.length > 0 &&
                 answerFiles?.map((file, idx) => (
-                  <AttachedImg
-                    key={idx}
-                    src={URL.createObjectURL(file[idx])}
-                    alt="첨부파일"
-                  />
+                  <AttachedImg key={idx} src={URL.createObjectURL(file)} alt="첨부파일" />
                 ))}
             </AttachedImgWrapper>
 

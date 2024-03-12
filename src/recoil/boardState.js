@@ -10,3 +10,8 @@ export const itemIdState = atom({
   key: "itemIdState",
   default: null
 });
+
+export const remoteApiConfigState = atom({
+  key: "remoteApiConfigState",
+  default: null
+});

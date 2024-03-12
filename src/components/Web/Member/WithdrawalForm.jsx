@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -43,6 +44,9 @@ const WithdrawalForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies] = useCookies(["sessionId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
@@ -63,6 +67,7 @@ const WithdrawalForm = () => {
       // 회원 탈퇴 API 코드
       setApiConfig({
         method: "delete",
+        headers: { sessionId: cookies.sessionId },
         url: "/user"
       });
 

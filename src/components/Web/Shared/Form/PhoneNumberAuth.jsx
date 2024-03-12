@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
 import Timer from "./Timer";
@@ -33,6 +34,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
+  // === cookie ===
+  const [cookies, setCookie] = useCookies(["smsAuthId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
@@ -40,7 +44,8 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   }, [apiConfig]);
 
   useEffect(() => {
-    debugger;
+    const phoneNumber = numbersRef.map((ref) => ref.current.value).join("-");
+
     if (response === null) return;
 
     if (response !== null) {
@@ -49,6 +54,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
         setIsSentPhoneNumber(true);
         setValidMessage("인증번호가 발송되었습니다.");
         setInitialTime(180);
+        setCookie("smsAuthId", response.smsAuthId);
       } else {
         setIsVerifying(true);
         onVerificationResult(response, phoneNumber);
@@ -123,6 +129,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       setApiConfig({
         method: "post",
         url: "/user/auth-code/check",
+        headers: { smsAuthId: cookies.smsAuthId },
         data: {
           authNumber: verification,
           phoneNumber: phoneNumber

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -51,11 +52,24 @@ const ChangepwForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies, setCookie] = useCookies(["passwordChangeAuthId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setCookie("passwordChangeAuthId", response.passwordChangeAuthId);
+      // 로그인 페이지로 이동
+      navigate(`/member/login`);
+    } else {
+      setFailModalOpen(true);
+    }
+  }, [response]);
 
   // 비밀번호 유효성 검사
   const handlePasswordValidation = () => {
@@ -94,18 +108,12 @@ const ChangepwForm = () => {
       setApiConfig({
         method: "put",
         url: "/user/find/pw",
+        headers: { passwordChangeAuthId: cookies.passwordChangeAuthId },
         data: {
           newPassword: password,
           newPasswordAgain: confirmPassword
         }
       });
-
-      if (response !== null) {
-        // 로그인 페이지로 이동
-        navigate(`/member/login`);
-      } else {
-        setFailModalOpen(true);
-      }
     } else {
       setFailModalOpen(true);
     }

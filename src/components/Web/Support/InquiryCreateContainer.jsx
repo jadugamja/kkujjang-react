@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -65,6 +66,9 @@ const InquiryCreateContainer = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies] = useCookies(["sessionId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
@@ -105,7 +109,10 @@ const InquiryCreateContainer = () => {
         setApiConfig({
           method: "post",
           url: "/inquiry/new",
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            sessionId: cookies.sessionId
+          },
           data: formData
         });
 

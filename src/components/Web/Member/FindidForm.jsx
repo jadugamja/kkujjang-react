@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -68,11 +69,25 @@ const FindidForm = () => {
   // === navigate ===
   const navigate = useNavigate();
 
+  // === cookie ===
+  const [cookies] = useCookies(["smsAuthId"]);
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      const { id } = response;
+
+      setHasUserInfo(true);
+      setUserId(id);
+    } else {
+      setFindidModalOpen(true);
+    }
+  }, [response]);
 
   // 전화번호 인증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
@@ -96,21 +111,11 @@ const FindidForm = () => {
     setApiConfig({
       method: "post",
       url: "/user/find/id",
+      headers: { smsAuthId: cookies.smsAuthId },
       data: {
         phone: phoneNumber
       }
     });
-
-    if (response !== null) {
-      const { id } = response;
-
-      setHasUserInfo(true);
-      setUserId(id);
-    } else {
-      setFindidModalOpen(true);
-      // window.location.reload();
-      // console.log("아이디 조회");
-    }
   };
 
   // 로그인 페이지로 이동

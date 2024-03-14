@@ -6,6 +6,7 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
+  reconnection: false,
   extraHeaders: {
     // "my-header": "1234"
     sessionId: cookies.get("sessionId")
@@ -87,11 +88,15 @@ export const changeRoomConfig = (roomData, callBack) => {
 };
 
 // ====== 방 참가 ======
-export const joinRoom = (roomData, callBack) => {
-  client.emit("join room", roomData);
+export const joinRoom = (authorization, callBack, errorCallBack) => {
+  client.emit("join room", authorization);
   client.on("complete join room", () => {
     console.log("[log] complete join room... ");
     callBack();
+  });
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    errorCallBack(error);
   });
 };
 

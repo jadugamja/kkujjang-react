@@ -36,6 +36,8 @@ import AvatarCanvas from "../Shared/AvatarCanvas";
 import { createRoom, changeRoomConfig, leaveRoom } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
 import { updateCurrentUserAvatar } from "../../../services/user";
+import { SPECIAL_CHARACTERS_REGEX } from "../../../services/regexp";
+import { joinRoom } from "../../../services/socket";
 
 const GameModal = ({
   type,
@@ -135,14 +137,16 @@ const GameModal = ({
       setRoomInfo({
         title: "",
         password: "",
-        playerCount: 1,
-        maxPlayerCount: 8,
-        roundCount: 5,
-        roundTime: 90
+        currentUserCount: 1,
+        maxUserCount: 8,
+        maxRound: 5,
+        roundTimeLimit: 90,
+        state: "preparing"
       });
     }
   }, [roomId, roomInfo.id]);
 
+  // ====== avatar ======
   const onAvatarLeftClick = () => {
     const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
     setCurrAvatar(index);
@@ -164,11 +168,12 @@ const GameModal = ({
 
   const navigate = useNavigate();
 
+  // ====== room ======
   const onValidateChange = (e) => {
     const t = e.target;
     let v = t.value;
 
-    if (/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(v)) {
+    if (SPECIAL_CHARACTERS_REGEX.test(v)) {
       return;
     }
 
@@ -209,7 +214,6 @@ const GameModal = ({
         )
       );
     } else {
-      debugger;
       createRoom(roomInfo, (room) => {
         setRoomId(roomId);
         setRoomInfo(room);
@@ -230,21 +234,24 @@ const GameModal = ({
     navigate(`/game/${roomId}`);
   };
 
+  // ====== password ======
   const onCheckSamePassword = () => {
-    // 비밀번호 확인 요청 (body: roomId, password)
-
-    // if (!data.isCorrect)
-    {
-      setIsCorrectPassword(false);
-      return;
-    }
-    // else
-    {
-      setIsOpen(false);
-      navigate(`/game/${roomId}`);
-    }
+    const authorization = { roomId, password };
+    joinRoom(
+      authorization,
+      () => {
+        setIsOpen(false);
+        navigate(`/game/${roomId}`);
+      },
+      (error) => {
+        console.log(`[Error]: ${error}`);
+        setIsCorrectPassword(false);
+        return;
+      }
+    );
   };
 
+  // ====== exit ======
   const onExitRoom = () => {
     leaveRoom(roomId, userId, () => {
       setIsOpen(false);
@@ -410,9 +417,7 @@ const GameModal = ({
                 col="center"
                 margin={isTitleEmpty ? "22px 0 0" : "42px 0 0"}
               >
-                <GameModalButton type="submit" onClick={(e) => onValidateChange(e)}>
-                  확인
-                </GameModalButton>
+                <GameModalButton type="submit">확인</GameModalButton>
               </ButtonWrapper>
             </form>
           )}

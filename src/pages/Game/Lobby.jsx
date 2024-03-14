@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import io from "socket.io-client";
 import { Cookies } from "react-cookie";
@@ -39,66 +39,77 @@ const Lobby = () => {
   const cookies = new Cookies();
   const [socket, setSocket] = useState();
 
+  let onMount = false;
+
   useEffect(() => {
-    const clientSocket = io(SOCKET_URL, {
-      path: "/game/socket.io/",
-      extraHeaders: {
-        // "my-header": "1234"
-        sessionId: cookies.get("sessionId")
+    if (!onMount) {
+      debugger;
+      let isErrorOccured = false;
+
+      const clientSocket = io(SOCKET_URL, {
+        path: "/game/socket.io/",
+        reconnection: false,
+        extraHeaders: {
+          // "my-header": "1234"
+          sessionId: cookies.get("sessionId")
+        }
+      });
+
+      clientSocket.on("connect", () => {
+        console.log("[log] Connect to the Server...");
+      });
+
+      clientSocket.on("error", (error) => {
+        console.log(`[Error]: ${error}`);
+        isErrorOccured = true;
+        setModalType("error");
+        setErrorMessage(error);
+        setIsModalOpen(true);
+        return;
+      });
+
+      clientSocket.emit("load room list");
+
+      clientSocket.on("complete load room list", (roomList) => {
+        console.log("[log] Complete Load Room List: ", roomList);
+        setRooms(roomList);
+      });
+
+      clientSocket.on("load new room", (newRoom) => {
+        console.log("[log] Load New Room: ", newRoom);
+        setRooms((prev) => [newRoom, ...prev]);
+      });
+
+      clientSocket.on("destroy room", (roomId) => {
+        console.log("[log] Destroy Room: ", roomId);
+        setRooms((prev) => prev.filter((room) => room.id !== roomId));
+      });
+
+      clientSocket.on("update room member count", (data) => {
+        console.log("[log] update room member count: ", data);
+        const { roomId, currentPlayerCount } = data;
+        setRooms((prev) =>
+          prev.map((room) =>
+            room.id === roomId ? { ...room, currentPlayerCount } : room
+          )
+        );
+      });
+
+      clientSocket.on("update room config", (newRoom) => {
+        console.log("[log] update room config: ", newRoom);
+        setRooms((prev) =>
+          prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
+        );
+      });
+
+      setSocket(clientSocket);
+
+      if (!isErrorOccured) {
+        // getUserInfo();
       }
-    });
+    }
 
-    let isErrorOccured = false;
-
-    clientSocket.on("connect", () => {
-      console.log("[log] Connect to the Server...");
-    });
-
-    clientSocket.on("error", (error) => {
-      console.log(`[Error]: ${error}`);
-      isErrorOccured = true;
-      setModalType("error");
-      setErrorMessage(error);
-      setIsModalOpen(true);
-      return;
-    });
-
-    clientSocket.emit("load room list", {}, (res) => {
-      if (!isErrorOccured) getUserInfo();
-      console.log(`[log] load room list: ${res}`);
-    });
-
-    clientSocket.on("complete load room list", (roomList) => {
-      console.log("[log] Complete Load Room List: ", roomList);
-      setRooms(roomList);
-    });
-
-    clientSocket.on("load new room", (newRoom) => {
-      console.log("[log] Load New Room: ", newRoom);
-      setRooms((prev) => [newRoom, ...prev]);
-    });
-
-    clientSocket.on("destroy room", (roomId) => {
-      console.log("[log] Destroy Room: ", roomId);
-      setRooms((prev) => prev.filter((room) => room.id !== roomId));
-    });
-
-    clientSocket.on("update room member count", (data) => {
-      console.log("[log] update room member count: ", data);
-      const { roomId, currentPlayerCount } = data;
-      setRooms((prev) =>
-        prev.map((room) => (room.id === roomId ? { ...room, currentPlayerCount } : room))
-      );
-    });
-
-    clientSocket.on("update room config", (newRoom) => {
-      console.log("[log] update room config: ", newRoom);
-      setRooms((prev) =>
-        prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
-      );
-    });
-
-    setSocket(clientSocket);
+    onMount = true;
   }, []);
 
   useEffect(() => {
@@ -124,7 +135,7 @@ const Lobby = () => {
 
   return (
     <ContentWrapper row="center" col="center">
-      {isModalOpen && (
+      {/*isModalOpen && (
         <Modal
           type={modalType}
           isOpen={isModalOpen}
@@ -133,7 +144,7 @@ const Lobby = () => {
         >
           {modalType === "error" && errorMessage}
         </Modal>
-      )}
+      )*/}
       <WideContent dir="col">
         <GameHeader />
         <Main>

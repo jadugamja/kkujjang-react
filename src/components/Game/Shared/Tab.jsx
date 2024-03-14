@@ -80,13 +80,7 @@ const TabSpan = styled.span`
 
 // ========= Main 탭 =========
 export const MainTab = ({ children, bgColor, color, onClick }) => (
-  <StyledTab
-    row="center"
-    col="center"
-    bgColor={bgColor}
-    color={color}
-    onClick={onClick}
-  >
+  <StyledTab row="center" col="center" bgColor={bgColor} color={color} onClick={onClick}>
     <TabSpan>{children}</TabSpan>
   </StyledTab>
 );

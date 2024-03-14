@@ -50,7 +50,6 @@ const GameRoom = () => {
   useEffect(() => {
     // 방 조회
     loadRoom(roomId, (room) => {
-      debugger;
       setRoomInfo(room);
       setIsPlaying(room.state === "playing" ? true : false);
 
@@ -107,15 +106,15 @@ const GameRoom = () => {
     fetchData();
   }, [apiConfig]);
 
-  useEffect(() => {
-    // 유저 정보
-    waitingPlayerList.forEach((user) => {
-      setApiConfig({
-        method: "get",
-        url: `/user/${user?.username}`
-      });
-    });
-  }, [waitingPlayerList]);
+  // useEffect(() => {
+  //   // 유저 정보
+  //   waitingPlayerList.forEach((user) => {
+  //     setApiConfig({
+  //       method: "get",
+  //       url: `/user/${user?.username}`
+  //     });
+  //   });
+  // }, [waitingPlayerList]);
 
   useEffect(() => {
     if (response !== null) {

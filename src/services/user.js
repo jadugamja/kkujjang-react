@@ -16,10 +16,10 @@ export const getCurrentUserInfo = async () => {
   return null;
 };
 
-export const updateCurrentUserAvatar = async (accIdx, nickname) => {
+export const updateCurrentUserAvatar = async (accIdx, nickname = "테스트") => {
   const res = await axios.put(`${BASE_URL}/user`, {
     headers: { sessionId: cookies.get("sessionId") },
-    body: { avatarAccessoryIndex: accIdx, nickname: nickname }
+    data: { avatarAccessoryIndex: accIdx, nickname: nickname }
   });
 
   if (res.statusText === "OK") {

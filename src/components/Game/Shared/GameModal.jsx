@@ -33,11 +33,10 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
-import { createRoom, changeRoomConfig, leaveRoom } from "@/services/socket";
+import { createRoom, changeRoomConfig, leaveRoom, joinRoom } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
-import { updateCurrentUserAvatar } from "../../../services/user";
-import { SPECIAL_CHARACTERS_REGEX } from "../../../services/regexp";
-import { joinRoom } from "../../../services/socket";
+import { updateCurrentUserAvatar } from "@/services/user";
+import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
 
 const GameModal = ({
   type,

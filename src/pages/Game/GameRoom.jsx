@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -19,117 +20,98 @@ import {
   onUserJoinRoom,
   onUserLeaveRoom
 } from "../../services/socket";
-import { waitingPlayerListState } from "../../recoil/userState";
+import { waitingPlayerListState } from "@/recoil/userState";
+import { roomInfoState } from "@/recoil/roomState";
 import Modal from "../../components/Game/Shared/GameModal";
-import useAxios from "@/hooks/useAxios";
+import { getWaitingPlayerInfoByUserId } from "@/services/user";
 
 const GameRoom = () => {
   const userName = useRecoilValue(userNameState);
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  const [roomInfo, setRoomInfo] = useState({});
+  // const [roomInfo, setRoomInfo] = useState({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [apiConfig, setApiConfig] = useState(null);
-  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   // 경로의 roomId값 추출
-  const { roomId } = useParams();
+  // const { roomId } = useParams();
+  const roomId = "1234";
 
   useEffect(() => {
-    initSocket((error) => {
-      setErrorMessage(error);
-      setIsModalOpen(true);
-    });
+    setWaitingPlayerList(roomInfo?.userList);
+    setIsPlaying(roomInfo?.state === "playing" ? true : false);
+  }, [roomInfo]);
+
+  // useEffect(() => {
+  //   initSocket((error) => {
+  //     setErrorMessage(error);
+  //     setIsModalOpen(true);
+  //   });
+
+  //   return () => disconnectSocket();
+  // }, []);
+
+  useEffect(() => {
+    // setWaitingPlayerList(roomInfo?.userList);
+    // setIsPlaying(roomInfo?.state === "playing" ? true : false);
+
+    // 방 조회
+    // loadRoom((room) => {
+    //   setRoomInfo(room);
+    //   setIsPlaying(room.state === "playing" ? true : false);
+
+    //   // 방장
+    //   setWaitingPlayerList((prev) => [
+    //     { userId: room.roomOwnerUserId, isHost: true, isReady: true },
+    //     ...prev
+    //   ]);
+
+    //   // 방장이 아닌 플레이어
+    //   room.userList?.forEach((user) => {
+    //     setWaitingPlayerList((prev) => [...prev, user]);
+    //   });
+    // });
+
+    // // 타 플레이어 입장 알림
+    // onUserJoinRoom((user) => {
+    //   setWaitingPlayerList((prev) => [...prev, user]);
+    // });
+
+    // // 타 플레이어 퇴장 알림
+    // onUserLeaveRoom((userId) => {
+    //   setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
+    // });
+
+    // // 방장 변경
+    // onChangeRoomOwner((newOwnerIdx) => {
+    //   setWaitingPlayerList((prev) => {
+    //     const updatedList = [...prev];
+    //     updatedList[newOwnerIdx].isHost = true;
+    //     return updatedList;
+    //   });
+    // });
 
     return () => disconnectSocket();
   }, []);
 
   useEffect(() => {
-    // 방 조회
-    loadRoom((room) => {
-      setRoomInfo(room);
-      setIsPlaying(room.state === "playing" ? true : false);
-
-      // 방장
-      setWaitingPlayerList((prev) => [
-        { userId: room.roomOwnerUserId, isHost: true, isReady: true },
-        ...prev
-      ]);
-
-      // 방장이 아닌 플레이어
-      room.userList?.forEach((user) => {
-        setWaitingPlayerList((prev) => [...prev, user]);
-      });
-    });
-
-    // 타 플레이어 입장 알림
-    onUserJoinRoom((user) => {
-      setWaitingPlayerList((prev) => [...prev, user]);
-    });
-
-    // 타 플레이어 퇴장 알림
-    onUserLeaveRoom((userId) => {
-      setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
-    });
-
-    // 방장 변경
-    onChangeRoomOwner((newOwnerIdx) => {
-      setWaitingPlayerList((prev) => {
-        const updatedList = [...prev];
-        updatedList[newOwnerIdx].isHost = true;
-        return updatedList;
-      });
-    });
-
-    // 임시
-    const tmp = {
-      id: roomId,
-      title: "테스트123",
-      password: "", // 비밀번호 X
-      currentUserCount: 1,
-      maxUserCount: 8,
-      maxRound: 5,
-      roundTimeLimit: 90,
-      roomOwnerUserId: "abcd1234",
-      state: "playing"
-    };
-
-    setRoomInfo(tmp);
-    setIsPlaying(tmp.state === "playing" ? true : false);
-  }, []);
-
-  useEffect(() => {
-    if (apiConfig === null) return;
-    fetchData();
-  }, [apiConfig]);
-
-  // useEffect(() => {
-  //   // 유저 정보
-  //   waitingPlayerList.forEach((user) => {
-  //     setApiConfig({
-  //       method: "get",
-  //       url: `/user/${user?.username}`
-  //     });
-  //   });
-  // }, [waitingPlayerList]);
-
-  useEffect(() => {
-    if (response !== null) {
-      setWaitingPlayerList((prev) => {
-        const userIndex = prev.findIndex(
-          (user) => user.userId === apiConfig.url.split("/").pop()
+    if (waitingPlayerList?.length !== 0 && !isDataFetched) {
+      const fetchAllUsers = async () => {
+        const updatedPlayerList = await Promise.all(
+          waitingPlayerList.map(async (user) => {
+            const response = await getWaitingPlayerInfoByUserId(user.userId);
+            return { ...user, ...response };
+          })
         );
-        if (userIndex !== -1) {
-          const updatedUser = { ...prev[userIndex], ...response };
-          return [...prev.slice(0, userIndex), updatedUser, ...prev.slice(userIndex + 1)];
-        }
-        return prev;
-      });
+        setWaitingPlayerList(updatedPlayerList);
+        setIsDataFetched(true);
+      };
+      fetchAllUsers();
     }
-  }, [response]);
+  }, [waitingPlayerList]);
 
   return (
     <ContentWrapper row="center" col="center">

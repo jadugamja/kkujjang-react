@@ -69,7 +69,7 @@ const TitleBar = ({
         <TitleRightSideWrapper left="28px">
           <span>{`참여자 ${currentUserCount}/${maxUserCount}`}</span>
           <span>{`라운드 ${maxRound}`}</span>
-          <span>{`${roundTimeLimit}초`}</span>
+          <span>{`${roundTimeLimit / 1000}초`}</span>
         </TitleRightSideWrapper>
       )}
     </StyledTitleBar>

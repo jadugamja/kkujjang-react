@@ -6,7 +6,9 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
+  // transports: ["websocket"],
   reconnection: false,
+  sid: cookies.get("sessionId"),
   extraHeaders: {
     // "my-header": "1234"
     sessionId: cookies.get("sessionId")
@@ -68,17 +70,16 @@ export const onUpdateRoomConfig = (callBack) => {
 };
 
 // ====== 방 생성 ======
-export const createRoom = (roomData, callBack, errorCallBack) => {
+export const createRoom = (roomData, callBack) => {
   client.emit("create room", roomData);
 
-  client.on("complete create room", (room) => {
-    console.log("[log] complete create room: ", room);
-    callBack(room);
+  client.on("complete create room", () => {
+    console.log("[log] complete create room...");
+    callBack();
   });
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    errorCallBack(error);
   });
 };
 
@@ -116,21 +117,32 @@ export const onUserJoinRoom = (callBack) => {
 };
 
 // ====== 방 조회 ======
-export const loadRoom = (callBack) => {
+export const loadRoom = (callBack, errorCallBack) => {
   client.emit("load room");
 
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);
     callBack(room);
   });
+
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
+  });
 };
 
 // ====== 방 퇴장 ======
-export const leaveRoom = (roomId, callBack) => {
-  client.emit("leave room", roomId);
+export const leaveRoom = (callBack, errorCallBack) => {
+  client.emit("leave room");
+
   client.on("complete leave room", () => {
     console.log("[log] complete leave room... ");
     callBack();
+  });
+
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 

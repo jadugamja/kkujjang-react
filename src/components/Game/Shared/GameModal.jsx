@@ -37,6 +37,7 @@ import { createRoom, changeRoomConfig, leaveRoom, joinRoom } from "@/services/so
 import useAxios from "@/hooks/useAxios";
 import { updateCurrentUserAvatar } from "@/services/user";
 import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
+import { loadRoom } from "../../../services/socket";
 
 const GameModal = ({
   type,
@@ -47,8 +48,12 @@ const GameModal = ({
   height = "",
   children
 }) => {
+  // ====== room ======
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
+  const setRoomId = useSetRecoilState(roomIdState);
+  const [roomNumber, setRoomNumber] = useState(null);
+
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
   const [fxCurrVolume, setFxCurrVolume] = useRecoilState(fxVolumeState);
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
@@ -58,7 +63,6 @@ const GameModal = ({
   const [currAvatar, setCurrAvatar] = useState(0);
   const [user, setUser] = useRecoilState(userInfoState);
   const userId = useRecoilValue(userNameState);
-  const setRoomId = useSetRecoilState(roomIdState);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -117,6 +121,7 @@ const GameModal = ({
     "fx2"
   ];
 
+  // roomInfo -> roomInfoList
   useEffect(() => {
     if (roomInfo.id) {
       if (roomInfoList.some((room) => room.id === roomInfo.id)) {
@@ -132,7 +137,14 @@ const GameModal = ({
   }, [roomInfo]);
 
   useEffect(() => {
-    if (roomId !== roomInfo.id) {
+    if (roomNumber !== null) {
+      setIsOpen(false);
+      navigate(`/game/${roomNumber}`);
+    }
+  }, [roomNumber]);
+
+  useEffect(() => {
+    if (roomId && roomId !== roomInfo.id) {
       setRoomInfo({
         title: "",
         password: "",
@@ -213,30 +225,14 @@ const GameModal = ({
         )
       );
     } else {
-      createRoom(
-        roomInfo,
-        (room) => {
-          setRoomId(roomId);
+      createRoom(roomInfo, () => {
+        loadRoom((room) => {
+          setRoomNumber(room.roomNumber);
+          setRoomId(room.id);
           setRoomInfo(room);
-        },
-        (error) => {
-          console.log(`[Error]: ${error}`);
-        }
-      );
-
-      // setWaitingPlayerList();
-
-      // (최초 방 생성 시, 생성한 플레이어의 username을 같이 보내어 roomInfo에 hostId를 같이 저장해둬야 함)
-      setRoomId(roomId);
-      setRoomInfo((prev) => ({
-        ...prev,
-        id: roomId
-      }));
-      setRoomInfoList((prev) => [...prev, { ...roomInfo, id: roomId }]);
+        });
+      });
     }
-
-    setIsOpen(false);
-    navigate(`/game/${roomId}`);
   };
 
   // ====== password ======
@@ -258,7 +254,7 @@ const GameModal = ({
 
   // ====== exit ======
   const onExitRoom = () => {
-    leaveRoom(roomId, userId, () => {
+    leaveRoom(() => {
       setIsOpen(false);
       navigate("/game");
     });
@@ -408,10 +404,10 @@ const GameModal = ({
                         value={roomInfo?.roundTimeLimit}
                         onChange={(e) => onValidateChange(e)}
                       >
-                        <option value="60">60초</option>
-                        <option value="90">90초</option>
-                        <option value="120">120초</option>
-                        <option value="150">150초</option>
+                        <option value={60000}>60초</option>
+                        <option value={90000}>90초</option>
+                        <option value={120000}>120초</option>
+                        <option value={150000}>150초</option>
                       </GameModalSelect>
                     </TdContent>
                   </Tr>

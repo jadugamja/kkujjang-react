@@ -10,19 +10,7 @@ import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
 const WaitingPlayerList = ({ info }) => {
-  const [playerList, setPlayerList] = useRecoilState(waitingPlayerListState);
-
-  useEffect(() => {
-    // 임시 플레이어 배열
-    const players = [
-      { id: 1, isHost: true, isReady: true, nickname: "닉네임#1", level: 3 },
-      { id: 2, isHost: false, isReady: true, nickname: "닉네임#2", level: 2 },
-      { id: 3, isHost: false, isReady: false, nickname: "닉네임#3", level: 1 },
-      { id: 4, isHost: false, isReady: false, nickname: "닉네임#4", level: 2 },
-      { id: 5, isHost: false, isReady: true, nickname: "닉네임#5", level: 3 }
-    ];
-    setPlayerList(players);
-  }, []);
+  const playerList = useRecoilValue(waitingPlayerListState);
 
   return (
     <GridBox items="4" gap="10px" margin="10px 4px 6px">

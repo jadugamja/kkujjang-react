@@ -12,9 +12,17 @@ const TitleBar = ({
   showOpenRoom,
   setShowOpenRoom
 }) => {
-  const { id, title, currentUserCount, maxUserCount, maxRound, roundTimeLimit } = info;
+  const {
+    roomNumber,
+    id,
+    title,
+    currentUserCount,
+    maxUserCount,
+    maxRound,
+    roundTimeLimit
+  } = info;
   return (
-    <StyledTitleBar row="between">
+    <StyledTitleBar row="between" key={id && id}>
       {/* Left */}
       {type === "list" && (
         <div>
@@ -34,7 +42,7 @@ const TitleBar = ({
           <span>프로필</span>
         </div>
       )}
-      {type === "room" && <span>{`[${id}] ${title}`}</span>}
+      {type === "room" && <span>{`[${roomNumber}] ${title}`}</span>}
 
       {/* Right */}
       {type === "list" && (

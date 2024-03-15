@@ -16,13 +16,6 @@ const WaitingContainer = ({ roomInfo }) => {
       <Wrapper>
         <Profile />
         <Chat />
-        {/* 
-        <ButtonWrapper dir="col" row="center" col="center">
-            <div>
-              <ReadyButton>준비</ReadyButton>
-            </div>
-          </ButtonWrapper> 
-          */}
       </Wrapper>
     </BodyWrapper>
   );

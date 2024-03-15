@@ -213,10 +213,16 @@ const GameModal = ({
         )
       );
     } else {
-      createRoom(roomInfo, (room) => {
-        setRoomId(roomId);
-        setRoomInfo(room);
-      });
+      createRoom(
+        roomInfo,
+        (room) => {
+          setRoomId(roomId);
+          setRoomInfo(room);
+        },
+        (error) => {
+          console.log(`[Error]: ${error}`);
+        }
+      );
 
       // setWaitingPlayerList();
 

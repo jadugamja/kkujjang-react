@@ -5,7 +5,6 @@ import NotFound from "./pages/NotFound";
 const Home = lazy(() => import("./pages/Web/Home"));
 const Signup = lazy(() => import("./pages/Web/Member/Signup"));
 const Find = lazy(() => import("./pages/Web/Member/Find"));
-const ChangePw = lazy(() => import("./pages/Web/Member/ChangePw"));
 const Login = lazy(() => import("./pages/Web/Member/Login"));
 const Redirection = lazy(() => import("./pages/Web/Member/Redirection"));
 const Withdrawal = lazy(() => import("./pages/Web/Member/Withdrawal"));
@@ -29,7 +28,6 @@ const App = () => {
           <Route exact path="/" element={<Home />}>
             <Route path="member/join" element={<Signup />} />
             <Route path="member/find" element={<Find />} />
-            <Route path="member/change-pw" element={<ChangePw />} />
             <Route path="member/login" element={<Login />} />
             <Route path="member/out" element={<Withdrawal />} />
             <Route path="member/myInfo" element={<MyInfo />} />

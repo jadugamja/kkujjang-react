@@ -49,7 +49,7 @@ const GameRoom = () => {
 
   useEffect(() => {
     // 방 조회
-    loadRoom(roomId, (room) => {
+    loadRoom((room) => {
       setRoomInfo(room);
       setIsPlaying(room.state === "playing" ? true : false);
 

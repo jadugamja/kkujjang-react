@@ -120,6 +120,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
 
       onUserJoinRoom((userId) => {
         // 방에 참가한 사용자의 userId를 배열에 추가
+        debugger;
         console.log(userId);
       });
       // setRoomId(pickedRoom.id);

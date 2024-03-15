@@ -68,12 +68,17 @@ export const onUpdateRoomConfig = (callBack) => {
 };
 
 // ====== 방 생성 ======
-export const createRoom = (roomData, callBack) => {
+export const createRoom = (roomData, callBack, errorCallBack) => {
   client.emit("create room", roomData);
 
   client.on("complete create room", (room) => {
     console.log("[log] complete create room: ", room);
     callBack(room);
+  });
+
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    errorCallBack(error);
   });
 };
 
@@ -90,10 +95,12 @@ export const changeRoomConfig = (roomData, callBack) => {
 // ====== 방 참가 ======
 export const joinRoom = (authorization, callBack, errorCallBack) => {
   client.emit("join room", authorization);
+
   client.on("complete join room", () => {
     console.log("[log] complete join room... ");
     callBack();
   });
+
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     errorCallBack(error);
@@ -109,8 +116,8 @@ export const onUserJoinRoom = (callBack) => {
 };
 
 // ====== 방 조회 ======
-export const loadRoom = (roomId, callBack) => {
-  client.emit("load room", roomId);
+export const loadRoom = (callBack) => {
+  client.emit("load room");
 
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);

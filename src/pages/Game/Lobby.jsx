@@ -43,14 +43,12 @@ const Lobby = () => {
 
   useEffect(() => {
     if (!onMount) {
-      debugger;
       let isErrorOccured = false;
 
       const clientSocket = io(SOCKET_URL, {
         path: "/game/socket.io/",
         reconnection: false,
         extraHeaders: {
-          // "my-header": "1234"
           sessionId: cookies.get("sessionId")
         }
       });
@@ -135,7 +133,7 @@ const Lobby = () => {
 
   return (
     <ContentWrapper row="center" col="center">
-      {/*isModalOpen && (
+      {isModalOpen && (
         <Modal
           type={modalType}
           isOpen={isModalOpen}
@@ -144,7 +142,7 @@ const Lobby = () => {
         >
           {modalType === "error" && errorMessage}
         </Modal>
-      )*/}
+      )}
       <WideContent dir="col">
         <GameHeader />
         <Main>

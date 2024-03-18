@@ -61,7 +61,6 @@ const GameRoom = () => {
     setWaitingPlayerList(roomInfo?.userList);
     setIsPlaying(roomInfo?.state === "playing" ? true : false);
 
-    debugger;
     //   initSocket(
     //     () => {
 
@@ -77,19 +76,14 @@ const GameRoom = () => {
       setWaitingPlayerList((prev) =>
         prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
       );
-
-      onChangeRoomOwner((newOwnerIdx) => {
-        setWaitingPlayerList?.map((idx) => {
-          newOwnerIdx === idx ? (idx.isHost = true) : (idx.isHost = false);
-        });
-      });
     });
 
     // 방장 변경
     onChangeRoomOwner((newOwnerIdx) => {
       setWaitingPlayerList((prev) => {
-        const updatedList = [...prev];
-        updatedList[newOwnerIdx].isHost = true;
+        const updatedList = prev.map((user, idx) => {
+          return { ...user, isHost: idx === newOwnerIdx };
+        });
         return updatedList;
       });
     });

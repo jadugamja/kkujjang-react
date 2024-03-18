@@ -30,6 +30,7 @@ export const initSocket = (callBack, errorCallBack) => {
 
 // ====== 방 목록 조회 ======
 export const loadRoomList = (callBack) => {
+  debugger;
   client.emit("load room list");
 
   client.on("complete load room list", (roomList) => {
@@ -155,7 +156,7 @@ export const leaveRoom = (callBack, errorCallBack) => {
 // 다른 유저 퇴장 알림
 export const onUserLeaveRoom = (callBack) => {
   client.on("some user leave room", (roomStatus) => {
-    console.log("[log] some user leave room, userId: ", userId);
+    console.log("[log] some user leave room, userId: ", roomStatus);
     callBack(roomStatus);
   });
 };

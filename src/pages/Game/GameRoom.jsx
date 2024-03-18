@@ -64,9 +64,10 @@ const GameRoom = () => {
     debugger;
     //   initSocket(
     //     () => {
+
     // 타 플레이어 입장 알림
-    onUserJoinRoom((user) => {
-      setWaitingPlayerList((prev) => [...prev, user]);
+    onUserJoinRoom((userId) => {
+      getUserInfoByUserId(userId);
     });
 
     // 타 플레이어 퇴장 알림
@@ -129,6 +130,14 @@ const GameRoom = () => {
     }
   }, [waitingPlayerList]);
 
+  const getUserInfoByUserId = async (userId) => {
+    const userInfo = await getWaitingPlayerInfoByUserId(userId);
+    return setWaitingPlayerList((prev) => [
+      ...prev,
+      { userId, isHost: false, isReady: false, ...userInfo }
+    ]);
+  };
+
   return (
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
@@ -150,7 +159,7 @@ const GameRoom = () => {
                       waitingPlayerList.find((_user) => _user.userId === user?.userId)
                         ?.isHost
                     }
-                    roomId={roomInfo.id}
+                    roomId={roomInfo?.id}
                     setIsPlaying={setIsPlaying}
                   />
                 )}

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useLocation } from "react-router-dom";
 import { avatarUrlState } from "../../recoil/userState";
 import io from "socket.io-client";
 import { Cookies } from "react-cookie";
 import { SOCKET_URL } from "@/services/const";
 
+import { roomInfoState } from "@/recoil/roomState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
@@ -32,19 +34,24 @@ import { getCurrentUserInfo } from "@/services/user";
 
 const Lobby = () => {
   const [rooms, setRooms] = useState([]);
+  const setRoomInfo = useSetRecoilState(roomInfoState);
   const [modalType, setModalType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [socket, setSocket] = useState();
 
+  const location = useLocation();
+  const path = location.pathname;
+
   let isMounted = false;
 
   useEffect(() => {
-    if (!isMounted) {
+    if (!isMounted && path === "/game") {
       loadRoomList(setRooms);
 
       onLoadNewRoom((newRoom) => {
         setRooms((prev) => [newRoom, ...prev]);
+        setRoomInfo(null);
       });
 
       onDestroyRoom((roomId) => {
@@ -65,6 +72,7 @@ const Lobby = () => {
           prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
         );
       });
+
       //   },
       //   (error) => {
       //     setModalType("error");

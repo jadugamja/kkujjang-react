@@ -34,11 +34,16 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
-import { createRoom, changeRoomConfig, leaveRoom, joinRoom } from "@/services/socket";
+import {
+  createRoom,
+  changeRoomConfig,
+  leaveRoom,
+  joinRoom,
+  loadRoom
+} from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
 import { updateCurrentUserAvatar } from "@/services/user";
 import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
-import { loadRoom } from "../../../services/socket";
 
 const GameModal = ({
   type,
@@ -124,9 +129,21 @@ const GameModal = ({
     "fx2"
   ];
 
+  useEffect(() => {
+    if (!roomId) {
+      setRoomInfo({
+        title: "",
+        password: "",
+        maxUserCount: 8,
+        maxRound: 5,
+        roundTimeLimit: 90000
+      });
+    }
+  }, []);
+
   // roomInfo -> roomInfoList
   useEffect(() => {
-    if (roomInfo.id) {
+    if (roomInfo?.id) {
       if (roomInfoList.some((room) => room.id === roomInfo.id)) {
         // 방 정보 PUT API 호출
         setRoomInfoList((prev) =>
@@ -147,7 +164,7 @@ const GameModal = ({
   }, [roomNumber]);
 
   useEffect(() => {
-    if (roomId && roomId !== roomInfo.id) {
+    if (roomId && roomId !== roomInfo?.id) {
       setRoomInfo({
         title: "",
         password: "",
@@ -158,7 +175,7 @@ const GameModal = ({
         state: "preparing"
       });
     }
-  }, [roomId, roomInfo.id]);
+  }, [roomId, roomInfo?.id]);
 
   // ====== avatar ======
   const onAvatarLeftClick = () => {

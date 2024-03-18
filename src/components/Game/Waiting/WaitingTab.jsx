@@ -60,7 +60,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   };
 
   const onReadyToggle = () => {
-    switchReadyState({ state: !isReady }, (data) => {
+    switchReadyState(!isReady, (data) => {
       const { index, state } = data;
       setIsReady(state);
       setWaitingPlayerList((prevList) => {

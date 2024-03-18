@@ -3,7 +3,7 @@ import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { userNameState } from "@/recoil/userState";
+import { userInfoState, userNameState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { MainContentWrapper, Wrapper } from "@/components/Game/Shared/Layout";
@@ -27,6 +27,7 @@ import { getWaitingPlayerInfoByUserId } from "@/services/user";
 
 const GameRoom = () => {
   const userName = useRecoilValue(userNameState);
+  const user = useRecoilValue(userInfoState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
@@ -145,7 +146,10 @@ const GameRoom = () => {
                   <PlayingTab />
                 ) : (
                   <WaitingTab
-                    isHost={waitingPlayerList?.[0]?.isHost || false}
+                    isHost={
+                      waitingPlayerList.find((_user) => _user.userId === user?.userId)
+                        ?.isHost
+                    }
                     roomId={roomInfo.id}
                     setIsPlaying={setIsPlaying}
                   />
@@ -160,7 +164,10 @@ const GameRoom = () => {
                 <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
                 <WaitingContainer
-                  isHost={waitingPlayerList?.[0]?.isHost || false}
+                  isHost={
+                    waitingPlayerList.find((_user) => _user.userId === user?.userId)
+                      ?.isHost
+                  }
                   roomInfo={roomInfo}
                 />
               )}

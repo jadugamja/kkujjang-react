@@ -110,7 +110,7 @@ export const joinRoom = (authorization, callBack, errorCallBack) => {
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    if (errorCallBack) errorCallBack(error);
+    if (!!errorCallBack) errorCallBack(error);
   });
 };
 
@@ -175,6 +175,11 @@ export const switchReadyState = (newState, callBack) => {
   client.on("complete switch ready state", (data) => {
     console.log("[log] complete switch ready state, data: ", data);
     callBack(data);
+  });
+
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 

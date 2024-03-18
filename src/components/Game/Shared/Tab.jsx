@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -7,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
+import { roomInfoState } from "@/recoil/roomState";
+import { userInfoState } from "@/recoil/userState";
 import { joinRoom, loadRoom, onUserJoinRoom } from "../../../services/socket";
 
 const TAB_TYPES = {
@@ -94,6 +97,8 @@ MainTab.propTypes = {
 };
 
 export const Tab = ({ children, type, rooms, onClick }) => {
+  const setRoomInfo = useSetRecoilState(roomInfoState);
+  const setUser = useSetRecoilState(userInfoState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -116,10 +121,14 @@ export const Tab = ({ children, type, rooms, onClick }) => {
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
       joinRoom(
-        { roomId: pickedRoom.id },
+        { roomId: pickedRoom.id, password: "" },
         () => {
           loadRoom((room) => {
-            console.log(room);
+            setRoomInfo(room);
+            setUser((prev) => ({
+              userId: room.userList[room.userList.length - 1].userId,
+              ...prev
+            }));
             navigate(`/game/${room.roomNumber.toString()}`);
           });
         },
@@ -163,7 +172,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
           type={TAB_TEXTS[type].type}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
-          height={ TAB_TEXTS[type]?.height}
+          height={TAB_TEXTS[type]?.height}
         >
           {TAB_TEXTS[type].message}
         </Modal>

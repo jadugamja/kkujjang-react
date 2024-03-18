@@ -95,6 +95,7 @@ const LoginForm = () => {
     const userInfo = await getCurrentUserInfo();
 
     if (userInfo !== null) {
+      setCookie("userId", userInfo.nickname.split("#")[1], { path: "/" });
       const updatedUserInfo = {
         // username: username,
         role: cookies.userRole,

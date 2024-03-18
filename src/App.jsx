@@ -17,8 +17,8 @@ const NoticeManagement = lazy(() => import("./pages/Web/Admin/NoticeManagement")
 const InquiryManagement = lazy(() => import("./pages/Web/Admin/InquiryManagement"));
 const ReportManagement = lazy(() => import("./pages/Web/Admin/ReportManagement"));
 const UserManagement = lazy(() => import("./pages/Web/Admin/UserManagement"));
-const Lobby = lazy(() => import("./pages/Game/Lobby"));
-const GameRoom = lazy(() => import("./pages/Game/GameRoom"));
+// const Lobby = lazy(() => import("./pages/Game/Lobby"));
+// const GameRoom = lazy(() => import("./pages/Game/GameRoom"));
 const GameRoutes = lazy(() => import("./router/GameRoutes"));
 
 const App = () => {

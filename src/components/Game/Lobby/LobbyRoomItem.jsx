@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { roomInfoState, roomIdState } from "@/recoil/roomState";
+import { userInfoState } from "@/recoil/userState";
 import FlexBox from "@/styles/FlexStyle";
 import Modal from "../Shared/GameModal";
 import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
@@ -25,6 +26,7 @@ const LobbyRoomItem = ({
   }
 }) => {
   const setRoomInfo = useSetRecoilState(roomInfoState);
+  const setUser = useSetRecoilState(userInfoState);
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,10 +54,14 @@ const LobbyRoomItem = ({
     }
 
     joinRoom(
-      { roomId },
+      { roomId, password: "" },
       () => {
         loadRoom((room) => {
           setRoomInfo(room);
+          setUser((prev) => ({
+            userId: room.userList[room.userList.length - 1].userId,
+            ...prev
+          }));
           navigate(`/game/${room.roomNumber.toString()}`);
         });
       },
@@ -81,7 +87,7 @@ const LobbyRoomItem = ({
             <RoomName>{title}</RoomName>
             <CenterBottomInfoWrapper>
               <RoomSubText>{`라운드 ${maxRound}`}</RoomSubText>
-              <RoomSubText>{`${roundTimeLimit}초`}</RoomSubText>
+              <RoomSubText>{`${roundTimeLimit / 1000}초`}</RoomSubText>
             </CenterBottomInfoWrapper>
           </CenterInfoWrapper>
           <RightInfoWrapper dir="col" row="evenly" col="center">
@@ -116,7 +122,7 @@ LobbyRoomItem.propTypes = {
     roundTimeLimit: PropTypes.number,
     currentUserCount: PropTypes.number,
     maxUserCount: PropTypes.number,
-    state: PropTypes.oneOf(["waiting", "playing"]).isRequired
+    state: PropTypes.oneOf(["preparing", "playing"]).isRequired
   }).isRequired
 };
 
@@ -150,7 +156,7 @@ const RoomItemInfoWrapper = styled(FlexBox)`
 `;
 
 const LeftInfoWrapper = styled(FlexBox)`
-  width: 4rem;
+  width: 5rem;
 `;
 
 const CenterInfoWrapper = styled(FlexBox)`

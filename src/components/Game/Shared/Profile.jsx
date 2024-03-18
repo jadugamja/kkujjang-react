@@ -54,14 +54,14 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
     headers: { sessionId: cookies.sessionId }
   });
 
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        ...profile,
-        avatarUrl: user.avatarUrl
-      });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     setProfile({
+  //       ...profile,
+  //       avatarUrl: user.avatarUrl
+  //     });
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     if (response !== null) {

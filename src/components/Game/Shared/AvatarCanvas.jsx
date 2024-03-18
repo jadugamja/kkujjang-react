@@ -60,7 +60,7 @@ const getPosition = (item, width, height) => {
   }
 };
 
-const AvatarCanvas = ({ item, avatar, setAvatarImage }) => {
+const AvatarCanvas = ({ item, avatar, setAvatarImage, width = "120px" }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -95,13 +95,14 @@ const AvatarCanvas = ({ item, avatar, setAvatarImage }) => {
     avatarImg.src = avatar;
   }, [item, avatar]);
 
-  return <canvas ref={canvasRef} />;
+  return <canvas ref={canvasRef} style={{ width: width }} />;
 };
 
 AvatarCanvas.propTypes = {
   avatar: PropTypes.string,
   item: PropTypes.string,
-  setAvatarImage: PropTypes.func
+  setAvatarImage: PropTypes.func,
+  width: PropTypes.string
 };
 
 export default AvatarCanvas;

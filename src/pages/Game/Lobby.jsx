@@ -41,13 +41,6 @@ const Lobby = () => {
 
   useEffect(() => {
     if (!isMounted) {
-      initSocket((error) => {
-        setModalType("error");
-        setErrorMessage(error);
-        setIsModalOpen(true);
-        return;
-      });
-
       loadRoomList(setRooms);
 
       onLoadNewRoom((newRoom) => {
@@ -72,10 +65,17 @@ const Lobby = () => {
           prev.map((room) => (room.id === newRoom.id ? { ...room, ...newRoom } : room))
         );
       });
+      //   },
+      //   (error) => {
+      //     setModalType("error");
+      //     setErrorMessage(error);
+      //     setIsModalOpen(true);
+      //     return;
+      //   }
+      // );
     }
 
     isMounted = true;
-    return () => disconnectSocket();
   }, []);
 
   useEffect(() => {

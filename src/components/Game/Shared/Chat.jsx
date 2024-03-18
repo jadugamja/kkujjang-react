@@ -11,10 +11,12 @@ import {
   thisTurnLeftTimeState,
   myTurnPlayerIndexState
 } from "@/recoil/gameState";
+import { userInfoState } from "@/recoil/userState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
 import {
+  loadRoom,
   receiveMessage,
   receiveSayWordFail,
   receiveSayWordSucceed,
@@ -22,6 +24,7 @@ import {
 } from "../../../services/socket";
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
+  const userInfo = useRecoilValue(userInfoState);
   const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
@@ -32,17 +35,48 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   const chatInput = useRef();
   const cs = useRef(null);
 
+  // 다른 사용자가 메시지를 입력한 경우
+  useEffect(() => {
+    receiveMessage((message) => {
+      // 사용자가 스크롤 제어하는지 확인
+      const isUserScrolling =
+        chatResult.current.scrollHeight - chatResult.current.scrollTop !==
+        chatResult.current.clientHeight;
+
+      // 사용자가 스크롤을 제어하지 않는 경우
+      if (!isUserScrolling) {
+        // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
+        chatResult.current.scrollTop = chatResult.current.scrollHeight;
+      }
+
+      setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
+    });
+  }, []);
+
+  // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
+  useEffect(() => {
+    if (chatResult.current) {
+      chatResult.current.scrollTop = chatResult.current.scrollHeight;
+    }
+  }, [chats]);
+
   const sendChatMessage = () => {
     if (toMessage) {
-      // const _chat = {
-      //   type: "CHAT",
-      //   sessionId: sessionId,
-      //   roomId: roomId,
-      //   nickname: "테스트",
-      //   message: toMessage
-      // };
-      sendMessage(toMessage);
-      setChats([...chats, { nickname: "테스트", message: toMessage }]);
+      sendMessage(
+        toMessage,
+        (message) => {
+          if (userInfo) {
+            setChats([...chats, { nickname: userInfo.nickname, message: message }]);
+          }
+        },
+        (word) => {
+          console.log("word: ", word);
+        },
+        (data) => {
+          console.log("data: ", data);
+        }
+      );
+
       setToMessage("");
       chatInput.current.focus();
     }
@@ -61,35 +95,6 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
     //   sendGameWord(toMessage);
     // }
   };
-
-  // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
-  useEffect(() => {
-    if (chatResult.current) {
-      chatResult.current.scrollTop = chatResult.current.scrollHeight;
-    }
-  }, [chats]);
-
-  // 다른 사용자가 메시지를 입력한 경우
-  useEffect(() => {
-    receiveMessage((message) => {
-      // 사용자가 스크롤 제어하는지 확인
-      const isUserScrolling =
-        chatResult.current.scrollHeight - chatResult.current.scrollTop !==
-        chatResult.current.clientHeight;
-
-      // 사용자가 스크롤을 제어하지 않는 경우
-      if (!isUserScrolling) {
-        // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
-        chatResult.current.scrollTop = chatResult.current.scrollHeight;
-      }
-
-      setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
-    });
-
-    receiveSayWordFail((word) => {});
-
-    receiveSayWordSucceed((data) => {});
-  }, [chats]);
 
   return (
     <ChatWrapper dir="col" size={size}>

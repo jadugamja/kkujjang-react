@@ -42,7 +42,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
         setPlayingPlayerList(updatedPlayerList);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);
-        setInitialCharacter(room.wordStartsWith);
+        setInitialCharacter(room.roundWord[0]);
         setIsPlaying(true);
       },
       (error) => {
@@ -60,7 +60,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   };
 
   const onReadyToggle = () => {
-    switchReadyState(!isReady, (data) => {
+    switchReadyState({ state: !isReady }, (data) => {
       const { index, state } = data;
       setIsReady(state);
       setWaitingPlayerList((prevList) => {

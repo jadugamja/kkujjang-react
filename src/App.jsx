@@ -19,6 +19,7 @@ const ReportManagement = lazy(() => import("./pages/Web/Admin/ReportManagement")
 const UserManagement = lazy(() => import("./pages/Web/Admin/UserManagement"));
 const Lobby = lazy(() => import("./pages/Game/Lobby"));
 const GameRoom = lazy(() => import("./pages/Game/GameRoom"));
+const GameRoutes = lazy(() => import("./router/GameRoutes"));
 
 const App = () => {
   return (
@@ -43,8 +44,11 @@ const App = () => {
             <Route path="admin/report" element={<ReportManagement />} />
             <Route path="admin/user" element={<UserManagement />} />
           </Route>
-          <Route path="/game" element={<Lobby />} />
-          <Route path="/game/:roomId" element={<GameRoom />} />
+          {/* 
+            <Route path="/game" element={<Lobby />} />
+            <Route path="/game/:roomId" element={<GameRoom />} /> 
+          */}
+          <Route path="/game/*" element={<GameRoutes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

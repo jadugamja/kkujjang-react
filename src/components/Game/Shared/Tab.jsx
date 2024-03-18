@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "./GameModal";
-import { joinRoom, onJoinRoom, onUserJoinRoom } from "../../../services/socket";
+import { joinRoom, loadRoom, onUserJoinRoom } from "../../../services/socket";
 
 const TAB_TYPES = {
   CREATE: "create",
@@ -37,7 +37,8 @@ const TAB_TEXTS = {
   [TAB_TYPES.CREATE]: { type: "room", message: "" },
   [TAB_TYPES.ENTER]: {
     type: "alert",
-    message: "입장 가능한 방이 없습니다."
+    message: "입장 가능한 방이 없습니다.",
+    height: "14.5rem"
   }
 };
 
@@ -114,9 +115,19 @@ export const Tab = ({ children, type, rooms, onClick }) => {
       const pickedRoom =
         availableRooms[Math.floor(Math.random() * availableRooms.length)];
 
-      joinRoom({ roomId: pickedRoom.id, password: null }, () => {
-        navigate(`/game/${pickedRoom.roomNumber}`);
-      });
+      joinRoom(
+        { roomId: pickedRoom.id },
+        () => {
+          loadRoom((room) => {
+            console.log(room);
+            navigate(`/game/${room.roomNumber.toString()}`);
+          });
+        },
+        (error) => {
+          // setModalType("error");
+          // setModalMessage(error);
+        }
+      );
 
       onUserJoinRoom((userId) => {
         // 방에 참가한 사용자의 userId를 배열에 추가
@@ -152,6 +163,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
           type={TAB_TEXTS[type].type}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
+          height={ TAB_TEXTS[type]?.height}
         >
           {TAB_TEXTS[type].message}
         </Modal>

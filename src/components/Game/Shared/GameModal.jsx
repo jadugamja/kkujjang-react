@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
 import { userInfoState, userNameState, waitingPlayerListState } from "@/recoil/userState";
@@ -63,6 +64,8 @@ const GameModal = ({
   const [currAvatar, setCurrAvatar] = useState(0);
   const [user, setUser] = useRecoilState(userInfoState);
   const userId = useRecoilValue(userNameState);
+
+  const [, setCookie] = useCookies("userId");
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -83,12 +86,12 @@ const GameModal = ({
       height = "17.75rem";
       break;
     case "room":
-      titleText = "방 만들기";
+      titleText = !roomId ? "방 만들기" : "방 설정";
       height = "28.3rem";
       break;
     case "profile":
       titleText = "프로필";
-      height = "13.75rem";
+      height !== "" ? "14rem" : height;
       break;
     case "setting":
       titleText = "환경설정";
@@ -182,20 +185,20 @@ const GameModal = ({
   // ====== room ======
   const onValidateChange = (e) => {
     const t = e.target;
-    let v = t.value;
-
-    if (SPECIAL_CHARACTERS_REGEX.test(v)) {
-      return;
-    }
+    let v = parseInt(t.value);
 
     if (isNaN(parseInt(v))) {
       return;
     }
 
+    if (SPECIAL_CHARACTERS_REGEX.test(v)) {
+      return;
+    }
+
     if (v < parseInt(t.min)) {
-      v = t.min;
+      v = parseInt(t.min);
     } else if (v > parseInt(t.max)) {
-      v = t.max;
+      v = parseInt(t.max);
     }
 
     setRoomInfo({
@@ -212,13 +215,19 @@ const GameModal = ({
       return;
     }
 
-    // 임시 roomId
-    const roomId = roomInfoList.length + 1;
-
     if (roomInfoList.some((room) => room.id === roomId)) {
-      changeRoomConfig(roomInfo, (room) => {
-        setRoomInfo(room);
-      });
+      let { title, password, maxUserCount, maxRound, roundTimeLimit } = roomInfo;
+      password = password || "";
+      changeRoomConfig(
+        { title, password, maxUserCount, maxRound, roundTimeLimit },
+        (room) => {
+          setRoomInfo(room);
+          setIsOpen(false);
+        },
+        (error) => {
+          console.log(`[Error]: ${error}`);
+        }
+      );
       setRoomInfoList((prev) =>
         prev.map((room) =>
           room.id === roomId ? { ...room, ...roomInfo, id: roomId } : room
@@ -230,6 +239,8 @@ const GameModal = ({
           setRoomNumber(room.roomNumber);
           setRoomId(room.id);
           setRoomInfo(room);
+          setCookie("userId", room.roomOwnerUserId, { path: "/" });
+          setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
         });
       });
     }
@@ -355,10 +366,11 @@ const GameModal = ({
                         type="text"
                         placeholder="비밀번호"
                         maxLength={30}
-                        value={roomInfo?.isSecure && "1234"}
-                        onChange={(e) =>
-                          setRoomInfo({ ...roomInfo, password: e.target.value })
-                        }
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setRoomInfo({ ...roomInfo, password: e.target.value });
+                        }}
                       />
                     </TdContent>
                   </Tr>
@@ -370,7 +382,7 @@ const GameModal = ({
                       <GameModalInput
                         type="number"
                         max={8}
-                        min={1}
+                        min={2}
                         step={1}
                         name="maxUserCount"
                         value={roomInfo?.maxUserCount}

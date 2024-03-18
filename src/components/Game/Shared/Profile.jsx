@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
+import avatar from "@/assets/images/avatar.png";
+import { FlexBox } from "@/styles/FlexStyle";
+import useAxios from "@/hooks/useAxios";
 import { userInfoState } from "@/recoil/userState";
 import Player from "./Player";
 import ProfileActiveToggle from "./ProfileActiveToggle";
 import GameModal from "./GameModal";
-import avatar from "@/assets/images/avatar.png";
-import { FlexBox } from "@/styles/FlexStyle";
 import TitleBar from "./TitleBar";
+import AvatarCanvas from "./AvatarCanvas";
 
 const init = {
   avatarUrl: avatar,
@@ -21,8 +24,21 @@ const init = {
   bannedReson: ""
 };
 
+const accessories = [
+  "",
+  "emo1",
+  "emo2",
+  "eye1",
+  "eye2",
+  "eye3",
+  "head1",
+  "head2",
+  "fx1",
+  "fx2"
+];
+
 const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
-  const user = useRecoilValue(userInfoState);
+  const [user, setUser] = useRecoilState(userInfoState);
   const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);
@@ -30,20 +46,43 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
     profileInfos.isBanned === "true"
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [avatarImage, setAvatarImage] = useState(null);
+  const [cookies] = useCookies(["sessionId"]);
+  const { response, loading, error, fetchData } = useAxios({
+    method: "get",
+    url: "/user/me",
+    headers: { sessionId: cookies.sessionId }
+  });
 
   useEffect(() => {
     if (user) {
       setProfile({
         ...profile,
-        // nickname: ["닉네임", user.nickname],
-        // level: ["레벨", user.level],
-        // winRate: ["승률", user.winRate],
-        // exp: ["경험치", user.exp],
-        // isBanned: user.isBanned,
         avatarUrl: user.avatarUrl
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (response !== null) {
+      const data = response.result;
+      setProfile({
+        nickname: ["닉네임", data.nickname],
+        level: ["레벨", data.level],
+        winRate: ["승률", data.winRate],
+        exp: ["경험치", data.exp],
+        avatarUrl: data.avatarAccessoryIndex
+      });
+      setUser((prev) => ({
+        ...prev,
+        nickname: data.nickname,
+        level: data.level,
+        winRate: data.winRate,
+        exp: data.exp,
+        avatarUrl: data.avatarAccessoryIndex
+      }));
+    }
+  }, [response]);
 
   return (
     <>
@@ -56,7 +95,12 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
       ) : type === "modal" ? (
         <ProfileWrapper type={type} dir="col">
           <ProfileUpperWrapper type={type}>
-            <AvatarImage src={profile.avatarUrl} />
+            <AvatarCanvas
+              avatar={avatar}
+              item={accessories[profile.avatarUrl]}
+              setAvatarImage={setAvatarImage}
+              width="6rem"
+            />
             <ProfileInfoWrapper dir="col" row="center">
               {isIncludingKey
                 ? Object.entries(profile)?.map(([key, [title, value]], idx) => (
@@ -80,7 +124,12 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
           <ProfileWrapper dir="col">
             <TitleBar type="profile" />
             <ProfileUpperWrapper onClick={() => setIsModalOpen(true)}>
-              <AvatarImage src={profile.avatarUrl} />
+              <AvatarCanvas
+                avatar={avatar}
+                item={accessories[profile.avatarUrl]}
+                setAvatarImage={setAvatarImage}
+                width="5.4rem"
+              />
               <ProfileInfoWrapper dir="col" row="center">
                 {isIncludingKey
                   ? Object.entries(profile)?.map(([key, [title, value]], idx) => (
@@ -108,7 +157,12 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
             )}
           </ProfileWrapper>
           {isModalOpen ? (
-            <GameModal type="profile" isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+            <GameModal
+              type="profile"
+              isOpen={isModalOpen}
+              setIsOpen={setIsModalOpen}
+              height="14rem"
+            />
           ) : null}
           {isAdmin && (
             <ProfileActiveToggle
@@ -138,6 +192,7 @@ const ProfileWrapper = styled(FlexBox)`
 `;
 
 const ProfileUpperWrapper = styled(FlexBox)`
+  min-height: 6rem;
   padding: 8px;
 
   &:hover {

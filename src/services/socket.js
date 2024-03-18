@@ -16,14 +16,15 @@ const client = io(SOCKET_URL, {
 });
 
 // ====== 소켓 초기화 ======
-export const initSocket = (callBack) => {
+export const initSocket = (callBack, errorCallBack) => {
   client.on("connect", () => {
     console.log("[log] Connect to the Server...");
+    callBack();
   });
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    callBack(error);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 
@@ -84,12 +85,17 @@ export const createRoom = (roomData, callBack) => {
 };
 
 // ====== 방 수정 ======
-export const changeRoomConfig = (roomData, callBack) => {
+export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
   client.emit("change room config", roomData);
 
   client.on("complete change room config", (room) => {
     console.log("[log] complete change room config: ", room);
     callBack(room);
+  });
+
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    errorCallBack(error);
   });
 };
 
@@ -104,7 +110,7 @@ export const joinRoom = (authorization, callBack, errorCallBack) => {
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    errorCallBack(error);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 
@@ -188,9 +194,9 @@ export const gameStart = (callBack, errorCallBack) => {
 // ====== 라운드 시작 요청 ======
 export const roundStart = (callBack, errorCallBack) => {
   client.emit("round start");
-  client.on("complete round start", (room) => {
-    console.log("[log] complete round start, room: ", room);
-    callBack(room);
+  client.on("complete round start", (gameStatus) => {
+    console.log("[log] complete round start, room: ", gameStatus);
+    callBack(gameStatus);
   });
   client.on("error", (error) => {
     console.log("[Error]: ", error);
@@ -201,9 +207,9 @@ export const roundStart = (callBack, errorCallBack) => {
 // ====== 턴 시작 요청 ======
 export const turnStart = (callBack, errorCallBack) => {
   client.emit("turn start");
-  client.on("complete turn start", (room) => {
-    console.log("[log] complete turn start, room: ", room);
-    callBack(room);
+  client.on("complete turn start", (gameStatus) => {
+    console.log("[log] complete turn start, room: ", gameStatus);
+    callBack(gameStatus);
   });
   client.on("error", (error) => {
     console.log("[Error]: ", error);
@@ -212,9 +218,24 @@ export const turnStart = (callBack, errorCallBack) => {
 };
 
 // ====== 채팅 ======
-export const sendMessage = (message) => {
+export const sendMessage = (_message, callBack, failureCallBack, successCallBack) => {
   if (client.connected) {
-    client.emit("chat", message);
+    client.emit("chat", _message);
+
+    client.on("chat", (message) => {
+      console.log("[log] chat, message: ", message);
+      callBack(message);
+    });
+
+    client.on("say word fail", (word) => {
+      console.log("[log] say word fail: ", word);
+      failureCallBack(word);
+    });
+
+    client.on("say word succeed", (data) => {
+      console.log("[log] say word succeed: ", data);
+      successCallBack(data);
+    });
   }
 };
 
@@ -274,7 +295,10 @@ export const onGameEnd = (callBack) => {
 };
 
 export const disconnectSocket = () => {
+  debugger;
   if (client.connected) {
     client.disconnect("[log] Disconnected from the Server...");
+    // 재연결 시도
+    // setTimeout(initSocket, 1000);
   }
 };

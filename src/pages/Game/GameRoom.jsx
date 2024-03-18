@@ -37,13 +37,12 @@ const GameRoom = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
 
   // 경로의 roomId값 추출
-  // const { roomId } = useParams();
-  const roomId = "1234";
+  const { roomId } = useParams();
 
-  useEffect(() => {
-    setWaitingPlayerList(roomInfo?.userList);
-    setIsPlaying(roomInfo?.state === "playing" ? true : false);
-  }, [roomInfo]);
+  // useEffect(() => {
+  //   setWaitingPlayerList(roomInfo?.userList);
+  //   setIsPlaying(roomInfo?.state === "playing" ? true : false);
+  // }, [roomInfo]);
 
   // useEffect(() => {
   //   initSocket((error) => {
@@ -53,10 +52,42 @@ const GameRoom = () => {
 
   //   return () => disconnectSocket();
   // }, []);
+  let isMounted = false;
 
   useEffect(() => {
-    // setWaitingPlayerList(roomInfo?.userList);
-    // setIsPlaying(roomInfo?.state === "playing" ? true : false);
+    //   if (isMounted) return;
+
+    setWaitingPlayerList(roomInfo?.userList);
+    setIsPlaying(roomInfo?.state === "playing" ? true : false);
+
+    debugger;
+    //   initSocket(
+    //     () => {
+    // 타 플레이어 입장 알림
+    onUserJoinRoom((user) => {
+      setWaitingPlayerList((prev) => [...prev, user]);
+    });
+
+    // 타 플레이어 퇴장 알림
+    onUserLeaveRoom((userId) => {
+      setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
+    });
+
+    // 방장 변경
+    onChangeRoomOwner((newOwnerIdx) => {
+      setWaitingPlayerList((prev) => {
+        const updatedList = [...prev];
+        updatedList[newOwnerIdx].isHost = true;
+        return updatedList;
+      });
+    });
+    //     },
+    //     (error) => {
+    //       setErrorMessage(error);
+    //       setIsModalOpen(true);
+    //       return;
+    //     }
+    //   );
 
     // 방 조회
     // loadRoom((room) => {
@@ -75,35 +106,19 @@ const GameRoom = () => {
     //   });
     // });
 
-    // // 타 플레이어 입장 알림
-    // onUserJoinRoom((user) => {
-    //   setWaitingPlayerList((prev) => [...prev, user]);
-    // });
-
-    // // 타 플레이어 퇴장 알림
-    // onUserLeaveRoom((userId) => {
-    //   setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
-    // });
-
-    // // 방장 변경
-    // onChangeRoomOwner((newOwnerIdx) => {
-    //   setWaitingPlayerList((prev) => {
-    //     const updatedList = [...prev];
-    //     updatedList[newOwnerIdx].isHost = true;
-    //     return updatedList;
-    //   });
-    // });
-
-    return () => disconnectSocket();
+    //   isMounted = true;
+    //   return () => disconnectSocket();
   }, []);
 
   useEffect(() => {
-    if (waitingPlayerList?.length !== 0 && !isDataFetched) {
+    if (waitingPlayerList && waitingPlayerList?.length !== 0 && !isDataFetched) {
       const fetchAllUsers = async () => {
         const updatedPlayerList = await Promise.all(
-          waitingPlayerList.map(async (user) => {
+          waitingPlayerList.map(async (user, idx) => {
             const response = await getWaitingPlayerInfoByUserId(user.userId);
-            return { ...user, ...response };
+            const isHost = roomInfo.roomOwnerUserId === user.userId;
+            // const isHost = idx === 0;
+            return { ...user, isHost, ...response };
           })
         );
         setWaitingPlayerList(updatedPlayerList);
@@ -130,7 +145,7 @@ const GameRoom = () => {
                   <PlayingTab />
                 ) : (
                   <WaitingTab
-                    isHost={roomInfo.roomOwnerUserId === userName ? true : false}
+                    isHost={waitingPlayerList?.[0]?.isHost || false}
                     roomId={roomInfo.id}
                     setIsPlaying={setIsPlaying}
                   />
@@ -145,7 +160,7 @@ const GameRoom = () => {
                 <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
                 <WaitingContainer
-                  isHost={roomInfo.roomOwnerUserId === userName ? true : false}
+                  isHost={waitingPlayerList?.[0]?.isHost || false}
                   roomInfo={roomInfo}
                 />
               )}

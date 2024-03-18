@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { roomInfoState, roomIdState } from "@/recoil/roomState";
 import FlexBox from "@/styles/FlexStyle";
 import Modal from "../Shared/GameModal";
 import { faLock, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { joinRoom, loadRoom } from "../../../services/socket";
 
 const LobbyRoomItem = ({
   roomInfo: {
@@ -21,6 +24,7 @@ const LobbyRoomItem = ({
     state
   }
 }) => {
+  const setRoomInfo = useSetRecoilState(roomInfoState);
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,7 +51,20 @@ const LobbyRoomItem = ({
       return;
     }
 
-    navigate(`/game/${roomId}`);
+    joinRoom(
+      { roomId },
+      () => {
+        loadRoom((room) => {
+          setRoomInfo(room);
+          navigate(`/game/${room.roomNumber.toString()}`);
+        });
+      },
+      (error) => {
+        setModalType("error");
+        setModalMessage(error);
+        setIsModalOpen(true);
+      }
+    );
   };
 
   return (

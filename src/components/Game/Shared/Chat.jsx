@@ -37,20 +37,22 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
 
   // 다른 사용자가 메시지를 입력한 경우
   useEffect(() => {
-    receiveMessage((message) => {
-      // 사용자가 스크롤 제어하는지 확인
-      const isUserScrolling =
-        chatResult.current.scrollHeight - chatResult.current.scrollTop !==
-        chatResult.current.clientHeight;
+    if (!toMessage) {
+      receiveMessage((message) => {
+        // 사용자가 스크롤 제어하는지 확인
+        const isUserScrolling =
+          chatResult.current.scrollHeight - chatResult.current.scrollTop !==
+          chatResult.current.clientHeight;
 
-      // 사용자가 스크롤을 제어하지 않는 경우
-      if (!isUserScrolling) {
-        // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
-        chatResult.current.scrollTop = chatResult.current.scrollHeight;
-      }
+        // 사용자가 스크롤을 제어하지 않는 경우
+        if (!isUserScrolling) {
+          // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
+          chatResult.current.scrollTop = chatResult.current.scrollHeight;
+        }
 
-      setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
-    });
+        setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
+      });
+    }
   }, []);
 
   // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
@@ -67,6 +69,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         (message) => {
           if (userInfo) {
             setChats([...chats, { nickname: userInfo.nickname, message: message }]);
+            setToMessage("");
           }
         },
         (word) => {
@@ -77,7 +80,6 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         }
       );
 
-      setToMessage("");
       chatInput.current.focus();
     }
   };

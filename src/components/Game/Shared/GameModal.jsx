@@ -130,7 +130,7 @@ const GameModal = ({
   ];
 
   useEffect(() => {
-    if (!roomId) {
+    if (type === "room" && !roomId) {
       setRoomInfo({
         title: "",
         password: "",

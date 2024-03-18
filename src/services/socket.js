@@ -30,7 +30,6 @@ export const initSocket = (callBack, errorCallBack) => {
 
 // ====== 방 목록 조회 ======
 export const loadRoomList = (callBack) => {
-  debugger;
   client.emit("load room list");
 
   client.on("complete load room list", (roomList) => {

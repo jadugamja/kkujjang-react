@@ -54,7 +54,7 @@ const Lobby = () => {
         setRoomInfo(null);
       });
 
-      onDestroyRoom((roomId) => {
+      onDestroyRoom(({ roomId }) => {
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       });
 
@@ -95,6 +95,11 @@ const Lobby = () => {
     // Audio.volume = bgVolume
     // Audio.volume = fxVolume
   }, []);
+
+  useEffect(() => {
+    console.log(rooms);
+    debugger;
+  }, [rooms]);
 
   const getUserInfo = useCallback(async () => {
     const userInfo = await getCurrentUserInfo();

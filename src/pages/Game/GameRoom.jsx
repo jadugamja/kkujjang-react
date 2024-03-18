@@ -71,8 +71,18 @@ const GameRoom = () => {
     });
 
     // 타 플레이어 퇴장 알림
-    onUserLeaveRoom((userId) => {
-      setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
+    onUserLeaveRoom((roomStatus) => {
+      const { userList, currentUserCount } = roomStatus;
+      setRoomInfo((prev) => ({ ...prev, currentUserCount }));
+      setWaitingPlayerList((prev) =>
+        prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
+      );
+
+      onChangeRoomOwner((newOwnerIdx) => {
+        setWaitingPlayerList?.map((idx) => {
+          newOwnerIdx === idx ? (idx.isHost = true) : (idx.isHost = false);
+        });
+      });
     });
 
     // 방장 변경
@@ -132,10 +142,10 @@ const GameRoom = () => {
 
   const getUserInfoByUserId = async (userId) => {
     const userInfo = await getWaitingPlayerInfoByUserId(userId);
-    return setWaitingPlayerList((prev) => [
-      ...prev,
-      { userId, isHost: false, isReady: false, ...userInfo }
-    ]);
+    return setWaitingPlayerList((prev) => {
+      if (prev.some((user) => user.userId === userId)) return prev;
+      return [...prev, { userId, isHost: false, isReady: false, ...userInfo }];
+    });
   };
 
   return (

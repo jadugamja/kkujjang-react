@@ -166,6 +166,7 @@ export const leaveRoom = (callBack, errorCallBack) => {
 
 // 다른 유저 퇴장 알림
 export const onUserLeaveRoom = (callBack) => {
+  client.off("some user leave room");
   client.on("some user leave room", (roomStatus) => {
     console.log("[log] some user leave room, userId: ", roomStatus);
     callBack(roomStatus);
@@ -204,10 +205,24 @@ export const onSwitchReadyState = (callBack) => {
   });
 };
 
-// ====== 게임 시작 요청 ======
+// ====== 게임 시작 ======
 export const gameStart = (callBack, errorCallBack) => {
   client.emit("game start");
 
+  // client.off("complete game start");
+  // client.on("complete game start", (room) => {
+  //   console.log("[log] complete game start, room", room);
+  //   callBack(room);
+  // });
+
+  // client.off("error");
+  // client.on("error", (error) => {
+  //   console.log("[Error] error: ", error);
+  //   errorCallBack(error);
+  // });
+};
+
+export const onGameStart = (callBack, errorCallBack) => {
   client.off("complete game start");
   client.on("complete game start", (room) => {
     console.log("[log] complete game start, room", room);

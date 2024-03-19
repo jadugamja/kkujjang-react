@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import { userInfoState, userNameState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
@@ -19,12 +19,18 @@ import {
   onChangeRoomOwner,
   onUserJoinRoom,
   onUserLeaveRoom,
-  onSwitchReadyState
+  onSwitchReadyState,
+  onGameStart
 } from "../../services/socket";
-import { waitingPlayerListState } from "@/recoil/userState";
+import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
 import { roomInfoState } from "@/recoil/roomState";
 import Modal from "../../components/Game/Shared/GameModal";
 import { getWaitingPlayerInfoByUserId } from "@/services/user";
+import {
+  currentRoundState,
+  randomWordState,
+  initialCharacterState
+} from "../../recoil/gameState";
 
 const GameRoom = () => {
   const userName = useRecoilValue(userNameState);
@@ -33,6 +39,11 @@ const GameRoom = () => {
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
   // const [roomInfo, setRoomInfo] = useState({});
+  const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
+  const setCurrRound = useSetRecoilState(currentRoundState);
+  const setRandomWord = useSetRecoilState(randomWordState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -111,6 +122,29 @@ const GameRoom = () => {
       // });
       newOwnerIndex = newOwnerIdx;
     });
+
+    // 게임 시작
+    onGameStart(
+      (room) => {
+        const updatedPlayerList = room.usersSequence.map((user, idx) => ({
+          id: user.userId,
+          score: user.score,
+          myTurn: idx === 0
+        }));
+        // setMyTurnPlayerIndex(room.currentTurnUserIndex);
+        setPlayingPlayerList(updatedPlayerList);
+        setCurrRound(room.currentRound);
+        setRandomWord(room.roundWord);
+        setInitialCharacter(room.roundWord[0]);
+        setIsPlaying(true);
+      },
+      (error) => {
+        // setModalType("alert");
+        // setModalMessage(error?.slice(1, -1));
+        setErrorMessage(error?.slice(1, -1));
+        setIsModalOpen(true);
+      }
+    );
 
     //     },
     //     (error) => {

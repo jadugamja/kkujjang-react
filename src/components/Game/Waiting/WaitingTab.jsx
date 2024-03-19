@@ -31,26 +31,25 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   // const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
 
   const onStartGame = () => {
-    gameStart(
-      (room) => {
-        const updatedPlayerList = room.usersSequence.map((user, idx) => ({
-          id: user.userId,
-          score: user.score,
-          myTurn: idx === room.currentTurnUserIndex
-        }));
-        // setMyTurnPlayerIndex(room.currentTurnUserIndex);
-        setPlayingPlayerList(updatedPlayerList);
-        setCurrRound(room.currentRound);
-        setRandomWord(room.roundWord);
-        setInitialCharacter(room.roundWord[0]);
-        setIsPlaying(true);
-      },
-      (error) => {
-        setModalType("alert");
-        setModalMessage(error);
-        setIsModalOpen(true);
-      }
-    );
+    gameStart();
+    // (room) => {
+    //   const updatedPlayerList = room.usersSequence.map((user, idx) => ({
+    //     id: user.userId,
+    //     score: user.score,
+    //     myTurn: idx === 0
+    //   }));
+    //   // setMyTurnPlayerIndex(room.currentTurnUserIndex);
+    //   setPlayingPlayerList(updatedPlayerList);
+    //   setCurrRound(room.currentRound);
+    //   setRandomWord(room.roundWord);
+    //   setInitialCharacter(room.roundWord[0]);
+    //   setIsPlaying(true);
+    // },
+    // (error) => {
+    //   setModalType("alert");
+    //   setModalMessage(error?.slice(1, -1));
+    //   setIsModalOpen(true);
+    // }
   };
 
   const onUpdateRoomConfig = () => {

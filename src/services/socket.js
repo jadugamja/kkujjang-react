@@ -206,20 +206,8 @@ export const onSwitchReadyState = (callBack) => {
 };
 
 // ====== 게임 시작 ======
-export const gameStart = (callBack, errorCallBack) => {
+export const gameStart = () => {
   client.emit("game start");
-
-  // client.off("complete game start");
-  // client.on("complete game start", (room) => {
-  //   console.log("[log] complete game start, room", room);
-  //   callBack(room);
-  // });
-
-  // client.off("error");
-  // client.on("error", (error) => {
-  //   console.log("[Error] error: ", error);
-  //   errorCallBack(error);
-  // });
 };
 
 export const onGameStart = (callBack, errorCallBack) => {
@@ -328,7 +316,7 @@ export const onRoundEnd = (callBack) => {
 // ====== 게임 종료 ======
 export const onGameEnd = (callBack) => {
   client.on("game end", (ranking) => {
-    console.log("[log] game end... ");
+    console.log(`[log] game end...: ${ranking}`);
     callBack(ranking);
   });
 };

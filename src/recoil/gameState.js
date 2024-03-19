@@ -44,6 +44,16 @@ export const myTurnPlayerIndexState = selector({
     get(playingPlayerListState).findIndex((player) => player.myTurn === true)
 });
 
+export const isWordFailState = atom({
+  key: "isWordFailState",
+  default: false
+});
+
+export const timeoutIdsState = atom({
+  key: "timeoutIdsState",
+  default: []
+});
+
 // 현재 차례 끝말잇기 점수 결과
 export const currentPoints = atom({
   key: "currentPoints",

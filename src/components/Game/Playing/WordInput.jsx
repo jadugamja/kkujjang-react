@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+
 import { FlexBox } from "@/styles/FlexStyle";
 import { blink } from "@/styles/CommonStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
+
 import {
   playingPlayerListState,
   playingPlayerState,
@@ -17,7 +19,9 @@ import {
   thisTurnLeftTimeState,
   thisRoundLeftTimeState,
   currentRoundState,
-  currentPoints
+  currentPoints,
+  isWordFailState,
+  timeoutIdsState
 } from "@/recoil/gameState";
 import {
   receiveSayWordFail,
@@ -27,25 +31,18 @@ import {
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
-  // const [tempRandomWord, setTempRandomWord] = useState("라이터");
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
   const [inputWord, setInputWord] = useState("");
-  const [isFail, setIsFail] = useState(false);
+  const [isFail, setIsFail] = useRecoilState(isWordFailState);
+
   const setCurrPoints = useSetRecoilState(currentPoints);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
-  const [timeoutIds, setTimeoutIds] = useState([]);
-
-  // 임시
-  // useEffect(() => {
-  //   if (tempRandomWord) {
-  //     setInitialCharacter(tempRandomWord[0]);
-  //   }
-  // }, [tempRandomWord]);
+  const [timeoutIds, setTimeoutIds] = useRecoilState(timeoutIdsState);
 
   // 3. 라운드 변경
   useEffect(() => {

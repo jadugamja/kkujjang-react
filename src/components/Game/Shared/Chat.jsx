@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +9,9 @@ import { SOCKET_URL } from "@/services/const";
 import {
   initialCharacterState,
   thisTurnLeftTimeState,
-  myTurnPlayerIndexState
+  myTurnPlayerIndexState,
+  isWordFailState,
+  timeoutIdsState
 } from "@/recoil/gameState";
 import { userInfoState } from "@/recoil/userState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
@@ -31,6 +33,9 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   const playerList = useRecoilValue(waitingPlayerListState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const setIsFail = useSetRecoilState(isWordFailState);
+  const setTimeoutIds = useSetRecoilState(timeoutIdsState);
+
   const [toMessage, setToMessage] = useState("");
   const [chats, setChats] = useState([]);
 
@@ -46,6 +51,19 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         const nickname = await getNicknameByUserId(userId);
         setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
       });
+
+      // receiveSayWordFail((word) => {
+      //   const prevInitialCharacter = initialCharacter;
+      //   setIsFail(true);
+      //   setInitialCharacter(word);
+
+      //   const id = setTimeout(() => {
+      //     setInitialCharacter(prevInitialCharacter);
+      //     setIsFail(false);
+      //   }, 1000);
+
+      //   setTimeoutIds([id]);
+      // });
     }
   }, []);
 

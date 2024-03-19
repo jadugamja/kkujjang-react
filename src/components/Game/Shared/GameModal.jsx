@@ -70,7 +70,7 @@ const GameModal = ({
   const [user, setUser] = useRecoilState(userInfoState);
   const userId = useRecoilValue(userNameState);
 
-  const [, setCookie] = useCookies("userId");
+  const [, setCookie] = useCookies(["userId"]);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -535,6 +535,7 @@ const GameModal = ({
                   onClick={() => {
                     setIsOpen(false);
                     setIsPlaying(false);
+                    // 모든 플레이어의 isReady: false로...
                   }}
                 >
                   확인

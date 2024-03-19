@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useCookies } from "react-cookie";
+import PropTypes from "prop-types";
 
 import {
   userNameState,
@@ -30,12 +31,13 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cookie] = useCookies(["userId"]);
+
   const prevRoundScoreRef = useRef();
 
   useEffect(() => {
     const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
-
-    if (myTurnPlayer && myTurnPlayer.id === userName) {
+    if (myTurnPlayer && myTurnPlayer.id === cookie.userId) {
       roundStart(
         (room) => {
           setTurnCount(room.turnElapsed);
@@ -71,61 +73,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       setModalChildren(ranking);
       setIsModalOpen(true);
     });
-
-    // 임시 플레이어 배열
-    const players = [
-      {
-        id: 1,
-        nickname: "테스트#3",
-        level: 3,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 2,
-        nickname: "닉네임#2",
-        level: 2,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 3,
-        nickname: "닉네임#3",
-        level: 1,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 4,
-        nickname: "닉네임#4",
-        level: 2,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 5,
-        nickname: "닉네임#5",
-        level: 3,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      }
-    ];
-
-    // 게임 시작 시 (임시, 소켓 성공 시 삭제)
-    players?.map((player, idx) => {
-      if (idx === 0) player.myTurn = true;
-    });
-    setPlayerList(players);
   }, []);
 
   useEffect(() => {

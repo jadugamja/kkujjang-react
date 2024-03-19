@@ -183,6 +183,13 @@ export const switchReadyState = (newState, callBack) => {
   });
 };
 
+export const onSwitchReadyState = (callBack) => {
+  client.on("complete switch ready state", (data) => {
+    console.log("[log] complete switch ready state, data: ", data);
+    callBack(data);
+  });
+};
+
 // ====== 게임 시작 요청 ======
 export const gameStart = (callBack, errorCallBack) => {
   client.emit("game start");

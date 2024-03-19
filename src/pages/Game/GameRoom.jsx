@@ -18,7 +18,8 @@ import {
   loadRoom,
   onChangeRoomOwner,
   onUserJoinRoom,
-  onUserLeaveRoom
+  onUserLeaveRoom,
+  onSwitchReadyState
 } from "../../services/socket";
 import { waitingPlayerListState } from "@/recoil/userState";
 import { roomInfoState } from "@/recoil/roomState";
@@ -36,6 +37,8 @@ const GameRoom = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDataFetched, setIsDataFetched] = useState(false);
+
+  let newOwnerIndex = null;
 
   // 경로의 roomId값 추출
   const { roomId } = useParams();
@@ -69,6 +72,16 @@ const GameRoom = () => {
       getUserInfoByUserId(userId);
     });
 
+    // 타 플레이어 준비 여부 알림
+    onSwitchReadyState((data) => {
+      const { index, state } = data;
+      setWaitingPlayerList((prevList) => {
+        return prevList?.map((player, idx) =>
+          idx === index ? { ...player, isReady: state } : player
+        );
+      });
+    });
+
     // 타 플레이어 퇴장 알림
     onUserLeaveRoom((roomStatus) => {
       const { userList, currentUserCount } = roomStatus;
@@ -76,17 +89,29 @@ const GameRoom = () => {
       setWaitingPlayerList((prev) =>
         prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
       );
+
+      if (newOwnerIndex !== null) {
+        setWaitingPlayerList((prev) => {
+          const updatedList = prev.map((user, idx) => {
+            return { ...user, isHost: idx === newOwnerIndex };
+          });
+          return updatedList;
+        });
+        newOwnerIndex = null;
+      }
     });
 
     // 방장 변경
     onChangeRoomOwner((newOwnerIdx) => {
-      setWaitingPlayerList((prev) => {
-        const updatedList = prev.map((user, idx) => {
-          return { ...user, isHost: idx === newOwnerIdx };
-        });
-        return updatedList;
-      });
+      // setWaitingPlayerList((prev) => {
+      //   const updatedList = prev.map((user, idx) => {
+      //     return { ...user, isHost: idx === newOwnerIdx };
+      //   });
+      //   return updatedList;
+      // });
+      newOwnerIndex = newOwnerIdx;
     });
+
     //     },
     //     (error) => {
     //       setErrorMessage(error);

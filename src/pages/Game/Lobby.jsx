@@ -96,11 +96,6 @@ const Lobby = () => {
     // Audio.volume = fxVolume
   }, []);
 
-  useEffect(() => {
-    console.log(rooms);
-    debugger;
-  }, [rooms]);
-
   const getUserInfo = useCallback(async () => {
     const userInfo = await getCurrentUserInfo();
     debugger;

@@ -22,10 +22,13 @@ import {
   receiveSayWordSucceed,
   sendMessage
 } from "../../../services/socket";
+import { getWaitingPlayerInfoByUserId } from "@/services/user";
+import { waitingPlayerListState } from "../../../recoil/userState";
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
   const userInfo = useRecoilValue(userInfoState);
   const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
+  const playerList = useRecoilValue(waitingPlayerListState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const [toMessage, setToMessage] = useState("");
@@ -38,7 +41,8 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   // 다른 사용자가 메시지를 입력한 경우
   useEffect(() => {
     if (!toMessage) {
-      receiveMessage((message) => {
+      receiveMessage(async (data) => {
+        const { userId, message } = data;
         // 사용자가 스크롤 제어하는지 확인
         const isUserScrolling =
           chatResult.current.scrollHeight - chatResult.current.scrollTop !==
@@ -50,7 +54,8 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
           chatResult.current.scrollTop = chatResult.current.scrollHeight;
         }
 
-        setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
+        const nickname = await getNicknameByUserId(userId);
+        setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
       });
     }
   }, []);
@@ -66,9 +71,9 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
     if (toMessage) {
       sendMessage(
         toMessage,
-        (message) => {
+        (data) => {
           if (userInfo) {
-            setChats([...chats, { nickname: userInfo.nickname, message: message }]);
+            setChats([...chats, { nickname: userInfo.nickname, message: data.message }]);
             setToMessage("");
           }
         },
@@ -96,6 +101,11 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
     // ) {
     //   sendGameWord(toMessage);
     // }
+  };
+
+  const getNicknameByUserId = async (userId) => {
+    const userInfo = await getWaitingPlayerInfoByUserId(userId);
+    return userInfo.nickname;
   };
 
   return (

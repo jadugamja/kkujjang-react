@@ -22,6 +22,7 @@ export const initSocket = (callBack, errorCallBack) => {
     callBack();
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);
@@ -32,6 +33,7 @@ export const initSocket = (callBack, errorCallBack) => {
 export const loadRoomList = (callBack) => {
   client.emit("load room list");
 
+  client.off("complete load room list");
   client.on("complete load room list", (roomList) => {
     console.log("[log] Complete Load Room List: ", roomList);
     callBack(roomList);
@@ -74,11 +76,13 @@ export const onUpdateRoomConfig = (callBack) => {
 export const createRoom = (roomData, callBack) => {
   client.emit("create room", roomData);
 
+  client.off("complete create room");
   client.on("complete create room", () => {
     console.log("[log] complete create room...");
     callBack();
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
   });
@@ -88,11 +92,13 @@ export const createRoom = (roomData, callBack) => {
 export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
   client.emit("change room config", roomData);
 
+  client.off("complete change room config");
   client.on("complete change room config", (room) => {
     console.log("[log] complete change room config: ", room);
     callBack(room);
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     errorCallBack(error);
@@ -103,11 +109,13 @@ export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
 export const joinRoom = (authorization, callBack, errorCallBack) => {
   client.emit("join room", authorization);
 
+  client.off("complete join room");
   client.on("complete join room", () => {
     console.log("[log] complete join room... ");
     callBack();
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (!!errorCallBack) errorCallBack(error);
@@ -126,11 +134,13 @@ export const onUserJoinRoom = (callBack) => {
 export const loadRoom = (callBack, errorCallBack) => {
   client.emit("load room");
 
+  client.off("complete load room");
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);
     callBack(room);
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);
@@ -141,11 +151,13 @@ export const loadRoom = (callBack, errorCallBack) => {
 export const leaveRoom = (callBack, errorCallBack) => {
   client.emit("leave room");
 
+  client.off("complete leave room");
   client.on("complete leave room", () => {
     console.log("[log] complete leave room... ");
     callBack();
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);
@@ -172,11 +184,13 @@ export const onChangeRoomOwner = (callBack) => {
 export const switchReadyState = (newState, callBack) => {
   client.emit("switch ready state", newState);
 
+  client.off("complete switch ready state");
   client.on("complete switch ready state", (data) => {
     console.log("[log] complete switch ready state, data: ", data);
     callBack(data);
   });
 
+  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);
@@ -193,10 +207,14 @@ export const onSwitchReadyState = (callBack) => {
 // ====== 게임 시작 요청 ======
 export const gameStart = (callBack, errorCallBack) => {
   client.emit("game start");
+
+  client.off("complete game start");
   client.on("complete game start", (room) => {
     console.log("[log] complete game start, room", room);
     callBack(room);
   });
+
+  client.off("error");
   client.on("error", (error) => {
     console.log("[Error] error: ", error);
     errorCallBack(error);
@@ -206,10 +224,14 @@ export const gameStart = (callBack, errorCallBack) => {
 // ====== 라운드 시작 요청 ======
 export const roundStart = (callBack, errorCallBack) => {
   client.emit("round start");
+
+  client.off("complete round start");
   client.on("complete round start", (gameStatus) => {
     console.log("[log] complete round start, room: ", gameStatus);
     callBack(gameStatus);
   });
+
+  client.off("error");
   client.on("error", (error) => {
     console.log("[Error]: ", error);
     errorCallBack(error);
@@ -219,10 +241,14 @@ export const roundStart = (callBack, errorCallBack) => {
 // ====== 턴 시작 요청 ======
 export const turnStart = (callBack, errorCallBack) => {
   client.emit("turn start");
+
+  client.off("complete turn start");
   client.on("complete turn start", (gameStatus) => {
     console.log("[log] complete turn start, room: ", gameStatus);
     callBack(gameStatus);
   });
+
+  client.off("error");
   client.on("error", (error) => {
     console.log("[Error]: ", error);
     errorCallBack(error);
@@ -234,16 +260,19 @@ export const sendMessage = (_message, callBack, failureCallBack, successCallBack
   if (client.connected) {
     client.emit("chat", _message);
 
-    client.on("chat", (message) => {
-      console.log("[log] chat, message: ", message);
-      callBack(message);
+    client.off("chat");
+    client.on("chat", (data) => {
+      console.log("[log] chat, chatData: ", data);
+      callBack(data);
     });
 
+    client.off("say word fail");
     client.on("say word fail", (word) => {
       console.log("[log] say word fail: ", word);
       failureCallBack(word);
     });
 
+    client.off("say word succeed");
     client.on("say word succeed", (data) => {
       console.log("[log] say word succeed: ", data);
       successCallBack(data);
@@ -252,11 +281,9 @@ export const sendMessage = (_message, callBack, failureCallBack, successCallBack
 };
 
 export const receiveMessage = (callBack) => {
-  client.on("chat", (message) => {
-    // 메시지 구성 {nickname: "", message: ""}
-    // const { fromNickname, fromMessage } = message;
-    console.log("[log] chat, message: ", message);
-    callBack(message);
+  client.on("chat", (data) => {
+    console.log("[log] chat, chatData: ", data);
+    callBack(data);
   });
 };
 

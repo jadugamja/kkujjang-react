@@ -27,7 +27,7 @@ import { waitingPlayerListState } from "../../../recoil/userState";
 
 const Chat = ({ sessionId, roomId, size = "default" }) => {
   const userInfo = useRecoilValue(userInfoState);
-  const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
+  // const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
   const playerList = useRecoilValue(waitingPlayerListState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);

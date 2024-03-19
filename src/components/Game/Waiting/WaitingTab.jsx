@@ -28,7 +28,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const setRandomWord = useSetRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
   const setCurrRound = useSetRecoilState(currentRoundState);
-  const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
+  // const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
 
   const onStartGame = () => {
     gameStart(
@@ -38,7 +38,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
           score: user.score,
           myTurn: idx === room.currentTurnUserIndex
         }));
-        setMyTurnPlayerIndex(room.currentTurnUserIndex);
+        // setMyTurnPlayerIndex(room.currentTurnUserIndex);
         setPlayingPlayerList(updatedPlayerList);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);

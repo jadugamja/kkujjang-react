@@ -256,31 +256,14 @@ export const turnStart = (callBack, errorCallBack) => {
 };
 
 // ====== 채팅 ======
-export const sendMessage = (_message, callBack, failureCallBack, successCallBack) => {
+export const sendMessage = (message) => {
   if (client.connected) {
-    client.emit("chat", _message);
-
-    client.off("chat");
-    client.on("chat", (data) => {
-      console.log("[log] chat, chatData: ", data);
-      callBack(data);
-    });
-
-    client.off("say word fail");
-    client.on("say word fail", (word) => {
-      console.log("[log] say word fail: ", word);
-      failureCallBack(word);
-    });
-
-    client.off("say word succeed");
-    client.on("say word succeed", (data) => {
-      console.log("[log] say word succeed: ", data);
-      successCallBack(data);
-    });
+    client.emit("chat", message);
   }
 };
 
 export const receiveMessage = (callBack) => {
+  client.off("chat");
   client.on("chat", (data) => {
     console.log("[log] chat, chatData: ", data);
     callBack(data);
@@ -288,6 +271,7 @@ export const receiveMessage = (callBack) => {
 };
 
 export const receiveSayWordFail = (callBack) => {
+  client.off("say word fail");
   client.on("say word fail", (word) => {
     console.log("[log] say word fail: ", word);
     callBack(word);
@@ -295,6 +279,7 @@ export const receiveSayWordFail = (callBack) => {
 };
 
 export const receiveSayWordSucceed = (callBack) => {
+  client.off("say word succeed");
   client.on("say word succeed", (data) => {
     console.log("[log] say word succeed: ", data);
     callBack(data);

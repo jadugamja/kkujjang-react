@@ -21,8 +21,7 @@ import {
   thisRoundLeftTimeState,
   currentRoundState,
   currentPointsState,
-  isWordFailState,
-  timeoutIdsState
+  isWordFailState
 } from "@/recoil/gameState";
 import {
   receiveSayWordFail,

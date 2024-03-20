@@ -47,6 +47,17 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   useEffect(() => {
     if (!toMessage) {
       receiveMessage(async (data) => {
+        // 사용자가 스크롤 제어하는지 확인
+        const isUserScrolling =
+          chatResult.current.scrollHeight - chatResult.current.scrollTop !==
+          chatResult.current.clientHeight;
+
+        // 사용자가 스크롤을 제어하지 않는 경우
+        if (!isUserScrolling) {
+          // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
+          chatResult.current.scrollTop = chatResult.current.scrollHeight;
+        }
+
         const { userId, message } = data;
         const nickname = await getNicknameByUserId(userId);
         setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
@@ -70,16 +81,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
   useEffect(() => {
     if (chatResult.current) {
-      // 사용자가 스크롤 제어하는지 확인
-      const isUserScrolling =
-        chatResult.current.scrollHeight - chatResult.current.scrollTop !==
-        chatResult.current.clientHeight;
-
-      // 사용자가 스크롤을 제어하지 않는 경우
-      if (!isUserScrolling) {
-        // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
-        chatResult.current.scrollTop = chatResult.current.scrollHeight;
-      }
+      chatResult.current.scrollTop = chatResult.current.scrollHeight;
     }
   }, [chats]);
 

@@ -53,7 +53,7 @@ const ChangepwForm = () => {
   const navigate = useNavigate();
 
   // === cookie ===
-  const [cookies, setCookie] = useCookies(["passwordChangeAuthId"]);
+  const [cookies] = useCookies(["passwordChangeAuthId"]);
 
   useEffect(() => {
     if (apiConfig !== null) {
@@ -62,12 +62,14 @@ const ChangepwForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response !== null) {
-      setCookie("passwordChangeAuthId", response.passwordChangeAuthId);
-      // 로그인 페이지로 이동
-      navigate(`/member/login`);
-    } else {
-      setFailModalOpen(true);
+    if (apiConfig?.url.startsWith("/user/find/pw")) {
+      if (response !== null) {
+        navigate(`/member/login`);
+      } else if (error) {
+        setFailModalOpen(true);
+      } else {
+        setFailModalOpen(true);
+      }
     }
   }, [response]);
 

@@ -59,8 +59,9 @@ const MyInfoContainer = () => {
 
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
-  const [nickname, setNickname] = useState(""); // 백엔드 state
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState([]); // 백엔드 state
+  const [nickname, setNickname] = useState(""); // 닉네임 state
+  const [avatarAccessoryIndex, setAvatarAccessoryIndex] = useState(""); // 아바타 인덱스 state
   // (modal 관련)
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 변경 실패 modal state
   const [message, setMessage] = useState(""); // 닉네임 modal 의 message 설정 state
@@ -80,13 +81,19 @@ const MyInfoContainer = () => {
 
   // 프로필 조회 API 호출
   useEffect(() => {
+    if (response == null) return;
+
     if (response !== null) {
-      setUserData(response);
-      setNickname(response.nickname);
+      if (apiConfig?.url.startsWith("/user/me")) {
+        setUserData(response.result);
+        setNickname(response.result.nickname);
+        setAvatarAccessoryIndex(response.result.avatarAccessoryIndex);
+      }
+    } else if (error) {
+      setNicknameModalOpen(true);
+      setMessage(error);
     }
   }, [response]);
-
-  // console.log(userData.avatarAccessoryIndex);
 
   // 수정 버튼 눌렀을 때
   const handleClickEditButton = () => {
@@ -113,7 +120,7 @@ const MyInfoContainer = () => {
       url: "/user",
       headers: { sessionId: cookies.sessionId },
       data: {
-        avatarAccessoryIndex: 0,
+        avatarAccessoryIndex: avatarAccessoryIndex,
         nickname: nickname
       }
     });

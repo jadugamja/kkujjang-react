@@ -34,7 +34,7 @@ const InquiryCreateBox = styled.div`
 `;
 
 export const InquiryCreateInput = styled.input`
-  width: 67.375rem;
+  width: 57rem;
   height: 4.688rem;
   border: 2px solid #e5e5e5;
   background-color: transparent;
@@ -49,19 +49,31 @@ export const InquiryCreateTextArea = styled.textarea`
   font-size: 23px;
 `;
 
+export const InquirySelect = styled.select`
+  border: 2px solid #e5e5e5;
+  background-color: transparent;
+  color: #767676;
+  font-size: 14px;
+`;
+
+export const InquiryOption = styled.option`
+  background-color: transparent;
+`;
+
 // ===== component =====
 const InquiryCreateContainer = () => {
   // === ref ===
   const titleRef = useRef("");
   const contentRef = useRef("");
+  const selectRef = useRef("");
 
   // === state ===
   const [files, setFiles] = useState([]);
+  // (modal 관련)
+  const [createModalOpen, setCreateModalOpen] = useState(false); // 문의 등록 실패 알림 modal state
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
-  // (modal 관련)
-  const [createModalOpen, setCreateModalOpen] = useState(false); // 문의 등록 실패 알림 modal state
 
   // === navigate ===
   const navigate = useNavigate();
@@ -75,12 +87,15 @@ const InquiryCreateContainer = () => {
     }
   }, [apiConfig]);
 
-  // const handleChangeTitle = (e) => {
-  //   setTitle(e.target.value);
-  // };
-  // const handleChangeContent = (e) => {
-  //   setContent(e.target.value);
-  // };
+  useEffect(() => {
+    if (apiConfig?.url.startsWith("/inquiry/new")) {
+      if (response !== null) {
+        navigate(`/inquiry/list`);
+      } else {
+        setCreateModalOpen(true);
+      }
+    }
+  }, [response]);
 
   const appendFilesToFormData = (_files) => {
     if (_files) {
@@ -93,8 +108,9 @@ const InquiryCreateContainer = () => {
   const handleClickSaveButton = () => {
     const title = titleRef.current.value;
     const content = contentRef.current.value;
+    const type = selectRef.current.value;
 
-    if (title.length < 1 || title.length > 100) {
+    if (title.length < 1 || title.length > 100 || type == -1) {
       setCreateModalOpen(true);
     } else {
       if (content.length < 1 || content.length > 2000) {
@@ -104,6 +120,7 @@ const InquiryCreateContainer = () => {
         formData.append("title", title);
         formData.append("content", content);
         formData.append("files", files);
+        formData.append("type", type);
 
         // 문의 등록 API 호출
         setApiConfig({
@@ -115,12 +132,6 @@ const InquiryCreateContainer = () => {
           },
           data: formData
         });
-
-        if (response !== null) {
-          navigate(`/inquiry/list`);
-        } else {
-          setCreateModalOpen(true);
-        }
       }
     }
   };
@@ -135,7 +146,7 @@ const InquiryCreateContainer = () => {
       {/* 문의 등록 실패 Modal */}
       {createModalOpen && (
         <WebModal setIsOpen={setCreateModalOpen} hasButton={true}>
-          제목 또는 내용을 입력해 주세요.
+          제목, 문의 유형 또는 내용을 입력해 주세요.
         </WebModal>
       )}
 
@@ -157,7 +168,18 @@ const InquiryCreateContainer = () => {
               marginTop="10px"
               marginBottom="10px"
             >
-              <InquiryCreateInput placeholder="제목을 입력하세요." ref={titleRef} />
+              <InquiryCreateWrapper row="between">
+                <InquiryCreateInput placeholder="제목을 입력하세요." ref={titleRef} />
+
+                <InquirySelect ref={selectRef}>
+                  <InquiryOption value={-1}>문의 유형</InquiryOption>
+                  <InquiryOption value={0}>버그 제보 / 문제 해결</InquiryOption>
+                  <InquiryOption value={1}>계정 관련 문제</InquiryOption>
+                  <InquiryOption value={2}>서비스 이용 관련 문의</InquiryOption>
+                  <InquiryOption value={99}>기타 문의</InquiryOption>
+                </InquirySelect>
+              </InquiryCreateWrapper>
+
               <InquiryCreateTextArea placeholder="내용을 입력하세요." ref={contentRef} />
             </InquiryCreateWrapper>
 

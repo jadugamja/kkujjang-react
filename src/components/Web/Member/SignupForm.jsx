@@ -79,21 +79,32 @@ const SignupForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response === null) return;
-
-    if (response !== null) {
+    if (response?.result === true) {
       if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        // 중복 확인 성공
         setDuplicationError("");
         setDuplicationModalOpen(true);
         setInputDisabled(true);
-      } else {
+      } else if (apiConfig?.url.startsWith("/user")) {
+        // 회원가입 성공
         navigate(`/member/login`);
+      }
+    } else if (error) {
+      if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        // 중복 확인 실패
+        setDuplicationError("사용할 수 없는 아이디입니다.");
+        setIdError("");
+      } else if (apiConfig?.url.startsWith("/user")) {
+        // 회원가입 실패
+        setSignupModalOpen(true);
       }
     } else {
       if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        // 중복 확인 실패
         setDuplicationError("사용할 수 없는 아이디입니다.");
         setIdError("");
-      } else {
+      } else if (apiConfig?.url.startsWith("/user")) {
+        // 회원가입 실패
         setSignupModalOpen(true);
       }
     }
@@ -107,7 +118,6 @@ const SignupForm = () => {
     // 아이디 유효성 검사 진행
     if (!idRegex.test(id)) {
       console.log("Fail");
-      return;
     } else {
       // 아이디 중복확인 API 코드
       setApiConfig({

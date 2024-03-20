@@ -54,12 +54,19 @@ const WithdrawalForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response !== null) {
-      removeCookie("sessionId");
-      removeCookie("userRole");
-      navigate(`/`);
-    } else {
-      setWithdrawalModalOpen(true);
+    if (apiConfig?.url.startsWith("/user")) {
+      if (response !== null) {
+        removeCookie("sessionId");
+        if (cookies?.userRole) {
+          removeCookie("userRole");
+        }
+        // 홈으로 이동
+        navigate(`/`);
+      } else if (error) {
+        setWithdrawalModalOpen(true);
+      } else {
+        setWithdrawalModalOpen(true);
+      }
     }
   }, [response]);
 

@@ -49,6 +49,7 @@ export const myTurnPlayerIndexState = selector({
     get(playingPlayerListState).findIndex((player) => player.myTurn === true)
 });
 
+// (임시)
 export const isWordFailState = atom({
   key: "isWordFailState",
   default: false
@@ -63,4 +64,10 @@ export const timeoutIdsState = atom({
 export const currentPoints = atom({
   key: "currentPoints",
   default: 0
+});
+
+// 인게임 내 말풍선 메시지
+export const balloonMessageState = atom({
+  key: "balloonMessageState",
+  default: null
 });

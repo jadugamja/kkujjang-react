@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
@@ -5,15 +7,31 @@ import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 import { TotalScore, TurnScore } from "../Shared/Score";
+import { balloonMessageState } from "@/recoil/gameState";
 
 const PlayingPlayerList = ({ playerList }) => {
+  const balloonMessage = useRecoilValue(balloonMessageState);
+  const [isBalloonShown, setIsBalloonShown] = useState(false);
+
+  useEffect(() => {
+    if (balloonMessage !== null) {
+      setIsBalloonShown(true);
+      const timer = setTimeout(() => {
+        setIsBalloonShown(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [balloonMessage]);
+
   return (
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
       {playerList?.map((player) => (
         <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
-          <StyledBalloon>
-            <span>{/* 채팅 메시지 */}</span>
-          </StyledBalloon>
+          {isBalloonShown && balloonMessage.userId === player.id && (
+            <StyledBalloon>
+              <span>{balloonMessage.message}</span>
+            </StyledBalloon>
+          )}
           <Player
             type="play"
             avatarUrl={avatarUrl}
@@ -43,6 +61,11 @@ const PlayerWrapper = styled(FlexBox)`
   transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
 `;
 
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+`;
+
 const StyledBalloon = styled.div`
   position: absolute;
   top: -29px;
@@ -52,6 +75,7 @@ const StyledBalloon = styled.div`
   border: 1px solid #a3a3a3;
   border-radius: 9px;
   padding: 3px 5px;
+  animation: ${fadeOut} 3s linear;
 
   &::before,
   &::after {

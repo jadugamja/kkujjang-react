@@ -11,7 +11,8 @@ import {
   thisTurnLeftTimeState,
   myTurnPlayerIndexState,
   isWordFailState,
-  timeoutIdsState
+  timeoutIdsState,
+  balloonMessageState
 } from "@/recoil/gameState";
 import { userInfoState } from "@/recoil/userState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
@@ -27,7 +28,7 @@ import {
 import { getWaitingPlayerInfoByUserId } from "@/services/user";
 import { waitingPlayerListState } from "../../../recoil/userState";
 
-const Chat = ({ sessionId, roomId, size = "default" }) => {
+const Chat = ({ isPlaying, size = "default" }) => {
   const userInfo = useRecoilValue(userInfoState);
   // const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
   const playerList = useRecoilValue(waitingPlayerListState);
@@ -37,6 +38,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   const setTimeoutIds = useSetRecoilState(timeoutIdsState);
 
   const [toMessage, setToMessage] = useState("");
+  const setBalloonMessage = useSetRecoilState(balloonMessageState);
   const [chats, setChats] = useState([]);
 
   const messageQueue = useRef([]);
@@ -45,37 +47,36 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   const cs = useRef(null);
 
   useEffect(() => {
-    if (!toMessage) {
-      receiveMessage(async (data) => {
-        // 사용자가 스크롤 제어하는지 확인
-        const isUserScrolling =
-          chatResult.current.scrollHeight - chatResult.current.scrollTop !==
-          chatResult.current.clientHeight;
+    receiveMessage(async (data) => {
+      // 사용자가 스크롤 제어하는지 확인
+      const isUserScrolling =
+        chatResult.current.scrollHeight - chatResult.current.scrollTop !==
+        chatResult.current.clientHeight;
 
-        // 사용자가 스크롤을 제어하지 않는 경우
-        if (!isUserScrolling) {
-          // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
-          chatResult.current.scrollTop = chatResult.current.scrollHeight;
-        }
+      // 사용자가 스크롤을 제어하지 않는 경우
+      if (!isUserScrolling) {
+        // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
+        chatResult.current.scrollTop = chatResult.current.scrollHeight;
+      }
 
-        const { userId, message } = data;
-        const nickname = await getNicknameByUserId(userId);
-        setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
-      });
+      const { userId, message } = data;
+      const nickname = await getNicknameByUserId(userId);
+      setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
+      if (isPlaying) setBalloonMessage({ userId: userId, message: message });
+    });
 
-      // receiveSayWordFail((word) => {
-      //   const prevInitialCharacter = initialCharacter;
-      //   setIsFail(true);
-      //   setInitialCharacter(word);
+    // receiveSayWordFail((word) => {
+    //   const prevInitialCharacter = initialCharacter;
+    //   setIsFail(true);
+    //   setInitialCharacter(word);
 
-      //   const id = setTimeout(() => {
-      //     setInitialCharacter(prevInitialCharacter);
-      //     setIsFail(false);
-      //   }, 1000);
+    //   const id = setTimeout(() => {
+    //     setInitialCharacter(prevInitialCharacter);
+    //     setIsFail(false);
+    //   }, 1000);
 
-      //   setTimeoutIds([id]);
-      // });
-    }
+    //   setTimeoutIds([id]);
+    // });
   }, []);
 
   // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
@@ -106,19 +107,15 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
   // };
 
   const sendChatMessage = () => {
-    if (toMessage) {
-      sendMessage(toMessage);
-      setToMessage("");
-      chatInput.current.focus();
-    }
+    sendMessage(toMessage);
+    setToMessage("");
+    chatInput.current.focus();
   };
 
   const handleMessage = (e) => {
     e.preventDefault();
 
-    if (toMessage) {
-      sendChatMessage(toMessage);
-    }
+    if (toMessage) sendChatMessage(toMessage);
     // if (
     //   initialCharacter !== "" &&
     //   toMessage.startsWith(initialCharacter)
@@ -162,8 +159,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
 };
 
 Chat.propTypes = {
-  sessionId: PropTypes.string,
-  roomId: PropTypes.string,
+  isPlaying: PropTypes.bool,
   size: PropTypes.string
 };
 

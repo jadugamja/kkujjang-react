@@ -218,10 +218,10 @@ const GameRoom = () => {
                   <PlayingTab />
                 ) : (
                   <WaitingTab
-                    isHost={
-                      waitingPlayerList?.find((_user) => _user.userId === user?.userId)
-                        ?.isHost
-                    }
+                    // isHost={
+                    //   waitingPlayerList?.find((_user) => _user.userId === user?.userId)
+                    //     ?.isHost
+                    // }
                     roomId={roomInfo?.id}
                     setIsPlaying={setIsPlaying}
                   />
@@ -236,10 +236,10 @@ const GameRoom = () => {
                 <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
                 <WaitingContainer
-                  isHost={
-                    waitingPlayerList?.find((_user) => _user.userId === user?.userId)
-                      ?.isHost
-                  }
+                  // isHost={
+                  //   waitingPlayerList?.find((_user) => _user.userId === user?.userId)
+                  //     ?.isHost
+                  // }
                   roomInfo={roomInfo}
                 />
               )}

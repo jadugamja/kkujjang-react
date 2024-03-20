@@ -9,7 +9,7 @@ import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 
-const WaitingPlayerList = ({ info }) => {
+const WaitingPlayerList = () => {
   const playerList = useRecoilValue(waitingPlayerListState);
 
   return (
@@ -30,10 +30,6 @@ const WaitingPlayerList = ({ info }) => {
       ))}
     </GridBox>
   );
-};
-
-WaitingPlayerList.propTypes = {
-  info: PropTypes.object
 };
 
 const PlayerWrapper = styled(FlexBox)`

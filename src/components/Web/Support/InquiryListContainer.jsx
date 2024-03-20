@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -33,6 +34,9 @@ const InquiryListBox = styled.div`
 
 // ===== component =====
 const InquiryListContainer = () => {
+  // === cookie ===
+  const [cookies] = useCookies(["sessionId"]);
+
   // === state ===
   const [listData, setListData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
@@ -41,7 +45,8 @@ const InquiryListContainer = () => {
   // (api 관련)
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/inquiry/list?page=${currPage}`
+    url: `/inquiry/list?page=${currPage}`,
+    headers: { sessionId: cookies.sessionId }
   });
   const { response, error, loading, fetchData } = useAxios(apiConfig);
 
@@ -54,8 +59,8 @@ const InquiryListContainer = () => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
-      setListData(response.list);
+      setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
+      setListData(response.result.list);
     } else {
       setLastPageIdx(1);
       setListData([]);
@@ -65,7 +70,8 @@ const InquiryListContainer = () => {
   useEffect(() => {
     setApiConfig({
       ...apiConfig,
-      url: `/inquiry/list?page=${currPage}`
+      url: `/inquiry/list?page=${currPage}`,
+      headers: { sessionId: cookies.sessionId }
     });
   }, [currPage]);
 
@@ -98,7 +104,12 @@ const InquiryListContainer = () => {
               onClick={() => handleThreadOpen(listData.id)}
             />
             {selectedInquiryId === listData.id && (
-              <Thread inquiryId={selectedInquiryId} />
+              <Thread
+                inquiryId={selectedInquiryId}
+                currPage={currPage}
+                title={listData.title}
+                type={listData.type}
+              />
             )}
           </div>
         ))}

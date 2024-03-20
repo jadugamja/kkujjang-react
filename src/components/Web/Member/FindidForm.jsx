@@ -79,21 +79,27 @@ const FindidForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response !== null) {
-      const { id } = response;
-
-      setHasUserInfo(true);
-      setUserId(id);
-    } else {
-      setFindidModalOpen(true);
+    if (apiConfig?.url.startsWith("/user/find/id")) {
+      if (response !== null) {
+        setHasUserInfo(true);
+        setUserId(response.result);
+      } else if (error) {
+        setFindidModalOpen(true);
+        if (findidModalOpen === false) {
+          window.location.reload();
+        }
+      } else {
+        setFindidModalOpen(true);
+        if (findidModalOpen === false) {
+          window.location.reload();
+        }
+      }
     }
   }, [response]);
 
   // 전화번호 인증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
-    console.log(response);
-    console.log(phoneNumber);
-
+    console.log("아이디 조회", response);
     if (response !== null) {
       // 성공 시, 아이디 조회 함수 호출
       handleFindid(phoneNumber);
@@ -105,8 +111,6 @@ const FindidForm = () => {
 
   // 아이디 조회
   const handleFindid = (phoneNumber) => {
-    console.log(phoneNumber);
-
     // 아이디 조회 API 코드
     setApiConfig({
       method: "post",

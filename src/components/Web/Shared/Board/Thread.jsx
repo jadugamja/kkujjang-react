@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import PropTypes from "prop-types";
@@ -50,72 +51,65 @@ const AttachmentWrapper = styled(FlexBox)`
 `;
 
 // ===== component ======
-const Thread = ({ inquiryId }) => {
+const Thread = ({ inquiryId, currPage, title, type }) => {
   // === ref ===
   const inputRef = useRef(null);
 
   // === state ===
   const [threadData, setThreadData] = useState([]);
+  const [threadId, setThreadId] = useState("");
   const [files, setFiles] = useState([]);
-
   // (modal 관련)
   const [createModalOpen, setCreateModalOpen] = useState(false); // 문의 등록 실패 알림 modal state
 
+  // === cookie ===
+  const [cookies] = useCookies(["sessionId"]);
+
   // (api 관련)
-  const [apiConfig, setApiConfig] = useState(null);
+  const [apiConfig, setApiConfig] = useState({
+    method: "get",
+    url: `/inquiry/${inquiryId}?page=${currPage}`,
+    headers: {
+      sessionId: cookies.sessionId
+    }
+  });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
-    // 문의 스레드 상세 조회 api 호출 (inquirys/:id)
-    setApiConfig({
-      method: "get",
-      url: `/inquiry/${inquiryId}`
-    });
-
-    if (response !== null) {
-      setListData(response);
-    } else {
-      setListData([]);
+    if (apiConfig !== null) {
+      fetchData();
     }
+  }, [apiConfig]);
 
-    // // 임시 데이터
-    // const tmp = [
-    //   {
-    //     needAnswer: false,
-    //     threadId: "252b1d9b-3e83-4951-983e-59932f625222",
-    //     authorId: 86,
-    //     type: 5,
-    //     threadTitle: "렉 걸립니다.",
-    //     nickname: "스테이지어스#86",
-    //     createdAt: "2024-01-15 16:44:44",
-    //     lastPage: 1,
-    //     list: [
-    //       {
-    //         isAnswer: false,
-    //         authorId: 86,
-    //         content: "해결해 주세요.",
-    //         createdAt: "2024-01-15 16:44:44",
-    //         file: null
-    //       },
-    //       {
-    //         isAnswer: false,
-    //         authorId: 86,
-    //         content: "사진 첨부합니다.",
-    //         createdAt: "2024-01-15 16:44:44",
-    //         file: null
-    //       },
-    //       {
-    //         isAnswer: true,
-    //         authorId: 87,
-    //         content: "운영자입니다. 제보 감사합니다.",
-    //         createdAt: "2024-01-15 16:44:44",
-    //         file: null
-    //       }
-    //     ]
-    //   }
-    // ];
-    // setThreadData(tmp);
-  }, [inquiryId]);
+  useEffect(() => {
+    if (apiConfig?.url.startsWith(`/inquiry/${inquiryId}?page=`)) {
+      if (response !== null) {
+        setThreadData(response.result.list);
+        setThreadId(response.result.threadId);
+        console.log(response.result.list);
+      } else {
+        setThreadData([]);
+      }
+    } else if (apiConfig?.url.startsWith(`/inquiry/${threadId}`)) {
+      if (response !== null) {
+        setApiConfig({
+          method: "get",
+          url: `/inquiry/${inquiryId}?page=${currPage}`,
+          headers: {
+            sessionId: cookies.sessionId
+          }
+        });
+
+        if (response !== null) {
+          setThreadData(response.result.list);
+        } else {
+          setThreadData([]);
+        }
+      } else {
+        setCreateModalOpen(true);
+      }
+    }
+  }, [response]);
 
   const appendFilesToFormData = (_files) => {
     if (_files) {
@@ -125,6 +119,10 @@ const Thread = ({ inquiryId }) => {
     }
   };
 
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
+
   const handleClickSubmitButton = () => {
     const content = inputRef.current.value;
 
@@ -132,36 +130,23 @@ const Thread = ({ inquiryId }) => {
       setCreateModalOpen(true);
     } else {
       const formData = new FormData();
+      formData.append("title", title);
       formData.append("content", content);
       formData.append("files", files);
+      formData.append("type", type);
+
+      console.log(files);
 
       // 문의 등록 API 호출
       setApiConfig({
         method: "post",
-        url: `/inquiry/${inquiryId}`,
-        headers: { "Content-Type": "multipart/form-data" },
+        url: `/inquiry/${threadId}`,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          sessionId: cookies.sessionId
+        },
         data: formData
       });
-
-      fetchData(apiConfig);
-
-      if (response !== null) {
-        content === "";
-        setFiles([]);
-
-        setApiConfig({
-          method: "get",
-          url: `/inquiry/${inquiryId}`
-        });
-
-        if (response !== null) {
-          setListData(response);
-        } else {
-          setListData([]);
-        }
-      } else {
-        setCreateModalOpen(true);
-      }
     }
   };
 
@@ -177,17 +162,13 @@ const Thread = ({ inquiryId }) => {
       <TreadBox dir="col">
         {/* 상세 스레드 조회 부분 */}
         {threadData?.map((threadItem, index) => (
-          <div key={index}>
-            {threadItem?.list?.map((listItem, listIndex) => (
-              <ThreadItem
-                key={listIndex}
-                isAnswer={listItem.isAnswer}
-                content={listItem.content}
-                createdAt={listItem.createdAt}
-                files={listItem.file}
-              />
-            ))}
-          </div>
+          <ThreadItem
+            key={index}
+            isAnswer={threadItem.isAnswer}
+            content={threadItem.content}
+            createdAt={threadItem.createdAt}
+            files={threadItem.file}
+          />
         ))}
 
         {/* 문의 입력, 이미지 업로드 */}
@@ -223,7 +204,9 @@ const Thread = ({ inquiryId }) => {
 
 Thread.propTypes = {
   inquiryId: PropTypes.number,
-  updateIsAnswer: PropTypes.func
+  currPage: PropTypes.number,
+  title: PropTypes.string,
+  type: PropTypes.number
 };
 
 export default Thread;

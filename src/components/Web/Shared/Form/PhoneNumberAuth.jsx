@@ -120,7 +120,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   // 인증 번호 전달
   const sendVerification = () => {
     const phoneNumber = numbersRef.map((ref) => ref.current.value).join("-");
-    const verification = Number(verificationRef.current.value);
+    const verification = verificationRef.current.value;
     const regex = /^\d{6}$/;
 
     if (!regex.test(verification)) {
@@ -224,7 +224,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       </>
       {isModalOpen && (
         <WebModal setIsOpen={setIsModalOpen} hasButton={true}>
-          인증번호가 일치하지 않습니다.
+          {modalMessage}
         </WebModal>
       )}
     </ItemWrapper>

@@ -40,7 +40,6 @@ const FindpwForm = () => {
   // (modal 관련)
   const [authModalOpen, setAuthModalOpen] = useState(false); // 인증번호 불일치 시 출력되는 인증번호 불일치 알림 modal state
   const [findidModalOpen, setFindidModalOpen] = useState(false); // 아이디 조회 실패 시 출력되는 아이디 조회 실패 알림 modal state
-  // const [changePwModalOpen, setChangePwModalOpen] = useState(false); // 비밀번호 조회 성공 시 (회원 정보 존재 시) 출력되는 비밀번호 변경 modal state
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -49,7 +48,7 @@ const FindpwForm = () => {
   const navigate = useNavigate();
 
   // === cookie ===
-  const [cookies] = useCookies(["smsAuthId"]);
+  const [cookies, setCookie] = useCookies(["smsAuthId", "passwordChangeAuthId"]);
 
   useEffect(() => {
     if (apiConfig !== null) {
@@ -58,11 +57,15 @@ const FindpwForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response !== null) {
-      // 비밀번호 변경 페이지로 이동
-      navigate(`/member/change-pw`);
-    } else {
-      setFindidModalOpen(true);
+    if (apiConfig?.url.startsWith("/user/find/pw")) {
+      if (response !== null) {
+        setCookie("passwordChangeAuthId", response.passwordChangeAuthId);
+        navigate(`/member/change-pw`);
+      } else if (error) {
+        setFindidModalOpen(true);
+      } else {
+        setFindidModalOpen(true);
+      }
     }
   }, [response]);
 
@@ -74,6 +77,7 @@ const FindpwForm = () => {
     } else {
       // 경고 모달 출력
       setAuthModalOpen(true);
+      handleReload();
     }
   };
 
@@ -98,6 +102,12 @@ const FindpwForm = () => {
     }
   };
 
+  const handleReload = () => {
+    if (findidModalOpen === false) {
+      window.location.reload();
+    }
+  };
+
   return (
     <>
       {/* 인증 실패 modal */}
@@ -106,13 +116,6 @@ const FindpwForm = () => {
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
-
-      {/* 비밀번호 변경 modal */}
-      {/* {changePwModalOpen && (
-            <WebModal setIsOpen={setChangePwModalOpen} hasButton={true} isMoving={true}>
-              비밀번호를 변경하시겠습니까?
-            </WebModal>
-      )} */}
 
       {/* 아이디 찾기 실패 modal */}
       {findidModalOpen && (

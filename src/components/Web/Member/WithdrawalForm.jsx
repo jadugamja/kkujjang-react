@@ -45,13 +45,30 @@ const WithdrawalForm = () => {
   const navigate = useNavigate();
 
   // === cookie ===
-  const [cookies] = useCookies(["sessionId"]);
+  const [cookies, , removeCookie] = useCookies(["sessionId"]);
 
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
+
+  useEffect(() => {
+    if (apiConfig?.url.startsWith("/user")) {
+      if (response !== null) {
+        removeCookie("sessionId");
+        if (cookies?.userRole) {
+          removeCookie("userRole");
+        }
+        // 홈으로 이동
+        navigate(`/`);
+      } else if (error) {
+        setWithdrawalModalOpen(true);
+      } else {
+        setWithdrawalModalOpen(true);
+      }
+    }
+  }, [response]);
 
   // 회원 탈퇴
   const handleWithdrawal = () => {
@@ -70,13 +87,6 @@ const WithdrawalForm = () => {
         headers: { sessionId: cookies.sessionId },
         url: "/user"
       });
-
-      if (response !== null) {
-        // 홈으로 이동
-        navigate(`/`);
-      } else {
-        setWithdrawalModalOpen(true);
-      }
     }
   };
 

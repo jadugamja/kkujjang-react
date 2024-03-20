@@ -70,11 +70,11 @@ const NoticeDetailContainer = () => {
 
   useEffect(() => {
     if (response !== null) {
-      setDetailData(response);
+      setDetailData(response.result);
     } else {
       setDetailData([]);
     }
-  }, []);
+  }, [response]);
 
   const handleMoveList = () => {
     navigate(`/notice/list`);
@@ -98,7 +98,7 @@ const NoticeDetailContainer = () => {
               <NoticeDeatalFlexBox col="center">
                 <NoticeDetailImage src={createdAtIcon} marginRight="10px" />
                 <NoticeDetailText color="#A7A7A7" fontSize="20px">
-                  {detailData.createdAt}
+                  {detailData.created_at}
                 </NoticeDetailText>
               </NoticeDeatalFlexBox>
 

@@ -216,7 +216,14 @@ const GameRoom = () => {
                 {isPlaying ? (
                   <PlayingTab />
                 ) : (
-                  <WaitingTab roomId={roomInfo?.id} setIsPlaying={setIsPlaying} />
+                  <WaitingTab
+                    isHost={
+                      waitingPlayerList?.find((_user) => _user.userId === user?.userId)
+                        ?.isHost
+                    }
+                    roomId={roomInfo?.id}
+                    setIsPlaying={setIsPlaying}
+                  />
                 )}
                 <div>
                   <Button type="help" />

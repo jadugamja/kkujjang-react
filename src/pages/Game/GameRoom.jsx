@@ -134,7 +134,6 @@ const GameRoom = () => {
         setPlayingPlayerList(updatedPlayerList);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);
-        setInitialCharacter(room.roundWord[0]);
         setIsPlaying(true);
       },
       (error) => {

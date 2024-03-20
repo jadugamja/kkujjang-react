@@ -311,7 +311,7 @@ export const onTurnEnd = (callBack) => {
 // ====== 라운드 종료 ======
 export const onRoundEnd = (callBack) => {
   client.on("round end", (roundResult) => {
-    console.log("[log] round end... ");
+    console.log("[log] round end... roundResult: ", roundResult);
     callBack(roundResult);
   });
 };
@@ -319,7 +319,7 @@ export const onRoundEnd = (callBack) => {
 // ====== 게임 종료 ======
 export const onGameEnd = (callBack) => {
   client.on("game end", (ranking) => {
-    console.log(`[log] game end...: ${ranking}`);
+    console.log(`[log] game end...: ${JSON.stringify(ranking)}`);
     callBack(ranking);
   });
 };

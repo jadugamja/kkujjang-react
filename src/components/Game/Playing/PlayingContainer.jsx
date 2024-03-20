@@ -56,8 +56,9 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const prevRoundScoreRef = useRef();
 
   useEffect(() => {
-    const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
-    if (myTurnPlayer && myTurnPlayer.id === cookie.userId) {
+    // const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
+    // if (myTurnPlayer && myTurnPlayer.id === cookie.userId) {
+    if (roomInfo?.roomOwnerUserId === cookie.userId) {
       roundStart(
         (gameStatus) => {
           if (!randomWord) setRandomWord(gameStatus.randomWord);
@@ -89,7 +90,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     receiveSayWordFail((word) => {
       const prevInitialCharacter = initialCharacter;
       setIsWordFail(true);
-      setInitialCharacter(word);
+      setInitialCharacter(word.split("")[0]);
 
       const id = setTimeout(() => {
         setInitialCharacter(prevInitialCharacter);
@@ -104,7 +105,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       const { word, userIndex, scoreDelta } = data;
 
       // 다음 끝말잇기 글자 설정
-      setInitialCharacter((prevChar) => prevChar + word.split("")[word.length - 1]);
+      const lastCharacter = word.split("")[word.length - 1];
+      setInitialCharacter(lastCharacter);
       const inputWordCharacters = word?.split("");
       const delay = 500; // 0.5초
       inputWordCharacters.forEach((char, idx) => {
@@ -127,25 +129,26 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       });
       setPlayerList((prevList) => {
         const newList = [...prevList];
-        let _player = newList[userIndex];
+        let _player = { ...newList[userIndex] };
         _player.score += scoreDelta;
+        newList[userIndex] = _player;
         return newList;
       });
 
       const id2 = setTimeout(
         () => {
-          setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
+          setInitialCharacter(lastCharacter);
         },
         delay * 1.5 * inputWordCharacters?.length
       );
 
       timeoutIds.push(id2);
       setTimeoutIds(timeoutIds);
-
-      updateNextTurn();
     });
 
-    onTurnEnd(() => {});
+    onTurnEnd(() => {
+      updateNextTurn();
+    });
 
     onRoundEnd((roundResult) => {
       const { defeatedUserIndex } = roundResult;
@@ -172,35 +175,35 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
-
-  //   if (player.myTurn) {
-  //     turnStart(
-  //       (room) => {
-  //         setTurnCount(room.turnElapsed);
-  //       },
-  //       (error) => {
-  //         setModalType("error");
-  //         setModalChildren(error);
-  //         setIsModalOpen(true);
-  //       }
-  //     );
-  //   }
-  // }, [player]);
-
   useEffect(() => {
-    if (!prevRoundScoreRef.current) {
-      prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
-    } else {
-      const isScored = playerList.some(
-        (player, idx) => player.roundScore > prevRoundScoreRef.current[idx]
-      );
+    setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
 
-      if (isScored) updateNextTurn();
-      prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
+    if (player.myTurn) {
+      turnStart(
+        (room) => {
+          setTurnCount(room.turnElapsed);
+        },
+        (error) => {
+          setModalType("error");
+          setModalChildren(error);
+          setIsModalOpen(true);
+        }
+      );
     }
-  }, [playerList]);
+  }, [player]);
+
+  // useEffect(() => {
+  //   if (!prevRoundScoreRef.current) {
+  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
+  //   } else {
+  //     const isScored = playerList.some(
+  //       (player, idx) => player.roundScore > prevRoundScoreRef.current[idx]
+  //     );
+
+  //     if (isScored) updateNextTurn();
+  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
+  //   }
+  // }, [playerList]);
 
   // clearTimeout
   useEffect(() => {
@@ -215,9 +218,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
     const changedTurnPlayerList = playerList?.map((player, idx) => {
       if (idx === currPlayerIndex) {
+        setIsMyTurn(false);
         return { ...player, myTurn: false };
       }
       if (idx === nextPlayerIndex) {
+        setIsMyTurn(true);
         return { ...player, myTurn: true };
       }
       return player;

@@ -7,7 +7,7 @@ import { thisTurnLeftTimeState, thisRoundLeftTimeState } from "@/recoil/gameStat
 import { onTimer } from "../../../services/socket";
 
 const TimerBar = ({ type, totalTime }) => {
-  const [leftTime, setLeftTime] = useState(totalTime);
+  // const [leftTime, setLeftTime] = useState(totalTime);
   const [thisTurnLeftTime, setThisTurnLeftTime] = useRecoilState(thisTurnLeftTimeState);
   const [thisRoundLeftTime, setThisRoundLeftTime] =
     useRecoilState(thisRoundLeftTimeState);
@@ -43,8 +43,8 @@ const TimerBar = ({ type, totalTime }) => {
   //   };
 
   //   if (leftTime <= 0) {
-  //     if (type === "turn") setThisTurnLeftTime(leftTime);
-  //     else if (type === "round") setThisRoundLeftTime(leftTime);
+  //     if (type === "turn") setThisTurnLeftTime(thisTurnLeftTime);
+  //     else if (type === "round") setThisRoundLeftTime(thisRoundLeftTime);
   //   } else {
   //     requestAnimationFrame(frame);
   //   }
@@ -61,6 +61,7 @@ const TimerBar = ({ type, totalTime }) => {
     }
   };
 
+  const leftTime = type === "turn" ? thisTurnLeftTime : thisRoundLeftTime;
   const width = leftTime > 0 ? (leftTime / totalTime) * 100 : 0;
   const sec = Math.round(leftTime, 0.1);
   const outerColor = React.useMemo(() => getBgColor(type, "outer"), [type]);

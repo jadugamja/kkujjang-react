@@ -48,16 +48,10 @@ const WordInput = ({ roundCount, roundTime }) => {
     syncPlayerList((prevList) => prevList?.map((p) => (player.myTurn ? player : p)));
   }, [player]);
 
-  // clearTimeout
-  // useEffect(() => {
-  //   return () => {
-  //     timeoutIds?.forEach((id) => clearTimeout(id));
-  //   };
-  // }, [timeoutIds]);
-
   const onEnterKeyDown = async (e) => {
     if (e.key !== "Enter") return;
 
+    setInputWord("");
     if (!inputWord.startsWith(randomWord?.split("")[currRound]) && thisTurnLeftTime <= 0)
       return;
 

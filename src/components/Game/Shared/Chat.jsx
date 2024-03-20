@@ -3,15 +3,12 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { io } from "socket.io-client";
-import { SOCKET_URL } from "@/services/const";
 
 import {
   initialCharacterState,
   thisTurnLeftTimeState,
   myTurnPlayerIndexState,
   isWordFailState,
-  timeoutIdsState,
   balloonMessageState
 } from "@/recoil/gameState";
 import { userInfoState } from "@/recoil/userState";
@@ -35,7 +32,6 @@ const Chat = ({ isPlaying, size = "default" }) => {
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const setIsFail = useSetRecoilState(isWordFailState);
-  const setTimeoutIds = useSetRecoilState(timeoutIdsState);
 
   const [toMessage, setToMessage] = useState("");
   const setBalloonMessage = useSetRecoilState(balloonMessageState);

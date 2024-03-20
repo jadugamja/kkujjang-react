@@ -3,12 +3,12 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Wrapper } from "./Layout";
-import { currentPoints } from "@/recoil/gameState";
-import { playingPlayerListState, playingPlayerState } from "../../../recoil/userState";
+import { currentPointsState } from "@/recoil/gameState";
+import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
 
 export const TurnScore = () => {
   const [pointType, setPointType] = useState(null);
-  const [currPoints, setCurrPoints] = useRecoilState(currentPoints);
+  const [currPoints, setCurrPoints] = useRecoilState(currentPointsState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
 

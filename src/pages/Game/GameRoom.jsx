@@ -38,7 +38,6 @@ const GameRoom = () => {
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  // const [roomInfo, setRoomInfo] = useState({});
   const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setRandomWord = useSetRecoilState(randomWordState);
@@ -217,14 +216,7 @@ const GameRoom = () => {
                 {isPlaying ? (
                   <PlayingTab />
                 ) : (
-                  <WaitingTab
-                    // isHost={
-                    //   waitingPlayerList?.find((_user) => _user.userId === user?.userId)
-                    //     ?.isHost
-                    // }
-                    roomId={roomInfo?.id}
-                    setIsPlaying={setIsPlaying}
-                  />
+                  <WaitingTab roomId={roomInfo?.id} setIsPlaying={setIsPlaying} />
                 )}
                 <div>
                   <Button type="help" />
@@ -235,13 +227,7 @@ const GameRoom = () => {
               {isPlaying ? (
                 <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
-                <WaitingContainer
-                  // isHost={
-                  //   waitingPlayerList?.find((_user) => _user.userId === user?.userId)
-                  //     ?.isHost
-                  // }
-                  roomInfo={roomInfo}
-                />
+                <WaitingContainer roomInfo={roomInfo} />
               )}
             </MainContentWrapper>
           </Box>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
@@ -39,7 +39,7 @@ const PlayingPlayerList = ({ playerList }) => {
             level={player.level}
           />
           {player.myTurn && <TurnScore />}
-          <TotalScore>{String(player.totalScore).padStart(5, "0")}</TotalScore>
+          <TotalScore>{String(player?.score).padStart(5, "0")}</TotalScore>
         </PlayerWrapper>
       ))}
     </GridBox>

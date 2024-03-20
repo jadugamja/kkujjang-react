@@ -12,7 +12,9 @@ import {
   randomWordState,
   initialCharacterState,
   turnCountState,
-  isMyTurnState
+  isMyTurnState,
+  isWordFailState,
+  currentPointsState
 } from "@/recoil/gameState";
 import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
 import TitleBar from "../Shared/TitleBar";
@@ -25,19 +27,24 @@ import {
   onTurnEnd,
   onTurnStart,
   roundStart,
-  turnStart
+  turnStart,
+  receiveSayWordFail,
+  receiveSayWordSucceed
 } from "../../../services/socket";
 import GameModal from "../Shared/GameModal";
-import {} from "../../../recoil/gameState";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const userName = useRecoilValue(userNameState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [randomWord, setRandomWord] = useRecoilState(randomWordState);
-  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
   const setIsMyTurn = useSetRecoilState(isMyTurnState);
   const setTurnCount = useSetRecoilState(turnCountState);
+  const setIsWordFail = useSetRecoilState(isWordFailState);
+  const setCurrPoints = useSetRecoilState(currentPointsState);
+
+  const [timeoutIds, setTimeoutIds] = useState([]);
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,6 +104,64 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       setModalChildren(ranking);
       setIsModalOpen(true);
     });
+
+    // 끝말잇기 실패
+    receiveSayWordFail((word) => {
+      const prevInitialCharacter = initialCharacter;
+      setIsWordFail(true);
+      setInitialCharacter(word);
+
+      const id = setTimeout(() => {
+        setInitialCharacter(prevInitialCharacter);
+        setIsWordFail(false);
+      }, 1000);
+
+      setTimeoutIds([id]);
+    });
+
+    // 끝말잇기 성공 시
+    receiveSayWordSucceed((data) => {
+      const { word, userIndex, scoreDelta } = data;
+
+      // 다음 끝말잇기 글자 설정
+      setInitialCharacter((prevChar) => prevChar + word.split("")[word.length - 1]);
+      const inputWordCharacters = word?.split("");
+      const delay = 500; // 0.5초
+      inputWordCharacters.forEach((char, idx) => {
+        const id1 = setTimeout(
+          () => {
+            if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
+          },
+          delay * (idx + 1)
+        );
+        timeoutIds.push(id1);
+      });
+
+      // 득점 저장
+      setCurrPoints(scoreDelta);
+      setPlayer((prev) => {
+        return {
+          ...prev,
+          score: prev.score + scoreDelta
+        };
+      });
+      setPlayerList((prevList) => {
+        const newList = [...prevList];
+        const _player = newList[userIndex];
+        _player.score += scoreDelta;
+        return newList;
+      });
+
+      const id2 = setTimeout(
+        () => {
+          setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
+        },
+        delay * 1.5 * inputWordCharacters?.length
+      );
+
+      timeoutIds.push(id2);
+      setTimeoutIds(timeoutIds);
+    });
   }, []);
 
   useEffect(() => {
@@ -128,6 +193,13 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
     }
   }, [playerList]);
+
+  // clearTimeout
+  useEffect(() => {
+    return () => {
+      timeoutIds?.forEach((id) => clearTimeout(id));
+    };
+  }, [timeoutIds]);
 
   const updateNextTurn = () => {
     const currPlayerIndex = playerList.findIndex((player) => player.myTurn);
@@ -161,7 +233,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       )}
       <UpperWrapper dir="col" type="play">
         <TitleBar type="room" info={roomInfo} />
-        <WordInput roundCount={roomInfo.roundCount} roundTime={roomInfo.roundTime} />
+        <WordInput roundCount={roomInfo?.maxRound} roundTime={roomInfo?.roundTimeLimit} />
         <PlayingPlayerList playerList={playerList} />
       </UpperWrapper>
       <Wrapper>

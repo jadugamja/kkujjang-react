@@ -43,7 +43,6 @@ const WordInput = ({ roundCount, roundTime }) => {
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
-  const [timeoutIds, setTimeoutIds] = useRecoilState(timeoutIdsState);
 
   // 3. 라운드 변경
   useEffect(() => {

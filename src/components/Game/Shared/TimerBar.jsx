@@ -20,44 +20,37 @@ const TimerBar = ({ type, totalTime }) => {
       const roundTimeLeftSec = roundTimeLeft / 1000;
       const personalTimeLeftSec = personalTimeLeft / 1000;
 
-      if (type === "turn") setThisTurnLeftTime(roundTimeLeftSec);
-      else if (type === "round") setThisRoundLeftTime(totalTime);
+      if (type === "turn") setThisTurnLeftTime(personalTimeLeftSec);
+      else if (type === "round") setThisRoundLeftTime(roundTimeLeftSec);
     });
   }, []);
 
   // useEffect(() => {
+  //   const frame = () => {
+  //     const now = Date.now();
+  //     const totalElapsed = (now - startTime) / 1000;
+  //     const sinceLastUpdate = (now - lastUpdate) / 1000;
+
+  //     if (sinceLastUpdate > 0.02) {
+  //       // 0.02초 이상 경과했을 때만 상태 업데이트
+  //       setLeftTime(Math.max(totalTime - totalElapsed, 0));
+  //       setLastUpdate(now);
+  //     }
+
+  //     if (leftTime > 0) {
+  //       requestAnimationFrame(frame);
+  //     }
+  //   };
+
   //   if (leftTime <= 0) {
   //     if (type === "turn") setThisTurnLeftTime(leftTime);
   //     else if (type === "round") setThisRoundLeftTime(leftTime);
+  //   } else {
+  //     requestAnimationFrame(frame);
   //   }
-  // }, [leftTime])
 
-  useEffect(() => {
-    const frame = () => {
-      const now = Date.now();
-      const totalElapsed = (now - startTime) / 1000;
-      const sinceLastUpdate = (now - lastUpdate) / 1000;
-
-      if (sinceLastUpdate > 0.02) {
-        // 0.02초 이상 경과했을 때만 상태 업데이트
-        setLeftTime(Math.max(totalTime - totalElapsed, 0));
-        setLastUpdate(now);
-      }
-
-      if (leftTime > 0) {
-        requestAnimationFrame(frame);
-      }
-    };
-
-    if (leftTime <= 0) {
-      if (type === "turn") setThisTurnLeftTime(leftTime);
-      else if (type === "round") setThisRoundLeftTime(leftTime);
-    } else {
-      requestAnimationFrame(frame);
-    }
-
-    return () => cancelAnimationFrame(frame);
-  }, [startTime, lastUpdate, totalTime]);
+  //   return () => cancelAnimationFrame(frame);
+  // }, [startTime, lastUpdate, totalTime]);
 
   const getBgColor = (type, name) => {
     switch (type) {

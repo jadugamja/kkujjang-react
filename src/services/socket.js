@@ -293,6 +293,7 @@ export const receiveSayWordSucceed = (callBack) => {
 
 // ====== 타이머 ======
 export const onTimer = (callBack) => {
+  client.off("timer");
   client.on("timer", (data) => {
     console.log("[log] timer: ", data);
     callBack(data);

@@ -44,13 +44,6 @@ const WordInput = ({ roundCount, roundTime }) => {
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
 
-  // 3. 라운드 변경
-  useEffect(() => {
-    if (thisRoundLeftTime === 0 && currRound < roundCount) {
-      setCurrRound((prevTurn) => prevTurn + 1);
-    }
-  }, [thisRoundLeftTime]);
-
   useEffect(() => {
     syncPlayerList((prevList) => prevList?.map((p) => (player.myTurn ? player : p)));
   }, [player]);
@@ -68,7 +61,6 @@ const WordInput = ({ roundCount, roundTime }) => {
     if (!inputWord.startsWith(randomWord?.split("")[currRound]) && thisTurnLeftTime <= 0)
       return;
 
-    // 서버로 단어 전송 및 유효 단어 여부 판별 요청
     sendMessage(inputWord);
 
     // // 끝말잇기 실패 시
@@ -151,8 +143,8 @@ const WordInput = ({ roundCount, roundTime }) => {
           )}
         </DisplayWordWrapper>
         {/* 변경 必 */}
-        <TimerBar type="turn" totalTime={30} />
-        <TimerBar type="round" totalTime={150} />
+        <TimerBar type="turn" totalTime={roundTime / 10} />
+        <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {isMyTurn && (
         <InputWrapper>

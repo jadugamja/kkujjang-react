@@ -33,7 +33,7 @@ import {
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
-  const isMyTurnState = useRecoilValue(isMyTurnState);
+  const isMyTurn = useRecoilValue(isMyTurnState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
@@ -156,7 +156,7 @@ const WordInput = ({ roundCount, roundTime }) => {
         <TimerBar type="turn" totalTime={30} />
         <TimerBar type="round" totalTime={150} />
       </WordTimerInfo>
-      {isMyTurnState && (
+      {isMyTurn && (
         <InputWrapper>
           <Input
             type="text"

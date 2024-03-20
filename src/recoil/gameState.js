@@ -25,6 +25,11 @@ export const turnCountState = atom({
   default: 0
 });
 
+export const isMyTurnState = atom({
+  key: "isMyTurnState",
+  default: false
+});
+
 // 남은 시간: 현재 차례
 export const thisTurnLeftTimeState = atom({
   key: "thisTurnLeftTimeState",

@@ -242,9 +242,11 @@ export const roundStart = (callBack, errorCallBack) => {
 };
 
 // ====== 턴 시작 요청 ======
-export const turnStart = (callBack, errorCallBack) => {
+export const turnStart = () => {
   client.emit("turn start");
+};
 
+export const onTurnStart = (callBack, errorCallBack) => {
   client.off("complete turn start");
   client.on("complete turn start", (gameStatus) => {
     console.log("[log] complete turn start, room: ", gameStatus);

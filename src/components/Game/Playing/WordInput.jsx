@@ -16,6 +16,7 @@ import {
 import {
   randomWordState,
   initialCharacterState,
+  isMyTurnState,
   thisTurnLeftTimeState,
   thisRoundLeftTimeState,
   currentRoundState,
@@ -32,6 +33,7 @@ import {
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const isMyTurnState = useRecoilValue(isMyTurnState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
@@ -154,18 +156,19 @@ const WordInput = ({ roundCount, roundTime }) => {
         <TimerBar type="turn" totalTime={30} />
         <TimerBar type="round" totalTime={150} />
       </WordTimerInfo>
-      {/* Player Who is myTurn === true */}
-      <InputWrapper>
-        <Input
-          type="text"
-          placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
-          bgColor="#fff"
-          fontSize="18px"
-          value={inputWord}
-          onChange={(e) => setInputWord(e.target.value)}
-          onKeyDown={onEnterKeyDown}
-        />
-      </InputWrapper>
+      {isMyTurnState && (
+        <InputWrapper>
+          <Input
+            type="text"
+            placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
+            bgColor="#fff"
+            fontSize="18px"
+            value={inputWord}
+            onChange={(e) => setInputWord(e.target.value)}
+            onKeyDown={onEnterKeyDown}
+          />
+        </InputWrapper>
+      )}
     </WordInputWrapper>
   );
 };

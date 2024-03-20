@@ -8,7 +8,12 @@ import {
   playingPlayerListState,
   playingPlayerState
 } from "@/recoil/userState";
-import { turnCountState } from "@/recoil/gameState";
+import {
+  randomWordState,
+  initialCharacterState,
+  turnCountState,
+  isMyTurnState
+} from "@/recoil/gameState";
 import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
 import TitleBar from "../Shared/TitleBar";
 import Chat from "../Shared/Chat";
@@ -18,15 +23,20 @@ import {
   onGameEnd,
   onRoundEnd,
   onTurnEnd,
+  onTurnStart,
   roundStart,
   turnStart
 } from "../../../services/socket";
 import GameModal from "../Shared/GameModal";
+import {} from "../../../recoil/gameState";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const userName = useRecoilValue(userNameState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
+  const [randomWord, setRandomWord] = useRecoilState(randomWordState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+  const setIsMyTurn = useSetRecoilState(isMyTurnState);
   const setTurnCount = useSetRecoilState(turnCountState);
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
@@ -39,8 +49,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
     if (myTurnPlayer && myTurnPlayer.id === cookie.userId) {
       roundStart(
-        (room) => {
-          setTurnCount(room.turnElapsed);
+        (gameStatus) => {
+          if (!randomWord) setRandomWord(gameStatus.randomWord);
+          setInitialCharacter(gameStatus.wordStartsWith);
+          setIsMyTurn(true);
+          turnStart();
         },
         (error) => {
           setModalType("error");
@@ -49,6 +62,17 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
         }
       );
     }
+
+    onTurnStart(
+      (gameStatus) => {
+        setTurnCount(gameStatus.turnElapsed);
+      },
+      (error) => {
+        setModalType("error");
+        setModalChildren(error);
+        setIsModalOpen(true);
+      }
+    );
 
     onTurnEnd(() => {});
 

@@ -36,7 +36,7 @@ const FlexBoardText = styled(BoardItemText)`
 `;
 
 const AnswerText = styled.p`
-  color: ${(props) => (props.isTrue ? "#4B3F2C" : "#6080FF")};
+  color: ${(props) => (props.isTrue ? "#6080FF" : "#4B3F2C")};
   margin: 0;
 `;
 
@@ -51,18 +51,18 @@ const BoardItem = ({ boardType, data, onClick }) => {
   const getTypeName = (type) => {
     switch (type) {
       case 0:
-        return "서비스 문의";
+        return "버그 제보 / 문제 해결";
       case 1:
-        return "기술 문의";
+        return "계정 관련 문제";
       case 2:
-        return "계정 문의";
-      case 3:
-        return "단어 추가 문의";
+        return "서비스 이용 관련 문의";
+      case 99:
+        return "기타 문의";
     }
   };
 
   const getNeedsAnswer = (bool) => (
-    <AnswerText isTrue={bool}>{bool ? "NO" : "YES"}</AnswerText>
+    <AnswerText isTrue={bool}>{bool ? "YES" : "NO"}</AnswerText>
   );
 
   return (
@@ -87,7 +87,7 @@ const BoardItem = ({ boardType, data, onClick }) => {
                   marginRight="10px"
                 />
                 <FlexBoardText color="#A7A7A7" fontSize="18px">
-                  {data.createdAt}
+                  {data.created_at}
                 </FlexBoardText>
               </BoardItemWrapper>
               <BoardItemWrapper col="center">

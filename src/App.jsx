@@ -33,7 +33,7 @@ const App = () => {
             <Route path="member/login" element={<Login />} />
             <Route path="member/out" element={<Withdrawal />} />
             <Route path="member/myInfo" element={<MyInfo />} />
-            <Route path="user/oauth/kakao" element={<Redirection />} />
+            <Route path="member/kakao" element={<Redirection />} />
 
             <Route path="inquiry/list" element={<InquiryList />} />
             <Route path="inquiry/create" element={<InquiryCreate />} />

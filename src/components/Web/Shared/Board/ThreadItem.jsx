@@ -71,7 +71,7 @@ const ThreadItem = ({ isAnswer, content, createdAt, files }) => {
 ThreadItem.propTypes = {
   isAnswer: PropTypes.bool,
   content: PropTypes.string,
-  createdAt: PropTypes.date,
+  createdAt: PropTypes.instanceOf(Date),
   files: PropTypes.arrayOf(PropTypes.string)
 };
 

@@ -38,7 +38,8 @@ const GameRoom = () => {
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
+  const [playingPlayerList, setPlayingPlayerList] =
+    useRecoilState(playingPlayerListState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setRandomWord = useSetRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
@@ -47,6 +48,7 @@ const GameRoom = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const [isDataFetched2, setIsDataFetched2] = useState(false);
 
   let newOwnerIndex = null;
 
@@ -173,6 +175,7 @@ const GameRoom = () => {
     //   return () => disconnectSocket();
   }, []);
 
+  // Add Waiting Players Info
   useEffect(() => {
     if (waitingPlayerList && waitingPlayerList?.length !== 0 && !isDataFetched) {
       const fetchAllUsers = async () => {
@@ -190,6 +193,24 @@ const GameRoom = () => {
       fetchAllUsers();
     }
   }, [waitingPlayerList]);
+
+  // Add Playing Players Info
+  useEffect(() => {
+    if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
+      const fetchAllUsers = async () => {
+        const updatedPlayerList = await Promise.all(
+          playingPlayerList.map(async (user) => {
+            const response = await getWaitingPlayerInfoByUserId(user.userId);
+            const isHost = roomInfo.roomOwnerUserId === user.userId;
+            return { ...user, isHost, ...response };
+          })
+        );
+        setPlayingPlayerList(updatedPlayerList);
+        setIsDataFetched2(true);
+      };
+      fetchAllUsers();
+    }
+  }, [playingPlayerList]);
 
   const getUserInfoByUserId = async (userId) => {
     const userInfo = await getWaitingPlayerInfoByUserId(userId);

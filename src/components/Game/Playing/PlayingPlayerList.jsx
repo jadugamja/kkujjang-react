@@ -7,9 +7,11 @@ import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 import { TotalScore, TurnScore } from "../Shared/Score";
+import { playingPlayerListState } from "@/recoil/userState";
 import { balloonMessageState } from "@/recoil/gameState";
 
-const PlayingPlayerList = ({ playerList }) => {
+const PlayingPlayerList = () => {
+  const playerList = useRecoilValue(playingPlayerListState);
   const balloonMessage = useRecoilValue(balloonMessageState);
   const [isBalloonShown, setIsBalloonShown] = useState(false);
 

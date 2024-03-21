@@ -12,19 +12,25 @@ const TimerBar = ({ type, totalTime }) => {
     useRecoilState(thisRoundLeftTimeState);
 
   useEffect(() => {
+    if (thisTurnLeftTime === 0) {
+      console.trace(`thisTurnLeftTime: ${thisTurnLeftTime}`);
+    }
+    console.log(`thisTurnLeftTime: ${thisTurnLeftTime}`);
+  }, [thisTurnLeftTime]);
+
+  useEffect(() => {
     onTimer((data) => {
       const { personalTimeLeft, roundTimeLeft } = data;
       const personalTimeLeftSec = personalTimeLeft / 1000;
       const roundTimeLeftSec = roundTimeLeft / 1000;
 
-      switch (type) {
-        case "turn":
-          setThisTurnLeftTime(personalTimeLeftSec);
-          break;
-        case "round":
-          setThisRoundLeftTime(roundTimeLeftSec);
-          break;
+      if (personalTimeLeftSec < 0) {
+        setThisTurnLeftTime(0);
+      } else if (roundTimeLeftSec < 0) {
+        setThisRoundLeftTime(0);
       }
+      setThisTurnLeftTime(personalTimeLeftSec);
+      setThisRoundLeftTime(roundTimeLeftSec);
     });
   }, []);
 

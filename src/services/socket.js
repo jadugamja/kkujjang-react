@@ -22,7 +22,6 @@ export const initSocket = (callBack, errorCallBack) => {
     callBack();
   });
 
-  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);

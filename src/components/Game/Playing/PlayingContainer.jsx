@@ -61,7 +61,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     if (roomInfo?.roomOwnerUserId === cookie.userId) {
       roundStart(
         (gameStatus) => {
-          if (!randomWord) setRandomWord(gameStatus.randomWord);
+          if (!randomWord) setRandomWord(gameStatus.roundWord);
           setInitialCharacter(gameStatus.wordStartsWith);
           setCurrRound(gameStatus.currentRound);
           setIsMyTurn(true);
@@ -151,7 +151,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     onTurnEnd(() => {});
 
     onRoundEnd((roundResult) => {
-      const { defeatedUserIndex } = roundResult;
+      const { defeatedUserIndex, scoreDelta } = roundResult;
       const defeatedUser = playerList[defeatedUserIndex];
       if (defeatedUser && defeatedUser.id === userName) {
         setIsRoundEnd(true);
@@ -212,24 +212,27 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     };
   }, [timeoutIds]);
 
+  // ====== 다음 턴으로 턴 넘기기 ======
   const updateNextTurn = () => {
-    const currPlayerIndex = playerList.findIndex((player) => player.myTurn);
-    const nextPlayerIndex = (currPlayerIndex + 1) % playerList.length;
+    setPlayerList((prevPlayerList) => {
+      const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
+      const nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
 
-    const changedTurnPlayerList = playerList?.map((player, idx) => {
-      if (idx === currPlayerIndex) {
-        setIsMyTurn(false);
-        return { ...player, myTurn: false };
-      }
-      if (idx === nextPlayerIndex) {
-        setIsMyTurn(true);
-        return { ...player, myTurn: true };
-      }
-      return player;
+      const changedTurnPlayerList = prevPlayerList.map((player, idx) => {
+        if (idx === currPlayerIndex) {
+          setIsMyTurn(false);
+          return { ...player, myTurn: false };
+        }
+        if (idx === nextPlayerIndex) {
+          setIsMyTurn(true);
+          return { ...player, myTurn: true };
+        }
+        return player;
+      });
+
+      setPlayer(changedTurnPlayerList[nextPlayerIndex]);
+      return changedTurnPlayerList;
     });
-
-    setPlayer(changedTurnPlayerList[nextPlayerIndex]);
-    setPlayerList(changedTurnPlayerList);
 
     if (!isRoundEnd) {
       turnStart(

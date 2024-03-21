@@ -24,7 +24,7 @@ export const TurnScore = () => {
       if (player.myTurn) {
         const updatedPlayer = {
           ...player,
-          totalScore: player.totalScore + currPoints
+          score: player.score + currPoints
         };
         setPlayer(updatedPlayer);
 

@@ -16,6 +16,10 @@ const PlayingPlayerList = () => {
   const [isBalloonShown, setIsBalloonShown] = useState(false);
 
   useEffect(() => {
+    console.log(`playerList:: ${JSON.stringify(playerList)}`);
+  }, [playerList]);
+
+  useEffect(() => {
     if (balloonMessage !== null) {
       setIsBalloonShown(true);
       const timer = setTimeout(() => {

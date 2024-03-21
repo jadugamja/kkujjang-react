@@ -73,9 +73,9 @@ export const playingPlayerState = atom({
   key: "playingPlayerState",
   default: {
     myTurn: false,
-    rounScore: [],
-    totalScore: 0
+    score: 0
   }
+
   // get:
   //   () =>
   //   ({ get }) => {

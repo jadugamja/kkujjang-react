@@ -12,13 +12,6 @@ const TimerBar = ({ type, totalTime }) => {
     useRecoilState(thisRoundLeftTimeState);
 
   useEffect(() => {
-    if (thisTurnLeftTime === 0) {
-      console.trace(`thisTurnLeftTime: ${thisTurnLeftTime}`);
-    }
-    console.log(`thisTurnLeftTime: ${thisTurnLeftTime}`);
-  }, [thisTurnLeftTime]);
-
-  useEffect(() => {
     onTimer((data) => {
       const { personalTimeLeft, roundTimeLeft } = data;
       const personalTimeLeftSec = personalTimeLeft / 1000;

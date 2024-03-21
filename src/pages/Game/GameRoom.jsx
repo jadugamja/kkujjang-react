@@ -200,7 +200,7 @@ const GameRoom = () => {
       const fetchAllUsers = async () => {
         const updatedPlayerList = await Promise.all(
           playingPlayerList.map(async (user) => {
-            const response = await getWaitingPlayerInfoByUserId(user.userId);
+            const response = await getWaitingPlayerInfoByUserId(user.id);
             const isHost = roomInfo.roomOwnerUserId === user.userId;
             return { ...user, isHost, ...response };
           })

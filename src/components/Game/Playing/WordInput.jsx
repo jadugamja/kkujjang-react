@@ -218,7 +218,7 @@ const DisplayFailWord = styled.span`
 
 const InputWrapper = styled(FlexBox)`
   position: absolute;
-  top: calc(40% - 2px);
+  top: 40%;
   width: 40.25rem;
   padding: 4px;
   background-color: #000000cc;

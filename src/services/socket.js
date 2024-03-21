@@ -310,6 +310,7 @@ export const onTurnEnd = (callBack) => {
 
 // ====== 라운드 종료 ======
 export const onRoundEnd = (callBack) => {
+  client.off("round end");
   client.on("round end", (roundResult) => {
     console.log("[log] round end... roundResult: ", roundResult);
     callBack(roundResult);

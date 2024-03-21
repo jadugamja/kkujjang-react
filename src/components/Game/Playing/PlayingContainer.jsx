@@ -90,7 +90,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     receiveSayWordFail((word) => {
       const prevInitialCharacter = initialCharacter;
       setIsWordFail(true);
-      setInitialCharacter(word.split("")[0]);
+      setInitialCharacter(word);
 
       const id = setTimeout(() => {
         setInitialCharacter(prevInitialCharacter);
@@ -107,12 +107,12 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       // 다음 끝말잇기 글자 설정
       const lastCharacter = word.split("")[word.length - 1];
       setInitialCharacter(lastCharacter);
-      const inputWordCharacters = word?.split("");
+      const inputWordCharacters = word?.split("").filter((char, idx) => idx !== 0);
       const delay = 500; // 0.5초
       inputWordCharacters.forEach((char, idx) => {
         const id1 = setTimeout(
           () => {
-            if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
+            setInitialCharacter((prevChar) => prevChar + char);
           },
           delay * (idx + 1)
         );
@@ -144,11 +144,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
       timeoutIds.push(id2);
       setTimeoutIds(timeoutIds);
-    });
 
-    onTurnEnd(() => {
       updateNextTurn();
     });
+
+    onTurnEnd(() => {});
 
     onRoundEnd((roundResult) => {
       const { defeatedUserIndex } = roundResult;

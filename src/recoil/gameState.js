@@ -33,13 +33,13 @@ export const isMyTurnState = atom({
 // 남은 시간: 현재 차례
 export const thisTurnLeftTimeState = atom({
   key: "thisTurnLeftTimeState",
-  default: 1
+  default: 0
 });
 
 // 남은 시간: 이번 라운드
 export const thisRoundLeftTimeState = atom({
   key: "thisRoundLeftTimeState",
-  default: 1
+  default: 0
 });
 
 // 현재 차례 플레이어 순서

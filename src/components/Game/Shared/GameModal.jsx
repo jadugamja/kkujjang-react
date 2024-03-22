@@ -533,6 +533,10 @@ const GameModal = ({
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
                 <GameModalButton
                   onClick={() => {
+                    loadRoom((room) => {
+                      setRoomInfo(room);
+                      setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
+                    });
                     setIsOpen(false);
                     setIsPlaying(false);
                     // 모든 플레이어의 isReady: false로...

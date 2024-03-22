@@ -52,67 +52,6 @@ const WordInput = ({ roundCount, roundTime }) => {
       return;
 
     sendMessage(inputWord);
-
-    // // 끝말잇기 실패 시
-    // receiveSayWordFail((word) => {
-    //   const prevInitialCharacter = initialCharacter;
-    //   setIsFail(true);
-    //   setInitialCharacter(word);
-
-    //   const id = setTimeout(() => {
-    //     setInitialCharacter(prevInitialCharacter);
-    //     setIsFail(false);
-    //   }, 1000);
-
-    //   setTimeoutIds([id]);
-    // });
-
-    // // 끝말잇기 성공 시
-    // receiveSayWordSucceed((data) => {
-    //   const { word, userIndex, scoreDelta } = data;
-
-    //   // 다음 끝말잇기 글자 설정
-    //   setInitialCharacter((prevChar) => prevChar + word.split("")[word.length - 1]);
-    //   const inputWordCharacters = inputWord?.split("");
-    //   const delay = 500; // 0.5초
-    //   inputWordCharacters.forEach((char, idx) => {
-    //     const id1 = setTimeout(
-    //       () => {
-    //         if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
-    //       },
-    //       delay * (idx + 1)
-    //     );
-    //     timeoutIds.push(id1);
-    //   });
-
-    //   // 득점 저장
-    //   setCurrPoints(scoreDelta);
-    //   setPlayer((prev) => {
-    //     const newRoundScore = [...(prev.roundScore || [])];
-    //     newRoundScore[currRound] = scoreDelta;
-    //     return {
-    //       ...prev,
-    //       roundScore: newRoundScore,
-    //       totalScore: prev.totalScore + scoreDelta
-    //     };
-    //   });
-    //   setPlayerList((prevList) => {
-    //     const newList = [...prevList];
-    //     const _player = newList[userIndex];
-    //     _player.totalScore += scoreDelta;
-    //     return newList;
-    //   });
-
-    //   const id2 = setTimeout(
-    //     () => {
-    //       setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
-    //     },
-    //     delay * 1.5 * inputWordCharacters?.length
-    //   );
-
-    //   timeoutIds.push(id2);
-    //   setTimeoutIds(timeoutIds);
-    // });
   };
 
   return (
@@ -133,7 +72,7 @@ const WordInput = ({ roundCount, roundTime }) => {
           )}
         </DisplayWordWrapper>
         {/* 변경 必 */}
-        <TimerBar type="turn" totalTime={roundTime} />
+        <TimerBar type="turn" totalTime={roundTime / 10} />
         <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {isMyTurn && (

@@ -36,7 +36,6 @@ import PlayingPlayerList from "./PlayingPlayerList";
 import GameModal from "../Shared/GameModal";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
-  const userName = useRecoilValue(userNameState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [randomWord, setRandomWord] = useRecoilState(randomWordState);
@@ -56,10 +55,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [cookie] = useCookies(["userId"]);
 
   const prevRoundScoreRef = useRef();
+  const isLastRoundRef = useRef(false);
 
   useEffect(() => {
     // 방장이 라운드 시작 요청
-    if (roomInfo?.roomOwnerUserId === cookie.userId) {
+    if (roomInfo?.roomOwnerUserId === cookie.userId && !isLastRoundRef.current) {
       roundStart();
     }
 
@@ -67,11 +67,16 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       if (!randomWord) setRandomWord(gameStatus.roundWord);
       setInitialCharacter(gameStatus.wordStartsWith);
       setCurrRound(gameStatus.currentRound);
-      setIsMyTurn(true);
+      setIsMyTurn(gameStatus.currentTurnUserId === cookie.userId);
+      if (gameStatus.currentRound + 1 === gameStatus.maxRound) {
+        isLastRoundRef.current = true;
+      }
+      if (!isRoundEnd) {
+        setIsRoundEnd(false);
+      }
 
       // 현재 차례인 플레이어가 턴 시작 요청
-      const myTurnPlayer = playerList.find((player) => player.myTurn);
-      if (myTurnPlayer.id === cookie.userId) {
+      if (gameStatus.currentTurnUserId === cookie.userId) {
         turnStart();
       }
     });
@@ -79,6 +84,9 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     onTurnStart(
       (gameStatus) => {
         setTurnCount(gameStatus.turnElapsed);
+        if (defeatedPlayerIndex !== null) {
+          setDefeatedPlayerIndex(null);
+        }
       },
       (error) => {
         setModalType("error");
@@ -89,12 +97,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
     // 끝말잇기 실패
     receiveSayWordFail((word) => {
-      const prevInitialCharacter = initialCharacter;
       setIsWordFail(true);
       setInitialCharacter(word);
 
       const id = setTimeout(() => {
-        setInitialCharacter(prevInitialCharacter);
+        setInitialCharacter((prevInitialCharacter) => prevInitialCharacter[0]);
         setIsWordFail(false);
       }, 1000);
 
@@ -106,14 +113,14 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       const { word, userIndex, scoreDelta } = data;
 
       // 다음 끝말잇기 글자 설정
-      const lastCharacter = word.split("")[word.length - 1];
-      setInitialCharacter(lastCharacter);
-      const inputWordCharacters = word?.split("").filter((char, idx) => idx !== 0);
+      const lastCharacter = word[word.length - 1];
+      const inputWordCharacters = word.split("").slice(1);
       const delay = 500; // 0.5초
+
       inputWordCharacters.forEach((char, idx) => {
         const id1 = setTimeout(
           () => {
-            setInitialCharacter((prevChar) => prevChar + char);
+            setInitialCharacter((prev) => prev + char);
           },
           delay * (idx + 1)
         );
@@ -156,19 +163,15 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       const defeatedUser = playerList[defeatedUserIndex];
       const currentPlayerIndex = playerList.findIndex((player) => player.myTurn);
 
-      if (defeatedUser && defeatedUserIndex === currentPlayerIndex) {
-        setDefeatedPlayerIndex(defeatedUserIndex);
+      if (
+        defeatedUser &&
+        defeatedUserIndex === currentPlayerIndex &&
+        !isLastRoundRef.current
+      ) {
         setIsRoundEnd(true);
-        roundStart(
-          (room) => {
-            setTurnCount(room.turnElapsed);
-            if (room.turnElapsed === 1) setIsRoundEnd(false);
-          },
-          (error) => {
-            setModalChildren(error);
-            setIsModalOpen(true);
-          }
-        );
+        setDefeatedPlayerIndex(defeatedUserIndex);
+        setCurrPoints(scoreDelta);
+        roundStart();
       }
     });
 
@@ -219,6 +222,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   // ====== 다음 턴으로 턴 넘기기 ======
   const updateNextTurn = () => {
     let nextPlayerIndex;
+    console.log(`playerList: ${playerList}`);
     setPlayerList((prevPlayerList) => {
       const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
       nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;

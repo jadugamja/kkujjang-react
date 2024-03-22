@@ -13,11 +13,26 @@ import { balloonMessageState } from "@/recoil/gameState";
 const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
   const playerList = useRecoilValue(playingPlayerListState);
   const balloonMessage = useRecoilValue(balloonMessageState);
+  const [isDefeated, setIsDefeated] = useState(false);
   const [isBalloonShown, setIsBalloonShown] = useState(false);
 
   useEffect(() => {
-    console.log(`playerList:: ${JSON.stringify(playerList)}`);
-  }, [playerList]);
+    if (defeatedPlayerIndex !== null) {
+      playerList.findIndex((player, idx) => {
+        if (idx === defeatedPlayerIndex) {
+          setIsDefeated(true);
+
+          const timer = setTimeout(() => {
+            setIsDefeated(false);
+          }, 1500);
+
+          return () => clearTimeout(timer);
+        } else {
+          setIsDefeated(false);
+        }
+      });
+    }
+  }, [defeatedPlayerIndex]);
 
   useEffect(() => {
     if (balloonMessage !== null) {
@@ -37,7 +52,7 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
           dir="col"
           col="center"
           myTurn={player.myTurn}
-          defeated={defeatedPlayerIndex !== null && idx === defeatedPlayerIndex}
+          defeated={isDefeated}
         >
           {isBalloonShown && balloonMessage.userId === player.id && (
             <StyledBalloon>

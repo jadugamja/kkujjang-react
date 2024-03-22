@@ -139,8 +139,6 @@ const GameRoom = () => {
         setIsPlaying(true);
       },
       (error) => {
-        // setModalType("alert");
-        // setModalMessage(error?.slice(1, -1));
         setErrorMessage(error?.slice(1, -1));
         setIsModalOpen(true);
       }
@@ -174,6 +172,13 @@ const GameRoom = () => {
     //   isMounted = true;
     //   return () => disconnectSocket();
   }, []);
+
+  useEffect(() => {
+    if (roomInfo.state && roomInfo.state !== "playing") {
+      setWaitingPlayerList(roomInfo?.userList);
+      setIsPlaying(false);
+    }
+  }, [roomInfo.state]);
 
   // Add Waiting Players Info
   useEffect(() => {

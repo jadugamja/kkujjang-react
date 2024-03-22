@@ -17,11 +17,6 @@ import {
   isWordFailState,
   currentPointsState
 } from "@/recoil/gameState";
-import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
-import TitleBar from "../Shared/TitleBar";
-import Chat from "../Shared/Chat";
-import WordInput from "./WordInput";
-import PlayingPlayerList from "./PlayingPlayerList";
 import {
   onGameEnd,
   onRoundEnd,
@@ -31,7 +26,12 @@ import {
   turnStart,
   receiveSayWordFail,
   receiveSayWordSucceed
-} from "../../../services/socket";
+} from "@/services/socket";
+import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
+import TitleBar from "../Shared/TitleBar";
+import Chat from "../Shared/Chat";
+import WordInput from "./WordInput";
+import PlayingPlayerList from "./PlayingPlayerList";
 import GameModal from "../Shared/GameModal";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
@@ -56,8 +56,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const prevRoundScoreRef = useRef();
 
   useEffect(() => {
-    // const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
-    // if (myTurnPlayer && myTurnPlayer.id === cookie.userId) {
     if (roomInfo?.roomOwnerUserId === cookie.userId) {
       roundStart(
         (gameStatus) => {
@@ -175,22 +173,22 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     });
   }, []);
 
-  useEffect(() => {
-    setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
+  // useEffect(() => {
+  //   setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
 
-    if (player.myTurn) {
-      turnStart(
-        (room) => {
-          setTurnCount(room.turnElapsed);
-        },
-        (error) => {
-          setModalType("error");
-          setModalChildren(error);
-          setIsModalOpen(true);
-        }
-      );
-    }
-  }, [player]);
+  //   if (player.myTurn) {
+  //     turnStart(
+  //       (room) => {
+  //         setTurnCount(room.turnElapsed);
+  //       },
+  //       (error) => {
+  //         setModalType("error");
+  //         setModalChildren(error);
+  //         setIsModalOpen(true);
+  //       }
+  //     );
+  //   }
+  // }, [player]);
 
   // useEffect(() => {
   //   if (!prevRoundScoreRef.current) {
@@ -214,37 +212,26 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
   // ====== 다음 턴으로 턴 넘기기 ======
   const updateNextTurn = () => {
+    let nextPlayerIndex;
     setPlayerList((prevPlayerList) => {
       const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
-      const nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
+      nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
 
-      const changedTurnPlayerList = prevPlayerList.map((player, idx) => {
+      return prevPlayerList.map((player, idx) => {
         if (idx === currPlayerIndex) {
-          setIsMyTurn(false);
           return { ...player, myTurn: false };
         }
         if (idx === nextPlayerIndex) {
-          setIsMyTurn(true);
           return { ...player, myTurn: true };
         }
         return player;
       });
-
-      setPlayer(changedTurnPlayerList[nextPlayerIndex]);
-      return changedTurnPlayerList;
     });
 
+    setIsMyTurn(nextPlayerIndex === 0);
+
     if (!isRoundEnd) {
-      turnStart(
-        (room) => {
-          setTurnCount(room.turnElapsed);
-        },
-        (error) => {
-          setModalType("error");
-          setModalChildren(error);
-          setIsModalOpen(true);
-        }
-      );
+      turnStart();
     }
   };
 

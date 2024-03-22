@@ -89,7 +89,7 @@ WaitingTab.propTypes = {
   isHost: PropTypes.bool,
   isReady: PropTypes.bool,
   setIsReady: PropTypes.func,
-  roomId: PropTypes.number,
+  roomId: PropTypes.string,
   setIsPlaying: PropTypes.func
 };
 

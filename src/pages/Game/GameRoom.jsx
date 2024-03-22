@@ -196,18 +196,25 @@ const GameRoom = () => {
 
   // Add Playing Players Info
   useEffect(() => {
+    const fetchAllUsers = async () => {
+      const updatedPlayerList = await Promise.all(
+        playingPlayerList.map(async (user) => {
+          const response = await getWaitingPlayerInfoByUserId(user.id);
+          if (!response) {
+            console.error(`Cannot get user info by userId: ${user.id}`);
+          }
+          const isHost = roomInfo.roomOwnerUserId === user.userId;
+          return { ...user, isHost, ...response };
+        })
+      );
+      return updatedPlayerList.filter(Boolean);
+    };
+
     if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
-      const fetchAllUsers = async () => {
-        const updatedPlayerList = await Promise.all(
-          playingPlayerList.map(async (user) => {
-            const response = await getWaitingPlayerInfoByUserId(user.id);
-            return { ...user, ...response };
-          })
-        );
+      fetchAllUsers().then((updatedPlayerList) => {
         setPlayingPlayerList(updatedPlayerList);
         setIsDataFetched2(true);
-      };
-      fetchAllUsers();
+      });
     }
   }, [playingPlayerList]);
 

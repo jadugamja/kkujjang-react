@@ -9,8 +9,6 @@ const GameRoute = () => {
   const [error, setError] = useState(null);
   const [rooms, setRooms] = useState([]);
 
-  let isMounted = false;
-
   useEffect(() => {
     initSocket(
       () => {},

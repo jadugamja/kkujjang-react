@@ -63,7 +63,7 @@ export const TotalScore = ({ children }) => {
 };
 
 TotalScore.propTypes = {
-  children: PropTypes.number
+  children: PropTypes.string
 };
 
 const StyledSpan = styled.span`

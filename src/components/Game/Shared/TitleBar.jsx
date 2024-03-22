@@ -79,7 +79,7 @@ const TitleBar = ({
 TitleBar.propTypes = {
   type: PropTypes.string,
   info: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     title: PropTypes.string,
     currentUserCount: PropTypes.number,
     maxUserCount: PropTypes.number,

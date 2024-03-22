@@ -18,12 +18,13 @@ import {
   currentPointsState
 } from "@/recoil/gameState";
 import {
+  roundStart,
+  onRoundStart,
+  turnStart,
+  onTurnStart,
   onGameEnd,
   onRoundEnd,
   onTurnEnd,
-  onTurnStart,
-  roundStart,
-  turnStart,
   receiveSayWordFail,
   receiveSayWordSucceed
 } from "@/services/socket";
@@ -47,6 +48,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const setCurrPoints = useSetRecoilState(currentPointsState);
 
   const [isRoundEnd, setIsRoundEnd] = useState(false);
+  const [defeatedPlayerIndex, setDefeatedPlayerIndex] = useState(null);
   const [timeoutIds, setTimeoutIds] = useState([]);
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
@@ -56,22 +58,23 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const prevRoundScoreRef = useRef();
 
   useEffect(() => {
+    // 방장이 라운드 시작 요청
     if (roomInfo?.roomOwnerUserId === cookie.userId) {
-      roundStart(
-        (gameStatus) => {
-          if (!randomWord) setRandomWord(gameStatus.roundWord);
-          setInitialCharacter(gameStatus.wordStartsWith);
-          setCurrRound(gameStatus.currentRound);
-          setIsMyTurn(true);
-          turnStart();
-        },
-        (error) => {
-          setModalType("error");
-          setModalChildren(error);
-          setIsModalOpen(true);
-        }
-      );
+      roundStart();
     }
+
+    onRoundStart((gameStatus) => {
+      if (!randomWord) setRandomWord(gameStatus.roundWord);
+      setInitialCharacter(gameStatus.wordStartsWith);
+      setCurrRound(gameStatus.currentRound);
+      setIsMyTurn(true);
+
+      // 현재 차례인 플레이어가 턴 시작 요청
+      const myTurnPlayer = playerList.find((player) => player.myTurn);
+      if (myTurnPlayer.id === cookie.userId) {
+        turnStart();
+      }
+    });
 
     onTurnStart(
       (gameStatus) => {
@@ -151,7 +154,10 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     onRoundEnd((roundResult) => {
       const { defeatedUserIndex, scoreDelta } = roundResult;
       const defeatedUser = playerList[defeatedUserIndex];
-      if (defeatedUser && defeatedUser.id === userName) {
+      const currentPlayerIndex = playerList.findIndex((player) => player.myTurn);
+
+      if (defeatedUser && defeatedUserIndex === currentPlayerIndex) {
+        setDefeatedPlayerIndex(defeatedUserIndex);
         setIsRoundEnd(true);
         roundStart(
           (room) => {
@@ -250,7 +256,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       <UpperWrapper dir="col" type="play">
         <TitleBar type="room" info={roomInfo} />
         <WordInput roundCount={roomInfo?.maxRound} roundTime={roomInfo?.roundTimeLimit} />
-        <PlayingPlayerList playerList={playerList} />
+        <PlayingPlayerList defeatedPlayerIndex={defeatedPlayerIndex} />
       </UpperWrapper>
       <Wrapper>
         <Chat size="big" />

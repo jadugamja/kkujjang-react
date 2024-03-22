@@ -15,13 +15,7 @@ import { userInfoState } from "@/recoil/userState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
-import {
-  loadRoom,
-  receiveMessage,
-  receiveSayWordFail,
-  receiveSayWordSucceed,
-  sendMessage
-} from "../../../services/socket";
+import { loadRoom, receiveMessage, sendMessage } from "../../../services/socket";
 import { getWaitingPlayerInfoByUserId } from "@/services/user";
 import { waitingPlayerListState } from "../../../recoil/userState";
 
@@ -37,7 +31,7 @@ const Chat = ({ isPlaying, size = "default" }) => {
   const setBalloonMessage = useSetRecoilState(balloonMessageState);
   const [chats, setChats] = useState([]);
 
-  const messageQueue = useRef([]);
+  // const messageQueue = useRef([]);
   const chatResult = useRef(null);
   const chatInput = useRef();
   const cs = useRef(null);
@@ -60,19 +54,6 @@ const Chat = ({ isPlaying, size = "default" }) => {
       setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
       if (isPlaying) setBalloonMessage({ userId: userId, message: message });
     });
-
-    // receiveSayWordFail((word) => {
-    //   const prevInitialCharacter = initialCharacter;
-    //   setIsFail(true);
-    //   setInitialCharacter(word);
-
-    //   const id = setTimeout(() => {
-    //     setInitialCharacter(prevInitialCharacter);
-    //     setIsFail(false);
-    //   }, 1000);
-
-    //   setTimeoutIds([id]);
-    // });
   }, []);
 
   // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
@@ -112,12 +93,6 @@ const Chat = ({ isPlaying, size = "default" }) => {
     e.preventDefault();
 
     if (toMessage) sendChatMessage(toMessage);
-    // if (
-    //   initialCharacter !== "" &&
-    //   toMessage.startsWith(initialCharacter)
-    // ) {
-    //   sendGameWord(toMessage);
-    // }
   };
 
   const getNicknameByUserId = async (userId) => {

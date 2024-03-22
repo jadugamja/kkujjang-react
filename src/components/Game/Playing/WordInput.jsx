@@ -23,11 +23,7 @@ import {
   currentPointsState,
   isWordFailState
 } from "@/recoil/gameState";
-import {
-  receiveSayWordFail,
-  receiveSayWordSucceed,
-  sendMessage
-} from "@/services/socket";
+import { sendMessage } from "@/services/socket";
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
@@ -137,7 +133,7 @@ const WordInput = ({ roundCount, roundTime }) => {
           )}
         </DisplayWordWrapper>
         {/* 변경 必 */}
-        <TimerBar type="turn" totalTime={roundTime / 10} />
+        <TimerBar type="turn" totalTime={roundTime} />
         <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {isMyTurn && (

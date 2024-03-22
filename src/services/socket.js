@@ -224,19 +224,15 @@ export const onGameStart = (callBack, errorCallBack) => {
 };
 
 // ====== 라운드 시작 요청 ======
-export const roundStart = (callBack, errorCallBack) => {
+export const roundStart = () => {
   client.emit("round start");
+};
 
+export const onRoundStart = (callBack) => {
   client.off("complete round start");
   client.on("complete round start", (gameStatus) => {
     console.log("[log] complete round start, room: ", gameStatus);
     callBack(gameStatus);
-  });
-
-  client.off("error");
-  client.on("error", (error) => {
-    console.log("[Error]: ", error);
-    errorCallBack(error);
   });
 };
 

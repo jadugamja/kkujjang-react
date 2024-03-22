@@ -10,7 +10,7 @@ import { TotalScore, TurnScore } from "../Shared/Score";
 import { playingPlayerListState } from "@/recoil/userState";
 import { balloonMessageState } from "@/recoil/gameState";
 
-const PlayingPlayerList = () => {
+const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
   const playerList = useRecoilValue(playingPlayerListState);
   const balloonMessage = useRecoilValue(balloonMessageState);
   const [isBalloonShown, setIsBalloonShown] = useState(false);
@@ -31,8 +31,14 @@ const PlayingPlayerList = () => {
 
   return (
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
-      {playerList?.map((player) => (
-        <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
+      {playerList?.map((player, idx) => (
+        <PlayerWrapper
+          key={player.id}
+          dir="col"
+          col="center"
+          myTurn={player.myTurn}
+          defeated={defeatedPlayerIndex !== null && idx === defeatedPlayerIndex}
+        >
           {isBalloonShown && balloonMessage.userId === player.id && (
             <StyledBalloon>
               <span>{balloonMessage.message}</span>
@@ -53,7 +59,7 @@ const PlayingPlayerList = () => {
 };
 
 PlayingPlayerList.propTypes = {
-  playerList: PropTypes.array
+  defeatedPlayerIndex: PropTypes.number
 };
 
 const PlayerWrapper = styled(FlexBox)`
@@ -61,8 +67,10 @@ const PlayerWrapper = styled(FlexBox)`
   width: 8.3rem;
   height: 12rem;
   padding: 12px 10px;
-  background-color: ${({ myTurn }) => (myTurn ? "#DDFFDD" : "#f0f0f0")};
-  border: ${({ myTurn }) => myTurn && "2px solid #57F857"};
+  background-color: ${({ myTurn, defeated }) =>
+    defeated ? "#f0f0f0" : myTurn ? "#DDFFDD" : "#f0f0f0"};
+  border: ${({ myTurn, defeated }) =>
+    defeated ? "3px solid #FF6C6C" : myTurn && "2px solid #57F857"};
   border-radius: 7px;
   transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
 `;

@@ -20,14 +20,25 @@ const ThemedApp = () => {
   );
 };
 
+// Strict Mode for dev
+// ReactDOM.createRoot(document.getElementById("root")).render(
+//   <React.StrictMode>
+//     <RecoilRoot>
+//       <CookiesProvider>
+//         <Router>
+//           <ThemedApp />
+//         </Router>
+//       </CookiesProvider>
+//     </RecoilRoot>
+//   </React.StrictMode>
+// );
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <CookiesProvider>
-        <Router>
-          <ThemedApp />
-        </Router>
-      </CookiesProvider>
-    </RecoilRoot>
-  </React.StrictMode>
+  <RecoilRoot>
+    <CookiesProvider>
+      <Router>
+        <ThemedApp />
+      </Router>
+    </CookiesProvider>
+  </RecoilRoot>
 );

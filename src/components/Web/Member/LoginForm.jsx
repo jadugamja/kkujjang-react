@@ -50,14 +50,12 @@ const LoginForm = () => {
       setLoginError("");
       const userRole = response.authorityLevel === 100 ? "admin" : "member";
       const expires = new Date();
-      expires.setDate(expires.getHours() + 12);
+      expires.setTime(expires.getTime() + 7200 * 1000);
       setCookie("sessionId", response.sessionId, { path: "/", expires });
       setCookie("userRole", userRole, { path: "/", expires });
-      navigate("/");
 
-      if (!isDataFetched.current) {
-        getUserInfo();
-      }
+      if (!isDataFetched.current) getUserInfo();
+      navigate("/");
     } else {
       setLoginError(error);
     }
@@ -97,6 +95,7 @@ const LoginForm = () => {
     const userInfo = await getCurrentUserInfo();
 
     if (userInfo !== null) {
+      setCookie("userId", userInfo.nickname.split("#")[1], { path: "/" });
       const updatedUserInfo = {
         // username: username,
         role: cookies.userRole,

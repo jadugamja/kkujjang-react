@@ -15,11 +15,9 @@ export const roomInfoState = atom({
   default: {
     title: "",
     password: "",
-    playerCount: 1,
-    maxPlayerCount: 8,
-    roundCount: 5,
-    roundTime: 90,
-    isPlaying: false
+    maxUserCount: 8,
+    maxRound: 5,
+    roundTimeLimit: 90000
   }
 });
 

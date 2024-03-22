@@ -12,7 +12,7 @@ const QnAText = styled.p`
 `;
 
 const ThreadItemWrapper = styled(FlexBox)`
-  width: "100%"
+  width: "100%";
   height: ${(props) => props.height || "fit-content"};
   margin: ${(props) => props.margin || "5px"};
   margin-top: ${(props) => props.marginTop || null};

@@ -116,7 +116,6 @@ const MyInfoContainer = () => {
 
     // 회원 정보 수정 API 코드
     setApiConfig({
-      ...apiConfig,
       method: "put",
       url: "/user",
       headers: { sessionId: cookies.sessionId },

@@ -10,16 +10,14 @@ import WithdrawalForm from "@/components/Web/Member/WithdrawalForm";
 // ===== component =====
 const Withdrawal = () => {
   return (
-    <>
-      <ContentWrapper row="center" col="center">
-        <Header />
-        <NarrowContent>
-          <Main>
-            <WithdrawalForm />
-          </Main>
-        </NarrowContent>
-      </ContentWrapper>
-    </>
+    <ContentWrapper row="center" col="center">
+      <Header />
+      <NarrowContent>
+        <Main>
+          <WithdrawalForm />
+        </Main>
+      </NarrowContent>
+    </ContentWrapper>
   );
 };
 

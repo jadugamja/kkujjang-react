@@ -4,60 +4,33 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FlexBox } from "@/styles/FlexStyle";
 import { thisTurnLeftTimeState, thisRoundLeftTimeState } from "@/recoil/gameState";
-import { onTimer } from "../../../services/socket";
+import { onTimer } from "@/services/socket";
 
 const TimerBar = ({ type, totalTime }) => {
-  const [leftTime, setLeftTime] = useState(totalTime);
+  const [totalTurnTime, setTotalTurnTime] = useState(totalTime / 10);
+  const [totalRoundTime, setTotalRoundTime] = useState(totalTime);
   const [thisTurnLeftTime, setThisTurnLeftTime] = useRecoilState(thisTurnLeftTimeState);
   const [thisRoundLeftTime, setThisRoundLeftTime] =
     useRecoilState(thisRoundLeftTimeState);
-  const [startTime, setStartTime] = useState(Date.now());
-  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   useEffect(() => {
     onTimer((data) => {
-      const { roundTimeLeft, personalTimeLeft } = data;
-      const roundTimeLeftSec = roundTimeLeft / 1000;
+      const { personalTimeLeft, roundTimeLeft } = data;
       const personalTimeLeftSec = personalTimeLeft / 1000;
+      const roundTimeLeftSec = roundTimeLeft / 1000;
 
-      if (type === "turn") setThisTurnLeftTime(roundTimeLeftSec);
-      else if (type === "round") setThisRoundLeftTime(totalTime);
+      if (personalTimeLeftSec < 0) {
+        setThisTurnLeftTime(0);
+      } else if (roundTimeLeftSec < 0) {
+        setThisRoundLeftTime(0);
+      }
+      setThisTurnLeftTime(personalTimeLeftSec);
+      setThisRoundLeftTime(roundTimeLeftSec);
+
+      // setTotalTurnTime(personalTimeLeftSec);
+      // setTotalRoundTime(roundTimeLeftSec);
     });
   }, []);
-
-  // useEffect(() => {
-  //   if (leftTime <= 0) {
-  //     if (type === "turn") setThisTurnLeftTime(leftTime);
-  //     else if (type === "round") setThisRoundLeftTime(leftTime);
-  //   }
-  // }, [leftTime])
-
-  useEffect(() => {
-    const frame = () => {
-      const now = Date.now();
-      const totalElapsed = (now - startTime) / 1000;
-      const sinceLastUpdate = (now - lastUpdate) / 1000;
-
-      if (sinceLastUpdate > 0.02) {
-        // 0.02초 이상 경과했을 때만 상태 업데이트
-        setLeftTime(Math.max(totalTime - totalElapsed, 0));
-        setLastUpdate(now);
-      }
-
-      if (leftTime > 0) {
-        requestAnimationFrame(frame);
-      }
-    };
-
-    if (leftTime <= 0) {
-      if (type === "turn") setThisTurnLeftTime(leftTime);
-      else if (type === "round") setThisRoundLeftTime(leftTime);
-    } else {
-      requestAnimationFrame(frame);
-    }
-
-    return () => cancelAnimationFrame(frame);
-  }, [startTime, lastUpdate, totalTime]);
 
   const getBgColor = (type, name) => {
     switch (type) {
@@ -68,8 +41,10 @@ const TimerBar = ({ type, totalTime }) => {
     }
   };
 
-  const width = leftTime > 0 ? (leftTime / totalTime) * 100 : 0;
-  const sec = Math.round(leftTime, 0.1);
+  const leftTime = type === "turn" ? thisTurnLeftTime : thisRoundLeftTime;
+  // const _totalTime = type === "turn" ? totalTurnTime : totalRoundTime;
+  const width = leftTime > 0 ? (leftTime / (totalTime / 1000)) * 100 : 0;
+  const sec = Math.round(leftTime * 10) / 10;
   const outerColor = React.useMemo(() => getBgColor(type, "outer"), [type]);
   const innerColor = React.useMemo(() => getBgColor(type, "inner"), [type]);
 

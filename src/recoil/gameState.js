@@ -25,16 +25,21 @@ export const turnCountState = atom({
   default: 0
 });
 
+export const isMyTurnState = atom({
+  key: "isMyTurnState",
+  default: false
+});
+
 // 남은 시간: 현재 차례
 export const thisTurnLeftTimeState = atom({
   key: "thisTurnLeftTimeState",
-  default: 1
+  default: 0
 });
 
 // 남은 시간: 이번 라운드
 export const thisRoundLeftTimeState = atom({
   key: "thisRoundLeftTimeState",
-  default: 1
+  default: 0
 });
 
 // 현재 차례 플레이어 순서
@@ -44,8 +49,20 @@ export const myTurnPlayerIndexState = selector({
     get(playingPlayerListState).findIndex((player) => player.myTurn === true)
 });
 
+// 끝말잇기 실패 상태
+export const isWordFailState = atom({
+  key: "isWordFailState",
+  default: false
+});
+
 // 현재 차례 끝말잇기 점수 결과
-export const currentPoints = atom({
-  key: "currentPoints",
+export const currentPointsState = atom({
+  key: "currentPointsState",
   default: 0
+});
+
+// 인게임 내 말풍선 메시지
+export const balloonMessageState = atom({
+  key: "balloonMessageState",
+  default: null
 });

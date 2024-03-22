@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 
 import { gameStart, switchReadyState } from "@/services/socket";
-import { roomIdState, isPlayingRoomState } from "@/recoil/roomState";
+import { roomIdState } from "@/recoil/roomState";
 import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
 import { userNameState } from "@/recoil/userState";
 import { SpacingWrapper } from "../Shared/Layout";
@@ -28,29 +28,10 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const setRandomWord = useSetRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
   const setCurrRound = useSetRecoilState(currentRoundState);
-  const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
+  // const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
 
   const onStartGame = () => {
-    gameStart(
-      (room) => {
-        const updatedPlayerList = room.usersSequence.map((user, idx) => ({
-          id: user.userId,
-          score: user.score,
-          myTurn: idx === room.currentTurnUserIndex
-        }));
-        setMyTurnPlayerIndex(room.currentTurnUserIndex);
-        setPlayingPlayerList(updatedPlayerList);
-        setCurrRound(room.currentRound);
-        setRandomWord(room.roundWord);
-        setInitialCharacter(room.wordStartsWith);
-        setIsPlaying(true);
-      },
-      (error) => {
-        setModalType("alert");
-        setModalMessage(error);
-        setIsModalOpen(true);
-      }
-    );
+    gameStart();
   };
 
   const onUpdateRoomConfig = () => {
@@ -108,7 +89,7 @@ WaitingTab.propTypes = {
   isHost: PropTypes.bool,
   isReady: PropTypes.bool,
   setIsReady: PropTypes.func,
-  roomId: PropTypes.number,
+  roomId: PropTypes.string,
   setIsPlaying: PropTypes.func
 };
 

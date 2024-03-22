@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
 import { userInfoState, userNameState, waitingPlayerListState } from "@/recoil/userState";
@@ -33,9 +34,16 @@ import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
 import avatar from "@/assets/images/avatar.png";
 import AvatarCanvas from "../Shared/AvatarCanvas";
-import { createRoom, changeRoomConfig, leaveRoom } from "@/services/socket";
+import {
+  createRoom,
+  changeRoomConfig,
+  leaveRoom,
+  joinRoom,
+  loadRoom
+} from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
-import { updateCurrentUserAvatar } from "../../../services/user";
+import { updateCurrentUserAvatar } from "@/services/user";
+import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
 
 const GameModal = ({
   type,
@@ -46,8 +54,12 @@ const GameModal = ({
   height = "",
   children
 }) => {
+  // ====== room ======
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
+  const setRoomId = useSetRecoilState(roomIdState);
+  const [roomNumber, setRoomNumber] = useState(null);
+
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
   const [fxCurrVolume, setFxCurrVolume] = useRecoilState(fxVolumeState);
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
@@ -57,7 +69,8 @@ const GameModal = ({
   const [currAvatar, setCurrAvatar] = useState(0);
   const [user, setUser] = useRecoilState(userInfoState);
   const userId = useRecoilValue(userNameState);
-  const setRoomId = useSetRecoilState(roomIdState);
+
+  const [, setCookie] = useCookies(["userId"]);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -78,12 +91,12 @@ const GameModal = ({
       height = "17.75rem";
       break;
     case "room":
-      titleText = "방 만들기";
+      titleText = !roomId ? "방 만들기" : "방 설정";
       height = "28.3rem";
       break;
     case "profile":
       titleText = "프로필";
-      height = "13.75rem";
+      height !== "" ? "14rem" : height;
       break;
     case "setting":
       titleText = "환경설정";
@@ -117,7 +130,20 @@ const GameModal = ({
   ];
 
   useEffect(() => {
-    if (roomInfo.id) {
+    if (type === "room" && !roomId) {
+      setRoomInfo({
+        title: "",
+        password: "",
+        maxUserCount: 8,
+        maxRound: 5,
+        roundTimeLimit: 90000
+      });
+    }
+  }, []);
+
+  // roomInfo -> roomInfoList
+  useEffect(() => {
+    if (roomInfo?.id) {
       if (roomInfoList.some((room) => room.id === roomInfo.id)) {
         // 방 정보 PUT API 호출
         setRoomInfoList((prev) =>
@@ -131,18 +157,27 @@ const GameModal = ({
   }, [roomInfo]);
 
   useEffect(() => {
-    if (roomId !== roomInfo.id) {
+    if (roomNumber !== null) {
+      setIsOpen(false);
+      navigate(`/game/${roomNumber}`);
+    }
+  }, [roomNumber]);
+
+  useEffect(() => {
+    if (roomId && roomId !== roomInfo?.id) {
       setRoomInfo({
         title: "",
         password: "",
-        playerCount: 1,
-        maxPlayerCount: 8,
-        roundCount: 5,
-        roundTime: 90
+        currentUserCount: 1,
+        maxUserCount: 8,
+        maxRound: 5,
+        roundTimeLimit: 90,
+        state: "preparing"
       });
     }
-  }, [roomId, roomInfo.id]);
+  }, [roomId, roomInfo?.id]);
 
+  // ====== avatar ======
   const onAvatarLeftClick = () => {
     const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
     setCurrAvatar(index);
@@ -164,22 +199,23 @@ const GameModal = ({
 
   const navigate = useNavigate();
 
+  // ====== room ======
   const onValidateChange = (e) => {
     const t = e.target;
-    let v = t.value;
-
-    if (/[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(v)) {
-      return;
-    }
+    let v = parseInt(t.value);
 
     if (isNaN(parseInt(v))) {
       return;
     }
 
+    if (SPECIAL_CHARACTERS_REGEX.test(v)) {
+      return;
+    }
+
     if (v < parseInt(t.min)) {
-      v = t.min;
+      v = parseInt(t.min);
     } else if (v > parseInt(t.max)) {
-      v = t.max;
+      v = parseInt(t.max);
     }
 
     setRoomInfo({
@@ -196,57 +232,57 @@ const GameModal = ({
       return;
     }
 
-    // 임시 roomId
-    const roomId = roomInfoList.length + 1;
-
     if (roomInfoList.some((room) => room.id === roomId)) {
-      changeRoomConfig(roomInfo, (room) => {
-        setRoomInfo(room);
-      });
+      let { title, password, maxUserCount, maxRound, roundTimeLimit } = roomInfo;
+      password = password || "";
+      changeRoomConfig(
+        { title, password, maxUserCount, maxRound, roundTimeLimit },
+        (room) => {
+          setRoomInfo(room);
+          setIsOpen(false);
+        },
+        (error) => {
+          console.log(`[Error]: ${error}`);
+        }
+      );
       setRoomInfoList((prev) =>
         prev.map((room) =>
           room.id === roomId ? { ...room, ...roomInfo, id: roomId } : room
         )
       );
     } else {
-      debugger;
-      createRoom(roomInfo, (room) => {
-        setRoomId(roomId);
-        setRoomInfo(room);
+      createRoom(roomInfo, () => {
+        loadRoom((room) => {
+          setRoomNumber(room.roomNumber);
+          setRoomId(room.id);
+          setRoomInfo(room);
+          setCookie("userId", room.roomOwnerUserId, { path: "/" });
+          setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
+        });
       });
-
-      // setWaitingPlayerList();
-
-      // (최초 방 생성 시, 생성한 플레이어의 username을 같이 보내어 roomInfo에 hostId를 같이 저장해둬야 함)
-      setRoomId(roomId);
-      setRoomInfo((prev) => ({
-        ...prev,
-        id: roomId
-      }));
-      setRoomInfoList((prev) => [...prev, { ...roomInfo, id: roomId }]);
     }
-
-    setIsOpen(false);
-    navigate(`/game/${roomId}`);
   };
 
+  // ====== password ======
   const onCheckSamePassword = () => {
-    // 비밀번호 확인 요청 (body: roomId, password)
-
-    // if (!data.isCorrect)
-    {
-      setIsCorrectPassword(false);
-      return;
-    }
-    // else
-    {
-      setIsOpen(false);
-      navigate(`/game/${roomId}`);
-    }
+    const authorization = { roomId, password };
+    joinRoom(
+      authorization,
+      () => {
+        setIsOpen(false);
+        navigate(`/game/${roomId}`);
+      },
+      (error) => {
+        console.log(`[Error]: ${error}`);
+        setIsCorrectPassword(false);
+        return;
+      }
+    );
   };
 
+  // ====== exit ======
   const onExitRoom = () => {
-    leaveRoom(roomId, userId, () => {
+    leaveRoom(() => {
       setIsOpen(false);
       navigate("/game");
     });
@@ -347,10 +383,11 @@ const GameModal = ({
                         type="text"
                         placeholder="비밀번호"
                         maxLength={30}
-                        value={roomInfo?.isSecure && "1234"}
-                        onChange={(e) =>
-                          setRoomInfo({ ...roomInfo, password: e.target.value })
-                        }
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          setRoomInfo({ ...roomInfo, password: e.target.value });
+                        }}
                       />
                     </TdContent>
                   </Tr>
@@ -362,7 +399,7 @@ const GameModal = ({
                       <GameModalInput
                         type="number"
                         max={8}
-                        min={1}
+                        min={2}
                         step={1}
                         name="maxUserCount"
                         value={roomInfo?.maxUserCount}
@@ -396,10 +433,10 @@ const GameModal = ({
                         value={roomInfo?.roundTimeLimit}
                         onChange={(e) => onValidateChange(e)}
                       >
-                        <option value="60">60초</option>
-                        <option value="90">90초</option>
-                        <option value="120">120초</option>
-                        <option value="150">150초</option>
+                        <option value={60000}>60초</option>
+                        <option value={90000}>90초</option>
+                        <option value={120000}>120초</option>
+                        <option value={150000}>150초</option>
                       </GameModalSelect>
                     </TdContent>
                   </Tr>
@@ -410,9 +447,7 @@ const GameModal = ({
                 col="center"
                 margin={isTitleEmpty ? "22px 0 0" : "42px 0 0"}
               >
-                <GameModalButton type="submit" onClick={(e) => onValidateChange(e)}>
-                  확인
-                </GameModalButton>
+                <GameModalButton type="submit">확인</GameModalButton>
               </ButtonWrapper>
             </form>
           )}
@@ -498,8 +533,13 @@ const GameModal = ({
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
                 <GameModalButton
                   onClick={() => {
+                    loadRoom((room) => {
+                      setRoomInfo(room);
+                      setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
+                    });
                     setIsOpen(false);
                     setIsPlaying(false);
+                    // 모든 플레이어의 isReady: false로...
                   }}
                 >
                   확인

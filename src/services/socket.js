@@ -6,6 +6,9 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
+  // transports: ["websocket"],
+  reconnection: false,
+  sid: cookies.get("sessionId"),
   extraHeaders: {
     // "my-header": "1234"
     sessionId: cookies.get("sessionId")
@@ -13,14 +16,15 @@ const client = io(SOCKET_URL, {
 });
 
 // ====== 소켓 초기화 ======
-export const initSocket = (callBack) => {
+export const initSocket = (callBack, errorCallBack) => {
   client.on("connect", () => {
     console.log("[log] Connect to the Server...");
+    callBack();
   });
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    callBack(error);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 
@@ -28,6 +32,7 @@ export const initSocket = (callBack) => {
 export const loadRoomList = (callBack) => {
   client.emit("load room list");
 
+  client.off("complete load room list");
   client.on("complete load room list", (roomList) => {
     console.log("[log] Complete Load Room List: ", roomList);
     callBack(roomList);
@@ -70,28 +75,49 @@ export const onUpdateRoomConfig = (callBack) => {
 export const createRoom = (roomData, callBack) => {
   client.emit("create room", roomData);
 
-  client.on("complete create room", (room) => {
-    console.log("[log] complete create room: ", room);
-    callBack(room);
+  client.off("complete create room");
+  client.on("complete create room", () => {
+    console.log("[log] complete create room...");
+    callBack();
+  });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
   });
 };
 
 // ====== 방 수정 ======
-export const changeRoomConfig = (roomData, callBack) => {
+export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
   client.emit("change room config", roomData);
 
+  client.off("complete change room config");
   client.on("complete change room config", (room) => {
     console.log("[log] complete change room config: ", room);
     callBack(room);
   });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    errorCallBack(error);
+  });
 };
 
 // ====== 방 참가 ======
-export const joinRoom = (roomData, callBack) => {
-  client.emit("join room", roomData);
+export const joinRoom = (authorization, callBack, errorCallBack) => {
+  client.emit("join room", authorization);
+
+  client.off("complete join room");
   client.on("complete join room", () => {
     console.log("[log] complete join room... ");
     callBack();
+  });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (!!errorCallBack) errorCallBack(error);
   });
 };
 
@@ -104,29 +130,45 @@ export const onUserJoinRoom = (callBack) => {
 };
 
 // ====== 방 조회 ======
-export const loadRoom = (roomId, callBack) => {
-  client.emit("load room", roomId);
+export const loadRoom = (callBack, errorCallBack) => {
+  client.emit("load room");
 
+  client.off("complete load room");
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);
     callBack(room);
   });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
+  });
 };
 
 // ====== 방 퇴장 ======
-export const leaveRoom = (roomId, callBack) => {
-  client.emit("leave room", roomId);
+export const leaveRoom = (callBack, errorCallBack) => {
+  client.emit("leave room");
+
+  client.off("complete leave room");
   client.on("complete leave room", () => {
     console.log("[log] complete leave room... ");
     callBack();
+  });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
   });
 };
 
 // 다른 유저 퇴장 알림
 export const onUserLeaveRoom = (callBack) => {
-  client.on("some user leave room", (userId) => {
-    console.log("[log] some user leave room, userId: ", userId);
-    callBack(userId);
+  client.off("some user leave room");
+  client.on("some user leave room", (roomStatus) => {
+    console.log("[log] some user leave room, userId: ", roomStatus);
+    callBack(roomStatus);
   });
 };
 
@@ -142,19 +184,39 @@ export const onChangeRoomOwner = (callBack) => {
 export const switchReadyState = (newState, callBack) => {
   client.emit("switch ready state", newState);
 
+  client.off("complete switch ready state");
+  client.on("complete switch ready state", (data) => {
+    console.log("[log] complete switch ready state, data: ", data);
+    callBack(data);
+  });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
+  });
+};
+
+export const onSwitchReadyState = (callBack) => {
   client.on("complete switch ready state", (data) => {
     console.log("[log] complete switch ready state, data: ", data);
     callBack(data);
   });
 };
 
-// ====== 게임 시작 요청 ======
-export const gameStart = (callBack, errorCallBack) => {
+// ====== 게임 시작 ======
+export const gameStart = () => {
   client.emit("game start");
+};
+
+export const onGameStart = (callBack, errorCallBack) => {
+  client.off("complete game start");
   client.on("complete game start", (room) => {
     console.log("[log] complete game start, room", room);
     callBack(room);
   });
+
+  client.off("error");
   client.on("error", (error) => {
     console.log("[Error] error: ", error);
     errorCallBack(error);
@@ -162,25 +224,31 @@ export const gameStart = (callBack, errorCallBack) => {
 };
 
 // ====== 라운드 시작 요청 ======
-export const roundStart = (callBack, errorCallBack) => {
+export const roundStart = () => {
   client.emit("round start");
-  client.on("complete round start", (room) => {
-    console.log("[log] complete round start, room: ", room);
-    callBack(room);
-  });
-  client.on("error", (error) => {
-    console.log("[Error]: ", error);
-    errorCallBack(error);
+};
+
+export const onRoundStart = (callBack) => {
+  client.off("complete round start");
+  client.on("complete round start", (gameStatus) => {
+    console.log("[log] complete round start, room: ", gameStatus);
+    callBack(gameStatus);
   });
 };
 
 // ====== 턴 시작 요청 ======
-export const turnStart = (callBack, errorCallBack) => {
+export const turnStart = () => {
   client.emit("turn start");
-  client.on("complete turn start", (room) => {
-    console.log("[log] complete turn start, room: ", room);
-    callBack(room);
+};
+
+export const onTurnStart = (callBack, errorCallBack) => {
+  client.off("complete turn start");
+  client.on("complete turn start", (gameStatus) => {
+    console.log("[log] complete turn start, room: ", gameStatus);
+    callBack(gameStatus);
   });
+
+  client.off("error");
   client.on("error", (error) => {
     console.log("[Error]: ", error);
     errorCallBack(error);
@@ -195,15 +263,15 @@ export const sendMessage = (message) => {
 };
 
 export const receiveMessage = (callBack) => {
-  client.on("chat", (message) => {
-    // 메시지 구성 {nickname: "", message: ""}
-    // const { fromNickname, fromMessage } = message;
-    console.log("[log] chat, message: ", message);
-    callBack(message);
+  client.off("chat");
+  client.on("chat", (data) => {
+    console.log("[log] chat, chatData: ", data);
+    callBack(data);
   });
 };
 
 export const receiveSayWordFail = (callBack) => {
+  client.off("say word fail");
   client.on("say word fail", (word) => {
     console.log("[log] say word fail: ", word);
     callBack(word);
@@ -211,6 +279,7 @@ export const receiveSayWordFail = (callBack) => {
 };
 
 export const receiveSayWordSucceed = (callBack) => {
+  client.off("say word succeed");
   client.on("say word succeed", (data) => {
     console.log("[log] say word succeed: ", data);
     callBack(data);
@@ -219,6 +288,7 @@ export const receiveSayWordSucceed = (callBack) => {
 
 // ====== 타이머 ======
 export const onTimer = (callBack) => {
+  client.off("timer");
   client.on("timer", (data) => {
     console.log("[log] timer: ", data);
     callBack(data);
@@ -235,8 +305,9 @@ export const onTurnEnd = (callBack) => {
 
 // ====== 라운드 종료 ======
 export const onRoundEnd = (callBack) => {
+  client.off("round end");
   client.on("round end", (roundResult) => {
-    console.log("[log] round end... ");
+    console.log("[log] round end... roundResult: ", roundResult);
     callBack(roundResult);
   });
 };
@@ -244,13 +315,16 @@ export const onRoundEnd = (callBack) => {
 // ====== 게임 종료 ======
 export const onGameEnd = (callBack) => {
   client.on("game end", (ranking) => {
-    console.log("[log] game end... ");
+    console.log(`[log] game end...: ${JSON.stringify(ranking)}`);
     callBack(ranking);
   });
 };
 
 export const disconnectSocket = () => {
+  debugger;
   if (client.connected) {
     client.disconnect("[log] Disconnected from the Server...");
+    // 재연결 시도
+    // setTimeout(initSocket, 1000);
   }
 };

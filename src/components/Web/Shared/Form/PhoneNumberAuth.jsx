@@ -21,6 +21,13 @@ import CheckIcon from "@/assets/images/white-check.png";
 import useAxios from "@/hooks/useAxios";
 
 const PhoneNumberAuth = ({ onVerificationResult }) => {
+  // 전화 번호
+  const numbersRef = Array(3)
+    .fill()
+    ?.map(() => React.createRef());
+  // 인증 번호
+  const verificationRef = useRef();
+
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
   const [validMessage, setValidMessage] = useState("");
   const [isSentPhoneNumber, setIsSentPhoneNumber] = useState(false); // 전화번호 발송 여부
@@ -65,13 +72,6 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
     }
   }, [response]);
 
-  // 전화 번호
-  const numbersRef = Array(3)
-    .fill()
-    ?.map(() => React.createRef());
-  // 인증 번호
-  const verificationRef = useRef();
-
   // 입력칸
   const handleChange = (e) => {
     const refIndex = numbersRef.findIndex((ref) => ref.current === e.target);
@@ -111,13 +111,19 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 
     setApiConfig({
       method: "get",
-      url: `/user/auth-code?receiverNumber=${phoneNumber}`
+      url: `/user/auth-code?receiverNumber=${phoneNumber}`,
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
 
     e.target.disabled = true;
   };
 
-  // 인증 번호 전달
+  /*
+   * Params
+   * phoneNumber: String, verification: String
+   */
   const sendVerification = () => {
     const phoneNumber = numbersRef.map((ref) => ref.current.value).join("-");
     const verification = verificationRef.current.value;
@@ -132,7 +138,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       setApiConfig({
         method: "post",
         url: "/user/auth-code/check",
-        headers: { smsAuthId: cookies.smsAuthId },
+        headers: {
+          smsAuthId: cookies.smsAuthId
+        },
         data: {
           authNumber: verification,
           phoneNumber: phoneNumber

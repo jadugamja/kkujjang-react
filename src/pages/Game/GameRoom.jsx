@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { userNameState } from "@/recoil/userState";
+import { userInfoState, userNameState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { MainContentWrapper, Wrapper } from "@/components/Game/Shared/Layout";
@@ -17,120 +18,209 @@ import {
   loadRoom,
   onChangeRoomOwner,
   onUserJoinRoom,
-  onUserLeaveRoom
+  onUserLeaveRoom,
+  onSwitchReadyState,
+  onGameStart
 } from "../../services/socket";
-import { waitingPlayerListState } from "../../recoil/userState";
+import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
+import { roomInfoState } from "@/recoil/roomState";
 import Modal from "../../components/Game/Shared/GameModal";
-import useAxios from "@/hooks/useAxios";
+import { getPlayerInfoByUserId } from "@/services/user";
+import {
+  currentRoundState,
+  randomWordState,
+  initialCharacterState
+} from "../../recoil/gameState";
 
 const GameRoom = () => {
   const userName = useRecoilValue(userNameState);
+  const user = useRecoilValue(userInfoState);
+  const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  const [roomInfo, setRoomInfo] = useState({});
+  const [playingPlayerList, setPlayingPlayerList] =
+    useRecoilState(playingPlayerListState);
+  const setCurrRound = useSetRecoilState(currentRoundState);
+  const setRandomWord = useSetRecoilState(randomWordState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
-  const [apiConfig, setApiConfig] = useState(null);
-  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
+  let newOwnerIndex = null;
 
   // 경로의 roomId값 추출
   const { roomId } = useParams();
 
+  // useEffect(() => {
+  //   setWaitingPlayerList(roomInfo?.userList);
+  //   setIsPlaying(roomInfo?.state === "playing" ? true : false);
+  // }, [roomInfo]);
+
+  // useEffect(() => {
+  //   initSocket((error) => {
+  //     setErrorMessage(error);
+  //     setIsModalOpen(true);
+  //   });
+
+  //   return () => disconnectSocket();
+  // }, []);
+  let isMounted = false;
+
   useEffect(() => {
-    initSocket((error) => {
-      setErrorMessage(error);
-      setIsModalOpen(true);
+    //   if (isMounted) return;
+
+    setWaitingPlayerList(roomInfo?.userList);
+    setIsPlaying(roomInfo?.state === "playing" ? true : false);
+
+    //   initSocket(
+    //     () => {
+
+    // 타 플레이어 입장 알림
+    onUserJoinRoom((userId) => {
+      getUserInfoByUserId(userId);
     });
 
-    return () => disconnectSocket();
-  }, []);
-
-  useEffect(() => {
-    // 방 조회
-    loadRoom(roomId, (room) => {
-      debugger;
-      setRoomInfo(room);
-      setIsPlaying(room.state === "playing" ? true : false);
-
-      // 방장
-      setWaitingPlayerList((prev) => [
-        { userId: room.roomOwnerUserId, isHost: true, isReady: true },
-        ...prev
-      ]);
-
-      // 방장이 아닌 플레이어
-      room.userList?.forEach((user) => {
-        setWaitingPlayerList((prev) => [...prev, user]);
+    // 타 플레이어 준비 여부 알림
+    onSwitchReadyState((data) => {
+      const { index, state } = data;
+      setWaitingPlayerList((prevList) => {
+        return prevList?.map((player, idx) =>
+          idx === index ? { ...player, isReady: state } : player
+        );
       });
     });
 
-    // 타 플레이어 입장 알림
-    onUserJoinRoom((user) => {
-      setWaitingPlayerList((prev) => [...prev, user]);
-    });
-
     // 타 플레이어 퇴장 알림
-    onUserLeaveRoom((userId) => {
-      setWaitingPlayerList((prev) => prev.filter((user) => user.id !== userId));
+    onUserLeaveRoom((roomStatus) => {
+      const { userList, currentUserCount } = roomStatus;
+      setRoomInfo((prev) => ({ ...prev, currentUserCount }));
+      setWaitingPlayerList((prev) =>
+        prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
+      );
+
+      if (newOwnerIndex !== null) {
+        setWaitingPlayerList((prev) => {
+          const updatedList = prev.map((user, idx) => {
+            return { ...user, isHost: idx === newOwnerIndex };
+          });
+          return updatedList;
+        });
+        newOwnerIndex = null;
+      }
     });
 
     // 방장 변경
     onChangeRoomOwner((newOwnerIdx) => {
-      setWaitingPlayerList((prev) => {
-        const updatedList = [...prev];
-        updatedList[newOwnerIdx].isHost = true;
-        return updatedList;
-      });
+      // setWaitingPlayerList((prev) => {
+      //   const updatedList = prev.map((user, idx) => {
+      //     return { ...user, isHost: idx === newOwnerIdx };
+      //   });
+      //   return updatedList;
+      // });
+      newOwnerIndex = newOwnerIdx;
     });
 
-    // 임시
-    const tmp = {
-      id: roomId,
-      title: "테스트123",
-      password: "", // 비밀번호 X
-      currentUserCount: 1,
-      maxUserCount: 8,
-      maxRound: 5,
-      roundTimeLimit: 90,
-      roomOwnerUserId: "abcd1234",
-      state: "playing"
-    };
+    // 게임 시작
+    onGameStart(
+      (room) => {
+        setCurrRound(room.currentRound);
+        setRandomWord(room.roundWord);
+        setIsPlaying(true);
+      },
+      (error) => {
+        setErrorMessage(error?.slice(1, -1));
+        setIsModalOpen(true);
+      }
+    );
 
-    setRoomInfo(tmp);
-    setIsPlaying(tmp.state === "playing" ? true : false);
+    //     },
+    //     (error) => {
+    //       setErrorMessage(error);
+    //       setIsModalOpen(true);
+    //       return;
+    //     }
+    //   );
+
+    // 방 조회
+    // loadRoom((room) => {
+    //   setRoomInfo(room);
+    //   setIsPlaying(room.state === "playing" ? true : false);
+
+    //   // 방장
+    //   setWaitingPlayerList((prev) => [
+    //     { userId: room.roomOwnerUserId, isHost: true, isReady: true },
+    //     ...prev
+    //   ]);
+
+    //   // 방장이 아닌 플레이어
+    //   room.userList?.forEach((user) => {
+    //     setWaitingPlayerList((prev) => [...prev, user]);
+    //   });
+    // });
+
+    //   isMounted = true;
+    //   return () => disconnectSocket();
   }, []);
 
   useEffect(() => {
-    if (apiConfig === null) return;
-    fetchData();
-  }, [apiConfig]);
+    if (roomInfo.state && roomInfo.state !== "playing") {
+      setWaitingPlayerList(roomInfo?.userList);
+      setIsPlaying(false);
+    }
+  }, [roomInfo.state]);
 
+  // Add Waiting Players Info
   useEffect(() => {
-    // 유저 정보
-    waitingPlayerList.forEach((user) => {
-      setApiConfig({
-        method: "get",
-        url: `/user/${user?.username}`
-      });
-    });
+    if (waitingPlayerList && waitingPlayerList?.length !== 0 && !isDataFetched) {
+      const fetchAllUsers = async () => {
+        const updatedPlayerList = await Promise.all(
+          waitingPlayerList.map(async (user, idx) => {
+            const response = await getPlayerInfoByUserId(user.userId);
+            const isHost = roomInfo.roomOwnerUserId === user.userId;
+            // const isHost = idx === 0;
+            return { ...user, isHost, ...response };
+          })
+        );
+        setWaitingPlayerList(updatedPlayerList);
+        setIsDataFetched(true);
+      };
+      fetchAllUsers();
+    }
   }, [waitingPlayerList]);
 
-  useEffect(() => {
-    if (response !== null) {
-      setWaitingPlayerList((prev) => {
-        const userIndex = prev.findIndex(
-          (user) => user.userId === apiConfig.url.split("/").pop()
-        );
-        if (userIndex !== -1) {
-          const updatedUser = { ...prev[userIndex], ...response };
-          return [...prev.slice(0, userIndex), updatedUser, ...prev.slice(userIndex + 1)];
-        }
-        return prev;
-      });
-    }
-  }, [response]);
+  // // Add Playing Players Info
+  // useEffect(() => {
+  //   const fetchAllUsers = async () => {
+  //     const updatedPlayerList = await Promise.all(
+  //       playingPlayerList.map(async (user) => {
+  //         const response = await getWaitingPlayerInfoByUserId(user.id);
+  //         if (!response) {
+  //           console.error(`Cannot get user info by userId: ${user.id}`);
+  //         }
+  //         return { ...user, ...response };
+  //       })
+  //     );
+  //     return updatedPlayerList.filter(Boolean);
+  //   };
+
+  //   if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
+  //     fetchAllUsers().then((updatedPlayerList) => {
+  //       setPlayingPlayerList(updatedPlayerList);
+  //       setIsDataFetched2(true);
+  //     });
+  //   }
+  // }, [playingPlayerList]);
+
+  const getUserInfoByUserId = async (userId) => {
+    const userInfo = await getPlayerInfoByUserId(userId);
+    return setWaitingPlayerList((prev) => {
+      if (prev.some((user) => user.userId === userId)) return prev;
+      return [...prev, { userId, isHost: false, isReady: false, ...userInfo }];
+    });
+  };
 
   return (
     <ContentWrapper row="center" col="center">
@@ -149,8 +239,11 @@ const GameRoom = () => {
                   <PlayingTab />
                 ) : (
                   <WaitingTab
-                    isHost={roomInfo.roomOwnerUserId === userName ? true : false}
-                    roomId={roomInfo.id}
+                    isHost={
+                      waitingPlayerList?.find((_user) => _user.userId === user?.userId)
+                        ?.isHost
+                    }
+                    roomId={roomInfo?.id}
                     setIsPlaying={setIsPlaying}
                   />
                 )}
@@ -163,10 +256,7 @@ const GameRoom = () => {
               {isPlaying ? (
                 <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
               ) : (
-                <WaitingContainer
-                  isHost={roomInfo.roomOwnerUserId === userName ? true : false}
-                  roomInfo={roomInfo}
-                />
+                <WaitingContainer roomInfo={roomInfo} />
               )}
             </MainContentWrapper>
           </Box>

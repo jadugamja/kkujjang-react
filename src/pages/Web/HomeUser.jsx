@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { userInfoState } from "../../recoil/userState";
 import useAxios from "@/hooks/useAxios";
@@ -10,7 +10,7 @@ import Header from "@/components/Web/Shared/Layout/Header";
 import Title from "@/components/Web/Shared/Layout/Title";
 import HomeButton from "@/components/Web/Shared/Buttons/HomeButton";
 import Banner from "@/components/Web/Shared/Layout/Banner";
-import { Span } from "@/components/Game/Shared/Layout";
+import { Span, StyledLink as NoticeLink } from "@/components/Game/Shared/Layout";
 
 const HomeUser = () => {
   const user = useRecoilValue(userInfoState);
@@ -64,9 +64,9 @@ const HomeUser = () => {
               <Span>{error}</Span>
             ) : (
               <>
-                <Link to="/notice/list">
+                <NoticeLink to="/notice/list" width="fit-content">
                   <Title>공지사항</Title>
-                </Link>
+                </NoticeLink>
                 {listData?.slice(0, 3)?.map((item) => (
                   <FlexBox
                     row="between"
@@ -83,7 +83,7 @@ const HomeUser = () => {
                       {item.title}
                     </Span>
                     <Span font="Noto Sans KR" fontSize="17px" color="#8F692B">
-                      {item.createdAt?.split(" ")[0]}
+                      {item.created_at?.split("T")[0]}
                     </Span>
                   </FlexBox>
                 ))}

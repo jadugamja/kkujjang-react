@@ -1,77 +1,43 @@
 import { useState, useRef, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { io } from "socket.io-client";
-import { SOCKET_URL } from "@/services/const";
 
 import {
   initialCharacterState,
   thisTurnLeftTimeState,
-  myTurnPlayerIndexState
+  myTurnPlayerIndexState,
+  isWordFailState,
+  balloonMessageState
 } from "@/recoil/gameState";
+import { userInfoState } from "@/recoil/userState";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
-import {
-  receiveMessage,
-  receiveSayWordFail,
-  receiveSayWordSucceed,
-  sendMessage
-} from "../../../services/socket";
+import { loadRoom, receiveMessage, sendMessage } from "../../../services/socket";
+import { getPlayerInfoByUserId } from "@/services/user";
+import { waitingPlayerListState } from "../../../recoil/userState";
 
-const Chat = ({ sessionId, roomId, size = "default" }) => {
-  const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
+const Chat = ({ isPlaying, size = "default" }) => {
+  const userInfo = useRecoilValue(userInfoState);
+  // const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
+  const playerList = useRecoilValue(waitingPlayerListState);
   const leftTime = useRecoilValue(thisTurnLeftTimeState);
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const setIsFail = useSetRecoilState(isWordFailState);
+
   const [toMessage, setToMessage] = useState("");
+  const setBalloonMessage = useSetRecoilState(balloonMessageState);
   const [chats, setChats] = useState([]);
 
+  // const messageQueue = useRef([]);
   const chatResult = useRef(null);
   const chatInput = useRef();
   const cs = useRef(null);
 
-  const sendChatMessage = () => {
-    if (toMessage) {
-      // const _chat = {
-      //   type: "CHAT",
-      //   sessionId: sessionId,
-      //   roomId: roomId,
-      //   nickname: "테스트",
-      //   message: toMessage
-      // };
-      sendMessage(toMessage);
-      setChats([...chats, { nickname: "테스트", message: toMessage }]);
-      setToMessage("");
-      chatInput.current.focus();
-    }
-  };
-
-  const handleMessage = (e) => {
-    e.preventDefault();
-
-    if (toMessage) {
-      sendChatMessage(toMessage);
-    }
-    // if (
-    //   initialCharacter !== "" &&
-    //   toMessage.startsWith(initialCharacter)
-    // ) {
-    //   sendGameWord(toMessage);
-    // }
-  };
-
-  // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
   useEffect(() => {
-    if (chatResult.current) {
-      chatResult.current.scrollTop = chatResult.current.scrollHeight;
-    }
-  }, [chats]);
-
-  // 다른 사용자가 메시지를 입력한 경우
-  useEffect(() => {
-    receiveMessage((message) => {
+    receiveMessage(async (data) => {
       // 사용자가 스크롤 제어하는지 확인
       const isUserScrolling =
         chatResult.current.scrollHeight - chatResult.current.scrollTop !==
@@ -83,13 +49,56 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
         chatResult.current.scrollTop = chatResult.current.scrollHeight;
       }
 
-      setChats((prevChat) => [...prevChat, { nickname: "닉네임", message: message }]);
+      const { userId, message } = data;
+      const nickname = await getNicknameByUserId(userId);
+      setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
+      if (isPlaying) setBalloonMessage({ userId: userId, message: message });
     });
+  }, []);
 
-    receiveSayWordFail((word) => {});
-
-    receiveSayWordSucceed((data) => {});
+  // 사용자가 메시지를 입력한 경우, 스크롤 맨아래 유지
+  useEffect(() => {
+    if (chatResult.current) {
+      chatResult.current.scrollTop = chatResult.current.scrollHeight;
+    }
   }, [chats]);
+
+  // const processMessages = async () => {
+  //   while (messageQueue.current.length > 0) {
+  //     // 사용자가 스크롤 제어하는지 확인
+  //     const isUserScrolling =
+  //       chatResult.current.scrollHeight - chatResult.current.scrollTop !==
+  //       chatResult.current.clientHeight;
+
+  //     // 사용자가 스크롤을 제어하지 않는 경우
+  //     if (!isUserScrolling) {
+  //       // messages 상태 변경되는 경우, 스크롤 위치 아래로 이동
+  //       chatResult.current.scrollTop = chatResult.current.scrollHeight;
+  //     }
+
+  //     const data = messageQueue.current.shift();
+  //     const { userId, message } = data;
+  //     const nickname = await getNicknameByUserId(userId);
+  //     setChats((prevChat) => [...prevChat, { nickname: nickname, message: message }]);
+  //   }
+  // };
+
+  const sendChatMessage = () => {
+    sendMessage(toMessage);
+    setToMessage("");
+    chatInput.current.focus();
+  };
+
+  const handleMessage = (e) => {
+    e.preventDefault();
+
+    if (toMessage) sendChatMessage(toMessage);
+  };
+
+  const getNicknameByUserId = async (userId) => {
+    const userInfo = await getPlayerInfoByUserId(userId);
+    return userInfo.nickname;
+  };
 
   return (
     <ChatWrapper dir="col" size={size}>
@@ -121,8 +130,7 @@ const Chat = ({ sessionId, roomId, size = "default" }) => {
 };
 
 Chat.propTypes = {
-  sessionId: PropTypes.string,
-  roomId: PropTypes.string,
+  isPlaying: PropTypes.bool,
   size: PropTypes.string
 };
 

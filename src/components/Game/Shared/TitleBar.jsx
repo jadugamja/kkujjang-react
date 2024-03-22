@@ -12,9 +12,17 @@ const TitleBar = ({
   showOpenRoom,
   setShowOpenRoom
 }) => {
-  const { id, title, currentUserCount, maxUserCount, maxRound, roundTimeLimit } = info;
+  const {
+    roomNumber,
+    id,
+    title,
+    currentUserCount,
+    maxUserCount,
+    maxRound,
+    roundTimeLimit
+  } = info;
   return (
-    <StyledTitleBar row="between">
+    <StyledTitleBar row="between" key={id && id}>
       {/* Left */}
       {type === "list" && (
         <div>
@@ -34,7 +42,7 @@ const TitleBar = ({
           <span>프로필</span>
         </div>
       )}
-      {type === "room" && <span>{`[${id}] ${title}`}</span>}
+      {type === "room" && <span>{`[${roomNumber}] ${title}`}</span>}
 
       {/* Right */}
       {type === "list" && (
@@ -61,7 +69,7 @@ const TitleBar = ({
         <TitleRightSideWrapper left="28px">
           <span>{`참여자 ${currentUserCount}/${maxUserCount}`}</span>
           <span>{`라운드 ${maxRound}`}</span>
-          <span>{`${roundTimeLimit}초`}</span>
+          <span>{`${roundTimeLimit / 1000}초`}</span>
         </TitleRightSideWrapper>
       )}
     </StyledTitleBar>
@@ -71,7 +79,7 @@ const TitleBar = ({
 TitleBar.propTypes = {
   type: PropTypes.string,
   info: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     title: PropTypes.string,
     currentUserCount: PropTypes.number,
     maxUserCount: PropTypes.number,

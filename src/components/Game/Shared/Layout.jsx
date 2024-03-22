@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
@@ -86,4 +87,8 @@ export const Span = styled.span`
   font-size: ${({ fontSize }) => fontSize || "21px"};
   font-weight: ${({ fontWeight }) => fontWeight || "normal"};
   color: ${({ color }) => color || "inherit"};
+`;
+
+export const StyledLink = styled(Link)`
+  width: ${({ width }) => width};
 `;

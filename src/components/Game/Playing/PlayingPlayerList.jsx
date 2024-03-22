@@ -1,19 +1,64 @@
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 import { TotalScore, TurnScore } from "../Shared/Score";
+import { playingPlayerListState } from "@/recoil/userState";
+import { balloonMessageState } from "@/recoil/gameState";
 
-const PlayingPlayerList = ({ playerList }) => {
+const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
+  const playerList = useRecoilValue(playingPlayerListState);
+  const balloonMessage = useRecoilValue(balloonMessageState);
+  const [isDefeated, setIsDefeated] = useState(false);
+  const [isBalloonShown, setIsBalloonShown] = useState(false);
+
+  useEffect(() => {
+    if (defeatedPlayerIndex !== null) {
+      playerList.findIndex((player, idx) => {
+        if (idx === defeatedPlayerIndex) {
+          setIsDefeated(true);
+
+          const timer = setTimeout(() => {
+            setIsDefeated(false);
+          }, 1500);
+
+          return () => clearTimeout(timer);
+        } else {
+          setIsDefeated(false);
+        }
+      });
+    }
+  }, [defeatedPlayerIndex]);
+
+  useEffect(() => {
+    if (balloonMessage !== null) {
+      setIsBalloonShown(true);
+      const timer = setTimeout(() => {
+        setIsBalloonShown(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [balloonMessage]);
+
   return (
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
-      {playerList?.map((player) => (
-        <PlayerWrapper key={player.id} dir="col" col="center" myTurn={player.myTurn}>
-          <StyledBalloon>
-            <span>{/* 채팅 메시지 */}</span>
-          </StyledBalloon>
+      {playerList?.map((player, idx) => (
+        <PlayerWrapper
+          key={player.id}
+          dir="col"
+          col="center"
+          myTurn={player.myTurn}
+          defeated={isDefeated}
+        >
+          {isBalloonShown && balloonMessage.userId === player.id && (
+            <StyledBalloon>
+              <span>{balloonMessage.message}</span>
+            </StyledBalloon>
+          )}
           <Player
             type="play"
             avatarUrl={avatarUrl}
@@ -21,7 +66,7 @@ const PlayingPlayerList = ({ playerList }) => {
             level={player.level}
           />
           {player.myTurn && <TurnScore />}
-          <TotalScore>{String(player.totalScore).padStart(5, "0")}</TotalScore>
+          <TotalScore>{String(player?.score).padStart(5, "0")}</TotalScore>
         </PlayerWrapper>
       ))}
     </GridBox>
@@ -29,7 +74,7 @@ const PlayingPlayerList = ({ playerList }) => {
 };
 
 PlayingPlayerList.propTypes = {
-  playerList: PropTypes.array
+  defeatedPlayerIndex: PropTypes.number
 };
 
 const PlayerWrapper = styled(FlexBox)`
@@ -37,10 +82,17 @@ const PlayerWrapper = styled(FlexBox)`
   width: 8.3rem;
   height: 12rem;
   padding: 12px 10px;
-  background-color: ${({ myTurn }) => (myTurn ? "#DDFFDD" : "#f0f0f0")};
-  border: ${({ myTurn }) => myTurn && "2px solid #57F857"};
+  background-color: ${({ myTurn, defeated }) =>
+    defeated ? "#f0f0f0" : myTurn ? "#DDFFDD" : "#f0f0f0"};
+  border: ${({ myTurn, defeated }) =>
+    defeated ? "3px solid #FF6C6C" : myTurn && "2px solid #57F857"};
   border-radius: 7px;
   transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
+`;
+
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 `;
 
 const StyledBalloon = styled.div`
@@ -52,6 +104,7 @@ const StyledBalloon = styled.div`
   border: 1px solid #a3a3a3;
   border-radius: 9px;
   padding: 3px 5px;
+  animation: ${fadeOut} 3s linear;
 
   &::before,
   &::after {

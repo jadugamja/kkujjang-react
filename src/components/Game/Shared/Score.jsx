@@ -3,12 +3,12 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Wrapper } from "./Layout";
-import { currentPoints } from "@/recoil/gameState";
-import { playingPlayerListState, playingPlayerState } from "../../../recoil/userState";
+import { currentPointsState } from "@/recoil/gameState";
+import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
 
 export const TurnScore = () => {
   const [pointType, setPointType] = useState(null);
-  const [currPoints, setCurrPoints] = useRecoilState(currentPoints);
+  const [currPoints, setCurrPoints] = useRecoilState(currentPointsState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
 
@@ -24,7 +24,7 @@ export const TurnScore = () => {
       if (player.myTurn) {
         const updatedPlayer = {
           ...player,
-          totalScore: player.totalScore + currPoints
+          score: player.score + currPoints
         };
         setPlayer(updatedPlayer);
 
@@ -47,8 +47,7 @@ export const TurnScore = () => {
       type={pointType}
     >
       <StyledSpan type={pointType}>
-        {currPoints !== 0 &&
-          (pointType === "score" ? `+${currPoints}` : `-${currPoints}`)}
+        {currPoints !== 0 && (pointType === "score" ? `+${currPoints}` : `${currPoints}`)}
       </StyledSpan>
     </Wrapper>
   );
@@ -63,7 +62,7 @@ export const TotalScore = ({ children }) => {
 };
 
 TotalScore.propTypes = {
-  children: PropTypes.number
+  children: PropTypes.string
 };
 
 const StyledSpan = styled.span`

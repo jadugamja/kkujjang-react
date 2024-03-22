@@ -1,179 +1,286 @@
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useCookies } from "react-cookie";
+import PropTypes from "prop-types";
 
+import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
 import {
-  userNameState,
-  playingPlayerListState,
-  playingPlayerState
-} from "@/recoil/userState";
-import { turnCountState } from "@/recoil/gameState";
+  randomWordState,
+  initialCharacterState,
+  turnCountState,
+  isMyTurnState,
+  currentRoundState,
+  isWordFailState,
+  currentPointsState
+} from "@/recoil/gameState";
+import {
+  roundStart,
+  onRoundStart,
+  turnStart,
+  onTurnStart,
+  onGameEnd,
+  onRoundEnd,
+  onTurnEnd,
+  receiveSayWordFail,
+  receiveSayWordSucceed
+} from "@/services/socket";
 import { BodyWrapper, UpperWrapper, Wrapper } from "../Shared/Layout";
 import TitleBar from "../Shared/TitleBar";
 import Chat from "../Shared/Chat";
 import WordInput from "./WordInput";
 import PlayingPlayerList from "./PlayingPlayerList";
-import {
-  onGameEnd,
-  onRoundEnd,
-  onTurnEnd,
-  roundStart,
-  turnStart
-} from "../../../services/socket";
 import GameModal from "../Shared/GameModal";
+import { getPlayerInfoByUserId } from "@/services/user";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
-  const userName = useRecoilValue(userNameState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
+  const [randomWord, setRandomWord] = useRecoilState(randomWordState);
+  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const setIsMyTurn = useSetRecoilState(isMyTurnState);
+  const setCurrRound = useSetRecoilState(currentRoundState);
   const setTurnCount = useSetRecoilState(turnCountState);
+  const setIsWordFail = useSetRecoilState(isWordFailState);
+  const setCurrPoints = useSetRecoilState(currentPointsState);
+
+  const [isDataFetched, setIsDataFetched] = useState(false);
+  const [isRoundEnd, setIsRoundEnd] = useState(false);
+  const [defeatedPlayerIndex, setDefeatedPlayerIndex] = useState(null);
+  const [timeoutIds, setTimeoutIds] = useState([]);
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const prevRoundScoreRef = useRef();
+  const [cookie] = useCookies(["userId"]);
+
+  const isLastRoundRef = useRef(false);
 
   useEffect(() => {
-    const myTurnPlayer = playerList?.find((player) => player.myTurn === true);
-
-    if (myTurnPlayer && myTurnPlayer.id === userName) {
-      roundStart(
-        (room) => {
-          setTurnCount(room.turnElapsed);
-        },
-        (error) => {
-          setModalType("error");
-          setModalChildren(error);
-          setIsModalOpen(true);
-        }
-      );
+    // 방장이 라운드 시작 요청
+    if (roomInfo?.roomOwnerUserId === cookie.userId && !isLastRoundRef.current) {
+      roundStart();
     }
+
+    onRoundStart((gameStatus) => {
+      if (gameStatus.currentRound === 0) {
+        const updatedPlayerList = gameStatus.usersSequence.map((user, idx) => ({
+          id: user.userId,
+          score: user.score,
+          myTurn: idx === gameStatus.currentTurnUserIndex,
+          ...user
+        }));
+        setPlayerList(updatedPlayerList);
+        if (!randomWord) setRandomWord(gameStatus.roundWord);
+      }
+      setInitialCharacter(gameStatus.wordStartsWith);
+      setCurrRound(gameStatus.currentRound);
+      setIsMyTurn(gameStatus.currentTurnUserId === cookie.userId);
+      if (gameStatus.currentRound + 1 === gameStatus.maxRound) {
+        isLastRoundRef.current = true;
+      }
+      if (!isRoundEnd) {
+        setIsRoundEnd(false);
+      }
+
+      // 현재 차례인 플레이어가 턴 시작 요청
+      if (gameStatus.currentTurnUserId === cookie.userId) {
+        turnStart();
+      }
+    });
+
+    onTurnStart(
+      (gameStatus) => {
+        setTurnCount(gameStatus.turnElapsed);
+        if (defeatedPlayerIndex !== null) {
+          setDefeatedPlayerIndex(null);
+        }
+      },
+      (error) => {
+        setModalType("error");
+        setModalChildren(error);
+        setIsModalOpen(true);
+      }
+    );
+
+    // 끝말잇기 실패
+    receiveSayWordFail((word) => {
+      setIsWordFail(true);
+      setInitialCharacter(word);
+
+      const id = setTimeout(() => {
+        setInitialCharacter((prevInitialCharacter) => prevInitialCharacter[0]);
+        setIsWordFail(false);
+      }, 1000);
+
+      setTimeoutIds([id]);
+    });
+
+    // 끝말잇기 성공 시
+    receiveSayWordSucceed((data) => {
+      const { word, userIndex, scoreDelta } = data;
+
+      // 다음 끝말잇기 글자 설정
+      const lastCharacter = word[word.length - 1];
+      const inputWordCharacters = word.split("").slice(1);
+      const delay = 500; // 0.5초
+
+      inputWordCharacters.forEach((char, idx) => {
+        const id1 = setTimeout(
+          () => {
+            setInitialCharacter((prev) => prev + char);
+          },
+          delay * (idx + 1)
+        );
+        timeoutIds.push(id1);
+      });
+
+      // 득점 저장
+      setCurrPoints(scoreDelta);
+      setPlayer((prev) => {
+        return {
+          ...prev,
+          score: prev.score + scoreDelta
+        };
+      });
+      setPlayerList((prevList) => {
+        const newList = [...prevList];
+        let _player = { ...newList[userIndex] };
+        _player.score += scoreDelta;
+        newList[userIndex] = _player;
+        return newList;
+      });
+
+      const id2 = setTimeout(
+        () => {
+          setInitialCharacter(lastCharacter);
+        },
+        delay * 1.5 * inputWordCharacters?.length
+      );
+
+      timeoutIds.push(id2);
+      setTimeoutIds(timeoutIds);
+
+      updateNextTurn();
+    });
 
     onTurnEnd(() => {});
 
     onRoundEnd((roundResult) => {
       const { defeatedUserIndex, scoreDelta } = roundResult;
       const defeatedUser = playerList[defeatedUserIndex];
-      if (defeatedUser && defeatedUser.id === userName) {
-        roundStart(
-          (room) => {
-            setTurnCount(room.turnElapsed);
-          },
-          (error) => {
-            setModalChildren(error);
-            setIsModalOpen(true);
-          }
-        );
+      const currentPlayerIndex = playerList.findIndex((player) => player.myTurn);
+
+      if (defeatedUser && defeatedUserIndex === currentPlayerIndex) {
+        setIsRoundEnd(true);
+        setDefeatedPlayerIndex(defeatedUserIndex);
+        setCurrPoints(scoreDelta);
+        setPlayerList((prevList) => {
+          const newList = [...prevList];
+          let _player = { ...newList[defeatedUserIndex] };
+          _player.score = Math.max(0, _player.score + scoreDelta);
+          newList[defeatedUserIndex] = _player;
+          return newList;
+        });
+        if (!isLastRoundRef.current) {
+          roundStart();
+        }
       }
     });
 
     onGameEnd((ranking) => {
+      isLastRoundRef.current = true;
       setModalType("result");
       setModalChildren(ranking);
       setIsModalOpen(true);
     });
-
-    // 임시 플레이어 배열
-    const players = [
-      {
-        id: 1,
-        nickname: "테스트#3",
-        level: 3,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 2,
-        nickname: "닉네임#2",
-        level: 2,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 3,
-        nickname: "닉네임#3",
-        level: 1,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 4,
-        nickname: "닉네임#4",
-        level: 2,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      },
-      {
-        id: 5,
-        nickname: "닉네임#5",
-        level: 3,
-        myTurn: false,
-        roundScore: [],
-        totalScore: 0,
-        isDefeated: false
-      }
-    ];
-
-    // 게임 시작 시 (임시, 소켓 성공 시 삭제)
-    players?.map((player, idx) => {
-      if (idx === 0) player.myTurn = true;
-    });
-    setPlayerList(players);
-  }, []);
-
-  useEffect(() => {
-    setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
-
-    if (player.myTurn) {
-      turnStart(
-        (room) => {
-          setTurnCount(room.turnElapsed);
-        },
-        (error) => {
-          setModalType("error");
-          setModalChildren(error);
-          setIsModalOpen(true);
-        }
-      );
-    }
-  }, [player]);
-
-  useEffect(() => {
-    if (!prevRoundScoreRef.current) {
-      prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
-    } else {
-      const isScored = playerList.some(
-        (player, idx) => player.roundScore > prevRoundScoreRef.current[idx]
-      );
-
-      if (isScored) updateNextTurn();
-      prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
-    }
   }, [playerList]);
 
-  const updateNextTurn = () => {
-    const currPlayerIndex = playerList.findIndex((player) => player.myTurn);
-    const nextPlayerIndex = (currPlayerIndex + 1) % playerList.length;
+  // Add Playing Players Info
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      const updatedPlayerList = await Promise.all(
+        playerList.map(async (user) => {
+          const response = await getPlayerInfoByUserId(user.id);
+          if (!response) {
+            console.error(`Cannot get user info by userId: ${user.id}`);
+          }
+          return { ...user, ...response };
+        })
+      );
+      return updatedPlayerList.filter(Boolean);
+    };
 
-    const changedTurnPlayerList = playerList?.map((player, idx) => {
-      if (idx === currPlayerIndex) {
-        return { ...player, myTurn: false };
-      }
-      if (idx === nextPlayerIndex) {
-        return { ...player, myTurn: true };
-      }
-      return player;
+    if (playerList && playerList?.length !== 0 && !isDataFetched) {
+      fetchAllUsers().then((updatedPlayerList) => {
+        setPlayerList(updatedPlayerList);
+        setIsDataFetched(true);
+      });
+    }
+  }, [playerList, isDataFetched]);
+
+  // useEffect(() => {
+  //   setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
+
+  //   if (player.myTurn) {
+  //     turnStart(
+  //       (room) => {
+  //         setTurnCount(room.turnElapsed);
+  //       },
+  //       (error) => {
+  //         setModalType("error");
+  //         setModalChildren(error);
+  //         setIsModalOpen(true);
+  //       }
+  //     );
+  //   }
+  // }, [player]);
+
+  // useEffect(() => {
+  //   if (!prevRoundScoreRef.current) {
+  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
+  //   } else {
+  //     const isScored = playerList.some(
+  //       (player, idx) => player.roundScore > prevRoundScoreRef.current[idx]
+  //     );
+
+  //     if (isScored) updateNextTurn();
+  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
+  //   }
+  // }, [playerList]);
+
+  useEffect(() => {
+    console.log(`playerList: ${JSON.stringify(playerList)}`);
+  }, [playerList]);
+
+  useEffect(() => {
+    return () => {
+      timeoutIds?.forEach((id) => clearTimeout(id));
+    };
+  }, [timeoutIds]);
+
+  // ====== 차례 넘기기 ======
+  const updateNextTurn = () => {
+    let nextPlayerIndex;
+    console.log(`playerList: ${JSON.stringify(playerList)}`);
+    setPlayerList((prevPlayerList) => {
+      const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
+      nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
+
+      return prevPlayerList.map((player, idx) => {
+        if (idx === currPlayerIndex) {
+          return { ...player, myTurn: false };
+        }
+        if (idx === nextPlayerIndex) {
+          return { ...player, myTurn: true };
+        }
+        return player;
+      });
     });
 
-    setPlayer(changedTurnPlayerList[nextPlayerIndex]);
-    setPlayerList(changedTurnPlayerList);
+    setIsMyTurn(nextPlayerIndex === 0);
+
+    if (!isRoundEnd) {
+      turnStart();
+    }
   };
 
   return (
@@ -190,8 +297,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       )}
       <UpperWrapper dir="col" type="play">
         <TitleBar type="room" info={roomInfo} />
-        <WordInput roundCount={roomInfo.roundCount} roundTime={roomInfo.roundTime} />
-        <PlayingPlayerList playerList={playerList} />
+        <WordInput roundCount={roomInfo?.maxRound} roundTime={roomInfo?.roundTimeLimit} />
+        <PlayingPlayerList defeatedPlayerIndex={defeatedPlayerIndex} />
       </UpperWrapper>
       <Wrapper>
         <Chat size="big" />

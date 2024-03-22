@@ -15,14 +15,7 @@ const WaitingContainer = ({ roomInfo }) => {
       </UpperWrapper>
       <Wrapper>
         <Profile />
-        <Chat />
-        {/* 
-        <ButtonWrapper dir="col" row="center" col="center">
-            <div>
-              <ReadyButton>준비</ReadyButton>
-            </div>
-          </ButtonWrapper> 
-          */}
+        <Chat isPlaying={roomInfo?.state === "playing"} />
       </Wrapper>
     </BodyWrapper>
   );

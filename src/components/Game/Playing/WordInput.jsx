@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+
 import { FlexBox } from "@/styles/FlexStyle";
 import { blink } from "@/styles/CommonStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
+
 import {
   playingPlayerListState,
   playingPlayerState,
@@ -14,126 +16,43 @@ import {
 import {
   randomWordState,
   initialCharacterState,
+  isMyTurnState,
   thisTurnLeftTimeState,
   thisRoundLeftTimeState,
   currentRoundState,
-  currentPoints
+  currentPointsState,
+  isWordFailState
 } from "@/recoil/gameState";
-import {
-  receiveSayWordFail,
-  receiveSayWordSucceed,
-  sendMessage
-} from "@/services/socket";
+import { sendMessage } from "@/services/socket";
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
-  // const [tempRandomWord, setTempRandomWord] = useState("라이터");
   const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const isMyTurn = useRecoilValue(isMyTurnState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
   const [inputWord, setInputWord] = useState("");
-  const [isFail, setIsFail] = useState(false);
-  const setCurrPoints = useSetRecoilState(currentPoints);
+  const [isFail, setIsFail] = useRecoilState(isWordFailState);
+
+  const setCurrPoints = useSetRecoilState(currentPointsState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
-  const [timeoutIds, setTimeoutIds] = useState([]);
-
-  // 임시
-  // useEffect(() => {
-  //   if (tempRandomWord) {
-  //     setInitialCharacter(tempRandomWord[0]);
-  //   }
-  // }, [tempRandomWord]);
-
-  // 3. 라운드 변경
-  useEffect(() => {
-    if (thisRoundLeftTime === 0 && currRound < roundCount) {
-      setCurrRound((prevTurn) => prevTurn + 1);
-    }
-  }, [thisRoundLeftTime]);
 
   useEffect(() => {
     syncPlayerList((prevList) => prevList?.map((p) => (player.myTurn ? player : p)));
   }, [player]);
 
-  // clearTimeout
-  useEffect(() => {
-    return () => {
-      timeoutIds?.forEach((id) => clearTimeout(id));
-    };
-  }, [timeoutIds]);
-
   const onEnterKeyDown = async (e) => {
     if (e.key !== "Enter") return;
+
+    setInputWord("");
 
     if (!inputWord.startsWith(randomWord?.split("")[currRound]) && thisTurnLeftTime <= 0)
       return;
 
-    // 서버로 단어 전송 및 유효 단어 여부 판별 요청
     sendMessage(inputWord);
-
-    // 끝말잇기 실패 시
-    receiveSayWordFail((word) => {
-      const prevInitialCharacter = initialCharacter;
-      setIsFail(true);
-      setInitialCharacter(word);
-
-      const id = setTimeout(() => {
-        setInitialCharacter(prevInitialCharacter);
-        setIsFail(false);
-      }, 1000);
-
-      setTimeoutIds([id]);
-    });
-
-    // 끝말잇기 성공 시
-    receiveSayWordSucceed((data) => {
-      const { word, userIndex, scoreDelta } = data;
-
-      // 다음 끝말잇기 글자 설정
-      setInitialCharacter((prevChar) => prevChar + word.split("")[word.length - 1]);
-      const inputWordCharacters = inputWord?.split("");
-      const delay = 500; // 0.5초
-      inputWordCharacters.forEach((char, idx) => {
-        const id1 = setTimeout(
-          () => {
-            if (idx !== 0) setInitialCharacter((prevChar) => prevChar + char);
-          },
-          delay * (idx + 1)
-        );
-        timeoutIds.push(id1);
-      });
-
-      // 득점 저장
-      setCurrPoints(scoreDelta);
-      setPlayer((prev) => {
-        const newRoundScore = [...(prev.roundScore || [])];
-        newRoundScore[currRound] = scoreDelta;
-        return {
-          ...prev,
-          roundScore: newRoundScore,
-          totalScore: prev.totalScore + scoreDelta
-        };
-      });
-      setPlayerList((prevList) => {
-        const newList = [...prevList];
-        const _player = newList[userIndex];
-        _player.totalScore += scoreDelta;
-        return newList;
-      });
-
-      const id2 = setTimeout(
-        () => {
-          setInitialCharacter(inputWord?.split("")[inputWord?.length - 1]);
-        },
-        delay * 1.5 * inputWordCharacters?.length
-      );
-
-      timeoutIds.push(id2);
-      setTimeoutIds(timeoutIds);
-    });
   };
 
   return (
@@ -154,21 +73,22 @@ const WordInput = ({ roundCount, roundTime }) => {
           )}
         </DisplayWordWrapper>
         {/* 변경 必 */}
-        <TimerBar type="turn" totalTime={30} />
-        <TimerBar type="round" totalTime={150} />
+        <TimerBar type="turn" totalTime={roundTime / 10} />
+        <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
-      {/* Player Who is myTurn === true */}
-      <InputWrapper>
-        <Input
-          type="text"
-          placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
-          bgColor="#fff"
-          fontSize="18px"
-          value={inputWord}
-          onChange={(e) => setInputWord(e.target.value)}
-          onKeyDown={onEnterKeyDown}
-        />
-      </InputWrapper>
+      {isMyTurn && (
+        <InputWrapper>
+          <Input
+            type="text"
+            placeholder="당신의 차례! 아래 채팅창에서 단어를 입력하세요!"
+            bgColor="#fff"
+            fontSize="18px"
+            value={inputWord}
+            onChange={(e) => setInputWord(e.target.value)}
+            onKeyDown={onEnterKeyDown}
+          />
+        </InputWrapper>
+      )}
     </WordInputWrapper>
   );
 };
@@ -234,7 +154,7 @@ const DisplayFailWord = styled.span`
 
 const InputWrapper = styled(FlexBox)`
   position: absolute;
-  top: calc(40% - 2px);
+  top: 40%;
   width: 40.25rem;
   padding: 4px;
   background-color: #000000cc;

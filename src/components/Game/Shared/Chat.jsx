@@ -16,7 +16,7 @@ import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
 import ChatItem from "./ChatItem";
 import { loadRoom, receiveMessage, sendMessage } from "../../../services/socket";
-import { getWaitingPlayerInfoByUserId } from "@/services/user";
+import { getPlayerInfoByUserId } from "@/services/user";
 import { waitingPlayerListState } from "../../../recoil/userState";
 
 const Chat = ({ isPlaying, size = "default" }) => {
@@ -96,7 +96,7 @@ const Chat = ({ isPlaying, size = "default" }) => {
   };
 
   const getNicknameByUserId = async (userId) => {
-    const userInfo = await getWaitingPlayerInfoByUserId(userId);
+    const userInfo = await getPlayerInfoByUserId(userId);
     return userInfo.nickname;
   };
 

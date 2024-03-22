@@ -25,7 +25,7 @@ import {
 import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
 import { roomInfoState } from "@/recoil/roomState";
 import Modal from "../../components/Game/Shared/GameModal";
-import { getWaitingPlayerInfoByUserId } from "@/services/user";
+import { getPlayerInfoByUserId } from "@/services/user";
 import {
   currentRoundState,
   randomWordState,
@@ -48,7 +48,6 @@ const GameRoom = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  const [isDataFetched2, setIsDataFetched2] = useState(false);
 
   let newOwnerIndex = null;
 
@@ -127,13 +126,6 @@ const GameRoom = () => {
     // 게임 시작
     onGameStart(
       (room) => {
-        const updatedPlayerList = room.usersSequence.map((user, idx) => ({
-          id: user.userId,
-          score: user.score,
-          myTurn: idx === 0
-        }));
-        // setMyTurnPlayerIndex(room.currentTurnUserIndex);
-        setPlayingPlayerList(updatedPlayerList);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);
         setIsPlaying(true);
@@ -186,7 +178,7 @@ const GameRoom = () => {
       const fetchAllUsers = async () => {
         const updatedPlayerList = await Promise.all(
           waitingPlayerList.map(async (user, idx) => {
-            const response = await getWaitingPlayerInfoByUserId(user.userId);
+            const response = await getPlayerInfoByUserId(user.userId);
             const isHost = roomInfo.roomOwnerUserId === user.userId;
             // const isHost = idx === 0;
             return { ...user, isHost, ...response };
@@ -199,32 +191,31 @@ const GameRoom = () => {
     }
   }, [waitingPlayerList]);
 
-  // Add Playing Players Info
-  useEffect(() => {
-    const fetchAllUsers = async () => {
-      const updatedPlayerList = await Promise.all(
-        playingPlayerList.map(async (user) => {
-          const response = await getWaitingPlayerInfoByUserId(user.id);
-          if (!response) {
-            console.error(`Cannot get user info by userId: ${user.id}`);
-          }
-          const isHost = roomInfo.roomOwnerUserId === user.userId;
-          return { ...user, isHost, ...response };
-        })
-      );
-      return updatedPlayerList.filter(Boolean);
-    };
+  // // Add Playing Players Info
+  // useEffect(() => {
+  //   const fetchAllUsers = async () => {
+  //     const updatedPlayerList = await Promise.all(
+  //       playingPlayerList.map(async (user) => {
+  //         const response = await getWaitingPlayerInfoByUserId(user.id);
+  //         if (!response) {
+  //           console.error(`Cannot get user info by userId: ${user.id}`);
+  //         }
+  //         return { ...user, ...response };
+  //       })
+  //     );
+  //     return updatedPlayerList.filter(Boolean);
+  //   };
 
-    if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
-      fetchAllUsers().then((updatedPlayerList) => {
-        setPlayingPlayerList(updatedPlayerList);
-        setIsDataFetched2(true);
-      });
-    }
-  }, [playingPlayerList]);
+  //   if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
+  //     fetchAllUsers().then((updatedPlayerList) => {
+  //       setPlayingPlayerList(updatedPlayerList);
+  //       setIsDataFetched2(true);
+  //     });
+  //   }
+  // }, [playingPlayerList]);
 
   const getUserInfoByUserId = async (userId) => {
-    const userInfo = await getWaitingPlayerInfoByUserId(userId);
+    const userInfo = await getPlayerInfoByUserId(userId);
     return setWaitingPlayerList((prev) => {
       if (prev.some((user) => user.userId === userId)) return prev;
       return [...prev, { userId, isHost: false, isReady: false, ...userInfo }];

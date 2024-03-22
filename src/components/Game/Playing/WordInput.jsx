@@ -48,6 +48,7 @@ const WordInput = ({ roundCount, roundTime }) => {
     if (e.key !== "Enter") return;
 
     setInputWord("");
+
     if (!inputWord.startsWith(randomWord?.split("")[currRound]) && thisTurnLeftTime <= 0)
       return;
 

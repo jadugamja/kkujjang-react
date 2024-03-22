@@ -29,7 +29,7 @@ export const updateCurrentUserAvatar = async (accIdx, nickname = "테스트") =>
   return false;
 };
 
-export const getWaitingPlayerInfoByUserId = async (userId) => {
+export const getPlayerInfoByUserId = async (userId) => {
   const res = await axios.get(`${BASE_URL}/user/${userId}`, {
     headers: { sessionId: cookies.get("sessionId") }
   });

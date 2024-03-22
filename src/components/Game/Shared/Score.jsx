@@ -47,8 +47,7 @@ export const TurnScore = () => {
       type={pointType}
     >
       <StyledSpan type={pointType}>
-        {currPoints !== 0 &&
-          (pointType === "score" ? `+${currPoints}` : `-${currPoints}`)}
+        {currPoints !== 0 && (pointType === "score" ? `+${currPoints}` : `${currPoints}`)}
       </StyledSpan>
     </Wrapper>
   );

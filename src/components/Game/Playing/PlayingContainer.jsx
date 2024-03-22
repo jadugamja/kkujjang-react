@@ -3,11 +3,7 @@ import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
-import {
-  userNameState,
-  playingPlayerListState,
-  playingPlayerState
-} from "@/recoil/userState";
+import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
 import {
   randomWordState,
   initialCharacterState,
@@ -34,6 +30,7 @@ import Chat from "../Shared/Chat";
 import WordInput from "./WordInput";
 import PlayingPlayerList from "./PlayingPlayerList";
 import GameModal from "../Shared/GameModal";
+import { getPlayerInfoByUserId } from "@/services/user";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [player, setPlayer] = useRecoilState(playingPlayerState);
@@ -46,6 +43,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const setIsWordFail = useSetRecoilState(isWordFailState);
   const setCurrPoints = useSetRecoilState(currentPointsState);
 
+  const [isDataFetched, setIsDataFetched] = useState(false);
   const [isRoundEnd, setIsRoundEnd] = useState(false);
   const [defeatedPlayerIndex, setDefeatedPlayerIndex] = useState(null);
   const [timeoutIds, setTimeoutIds] = useState([]);
@@ -54,7 +52,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cookie] = useCookies(["userId"]);
 
-  const prevRoundScoreRef = useRef();
   const isLastRoundRef = useRef(false);
 
   useEffect(() => {
@@ -64,7 +61,16 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     }
 
     onRoundStart((gameStatus) => {
-      if (!randomWord) setRandomWord(gameStatus.roundWord);
+      if (gameStatus.currentRound === 0) {
+        const updatedPlayerList = gameStatus.usersSequence.map((user, idx) => ({
+          id: user.userId,
+          score: user.score,
+          myTurn: idx === gameStatus.currentTurnUserIndex,
+          ...user
+        }));
+        setPlayerList(updatedPlayerList);
+        if (!randomWord) setRandomWord(gameStatus.roundWord);
+      }
       setInitialCharacter(gameStatus.wordStartsWith);
       setCurrRound(gameStatus.currentRound);
       setIsMyTurn(gameStatus.currentTurnUserId === cookie.userId);
@@ -163,24 +169,53 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       const defeatedUser = playerList[defeatedUserIndex];
       const currentPlayerIndex = playerList.findIndex((player) => player.myTurn);
 
-      if (
-        defeatedUser &&
-        defeatedUserIndex === currentPlayerIndex &&
-        !isLastRoundRef.current
-      ) {
+      if (defeatedUser && defeatedUserIndex === currentPlayerIndex) {
         setIsRoundEnd(true);
         setDefeatedPlayerIndex(defeatedUserIndex);
         setCurrPoints(scoreDelta);
-        roundStart();
+        setPlayerList((prevList) => {
+          const newList = [...prevList];
+          let _player = { ...newList[defeatedUserIndex] };
+          _player.score = Math.max(0, _player.score + scoreDelta);
+          newList[defeatedUserIndex] = _player;
+          return newList;
+        });
+        if (!isLastRoundRef.current) {
+          roundStart();
+        }
       }
     });
 
     onGameEnd((ranking) => {
+      isLastRoundRef.current = true;
       setModalType("result");
       setModalChildren(ranking);
       setIsModalOpen(true);
     });
-  }, []);
+  }, [playerList]);
+
+  // Add Playing Players Info
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      const updatedPlayerList = await Promise.all(
+        playerList.map(async (user) => {
+          const response = await getPlayerInfoByUserId(user.id);
+          if (!response) {
+            console.error(`Cannot get user info by userId: ${user.id}`);
+          }
+          return { ...user, ...response };
+        })
+      );
+      return updatedPlayerList.filter(Boolean);
+    };
+
+    if (playerList && playerList?.length !== 0 && !isDataFetched) {
+      fetchAllUsers().then((updatedPlayerList) => {
+        setPlayerList(updatedPlayerList);
+        setIsDataFetched(true);
+      });
+    }
+  }, [playerList, isDataFetched]);
 
   // useEffect(() => {
   //   setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
@@ -212,17 +247,20 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   //   }
   // }, [playerList]);
 
-  // clearTimeout
+  useEffect(() => {
+    console.log(`playerList: ${JSON.stringify(playerList)}`);
+  }, [playerList]);
+
   useEffect(() => {
     return () => {
       timeoutIds?.forEach((id) => clearTimeout(id));
     };
   }, [timeoutIds]);
 
-  // ====== 다음 턴으로 턴 넘기기 ======
+  // ====== 차례 넘기기 ======
   const updateNextTurn = () => {
     let nextPlayerIndex;
-    console.log(`playerList: ${playerList}`);
+    console.log(`playerList: ${JSON.stringify(playerList)}`);
     setPlayerList((prevPlayerList) => {
       const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
       nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;

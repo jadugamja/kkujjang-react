@@ -18,19 +18,16 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
 
   useEffect(() => {
     if (defeatedPlayerIndex !== null) {
-      playerList.findIndex((player, idx) => {
-        if (idx === defeatedPlayerIndex) {
-          setIsDefeated(true);
+      const defeatedPlayers = playerList.map(
+        (player, idx) => idx === defeatedPlayerIndex
+      );
+      setIsDefeated(defeatedPlayers);
 
-          const timer = setTimeout(() => {
-            setIsDefeated(false);
-          }, 1500);
+      const timer = setTimeout(() => {
+        setIsDefeated(defeatedPlayers.fill(false));
+      }, 1500);
 
-          return () => clearTimeout(timer);
-        } else {
-          setIsDefeated(false);
-        }
-      });
+      return () => clearTimeout(timer);
     }
   }, [defeatedPlayerIndex]);
 
@@ -52,7 +49,7 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
           dir="col"
           col="center"
           myTurn={player.myTurn}
-          defeated={isDefeated}
+          defeated={isDefeated[idx]}
         >
           {isBalloonShown && balloonMessage.userId === player.id && (
             <StyledBalloon>

@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
+
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
 
@@ -46,6 +47,9 @@ const LoginForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
+    console.log(cookies, "1");
+    console.log(cookies.sessionId, "1");
+
     if (response !== null) {
       setLoginError("");
       const userRole = response.authorityLevel === 100 ? "admin" : "member";
@@ -59,14 +63,14 @@ const LoginForm = () => {
     } else {
       setLoginError(error);
     }
-  }, [response]);
+  }, [response, error]);
 
   const handleLogin = () => {
     const id = idRef.current.value;
     const password = passwordRef.current.value;
 
     const idRegex = /^[a-z0-9]{7,30}$/;
-    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[\x00-\x7F]{7,30}$/;
 
     if (!idRegex.test(id) || !pwRegex.test(password)) {
       setLoginError("아이디 또는 비밀번호를 잘못 입력했습니다.");

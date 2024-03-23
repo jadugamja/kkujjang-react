@@ -93,7 +93,7 @@ const MyInfoContainer = () => {
       setNicknameModalOpen(true);
       setMessage(error);
     }
-  }, [response]);
+  }, [response, error]);
 
   // 수정 버튼 눌렀을 때
   const handleClickEditButton = () => {

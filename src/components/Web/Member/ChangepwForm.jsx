@@ -71,7 +71,7 @@ const ChangepwForm = () => {
         setFailModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 비밀번호 유효성 검사
   const handlePasswordValidation = () => {

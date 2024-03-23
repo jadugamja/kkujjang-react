@@ -108,7 +108,7 @@ const SignupForm = () => {
         setSignupModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 아이디 중복 확인
   const handleDuplicateId = () => {

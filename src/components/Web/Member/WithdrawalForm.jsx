@@ -68,7 +68,7 @@ const WithdrawalForm = () => {
         setWithdrawalModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 회원 탈퇴
   const handleWithdrawal = () => {

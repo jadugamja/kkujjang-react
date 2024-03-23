@@ -67,7 +67,7 @@ const FindpwForm = () => {
         setFindidModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 인증번호 검증
   const handlePhoneNumberAuth = (response, phoneNumber) => {

@@ -135,7 +135,12 @@ const Thread = ({ inquiryId, currPage, title, type }) => {
       formData.append("files", files);
       formData.append("type", type);
 
-      console.log(files);
+      console.log(formData);
+
+      console.log(formData.get("title"));
+      console.log(formData.get("content"));
+      console.log(formData.get("files"));
+      console.log(formData.get("type"));
 
       // 문의 등록 API 호출
       setApiConfig({

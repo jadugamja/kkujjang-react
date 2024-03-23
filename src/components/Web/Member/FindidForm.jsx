@@ -95,7 +95,7 @@ const FindidForm = () => {
         }
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 전화번호 인증
   const handlePhoneNumberAuth = (response, phoneNumber) => {

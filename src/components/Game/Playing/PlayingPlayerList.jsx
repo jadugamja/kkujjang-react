@@ -25,7 +25,7 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
 
       const timer = setTimeout(() => {
         setIsDefeated(defeatedPlayers.fill(false));
-      }, 1500);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }

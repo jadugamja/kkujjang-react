@@ -14,9 +14,9 @@ const WaitingPlayerList = () => {
 
   return (
     <GridBox items="4" gap="10px" margin="10px 4px 6px">
-      {playerList?.map((player) => (
+      {playerList?.map((player, idx) => (
         <PlayerWrapper
-          key={player.id}
+          key={player.userId}
           type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}
           row="between"
         >

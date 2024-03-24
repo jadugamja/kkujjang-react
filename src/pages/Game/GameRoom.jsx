@@ -16,6 +16,7 @@ import {
   initSocket,
   disconnectSocket,
   loadRoom,
+  onLoadRoom,
   onChangeRoomOwner,
   onUserJoinRoom,
   onUserLeaveRoom,
@@ -134,6 +135,11 @@ const GameRoom = () => {
         setIsModalOpen(true);
       }
     );
+
+    onLoadRoom((room) => {
+      setRoomInfo(room);
+      setIsPlaying(room.state === "playing" ? true : false);
+    });
 
     // 방 조회
     // loadRoom((room) => {

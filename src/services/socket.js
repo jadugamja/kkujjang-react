@@ -320,6 +320,7 @@ export const onGameEnd = (callBack) => {
   });
 };
 
+// ====== 소켓 연결 종료 ======
 export const disconnectSocket = () => {
   debugger;
   if (client.connected) {
@@ -327,4 +328,11 @@ export const disconnectSocket = () => {
     // 재연결 시도
     // setTimeout(initSocket, 1000);
   }
+};
+
+export const onError = (callBack) => {
+  client.on("error", (error) => {
+    console.trace(`[Error]: ${error}`);
+    if (callBack) errorCallBack(error);
+  });
 };

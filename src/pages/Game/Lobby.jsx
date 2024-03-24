@@ -28,7 +28,8 @@ import {
   onLoadNewRoom,
   onDestroyRoom,
   onUpdateCurrentPlayerCount,
-  onUpdateRoomConfig
+  onUpdateRoomConfig,
+  onError
 } from "@/services/socket";
 import { getCurrentUserInfo } from "@/services/user";
 
@@ -47,7 +48,9 @@ const Lobby = () => {
 
   useEffect(() => {
     if (!isMounted && path === "/game") {
-      loadRoomList(setRooms);
+      loadRoomList((roomList) => {
+        setRooms([...roomList].reverse());
+      });
 
       onLoadNewRoom((newRoom) => {
         setRooms((prev) => [newRoom, ...prev]);
@@ -73,14 +76,12 @@ const Lobby = () => {
         );
       });
 
-      //   },
-      //   (error) => {
-      //     setModalType("error");
-      //     setErrorMessage(error);
-      //     setIsModalOpen(true);
-      //     return;
-      //   }
-      // );
+      onError((error) => {
+        setModalType("error");
+        setErrorMessage(error);
+        setIsModalOpen(true);
+        return;
+      });
     }
 
     isMounted = true;

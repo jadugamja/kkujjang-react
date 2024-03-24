@@ -73,7 +73,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       }
       setInitialCharacter(gameStatus.wordStartsWith);
       setCurrRound(gameStatus.currentRound);
-      setIsMyTurn(gameStatus.currentTurnUserId === cookie.userId);
       if (gameStatus.currentRound + 1 === gameStatus.maxRound) {
         isLastRoundRef.current = true;
       }
@@ -83,6 +82,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
       // 현재 차례인 플레이어가 턴 시작 요청
       if (gameStatus.currentTurnUserId === cookie.userId) {
+        setIsMyTurn(true);
         turnStart();
       }
     });
@@ -226,7 +226,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   // ====== 차례 넘기기 ======
   const updateNextTurn = () => {
     let nextPlayerIndex;
-    console.log(`playerList: ${JSON.stringify(playerList)}`);
     setPlayerList((prevPlayerList) => {
       const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
       nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
@@ -242,7 +241,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       });
     });
 
-    setIsMyTurn(nextPlayerIndex === 0);
+    if (playerList[nextPlayerIndex].id === cookie.userId) {
+      setIsMyTurn(true);
+    } else {
+      setIsMyTurn(false);
+    }
 
     if (!isRoundEnd) {
       turnStart();

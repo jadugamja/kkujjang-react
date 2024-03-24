@@ -589,7 +589,7 @@ GameModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
   setIsPlaying: PropTypes.func,
-  roomId: PropTypes.number,
+  roomId: PropTypes.string,
   height: PropTypes.string,
   children: PropTypes.node
 };

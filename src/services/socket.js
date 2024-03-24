@@ -347,6 +347,6 @@ export const disconnectSocket = () => {
 export const onError = (callBack) => {
   client.on("error", (error) => {
     console.trace(`[Error]: ${error}`);
-    if (callBack) errorCallBack(error);
+    if (callBack) callBack(error);
   });
 };

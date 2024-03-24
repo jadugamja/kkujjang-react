@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
@@ -36,7 +36,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [randomWord, setRandomWord] = useRecoilState(randomWordState);
-  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
   const setIsMyTurn = useSetRecoilState(isMyTurnState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setTurnCount = useSetRecoilState(turnCountState);
@@ -217,40 +217,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     }
   }, [playerList, isDataFetched]);
 
-  // useEffect(() => {
-  //   setPlayerList((prevList) => prevList.map((p) => (p.id === player.id ? player : p)));
-
-  //   if (player.myTurn) {
-  //     turnStart(
-  //       (room) => {
-  //         setTurnCount(room.turnElapsed);
-  //       },
-  //       (error) => {
-  //         setModalType("error");
-  //         setModalChildren(error);
-  //         setIsModalOpen(true);
-  //       }
-  //     );
-  //   }
-  // }, [player]);
-
-  // useEffect(() => {
-  //   if (!prevRoundScoreRef.current) {
-  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
-  //   } else {
-  //     const isScored = playerList.some(
-  //       (player, idx) => player.roundScore > prevRoundScoreRef.current[idx]
-  //     );
-
-  //     if (isScored) updateNextTurn();
-  //     prevRoundScoreRef.current = playerList.map((player) => player.roundScore);
-  //   }
-  // }, [playerList]);
-
-  useEffect(() => {
-    console.log(`playerList: ${JSON.stringify(playerList)}`);
-  }, [playerList]);
-
   useEffect(() => {
     return () => {
       timeoutIds?.forEach((id) => clearTimeout(id));
@@ -259,13 +225,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
   // ====== 차례 넘기기 ======
   const updateNextTurn = () => {
-    let nextPlayerIndex;
-    console.log(`playerList: ${JSON.stringify(playerList)}`);
-    setPlayerList((prevPlayerList) => {
-      const currPlayerIndex = prevPlayerList.findIndex((player) => player.myTurn);
-      nextPlayerIndex = (currPlayerIndex + 1) % prevPlayerList.length;
+    const currPlayerIndex = playerList.findIndex((player) => player.myTurn);
+    const nextPlayerIndex = (currPlayerIndex + 1) % playerList.length;
 
-      return prevPlayerList.map((player, idx) => {
+    setPlayerList((prevPlayerList) =>
+      prevPlayerList.map((player, idx) => {
         if (idx === currPlayerIndex) {
           return { ...player, myTurn: false };
         }
@@ -273,10 +237,10 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
           return { ...player, myTurn: true };
         }
         return player;
-      });
-    });
+      })
+    );
 
-    setIsMyTurn(nextPlayerIndex === 0);
+    setIsMyTurn(playerList[nextPlayerIndex].id === cookie.userId);
 
     if (!isRoundEnd) {
       turnStart();

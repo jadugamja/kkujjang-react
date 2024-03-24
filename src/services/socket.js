@@ -24,7 +24,7 @@ export const initSocket = (callBack, errorCallBack) => {
 
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    if (errorCallBack) errorCallBack(error);
+    if (!!errorCallBack) errorCallBack(error);
   });
 };
 
@@ -133,6 +133,20 @@ export const onUserJoinRoom = (callBack) => {
 export const loadRoom = (callBack, errorCallBack) => {
   client.emit("load room");
 
+  client.off("complete load room");
+  client.on("complete load room", (room) => {
+    console.log("[log] complete load room: ", room);
+    callBack(room);
+  });
+
+  client.off("error");
+  client.on("error", (error) => {
+    console.error(`[Error]: ${error}`);
+    if (errorCallBack) errorCallBack(error);
+  });
+};
+
+export const onLoadRoom = (callBack, errorCallBack) => {
   client.off("complete load room");
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);
@@ -320,6 +334,7 @@ export const onGameEnd = (callBack) => {
   });
 };
 
+// ====== 소켓 연결 종료 ======
 export const disconnectSocket = () => {
   debugger;
   if (client.connected) {
@@ -327,4 +342,11 @@ export const disconnectSocket = () => {
     // 재연결 시도
     // setTimeout(initSocket, 1000);
   }
+};
+
+export const onError = (callBack) => {
+  client.on("error", (error) => {
+    console.trace(`[Error]: ${error}`);
+    if (callBack) errorCallBack(error);
+  });
 };

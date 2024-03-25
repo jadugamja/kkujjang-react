@@ -88,7 +88,7 @@ export const createRoom = (roomData, callBack) => {
 };
 
 // ====== 방 수정 ======
-export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
+export const changeRoomConfig = (roomData, callBack) => {
   client.emit("change room config", roomData);
 
   client.off("complete change room config");
@@ -96,11 +96,12 @@ export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
     console.log("[log] complete change room config: ", room);
     callBack(room);
   });
+};
 
-  client.off("error");
-  client.on("error", (error) => {
-    console.error(`[Error]: ${error}`);
-    errorCallBack(error);
+export const onChangeRoomConfig = (callBack) => {
+  client.on("complete change room config", (room) => {
+    console.log("[log] complete change room config: ", room);
+    callBack(room);
   });
 };
 
@@ -136,13 +137,13 @@ export const loadRoom = (callBack, errorCallBack) => {
   client.off("complete load room");
   client.on("complete load room", (room) => {
     console.log("[log] complete load room: ", room);
-    callBack(room);
+    if (!!callBack) callBack(room);
   });
 
   client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    if (errorCallBack) errorCallBack(error);
+    if (!!errorCallBack) errorCallBack(error);
   });
 };
 

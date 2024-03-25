@@ -114,7 +114,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       setTimeoutIds([id]);
     });
 
-    // 끝말잇기 성공 시
+    // 끝말잇기 성공
     receiveSayWordSucceed((data) => {
       const { word, userIndex, scoreDelta } = data;
 

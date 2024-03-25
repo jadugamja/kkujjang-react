@@ -51,6 +51,7 @@ const GameModal = ({
   setIsOpen,
   setIsPlaying,
   roomId,
+  setIsDataFetched,
   height = "",
   children
 }) => {
@@ -58,6 +59,7 @@ const GameModal = ({
   const [roomInfoList, setRoomInfoList] = useRecoilState(roomInfoListState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const setRoomId = useSetRecoilState(roomIdState);
+  const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
   const [roomNumber, setRoomNumber] = useState(null);
 
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -240,9 +242,6 @@ const GameModal = ({
         (room) => {
           setRoomInfo(room);
           setIsOpen(false);
-        },
-        (error) => {
-          console.log(`[Error]: ${error}`);
         }
       );
       setRoomInfoList((prev) =>
@@ -283,6 +282,7 @@ const GameModal = ({
   // ====== exit ======
   const onExitRoom = () => {
     leaveRoom(() => {
+      setWaitingPlayerList(null);
       setIsOpen(false);
       navigate("/game");
     });
@@ -533,10 +533,7 @@ const GameModal = ({
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
                 <GameModalButton
                   onClick={() => {
-                    loadRoom((room) => {
-                      setRoomInfo(room);
-                      setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
-                    });
+                    loadRoom();
                     setIsOpen(false);
                     setIsPlaying(false);
                     // 모든 플레이어의 isReady: false로...
@@ -589,7 +586,8 @@ GameModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
   setIsPlaying: PropTypes.func,
-  roomId: PropTypes.number,
+  roomId: PropTypes.string,
+  setIsDataFetched: PropTypes.func,
   height: PropTypes.string,
   children: PropTypes.node
 };

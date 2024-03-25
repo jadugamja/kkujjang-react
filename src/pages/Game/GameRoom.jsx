@@ -17,6 +17,7 @@ import {
   disconnectSocket,
   loadRoom,
   onLoadRoom,
+  onChangeRoomConfig,
   onChangeRoomOwner,
   onUserJoinRoom,
   onUserLeaveRoom,
@@ -73,9 +74,13 @@ const GameRoom = () => {
 
   useEffect(() => {
     //   if (isMounted) return;
-
     setWaitingPlayerList(roomInfo?.userList);
     setIsPlaying(roomInfo?.state === "playing" ? true : false);
+
+    // 방 설정 변경
+    onChangeRoomConfig((newRoom) => {
+      setRoomInfo(newRoom);
+    });
 
     // 타 플레이어 입장 알림
     onUserJoinRoom((userId) => {
@@ -96,6 +101,7 @@ const GameRoom = () => {
     onUserLeaveRoom((roomStatus) => {
       const { userList, currentUserCount } = roomStatus;
       setRoomInfo((prev) => ({ ...prev, currentUserCount }));
+      setIsDataFetched(false);
       setWaitingPlayerList((prev) =>
         prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
       );
@@ -131,15 +137,10 @@ const GameRoom = () => {
       },
       (error) => {
         setModalType("alert");
-        setErrorMessage(error?.slice(1, -1));
+        setErrorMessage(error);
         setIsModalOpen(true);
       }
     );
-
-    onLoadRoom((room) => {
-      setRoomInfo(room);
-      setIsPlaying(room.state === "playing" ? true : false);
-    });
 
     // 방 조회
     // loadRoom((room) => {
@@ -162,14 +163,25 @@ const GameRoom = () => {
   }, []);
 
   useEffect(() => {
-    if (roomInfo.state && roomInfo.state !== "playing") {
-      setWaitingPlayerList(roomInfo?.userList);
-      setIsPlaying(false);
+    if (!isPlaying) {
+      setIsDataFetched(false);
+      onLoadRoom(
+        (room) => {
+          setRoomInfo(room);
+          setWaitingPlayerList(room.userList);
+        },
+        (error) => {
+          setModalType("alert");
+          setErrorMessage(error);
+          setIsModalOpen(true);
+        }
+      );
     }
-  }, [roomInfo.state]);
+  }, [isPlaying]);
 
   // Add Waiting Players Info
   useEffect(() => {
+    // if (waitingPlayerList && waitingPlayerList?.length !== 0 && !isDataFetched) {
     if (waitingPlayerList && waitingPlayerList?.length !== 0 && !isDataFetched) {
       const fetchAllUsers = async () => {
         const updatedPlayerList = await Promise.all(
@@ -225,6 +237,7 @@ const GameRoom = () => {
           type={modalType}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
+          setIsDataFetched={setIsDataFetched}
           height="14.5rem"
         >
           {errorMessage}

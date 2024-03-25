@@ -16,6 +16,7 @@ import {
   initSocket,
   disconnectSocket,
   loadRoom,
+  onLoadRoom,
   onChangeRoomOwner,
   onUserJoinRoom,
   onUserLeaveRoom,
@@ -45,6 +46,7 @@ const GameRoom = () => {
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [modalType, setModalType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -74,9 +76,6 @@ const GameRoom = () => {
 
     setWaitingPlayerList(roomInfo?.userList);
     setIsPlaying(roomInfo?.state === "playing" ? true : false);
-
-    //   initSocket(
-    //     () => {
 
     // 타 플레이어 입장 알림
     onUserJoinRoom((userId) => {
@@ -131,18 +130,16 @@ const GameRoom = () => {
         setIsPlaying(true);
       },
       (error) => {
+        setModalType("alert");
         setErrorMessage(error?.slice(1, -1));
         setIsModalOpen(true);
       }
     );
 
-    //     },
-    //     (error) => {
-    //       setErrorMessage(error);
-    //       setIsModalOpen(true);
-    //       return;
-    //     }
-    //   );
+    onLoadRoom((room) => {
+      setRoomInfo(room);
+      setIsPlaying(room.state === "playing" ? true : false);
+    });
 
     // 방 조회
     // loadRoom((room) => {
@@ -162,7 +159,6 @@ const GameRoom = () => {
     // });
 
     //   isMounted = true;
-    //   return () => disconnectSocket();
   }, []);
 
   useEffect(() => {
@@ -225,7 +221,12 @@ const GameRoom = () => {
   return (
     <ContentWrapper row="center" col="center">
       {isModalOpen && (
-        <Modal type="error" isOpen={isModalOpen} setIsOpen={setIsModalOpen}>
+        <Modal
+          type={modalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          height="14.5rem"
+        >
           {errorMessage}
         </Modal>
       )}

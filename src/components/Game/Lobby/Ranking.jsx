@@ -52,8 +52,8 @@ const Ranking = () => {
             </Tr>
           </thead>
           <Tbody>
-            {rankData?.map(({ rank, level, nickname }) => (
-              <Tr key={rank}>
+            {rankData?.map(({ rank, level, nickname }, idx) => (
+              <Tr key={idx}>
                 <Td bgColor={getTopRankColor(rank)}>{rank}</Td>
                 <Td>{level}</Td>
                 <Td textAlign="left">{nickname}</Td>

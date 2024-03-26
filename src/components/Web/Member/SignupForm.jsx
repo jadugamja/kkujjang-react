@@ -203,21 +203,29 @@ const SignupForm = () => {
     <>
       {/* 인증 실패 Modal */}
       {authModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} setIsOpen={setAuthModalOpen} hasButton={true}>
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
 
       {/* 회원가입 실패 Modal */}
       {signupModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal
+          onClick={handleModalOpen}
+          setIsOpen={setSignupModalOpen}
+          hasButton={true}
+        >
           회원 정보를 확인해 주세요.
         </WebModal>
       )}
 
       {/* 중복 확인 Modal */}
       {duplicationModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal
+          onClick={handleModalOpen}
+          setIsOpen={setDuplicationModalOpen}
+          hasButton={true}
+        >
           사용 가능한 아이디입니다.
         </WebModal>
       )}

@@ -130,7 +130,7 @@ const ChangepwForm = () => {
     <>
       {/* {비밀번호 변경 실패 modal} */}
       {failModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} setIsOpen={setFailModalOpen} hasButton={true}>
           비밀번호 변경에 실패했습니다.
         </WebModal>
       )}

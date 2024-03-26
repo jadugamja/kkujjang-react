@@ -21,6 +21,7 @@ import Button from "../Buttons/Button.jsx";
 
 const WebModal = ({
   onClick,
+  setIsOpen,
   hasButton,
   isVan,
   isWithdrawal,
@@ -29,10 +30,10 @@ const WebModal = ({
 }) => {
   return (
     <>
-      <ModalBackground onClick={onClick}></ModalBackground>
+      <ModalBackground onClick={() => setIsOpen(false)}></ModalBackground>
       <ModalWrapper>
         <ModalHeader row="end" col="center">
-          <ExitMiniCircle onClick={onClick}></ExitMiniCircle>
+          <ExitMiniCircle onClick={() => setIsOpen(false)}></ExitMiniCircle>
         </ModalHeader>
         <ModalContent dir="col" row="center" col="center" height={isVan && "25.438rem"}>
           {hasButton && (
@@ -41,12 +42,17 @@ const WebModal = ({
               {isWithdrawal ? (
                 <ButtonContainer row="evenly">
                   <Button
-                    key="confirm"
+                    key="withdrawal"
                     type="modal"
                     message="확인"
                     onClick={handleWithdrawal}
                   />
-                  <Button key="exit" type="modal" message="취소" onClick={onClick} />
+                  <Button
+                    key="exit"
+                    type="modal"
+                    message="취소"
+                    onClick={() => setIsOpen(false)}
+                  />
                 </ButtonContainer>
               ) : (
                 <Button key="confirm" type="modal" message="확인" onClick={onClick} />
@@ -78,7 +84,7 @@ const WebModal = ({
 
 WebModal.propTypes = {
   onClick: PropTypes.func,
-  // setIsOpen: PropTypes.func,
+  setIsOpen: PropTypes.func,
   isVan: PropTypes.bool,
   hasButton: PropTypes.bool,
   isWithdrawal: PropTypes.bool,

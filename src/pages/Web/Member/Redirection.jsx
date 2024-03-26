@@ -15,7 +15,7 @@ const Redirection = () => {
     method: "get",
     url: `/user/oauth/kakao?code=${code}`
   });
-  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+  const { response, error, loading, fetchData } = useAxios(apiConfig);
 
   // === cookie ===
   const [cookies, setCookie] = useCookies(["sessionId"]);
@@ -29,9 +29,15 @@ const Redirection = () => {
 
   useEffect(() => {
     if (response !== null) {
-      setCookie("sessionId", response.sessionId);
+      debugger;
+      const userRole = response.authorityLevel === 100 ? "admin" : "member";
+      const expires = new Date();
+      expires.setTime(expires.getTime() + 7200 * 1000);
+      setCookie("sessionId", response.sessionId, { path: "/", expires });
+      setCookie("userRole", userRole, { path: "/", expires });
       navigate(`/`);
     } else {
+      debugger;
       navigate(`/member/login`);
     }
   }, [response, error]);

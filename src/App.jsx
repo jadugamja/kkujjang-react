@@ -7,7 +7,7 @@ const Signup = lazy(() => import("./pages/Web/Member/Signup"));
 const Find = lazy(() => import("./pages/Web/Member/Find"));
 const Login = lazy(() => import("./pages/Web/Member/Login"));
 const Redirection = lazy(() => import("./pages/Web/Member/Redirection"));
-const Withdrawal = lazy(() => import("./pages/Web/Member/Withdrawal"));
+// const Withdrawal = lazy(() => import("./pages/Web/Member/Withdrawal"));
 const MyInfo = lazy(() => import("./pages/Web/Member/MyInfo"));
 const NoticeList = lazy(() => import("./pages/Web/Support/NoticeList"));
 const NoticeDetail = lazy(() => import("./pages/Web/Support/NoticeDetail"));
@@ -30,7 +30,7 @@ const App = () => {
             <Route path="member/join" element={<Signup />} />
             <Route path="member/find" element={<Find />} />
             <Route path="member/login" element={<Login />} />
-            <Route path="member/out" element={<Withdrawal />} />
+            {/* <Route path="member/out" element={<Withdrawal />} /> */}
             <Route path="member/myInfo" element={<MyInfo />} />
             <Route path="member/kakao" element={<Redirection />} />
 

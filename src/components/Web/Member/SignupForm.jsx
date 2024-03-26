@@ -79,24 +79,17 @@ const SignupForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (response?.result === true) {
+    if (response !== null) {
       if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
+        // response?.result === true
         // 중복 확인 성공
         setDuplicationError("");
         setDuplicationModalOpen(true);
         setInputDisabled(true);
       } else if (apiConfig?.url.startsWith("/user")) {
+        // response?.result === 'success'
         // 회원가입 성공
         navigate(`/member/login`);
-      }
-    } else if (error) {
-      if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
-        // 중복 확인 실패
-        setDuplicationError("사용할 수 없는 아이디입니다.");
-        setIdError("");
-      } else if (apiConfig?.url.startsWith("/user")) {
-        // 회원가입 실패
-        setSignupModalOpen(true);
       }
     } else {
       if (apiConfig?.url.startsWith("/user/username/availability?username=")) {
@@ -180,7 +173,6 @@ const SignupForm = () => {
     if (!idError && !pwError && !confirmPwError && !duplicationError && isAuthMath) {
       const id = idRef.current.value;
       const password = passwordRef.current.value;
-      debugger;
       // 회원가입 API 코드
       setApiConfig({
         method: "post",
@@ -197,25 +189,35 @@ const SignupForm = () => {
     }
   };
 
+  const handleModalOpen = () => {
+    if (authModalOpen == true) {
+      setAuthModalOpen(false);
+    } else if (signupModalOpen == true) {
+      setSignupModalOpen(false);
+    } else if (duplicationModalOpen == true) {
+      setDuplicationModalOpen(false);
+    }
+  };
+
   return (
     <>
       {/* 인증 실패 Modal */}
       {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
 
       {/* 회원가입 실패 Modal */}
       {signupModalOpen && (
-        <WebModal setIsOpen={setSignupModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           회원 정보를 확인해 주세요.
         </WebModal>
       )}
 
       {/* 중복 확인 Modal */}
       {duplicationModalOpen && (
-        <WebModal setIsOpen={setDuplicationModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           사용 가능한 아이디입니다.
         </WebModal>
       )}

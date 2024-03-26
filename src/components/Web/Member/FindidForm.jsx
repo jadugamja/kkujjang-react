@@ -79,27 +79,20 @@ const FindidForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (apiConfig?.url.startsWith("/user/find/id")) {
-      if (response !== null) {
+    if (response !== null) {
+      if (apiConfig?.url.startsWith("/user/find/id")) {
         setHasUserInfo(true);
         setUserId(response.result);
-      } else if (error) {
+      }
+    } else {
+      if (apiConfig?.url.startsWith("/user/find/id")) {
         setFindidModalOpen(true);
-        if (findidModalOpen === false) {
-          window.location.reload();
-        }
-      } else {
-        setFindidModalOpen(true);
-        if (findidModalOpen === false) {
-          window.location.reload();
-        }
       }
     }
   }, [response, error]);
 
   // 전화번호 인증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
-    console.log("아이디 조회", response);
     if (response !== null) {
       // 성공 시, 아이디 조회 함수 호출
       handleFindid(phoneNumber);
@@ -132,18 +125,28 @@ const FindidForm = () => {
     navigate(`/member/find?type=pw`);
   };
 
+  // modal event
+  const handleModalOpen = () => {
+    if (findidModalOpen == true) {
+      setFindidModalOpen(false);
+      window.location.reload();
+    } else if (authModalOpen == true) {
+      setAuthModalOpen(false);
+    }
+  };
+
   return (
     <>
       {/* 인증 실패 modal */}
       {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
 
       {/* 아이디 찾기 실패 modal */}
       {findidModalOpen && (
-        <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           아이디가 존재하지 않습니다.
         </WebModal>
       )}

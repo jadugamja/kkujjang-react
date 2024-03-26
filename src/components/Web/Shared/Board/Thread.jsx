@@ -82,16 +82,11 @@ const Thread = ({ inquiryId, currPage, title, type }) => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (apiConfig?.url.startsWith(`/inquiry/${inquiryId}?page=`)) {
-      if (response !== null) {
+    if (response !== null) {
+      if (apiConfig?.url.startsWith(`/inquiry/${inquiryId}?page=`)) {
         setThreadData(response.result.list);
         setThreadId(response.result.threadId);
-        console.log(response.result.list);
-      } else {
-        setThreadData([]);
-      }
-    } else if (apiConfig?.url.startsWith(`/inquiry/${threadId}`)) {
-      if (response !== null) {
+      } else if (apiConfig?.url.startsWith(`/inquiry/${threadId}`)) {
         setApiConfig({
           method: "get",
           url: `/inquiry/${inquiryId}?page=${currPage}`,
@@ -105,11 +100,15 @@ const Thread = ({ inquiryId, currPage, title, type }) => {
         } else {
           setThreadData([]);
         }
-      } else {
+      }
+    } else if (error) {
+      if (apiConfig?.url.startsWith(`/inquiry/${inquiryId}?page=`)) {
+        setThreadData([]);
+      } else if (apiConfig?.url.startsWith(`/inquiry/${threadId}`)) {
         setCreateModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   const appendFilesToFormData = (_files) => {
     if (_files) {
@@ -132,15 +131,10 @@ const Thread = ({ inquiryId, currPage, title, type }) => {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("content", content);
-      formData.append("files", files);
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
       formData.append("type", type);
-
-      console.log(formData);
-
-      console.log(formData.get("title"));
-      console.log(formData.get("content"));
-      console.log(formData.get("files"));
-      console.log(formData.get("type"));
 
       // 문의 등록 API 호출
       setApiConfig({
@@ -155,11 +149,15 @@ const Thread = ({ inquiryId, currPage, title, type }) => {
     }
   };
 
+  const handleModalOpen = () => {
+    setCreateModalOpen(false);
+  };
+
   return (
     <>
       {/* 문의 등록 실패 Modal */}
       {createModalOpen && (
-        <WebModal setIsOpen={setCreateModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           내용을 입력해 주세요.
         </WebModal>
       )}

@@ -88,14 +88,16 @@ const InquiryCreateContainer = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (apiConfig?.url.startsWith("/inquiry/new")) {
-      if (response !== null) {
+    if (response !== null) {
+      if (apiConfig?.url.startsWith("/inquiry/new")) {
         navigate(`/inquiry/list`);
-      } else {
+      }
+    } else {
+      if (apiConfig?.url.startsWith("/inquiry/new")) {
         setCreateModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   const appendFilesToFormData = (_files) => {
     if (_files) {
@@ -119,7 +121,9 @@ const InquiryCreateContainer = () => {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("content", content);
-        formData.append("files", files);
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
         formData.append("type", type);
 
         // 문의 등록 API 호출

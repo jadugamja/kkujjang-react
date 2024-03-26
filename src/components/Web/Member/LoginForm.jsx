@@ -29,7 +29,7 @@ const LoginForm = () => {
   // === state ===
   const setUser = useSetRecoilState(userInfoState);
   const [loginError, setLoginError] = useState(""); // error state
-  const [username, setUsername] = useState(null);
+  // const [username, setUsername] = useState(null);
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -47,9 +47,6 @@ const LoginForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    console.log(cookies, "1");
-    console.log(cookies.sessionId, "1");
-
     if (response !== null) {
       setLoginError("");
       const userRole = response.authorityLevel === 100 ? "admin" : "member";

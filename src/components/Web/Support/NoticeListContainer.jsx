@@ -48,7 +48,6 @@ const NoticeListContainer = () => {
     fetchData();
   }, [apiConfig]);
 
-  // 백엔드 코드, 수정될 부분
   useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
@@ -57,7 +56,7 @@ const NoticeListContainer = () => {
       setLastPageIdx(1);
       setListData([]);
     }
-  }, [response]);
+  }, [response, error]);
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {

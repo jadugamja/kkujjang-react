@@ -53,7 +53,7 @@ const ThreadItem = ({ isAnswer, content, createdAt, files }) => {
           {files && (
             <ThreadItemWrapper>
               {files.map((file, index) => (
-                <ThreadImg key={index} src={URL.createObjectURL(file)} alt="첨부파일" />
+                <ThreadImg key={index} src={file} alt="첨부파일" />
               ))}
             </ThreadItemWrapper>
           )}

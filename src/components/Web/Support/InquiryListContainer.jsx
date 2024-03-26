@@ -65,7 +65,7 @@ const InquiryListContainer = () => {
       setLastPageIdx(1);
       setListData([]);
     }
-  }, [response]);
+  }, [response, error]);
 
   useEffect(() => {
     setApiConfig({

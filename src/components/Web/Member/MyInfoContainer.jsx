@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
@@ -11,6 +12,7 @@ import useAxios from "@/hooks/useAxios";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import Avartar from "@/assets/images/avatar.png";
 import WebModal from "@/components/Web/Shared/Modal/WebModal";
+import { faL, faWon } from "@fortawesome/free-solid-svg-icons";
 
 // ===== style ======
 const InfoFlexBox = styled(FlexBox)`
@@ -55,7 +57,7 @@ const MyInfoContainer = () => {
   const inputRef = useRef(null);
 
   // === cookie ===
-  const [cookies] = useCookies(["sessionId"]);
+  const [cookies, , removeCookie] = useCookies(["sessionId"]);
 
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
@@ -65,7 +67,10 @@ const MyInfoContainer = () => {
   // (modal 관련)
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 변경 실패 modal state
   const [message, setMessage] = useState(""); // 닉네임 modal 의 message 설정 state
+  const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false); // 탈퇴 확인 modal state
+  const [failModalOpen, setFailModalOpen] = useState(false); // 통신 실패 modal state
   // (api 관련)
+  // 프로필 조회 API 호출
   const [apiConfig, setApiConfig] = useState({
     method: "get",
     url: "/user/me",
@@ -73,25 +78,53 @@ const MyInfoContainer = () => {
   });
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
+  // === navigate ===
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
   }, [apiConfig]);
 
-  // 프로필 조회 API 호출
   useEffect(() => {
-    if (response == null) return;
-
     if (response !== null) {
       if (apiConfig?.url.startsWith("/user/me")) {
+        // 프로필 조회 성공 시
         setUserData(response.result);
         setNickname(response.result.nickname);
         setAvatarAccessoryIndex(response.result.avatarAccessoryIndex);
+      } else if (apiConfig?.url.startsWith("/user")) {
+        if (apiConfig?.method === "delete") {
+          // 회원 탈퇴 성공 시
+          console.log("회원 탈퇴");
+          removeCookie("sessionId", { path: "/" });
+          if (cookies?.userRole) {
+            removeCookie("userRole", { path: "/" });
+          } else if (cookies?.userId) {
+            removeCookie("userId", { path: "/" });
+          } else if (cookies?.smsAuthId) {
+            removeCookie("smsAuthId", { path: "/" });
+          } else if (cookies?.passwordChangeAuthId) {
+            removeCookie("passwordChangeAuthId", { path: "/" });
+          }
+          // 홈으로 이동
+          navigate(`/`);
+        } else if (apiConfig?.method === "put") {
+          return;
+        }
       }
     } else if (error) {
-      setNicknameModalOpen(true);
-      setMessage(error);
+      if (apiConfig?.url.startsWith("/user/me")) {
+        setNicknameModalOpen(true);
+        setMessage(error);
+      } else if (apiConfig?.url.startsWith("/user")) {
+        if (apiConfig?.method === "delete") {
+          setFailModalOpen(true);
+        } else if (apiConfig?.method === "put") {
+          setFailModalOpen(true);
+        }
+      }
     }
   }, [response, error]);
 
@@ -105,9 +138,11 @@ const MyInfoContainer = () => {
     const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
 
     if (nickname.trim() === "") {
+      console.log("닉네임 변경 1");
       setNicknameModalOpen(true);
       setMessage("닉네임을 입력해 주세요.");
     } else if (!ninknameRegex.test(nickname)) {
+      console.log("닉네임 변경 2");
       setNicknameModalOpen(true);
       setMessage("닉네임을 확인해 주세요.");
     } else {
@@ -128,7 +163,25 @@ const MyInfoContainer = () => {
 
   // 취소 버튼 눌렀을 때
   const handleClickCancelButton = () => {
-    setEditMode(false);
+    const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
+
+    if (nickname.trim() === "") {
+      console.log("닉네임 변경 1");
+      setNicknameModalOpen(true);
+      setMessage("닉네임을 입력해 주세요.");
+    } else if (!ninknameRegex.test(nickname)) {
+      console.log("닉네임 변경 2");
+      setNicknameModalOpen(true);
+      setMessage("닉네임을 확인해 주세요.");
+    } else {
+      setEditMode(false);
+    }
+  };
+
+  // 탈퇴 버튼 눌렀을 때
+  const handleClickWithdrawal = () => {
+    // 탈퇴 확인 modal 띄우기
+    setWithdrawalModalOpen(true);
   };
 
   // 수정 상태일 때 input에 focus 주기
@@ -143,11 +196,47 @@ const MyInfoContainer = () => {
     setNickname(e.target.value);
   };
 
+  // modal 관련 이벤트
+  const handleModalOpen = () => {
+    if (nicknameModalOpen == true) {
+      setNicknameModalOpen(false);
+    } else {
+      setWithdrawalModalOpen(false);
+    }
+  };
+
+  // modal 내 확인(탈퇴하기) 버튼 눌렀을 때
+  // 회원 탈퇴 API 코드
+  const handleWithdrawal = () => {
+    setApiConfig({
+      method: "delete",
+      headers: { sessionId: cookies.sessionId },
+      url: "/user"
+    });
+  };
+
   return (
     <>
       {nicknameModalOpen && (
-        <WebModal setIsOpen={setNicknameModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           {message}
+        </WebModal>
+      )}
+
+      {withdrawalModalOpen && (
+        <WebModal
+          onClick={handleModalOpen}
+          handleWithdrawal={handleWithdrawal}
+          hasButton={true}
+          isWithdrawal={true}
+        >
+          정말 탈퇴하시겠습니까?
+        </WebModal>
+      )}
+
+      {failModalOpen && (
+        <WebModal onClick={handleModal} hasButton={true}>
+          요청이 올바르지 않습니다.
         </WebModal>
       )}
 
@@ -213,9 +302,9 @@ const MyInfoContainer = () => {
         </InfoFlexBox>
         <InfoFlexBox col="center" row="between" width="1000px">
           {/* Link 버튼 */}
-          <Link to="/member/out">
-            <InfoLinkButton>회원 탈퇴</InfoLinkButton>
-          </Link>
+          {/* <Link to="/member/out"> */}
+          <InfoLinkButton onClick={handleClickWithdrawal}>회원 탈퇴</InfoLinkButton>
+          {/* </Link> */}
 
           {/* 버튼 */}
           {editMode ? (

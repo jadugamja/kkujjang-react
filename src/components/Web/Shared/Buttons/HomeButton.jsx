@@ -30,9 +30,9 @@ const HomeButton = ({ type }) => {
   useEffect(() => {
     if (response !== null) {
       setUser(null);
-      removeCookie("sessionId");
+      removeCookie("sessionId", { path: "/" });
       if (cookies?.userRole) {
-        removeCookie("userRole");
+        removeCookie("userRole", { path: "/" });
       }
     }
   }, [response]);
@@ -89,7 +89,7 @@ const HomeButton = ({ type }) => {
               col="center"
               flex="1"
               padding="15px 0 0"
-              bgColor="#FFFB6A"
+              bgColor="rgb(255 252 129)"
               shadow=" 0 4px 10px 0 rgba(0, 0, 0, 0.25)"
               borderRadius="30px 30px 0 0"
             >

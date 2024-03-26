@@ -157,7 +157,9 @@ const NoticeManagementCreate = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
-    formData.append("files", images);
+    for (const image of images) {
+      formData.append("files", image);
+    }
 
     if (!POST_TITLE_REGEX.test(title)) {
       alert("제목을 올바르게 입력하세요.");

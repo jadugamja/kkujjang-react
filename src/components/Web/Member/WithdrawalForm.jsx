@@ -56,9 +56,9 @@ const WithdrawalForm = () => {
   useEffect(() => {
     if (apiConfig?.url.startsWith("/user")) {
       if (response !== null) {
-        removeCookie("sessionId");
+        removeCookie("sessionId", { path: "/" });
         if (cookies?.userRole) {
-          removeCookie("userRole");
+          removeCookie("userRole", { path: "/" });
         }
         // 홈으로 이동
         navigate(`/`);

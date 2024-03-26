@@ -13,6 +13,7 @@ import { Box } from "@/components/Game/Shared/Layout";
 import { FlexBox } from "@/styles/FlexStyle";
 import useAxios from "@/hooks/useAxios";
 import { remoteApiConfigState } from "../../../recoil/boardState";
+import { POST_SEARCH_WORD_REGEX } from "../../../services/regexp";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const remoteApiConfig = useRecoilValue(remoteApiConfigState);
@@ -44,14 +45,25 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
-      setListData(
-        response.list.map(({ content, created_at, views, ...rest }) => ({
-          ...rest,
-          created_at: created_at.split("T")[0],
-          views: views
-        }))
-      );
+      if (apiConfig.url.includes("/search?q=")) {
+        setLastPageIdx(1);
+        setListData(
+          response.result?.map(({ content, created_at, views, ...rest }) => ({
+            ...rest,
+            created_at: created_at.split("T")[0],
+            views: views
+          }))
+        );
+      } else {
+        setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
+        setListData(
+          response.list?.map(({ content, created_at, views, ...rest }) => ({
+            ...rest,
+            created_at: created_at.split("T")[0],
+            views: views
+          }))
+        );
+      }
     } else {
       setLastPageIdx(1);
       setListData([]);
@@ -60,17 +72,12 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
-    if (searchKeyword !== "") {
-      setApiConfig({
-        ...apiConfig,
-        url: `/notice/search?q=${searchKeyword}&page=${currPage}`
-      });
-    } else {
-      setApiConfig({
-        ...apiConfig,
-        url: `/notice/list?page=${currPage}`
-      });
-    }
+    if (searchKeyword === "" || !POST_SEARCH_WORD_REGEX.test(searchKeyword)) return;
+
+    setApiConfig({
+      ...apiConfig,
+      url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+    });
   }, [currPage, searchKeyword]);
 
   return (
@@ -83,7 +90,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
         <Box>
           <HeaderWrapper row="between" col="center">
             <ManagementTitle title="notice" />
-            <SearchBarWrapper marginTop="14px" marginRight="10px">
+            <SearchBarWrapper marginTop="14px">
               <SearchBar searchType="제목" setSearchKeyword={setSearchKeyword} />
             </SearchBarWrapper>
           </HeaderWrapper>

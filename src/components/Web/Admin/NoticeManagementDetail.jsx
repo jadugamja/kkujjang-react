@@ -15,9 +15,10 @@ import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
 import { isModalOpenState } from "@/recoil/modalState";
 import useAxios from "@/hooks/useAxios";
+import { formatDateToTimestamp } from "../../../services/date";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
-  const { id, title, content, createdAt, views } = data;
+  const { id, title, content, created_at, views, files } = data;
   const [cookies] = useCookies(["sessionId"]);
   const [editTitle, setEditTitle] = useState(title);
   const [editContent, setEditContent] = useState(content);
@@ -124,7 +125,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         <SubTextWrapper col="center">
           <div>
             <ClockIcon icon={faClock} />
-            <SubText>{createdAt}</SubText>
+            <SubText>{formatDateToTimestamp(created_at)}</SubText>
           </div>
           <div>
             <EyeIcon icon={faEye} />
@@ -133,8 +134,11 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         </SubTextWrapper>
       </HeaderTextWrapper>
       <ContentWrapper>
-        {/* <ContentText dangerouslySetInnerHTML={{__html: content}} ref={contentRef}></ContentText> */}
-        <ContentText>{content}</ContentText>
+        <ContentText
+          dangerouslySetInnerHTML={{ __html: content }}
+          ref={contentRef}
+        ></ContentText>
+        {/* <ContentText>{content}</ContentText> */}
       </ContentWrapper>
       <ButtonWrapper row="end">
         <Button type="smallTransparent" message="수정" onClick={onClickEditModeOn} />
@@ -158,7 +162,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         <SubTextWrapper col="center">
           <div>
             <ClockIcon icon={faClock} />
-            <SubText>{createdAt}</SubText>
+            <SubText>{formatDateToTimestamp(created_at)}</SubText>
           </div>
           <div>
             <EyeIcon icon={faEye} />
@@ -261,6 +265,8 @@ const ContentText = styled.span`
 `;
 
 const ButtonWrapper = styled(FlexBox)`
+  position: absolute;
+  right: calc(18% - 8px);
   margin-top: 2.5rem;
   & > * + * {
     margin-left: 10px;

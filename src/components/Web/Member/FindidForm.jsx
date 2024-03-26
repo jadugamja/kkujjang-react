@@ -139,14 +139,18 @@ const FindidForm = () => {
     <>
       {/* 인증 실패 modal */}
       {authModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} setIsOpen={setAuthModalOpen} hasButton={true}>
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
 
       {/* 아이디 찾기 실패 modal */}
       {findidModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal
+          onClick={handleModalOpen}
+          setIsOpen={setFindidModalOpen}
+          hasButton={true}
+        >
           아이디가 존재하지 않습니다.
         </WebModal>
       )}

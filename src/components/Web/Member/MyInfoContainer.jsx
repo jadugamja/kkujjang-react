@@ -97,15 +97,17 @@ const MyInfoContainer = () => {
       } else if (apiConfig?.url.startsWith("/user")) {
         if (apiConfig?.method === "delete") {
           // 회원 탈퇴 성공 시
-          console.log("회원 탈퇴");
           removeCookie("sessionId", { path: "/" });
           if (cookies?.userRole) {
             removeCookie("userRole", { path: "/" });
-          } else if (cookies?.userId) {
+          }
+          if (cookies?.userId) {
             removeCookie("userId", { path: "/" });
-          } else if (cookies?.smsAuthId) {
+          }
+          if (cookies?.smsAuthId) {
             removeCookie("smsAuthId", { path: "/" });
-          } else if (cookies?.passwordChangeAuthId) {
+          }
+          if (cookies?.passwordChangeAuthId) {
             removeCookie("passwordChangeAuthId", { path: "/" });
           }
           // 홈으로 이동

@@ -145,11 +145,21 @@ const InquiryCreateContainer = () => {
     navigate(`/inquiry/list`);
   };
 
+  const handleModalOpen = () => {
+    if (createModalOpen == true) {
+      setCreateModalOpen(false);
+    }
+  };
+
   return (
     <>
       {/* 문의 등록 실패 Modal */}
       {createModalOpen && (
-        <WebModal setIsOpen={setCreateModalOpen} hasButton={true}>
+        <WebModal
+          setIsOpen={setCreateModalOpen}
+          onClick={handleModalOpen}
+          hasButton={true}
+        >
           제목, 문의 유형 또는 내용을 입력해 주세요.
         </WebModal>
       )}

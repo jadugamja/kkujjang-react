@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import {
@@ -20,46 +19,37 @@ import {
 } from "./WebModalStyle";
 import Button from "../Buttons/Button.jsx";
 
-const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, children }) => {
-  // === navigate ===
-  const navigate = useNavigate();
-
-  const handleMoveChangepw = () => {
-    navigate(`/member/change-pw`);
-  };
+const WebModal = ({
+  onClick,
+  hasButton,
+  isVan,
+  isWithdrawal,
+  handleWithdrawal,
+  children
+}) => {
   return (
     <>
-      <ModalBackground onClick={() => setIsOpen(false)}></ModalBackground>
+      <ModalBackground onClick={onClick}></ModalBackground>
       <ModalWrapper>
         <ModalHeader row="end" col="center">
-          <ExitMiniCircle onClick={() => setIsOpen(false)}></ExitMiniCircle>
+          <ExitMiniCircle onClick={onClick}></ExitMiniCircle>
         </ModalHeader>
         <ModalContent dir="col" row="center" col="center" height={isVan && "25.438rem"}>
           {hasButton && (
             <>
               <ModalMessage>{children}</ModalMessage>
-              {isMoving ? (
+              {isWithdrawal ? (
                 <ButtonContainer row="evenly">
                   <Button
-                    key="change"
+                    key="confirm"
                     type="modal"
-                    message="비밀번호 변경"
-                    onClick={handleMoveChangepw}
+                    message="확인"
+                    onClick={handleWithdrawal}
                   />
-                  <Button
-                    key="exit"
-                    type="modal"
-                    message="취소"
-                    onClick={() => setIsOpen(false)}
-                  />
+                  <Button key="exit" type="modal" message="취소" onClick={onClick} />
                 </ButtonContainer>
               ) : (
-                <Button
-                  key="confirm"
-                  type="modal"
-                  message="확인"
-                  onClick={() => setIsOpen(false)}
-                />
+                <Button key="confirm" type="modal" message="확인" onClick={onClick} />
               )}
             </>
           )}
@@ -88,10 +78,11 @@ const WebModal = ({ onClick, setIsOpen, hasButton, isVan, isMoving, children }) 
 
 WebModal.propTypes = {
   onClick: PropTypes.func,
-  setIsOpen: PropTypes.func,
+  // setIsOpen: PropTypes.func,
   isVan: PropTypes.bool,
   hasButton: PropTypes.bool,
-  isMoving: PropTypes.bool,
+  isWithdrawal: PropTypes.bool,
+  handleWithdrawal: PropTypes.func,
   children: PropTypes.node
 };
 

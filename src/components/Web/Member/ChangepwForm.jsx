@@ -62,16 +62,16 @@ const ChangepwForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (apiConfig?.url.startsWith("/user/find/pw")) {
-      if (response !== null) {
+    if (response !== null) {
+      if (apiConfig?.url.startsWith("/user/find/pw")) {
         navigate(`/member/login`);
-      } else if (error) {
-        setFailModalOpen(true);
-      } else {
+      }
+    } else {
+      if (apiConfig?.url.startsWith("/user/find/pw")) {
         setFailModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 비밀번호 유효성 검사
   const handlePasswordValidation = () => {
@@ -121,11 +121,16 @@ const ChangepwForm = () => {
     }
   };
 
+  // modal event
+  const handleModalOpen = () => {
+    setFailModalOpen(false);
+  };
+
   return (
     <>
       {/* {비밀번호 변경 실패 modal} */}
       {failModalOpen && (
-        <WebModal setIsOpen={setFailModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           비밀번호 변경에 실패했습니다.
         </WebModal>
       )}

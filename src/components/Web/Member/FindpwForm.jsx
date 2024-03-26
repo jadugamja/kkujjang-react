@@ -57,17 +57,17 @@ const FindpwForm = () => {
   }, [apiConfig]);
 
   useEffect(() => {
-    if (apiConfig?.url.startsWith("/user/find/pw")) {
-      if (response !== null) {
+    if (response !== null) {
+      if (apiConfig?.url.startsWith("/user/find/pw")) {
         setCookie("passwordChangeAuthId", response.passwordChangeAuthId);
         navigate(`/member/change-pw`);
-      } else if (error) {
-        setFindidModalOpen(true);
-      } else {
+      }
+    } else {
+      if (apiConfig?.url.startsWith("/user/find/pw")) {
         setFindidModalOpen(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   // 인증번호 검증
   const handlePhoneNumberAuth = (response, phoneNumber) => {
@@ -102,9 +102,13 @@ const FindpwForm = () => {
     }
   };
 
-  const handleReload = () => {
-    if (findidModalOpen === false) {
+  // modal event
+  const handleModalOpen = () => {
+    if (findidModalOpen == true) {
+      setFindidModalOpen(false);
       window.location.reload();
+    } else if (authModalOpen == true) {
+      setAuthModalOpen(false);
     }
   };
 
@@ -112,14 +116,14 @@ const FindpwForm = () => {
     <>
       {/* 인증 실패 modal */}
       {authModalOpen && (
-        <WebModal setIsOpen={setAuthModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           인증번호가 일치하지 않습니다.
         </WebModal>
       )}
 
       {/* 아이디 찾기 실패 modal */}
       {findidModalOpen && (
-        <WebModal setIsOpen={setFindidModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true}>
           아이디가 존재하지 않습니다.
         </WebModal>
       )}

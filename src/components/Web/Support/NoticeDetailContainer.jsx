@@ -74,7 +74,7 @@ const NoticeDetailContainer = () => {
     } else {
       setDetailData([]);
     }
-  }, [response]);
+  }, [response, error]);
 
   const handleMoveList = () => {
     navigate(`/notice/list`);

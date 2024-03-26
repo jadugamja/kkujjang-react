@@ -30,9 +30,9 @@ const HomeButton = ({ type }) => {
   useEffect(() => {
     if (response !== null) {
       setUser(null);
-      removeCookie("sessionId");
+      removeCookie("sessionId", { path: "/" });
       if (cookies?.userRole) {
-        removeCookie("userRole");
+        removeCookie("userRole", { path: "/" });
       }
     }
   }, [response]);

@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
+
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
 
@@ -28,7 +29,7 @@ const LoginForm = () => {
   // === state ===
   const setUser = useSetRecoilState(userInfoState);
   const [loginError, setLoginError] = useState(""); // error state
-  const [username, setUsername] = useState(null);
+  // const [username, setUsername] = useState(null);
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -59,14 +60,14 @@ const LoginForm = () => {
     } else {
       setLoginError(error);
     }
-  }, [response]);
+  }, [response, error]);
 
   const handleLogin = () => {
     const id = idRef.current.value;
     const password = passwordRef.current.value;
 
     const idRegex = /^[a-z0-9]{7,30}$/;
-    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+{}|:"<>?]{7,30}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)[\x00-\x7F]{7,30}$/;
 
     if (!idRegex.test(id) || !pwRegex.test(password)) {
       setLoginError("아이디 또는 비밀번호를 잘못 입력했습니다.");

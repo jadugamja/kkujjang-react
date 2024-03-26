@@ -9,7 +9,7 @@ import defaultFilter from "@/assets/images/icon-filter.png";
 const filterLabels = {
   type: "문의 유형",
   types: "신고 유형",
-  needsAnswer: "답변 여부",
+  needAnswer: "답변 여부",
   createdAt: "정렬"
 };
 
@@ -63,7 +63,7 @@ const Filter = ({ filterOptions, selectedFilterOptions, setSelectedFilterOptions
             onMouseOut={(e) => e.target.setAttribute("src", defaultFilter)}
           />
           {isClicked[key] && (
-            <FilterList left={idx === 1 ? "26px" : ""} dir="col" col="center">
+            <FilterList marginLeft={idx === 1 ? "30px" : ""} dir="col" col="center">
               {values?.map((item, idx) => (
                 <FilterListItem
                   key={idx}
@@ -101,17 +101,17 @@ const getFilterItemText = (key, item) => {
     case "type":
       switch (item) {
         case 0:
-          return <span>{"시스템 문의"}</span>;
+          return <span>{"버그문의"}</span>;
         case 1:
-          return <span>{"계정 관련 문의"}</span>;
+          return <span>{"계정문의"}</span>;
         case 2:
-          return <span>{"서비스 문의"}</span>;
-        case 3:
-          return <span>{"순서 테스트"}</span>;
-        default:
-          return "";
+          return <span>{"서비스문의"}</span>;
+        case 5:
+          return <span>{"단어추가문의"}</span>;
+        case 99:
+          return <span>{"기타문의"}</span>;
       }
-    case "needsAnswer":
+    case "needAnswer":
       switch (item) {
         case true:
           return <span>{"NO"}</span>;
@@ -170,7 +170,7 @@ const FilterList = styled(FlexBox).attrs({ as: "ul" })`
   width: max-content;
   align-self: baseline;
   margin-top: 10px;
-  margin-left: ${(props) => props.left || ""};
+  margin-left: ${(props) => props.marginLeft || ""};
   background-color: ${({ theme }) => theme.colors.content};
   border: 2px solid #a2a2a2;
   border-radius: 1px;

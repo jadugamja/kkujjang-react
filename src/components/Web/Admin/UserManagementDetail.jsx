@@ -3,11 +3,13 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
 
+import { itemIdState } from "@/recoil/boardState";
 import { isActiveAccountState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import ProfileActiveToggle from "../../Game/Shared/ProfileActiveToggle";
 
 const UserManagementDetail = ({ data }) => {
+  const id = useRecoilValue(itemIdState);
   const accountStates = useRecoilValue(isActiveAccountState);
   const isActiveAccount = accountStates[data?.id];
 
@@ -23,28 +25,33 @@ const UserManagementDetail = ({ data }) => {
             <TdContent>{data?.nickname}</TdContent>
           </Tr>
           <Tr>
-            <TdLabel>아이디</TdLabel>
-            <TdContent>{data?.id}</TdContent>
+            <TdLabel>경험치</TdLabel>
+            <TdContent>{data?.exp}</TdContent>
           </Tr>
           <Tr>
-            <TdLabel>가입 날짜</TdLabel>
-            <TdContent>{data?.createdAt}</TdContent>
+            <TdLabel>레벨</TdLabel>
+            <TdContent>{data?.level}</TdContent>
+          </Tr>
+          <Tr>
+            <TdLabel>승률</TdLabel>
+            <TdContent>{data?.winRate}</TdContent>
           </Tr>
           <Tr>
             <TdLabel>계정 활성화 여부</TdLabel>
             <TdContent>
-              <ProfileActiveToggle userId={data?.id} />
+              <ProfileActiveToggle isActive={!data?.isBanned} />
             </TdContent>
           </Tr>
-          {!isActiveAccount && (
+          {data?.isBanned && (
             <>
+              {/* 비활성화 기간 데이터 필요
               <Tr>
                 <TdLabel>- 비활성화 기간</TdLabel>
-                <TdContent>{data?.id}</TdContent>
-              </Tr>
+                <TdContent>{data?.bannedPeriod}</TdContent>
+              </Tr> */}
               <Tr>
                 <TdLabel>- 비활성화 사유</TdLabel>
-                <TdContent>{data?.createdAt}</TdContent>
+                <TdContent>{data?.bannedReason}</TdContent>
               </Tr>
             </>
           )}

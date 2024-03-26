@@ -8,7 +8,6 @@ import { onTimer } from "@/services/socket";
 
 const TimerBar = ({ type, totalTime }) => {
   const [totalTurnTime, setTotalTurnTime] = useState(totalTime / 10);
-  const [totalRoundTime, setTotalRoundTime] = useState(totalTime);
   const [thisTurnLeftTime, setThisTurnLeftTime] = useRecoilState(thisTurnLeftTimeState);
   const [thisRoundLeftTime, setThisRoundLeftTime] =
     useRecoilState(thisRoundLeftTimeState);
@@ -26,9 +25,7 @@ const TimerBar = ({ type, totalTime }) => {
       }
       setThisTurnLeftTime(personalTimeLeftSec);
       setThisRoundLeftTime(roundTimeLeftSec);
-
-      // setTotalTurnTime(personalTimeLeftSec);
-      // setTotalRoundTime(roundTimeLeftSec);
+      setTotalTurnTime(personalTimeLeftSec);
     });
   }, []);
 
@@ -42,8 +39,10 @@ const TimerBar = ({ type, totalTime }) => {
   };
 
   const leftTime = type === "turn" ? thisTurnLeftTime : thisRoundLeftTime;
-  // const _totalTime = type === "turn" ? totalTurnTime : totalRoundTime;
-  const width = leftTime > 0 ? (leftTime / (totalTime / 1000)) * 100 : 0;
+  const width =
+    leftTime > 0
+      ? (leftTime / (type === "ture" ? totalTurnTime : totalTime / 1000)) * 100
+      : 0;
   const sec = Math.round(leftTime * 10) / 10;
   const outerColor = React.useMemo(() => getBgColor(type, "outer"), [type]);
   const innerColor = React.useMemo(() => getBgColor(type, "inner"), [type]);

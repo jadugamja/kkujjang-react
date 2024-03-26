@@ -494,7 +494,7 @@ const GameModal = ({
               <GameModalMessage fontSize="20px" fontWeight="500">
                 {children}
               </GameModalMessage>
-              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+              <ButtonWrapper row="center" col="center" margin="30px 0px 32px">
                 <GameModalButton onClick={() => setIsOpen(false)}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>

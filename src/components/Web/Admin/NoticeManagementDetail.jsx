@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import ReactQuill from "react-quill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "react-quill/dist/quill.snow.css";
 
+import { isActiveSideContentTypeState } from "@/recoil/displayState";
+import { remoteApiConfigState } from "@/recoil/boardState";
+import { formatDateToTimestamp } from "@/services/date";
 import FlexBox from "@/styles/FlexStyle";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -13,16 +17,17 @@ import { EditorWrapper } from "./NoticeManagementCreate";
 import { Input } from "../Shared/Form/InputFieldStyle";
 import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
-import { isModalOpenState } from "@/recoil/modalState";
 import useAxios from "@/hooks/useAxios";
-import { formatDateToTimestamp } from "../../../services/date";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const { id, title, content, created_at, views, files } = data;
   const [cookies] = useCookies(["sessionId"]);
   const [editTitle, setEditTitle] = useState(title);
   const [editContent, setEditContent] = useState(content);
-  const [isOpenModal, setIsOpenModal] = useRecoilState(isModalOpenState);
+  const [editImages, setEditImages] = useState([]);
+  const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -38,11 +43,25 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setIsEditMode(false);
+      // 삭제
+      if (apiConfig.method === "delete") {
+        setIsActiveSideContentType(0);
+        setRemoteApiConfig({
+          method: "get",
+          url: "/notice/list?page=1",
+          headers: {
+            sessionId: cookies.sessionId
+          }
+        });
+      } else {
+        setIsEditMode(false);
+      }
     }
   }, [response]);
 
   const onClickEditModeOn = () => {
+    setEditTitle(title);
+    setEditContent(content);
     setIsEditMode(true);
   };
 
@@ -74,9 +93,14 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     e.preventDefault();
 
     const formData = new FormData();
+    formData.append("id", id);
     formData.append("title", editTitle);
     formData.append("content", editContent);
-    // formData.append("files", images);
+    if (editImages.length > 0) {
+      editImages?.forEach((image) => {
+        formData.append("files", image);
+      });
+    }
 
     setApiConfig({
       method: "put",
@@ -89,32 +113,17 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     });
   };
 
-  // 삭제
-  const deleteNotice = () => {
-    // 경고 메시지 모달 출력
-    setIsOpenModal(true);
-
-    // 확인 버튼 클릭 시 삭제 요청
-    setApiConfig({
-      method: "delete",
-      url: `/notice/${id}`,
-      headers: {
-        sessionId: cookies.sessionId
-      },
-      data: id
-    });
-  };
-
-  // 서버에서 받은 데이터의 이미지 url을 img src 속성에 적용
-  // useEffect(() => {
-  //   let imageUrl;
-  //   const empthImg = contentRef.current.querySelectorAll("img");
-  //   empthImg?.forEach((img) => {
-  //     if (imageUrl) {
-  //       img.src = imageUrl;
-  //     }
-  //   });
-  // }, [content]);
+  // 서버에서 받은 데이터의 이미지 url을 img src 속성에 적용 (수정 예정)
+  useEffect(() => {
+    if (contentRef.current) {
+      const imgElements = contentRef.current.querySelectorAll("img");
+      imgElements.forEach((img, index) => {
+        if (files !== null && files[index]) {
+          img.src = files[index];
+        }
+      });
+    }
+  }, [content, files]);
 
   const renderDetailView = () => (
     <>
@@ -134,11 +143,13 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
         </SubTextWrapper>
       </HeaderTextWrapper>
       <ContentWrapper>
-        <ContentText
-          dangerouslySetInnerHTML={{ __html: content }}
-          ref={contentRef}
-        ></ContentText>
-        {/* <ContentText>{content}</ContentText> */}
+        <ReactQuill
+          style={{ height: "32rem" }}
+          theme="snow"
+          value={content}
+          readOnly={true}
+          modules={{ toolbar: false }}
+        />
       </ContentWrapper>
       <ButtonWrapper row="end">
         <Button type="smallTransparent" message="수정" onClick={onClickEditModeOn} />
@@ -187,13 +198,29 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     </>
   );
 
+  // 삭제
+  const deleteNotice = () => {
+    setIsOpenModal(true);
+  };
+
+  const onDeleteNotice = () => {
+    setApiConfig({
+      method: "delete",
+      url: `/notice/${id}`,
+      headers: {
+        sessionId: cookies.sessionId
+      }
+    });
+    setIsOpenModal(false);
+  };
+
   return (
     <>
       <DetailWrapper key={id}>
         {isEditMode ? renderUpdateView() : renderDetailView()}
       </DetailWrapper>
       {isOpenModal && (
-        <Modal hasButton={true} setIsOpen={setIsOpenModal}>
+        <Modal onClick={onDeleteNotice} hasButton={true}>
           게시물을 삭제하시겠습니까?
         </Modal>
       )}
@@ -209,7 +236,6 @@ NoticeManagementDetail.propTypes = {
 
 const DetailWrapper = styled.div`
   margin: 0 14px;
-  overflow-y: auto;
 `;
 
 const HeaderTextWrapper = styled(FlexBox)`
@@ -257,11 +283,10 @@ const EyeIcon = styled(FontAwesomeIcon)`
 const ContentWrapper = styled.div`
   width: 100%;
   height: 32rem;
-`;
 
-const ContentText = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.xxs};
-  font-weight: 500;
+  & > .quill > .ql-container.ql-snow {
+    border: 0;
+  }
 `;
 
 const ButtonWrapper = styled(FlexBox)`

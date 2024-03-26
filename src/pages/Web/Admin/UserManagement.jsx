@@ -19,7 +19,7 @@ const UserManagement = () => {
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
   const [cookies] = useCookies(["sessionId"]);
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
@@ -46,11 +46,15 @@ const UserManagement = () => {
 
   useEffect(() => {
     if (response !== null) {
-      setUserData(userRes);
-      setIsActiveSideContentType(1);
-      setItemId(id);
+      setUserData(response.result);
     }
   }, [response]);
+
+  useEffect(() => {
+    if (userData !== null) {
+      setIsActiveSideContentType(1);
+    }
+  }, [userData]);
 
   const onSideOpen = (id) => {
     setApiConfig({

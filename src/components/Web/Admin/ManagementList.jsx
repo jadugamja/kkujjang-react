@@ -6,6 +6,7 @@ import styled from "styled-components";
 import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
 import { isActiveAccountState } from "@/recoil/userState";
 import { isAnswerCompletedState, itemIdState } from "@/recoil/boardState";
+import { type } from "@testing-library/user-event/dist/type";
 
 const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
   // 전역 상태로 id 관리
@@ -89,11 +90,11 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
             );
           case "username":
             return (
-              <Th key={idx} width={title === "user" && "5.5rem"}>
+              <Th key={idx} width={title === "user" && "4.5rem"}>
                 아이디
               </Th>
             );
-          case "needsAnswer":
+          case "needAnswer":
             return (
               <Th key={idx} width="5.5rem">
                 답변여부
@@ -101,7 +102,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
             );
           case "isBanned":
             return (
-              <Th key={idx} width="5.5rem">
+              <Th key={idx} width="3.2rem">
                 활성화 여부
               </Th>
             );
@@ -109,6 +110,25 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
             return <Th key={idx}>Field</Th>;
         }
       });
+  };
+
+  const getTypeText = (type) => {
+    if (title === "inquiry") {
+      switch (type) {
+        case 0:
+          return "버그문의";
+        case 1:
+          return "계정문의";
+        case 2:
+          return "서비스문의";
+        case 5:
+          return "단어추가문의";
+        case 99:
+          return "기타문의";
+        default:
+          return "기타";
+      }
+    }
   };
 
   useEffect(() => {
@@ -131,7 +151,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
           ) : (
             data?.map((item) => (
               <Tr
-                fontSize={!isHome ? "20px" : "18px"}
+                fontSize="18px"
                 key={item.id}
                 onClick={() => {
                   setItemId(item.id);
@@ -149,7 +169,9 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                           {title === "report" ? (
                             <TdLeft key={key}>{value}</TdLeft>
                           ) : (
-                            <TdCenter key={key}>{value}</TdCenter>
+                            <TdCenter key={key} fontSize="15px">
+                              {getTypeText(value)}
+                            </TdCenter>
                           )}
                         </React.Fragment>
                       );
@@ -170,31 +192,24 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                     if (key === "title") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "createdAt")
                       return <TdCenter key={key}>{value.substr(0, 10)}</TdCenter>;
+                    if (key === "username") return <TdLeft key={key}>{value}</TdLeft>;
+                    if (key === "nickname") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "isBanned")
                       return (
                         <TdCenter key={key} paddingLeft={isHome ? "1rem" : "2rem"}>
-                          <ProfileActiveToggle isBanned={item.isBanned} />
+                          <ProfileActiveToggle isActive={!value} />
                         </TdCenter>
                       );
-                    if (key === "needsAnswer")
+                    if (key === "needAnswer")
                       return (
                         <TdCenter
                           key={key}
                           style={{
-                            color:
-                              Object.keys(isAnswerCompleted)?.length !== 0
-                                ? !isAnswerCompleted[item?.id] && "#FF6C6C"
-                                : item.needsAnswer && "#FF6C6C",
+                            color: !value ? "#32250F" : "#FF6C6C",
                             fontWeight: "700"
                           }}
                         >
-                          {Object.keys(isAnswerCompleted)?.length !== 0
-                            ? isAnswerCompleted[item?.id]
-                              ? "YES"
-                              : "NO"
-                            : item.needsAnswer
-                              ? "YES"
-                              : "NO"}
+                          {!value ? "YES" : "NO"}
                         </TdCenter>
                       );
                     return <TdCenter key={key}>{value}</TdCenter>;
@@ -217,7 +232,7 @@ ManagementList.propTypes = {
 };
 
 const TableWrapper = styled.div`
-  height: ${({ title }) => (title === "notice" ? "36.7rem" : "38.7rem")};
+  height: 36.7rem;
   width: 100%;
   max-width: 100%;
 `;
@@ -278,6 +293,7 @@ const TdLeft = styled(Td)`
 const TdCenter = styled(Td)`
   padding-left: ${({ paddingLeft }) => paddingLeft};
   text-align: center;
+  font-size: ${({ fontSize }) => fontSize};
 `;
 
 export default ManagementList;

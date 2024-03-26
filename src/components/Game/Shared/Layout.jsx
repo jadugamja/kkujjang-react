@@ -19,6 +19,7 @@ export const Box = styled.div`
   background-color: #fff;
   border-radius: ${({ type }) => (type === "home" ? "25px" : "10px")};
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.25);
+  overflow-y: ${({ overflowY }) => overflowY};
 `;
 
 export const Main = styled.main`

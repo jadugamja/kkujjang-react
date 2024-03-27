@@ -20,12 +20,12 @@ const ManagementTitle = ({ type, title }) => {
   };
 
   return (
-    <Link to={`/admin/${title}`}>
+    <a href={`/admin/${title}`}>
       <TitleWrapper col="center">
         <Title type={type}>{getTitleText(title)}</Title>
         {type === "home" && <ArrowRightIcon icon={faChevronRight} />}
       </TitleWrapper>
-    </Link>
+    </a>
   );
 };
 

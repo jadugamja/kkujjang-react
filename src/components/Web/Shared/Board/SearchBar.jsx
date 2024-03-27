@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { FlexBox } from "@/styles/FlexStyle";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { POST_SEARCH_WORD_REGEX } from "../../../../services/regexp";
 
 const SearchBar = ({ searchType, setSearchKeyword }) => {
   const keywordRef = useRef();
@@ -12,8 +13,10 @@ const SearchBar = ({ searchType, setSearchKeyword }) => {
   const sendKeyword = (e) => {
     e.preventDefault();
 
+    if (!POST_SEARCH_WORD_REGEX.test(keywordRef.current.value)) return;
+
     setSearchKeyword(keywordRef.current.value);
-    keywordRef.current.value = "";
+    keywordRef.current.value = e.target.value;
   };
 
   return (

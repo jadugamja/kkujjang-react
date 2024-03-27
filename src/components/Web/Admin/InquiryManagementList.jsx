@@ -31,7 +31,7 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   // 필터 key 데이터 추출
-  const filterKeys = ["type", "needsAnswer"];
+  const filterKeys = ["type", "needAnswer"];
 
   // 서버에서 받아온 데이터를 filterKeys의 값에 해당하는 것으로만 추출
   const filterOptions = filterKeys?.map((key) => {
@@ -52,14 +52,23 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
+      setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
       setIsAnswerCompleted(
-        response.list?.reduce(
-          (acc, item) => ({ ...acc, [item.id]: !item.needsAnswer }),
+        response.result.list?.reduce(
+          (acc, item) => ({ ...acc, [item.id]: !item.needAnswer }),
           {}
         )
       );
-      setListData(response.list);
+      setListData(
+        response.result.list?.map(
+          ({ updatedAt, createdAt, id, type, title, needAnswer }) => ({
+            id,
+            type,
+            title,
+            needAnswer
+          })
+        )
+      );
     } else {
       setLastPageIdx(1);
       setListData([]);
@@ -76,6 +85,11 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
       setApiConfig({
         ...apiConfig,
         url: `/inquiry/search?page=${currPage}&${queryString}`
+      });
+    } else {
+      setApiConfig({
+        ...apiConfig,
+        url: `/inquiry/search?page=${currPage}`
       });
     }
   }, [currPage, selectedFilterOptions]);
@@ -132,7 +146,6 @@ InquiryManagementList.propTypes = {
 
 const HeaderWrapper = styled(FlexBox)`
   padding-bottom: 14px;
-  border-bottom: 5px solid ${({ theme }) => theme.colors.gray400};
 `;
 
 const FilterWrapper = styled.div`

@@ -32,9 +32,21 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
+    setCurrPage(1);
+    // setSearchKeyword("");
+    setApiConfig({
+      method: "get",
+      url: `/user/search?page=1`,
+      headers: {
+        sessionId: cookies.sessionId
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
-      setData(response.list);
+      setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
+      setData(response.result.list);
       data?.forEach((user) => {
         setAccountStates((oldState) => ({ ...oldState, [user.id]: user.isBanned }));
       });
@@ -50,11 +62,16 @@ const UserManagementList = ({ type, onSideOpen }) => {
 
   // 페이지 변경, 검색 시
   useEffect(() => {
-    if (data?.length === 0) {
+    if (data?.length === 0 || searchKeyword === "") {
       return;
     }
 
-    let queryString = `?page=${currPage}${searchKeyword !== "" && `&q=${searchKeyword}`}`;
+    let queryString;
+    if (searchKeyword !== "") {
+      queryString = `?page=${currPage}&nickname=${searchKeyword}`;
+    } else {
+      queryString = `?page=${currPage}`;
+    }
 
     setApiConfig({
       ...apiConfig,

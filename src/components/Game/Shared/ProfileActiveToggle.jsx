@@ -5,9 +5,10 @@ import styled from "styled-components";
 import { isActiveAccountState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 
-const ProfileActiveToggle = ({ userId }) => {
-  const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
-  const isActiveAccount = accountStates[userId];
+const ProfileActiveToggle = ({ isActive }) => {
+  // const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
+  // const isActiveAccount = accountStates[userId];
+  const isActiveAccount = isActive;
 
   const onActiveToggle = () => {
     if (isActiveAccount) {
@@ -33,7 +34,8 @@ const ProfileActiveToggle = ({ userId }) => {
 };
 
 ProfileActiveToggle.propTypes = {
-  userId: PropTypes.oneOfType[(PropTypes.number, PropTypes.string)]
+  isActive: PropTypes.bool
+  // userId: PropTypes.oneOfType[(PropTypes.number, PropTypes.string)]
 };
 
 const ActiveToggle = styled(FlexBox)`

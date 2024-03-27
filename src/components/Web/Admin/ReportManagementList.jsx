@@ -43,8 +43,8 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
-      setData(response.list);
+      setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
+      setData(response.result.list);
     } else {
       setLastPageIdx(1);
       setData([]);
@@ -53,7 +53,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
 
   // 페이지, 필터 변경 시 호출
   useEffect(() => {
-    if (data.length === 0) {
+    if (data?.length === 0) {
       return;
     }
 

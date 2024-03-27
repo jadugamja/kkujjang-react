@@ -50,7 +50,7 @@ const NoticeManagementCreate = () => {
       setIsActiveSideContentType(0);
       setRemoteApiConfig({
         method: "get",
-        url: "/notice/list",
+        url: "/notice/list?page=1",
         headers: {
           sessionId: cookies.sessionId
         }
@@ -157,7 +157,9 @@ const NoticeManagementCreate = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
-    formData.append("files", images);
+    images?.forEach((image) => {
+      formData.append("files", image);
+    });
 
     if (!POST_TITLE_REGEX.test(title)) {
       alert("제목을 올바르게 입력하세요.");
@@ -239,6 +241,10 @@ const TitleInput = styled(Input)`
 
 export const EditorWrapper = styled.div`
   height: 33rem;
+
+  & .ql-container.ql-snow {
+    border: 1px solid #ccc !important;
+  }
 
   & .ql-snow .ql-picker.ql-header .ql-picker-label::before,
   .ql-snow .ql-picker.ql-header .ql-picker-item::before {

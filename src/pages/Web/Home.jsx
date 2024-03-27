@@ -23,7 +23,7 @@ const Home = () => {
     } else {
       setUser(null);
     }
-  }, []);
+  }, [cookies?.sessionId]);
 
   const getUserInfo = async () => {
     const userInfo = await getCurrentUserInfo();

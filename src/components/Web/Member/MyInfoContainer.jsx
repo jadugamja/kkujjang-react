@@ -140,11 +140,9 @@ const MyInfoContainer = () => {
     const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
 
     if (nickname.trim() === "") {
-      console.log("닉네임 변경 1");
       setNicknameModalOpen(true);
       setMessage("닉네임을 입력해 주세요.");
     } else if (!ninknameRegex.test(nickname)) {
-      console.log("닉네임 변경 2");
       setNicknameModalOpen(true);
       setMessage("닉네임을 확인해 주세요.");
     } else {

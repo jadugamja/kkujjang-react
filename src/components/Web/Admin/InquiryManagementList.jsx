@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { isAnswerCompletedState } from "@/recoil/boardState";
+import { isAnswerCompletedState, remoteApiConfigState } from "@/recoil/boardState";
 import ManagementTitle from "./ManagementTitle";
 import ManagementList from "./ManagementList";
 import Filter from "../Shared/Board/Filter";
@@ -14,6 +14,7 @@ import { Box } from "../../Game/Shared/Layout";
 import useAxios from "@/hooks/useAxios";
 
 const InquiryManagementList = ({ type, onThreadOpen }) => {
+  const remoteApiConfig = useRecoilValue(remoteApiConfigState);
   const [cookies] = useCookies(["sessionId"]);
   const [listData, setListData] = useState([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState(null);
@@ -35,11 +36,11 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
   // 서버에서 받아온 데이터를 filterKeys의 값에 해당하는 것으로만 추출
   const filterOptions = filterKeys?.map((key) => {
-    const uniqueValues = [...new Set(listData?.map((item) => item[key]))];
-    if (key === "createdAt") {
-      uniqueValues?.sort((a, b) => new Date(a) - new Date(b));
-    } else {
-      uniqueValues?.sort((a, b) => a - b); // 오름차순 정렬
+    let uniqueValues;
+    if (key === "type") {
+      uniqueValues = [0, 1, 2, 5, 99];
+    } else if (key === "needAnswer") {
+      uniqueValues = [true, false];
     }
     return { key, values: uniqueValues };
   });
@@ -51,14 +52,20 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
   }, [apiConfig]);
 
   useEffect(() => {
+    if (remoteApiConfig !== null) {
+      setApiConfig(remoteApiConfig);
+    }
+  }, [remoteApiConfig]);
+
+  useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
-      setIsAnswerCompleted(
-        response.result.list?.reduce(
-          (acc, item) => ({ ...acc, [item.id]: !item.needAnswer }),
-          {}
-        )
-      );
+      // setIsAnswerCompleted(
+      //   response.result.list?.reduce(
+      //     (acc, item) => ({ ...acc, [item.id]: !item.needAnswer }),
+      //     {}
+      //   )
+      // );
       setListData(
         response.result.list?.map(
           ({ updatedAt, createdAt, id, type, title, needAnswer }) => ({

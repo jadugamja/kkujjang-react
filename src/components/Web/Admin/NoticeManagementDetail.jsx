@@ -214,15 +214,29 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     setIsOpenModal(false);
   };
 
+  const onErrorClick = () => {
+    setIsOpenModal(false);
+  };
+
   return (
     <>
-      <DetailWrapper key={id}>
-        {isEditMode ? renderUpdateView() : renderDetailView()}
-      </DetailWrapper>
-      {isOpenModal && (
-        <Modal onClick={onDeleteNotice} hasButton={true}>
-          게시물을 삭제하시겠습니까?
+      {loading ? (
+        <center>Loading...</center>
+      ) : error ? (
+        <Modal setIsOpen={setIsOpenModal} onClick={onErrorClick} hasButton={true}>
+          {error}
         </Modal>
+      ) : (
+        <>
+          <DetailWrapper key={id}>
+            {isEditMode ? renderUpdateView() : renderDetailView()}
+          </DetailWrapper>
+          {isOpenModal && (
+            <Modal setIsOpen={setIsOpenModal} onClick={onDeleteNotice} hasButton={true}>
+              게시물을 삭제하시겠습니까?
+            </Modal>
+          )}
+        </>
       )}
     </>
   );

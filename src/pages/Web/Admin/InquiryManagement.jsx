@@ -22,7 +22,7 @@ const InquiryManagement = ({ type }) => {
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
   const [cookies] = useCookies(["sessionId"]);
-  const [questionData, setQuestionData] = useState(null);
+  const [threadData, setThreadData] = useState(null);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
   const [apiConfig, setApiConfig] = useState(null);
@@ -32,7 +32,6 @@ const InquiryManagement = ({ type }) => {
     if (itemId === null) {
       setIsActiveSideContentType(0);
     } else {
-      setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
         url: `/inquiry/${itemId}?page=1`,
@@ -51,20 +50,15 @@ const InquiryManagement = ({ type }) => {
 
   useEffect(() => {
     if (response !== null) {
-      setIsAnswerCompleted(!response.result.needAnswer);
-      // setIsAnswerCompleted((prevState) => ({
-      //   ...prevState,
-      //   [response.result.threadId]: !response.result.needAnswer
-      // }));
-      setQuestionData(response.result);
+      setThreadData(response.result);
     }
   }, [response]);
 
   useEffect(() => {
-    if (questionData !== null) {
+    if (threadData !== null) {
       setIsActiveSideContentType(1);
     }
-  }, [questionData]);
+  }, [threadData]);
 
   const onThreadOpen = (id) => {
     setApiConfig({
@@ -91,9 +85,9 @@ const InquiryManagement = ({ type }) => {
             {isAcitveSideContentType === 1 && (
               <Box>
                 <InquiryManagementThread
-                  data={questionData}
-                  isAnswerCompleted={isAnswerCompleted}
-                  setIsAnswerCompleted={setIsAnswerCompleted}
+                  key={threadData?.threadId}
+                  data={threadData}
+                  fetchAnswer={fetchData}
                 />
               </Box>
             )}

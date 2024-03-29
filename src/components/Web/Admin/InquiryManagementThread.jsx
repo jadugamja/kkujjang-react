@@ -1,17 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useCookies } from "react-cookie";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { isAnswerCompletedState, itemIdState } from "@/recoil/boardState";
+import { isAnswerCompletedState, remoteApiConfigState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
 import {
   faUser,
   faClock,
   faHandHoldingHeart,
-  faLocationArrow,
   faBug,
   faFileCirclePlus,
   faGuitar
@@ -19,53 +18,45 @@ import {
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 import ImageFileUpload from "../Shared/Board/ImageFileUpload";
 import { Input } from "../Shared/Form/InputFieldStyle";
-import useAxios from "../../../hooks/useAxios";
+import useAxios from "@/hooks/useAxios";
+import { formatDateToTimestamp } from "@/services/date";
 
-const InquiryManagementThread = ({ data }) => {
+const InquiryManagementThread = ({ data, fetchAnswer }) => {
   const { threadId, type, threadTitle, nickname, updatedAt, list } = data;
   const [cookies] = useCookies(["sessionId"]);
-  const [id, setId] = useRecoilState(itemIdState);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
+  const [isFirstAnswer, setIsFirstAnswer] = useState(
+    list?.some((item) => item.isAnswer === true)
+  );
   const [answer, setAnswer] = useState("");
   const [answerFiles, setAnswerFiles] = useState([]);
-  const [replyAnswer, setReplyAnswer] = useState("");
-  const [replyAnswerFiles, setReplyAnswerFiles] = useState([]);
-  const [replyAnswers, setReplyAnswers] = useState([]);
-  const [apiConfigAnswer, setApiConfigAnswer] = useState(null);
-  const {
-    response: responseAnswer,
-    error: errorAnswer,
-    loading: loadingAnswer,
-    fetchData: fetchDataAnswer
-  } = useAxios(apiConfigAnswer, false);
-  const [apiConfigReply, setApiConfigReply] = useState(null);
-  const {
-    response: responseReply,
-    error: errorReply,
-    loading: loadingReply,
-    fetchData: fetchDataReply
-  } = useAxios(apiConfigReply, false);
+  const [apiConfig, setApiConfig] = useState(null);
+  const [key, setKey] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
-  const replyAnswerRef = useRef(null);
+  const answerRef = useRef(null);
 
   useEffect(() => {
-    if (apiConfigAnswer !== null || apiConfigReply !== null) {
+    if (apiConfig !== null) {
       fetchData();
     }
-  }, [apiConfigAnswer, apiConfigReply]);
+  }, [apiConfig]);
 
   useEffect(() => {
-    if (responseAnswer !== null) {
-      setIsAnswerCompleted((prevStatus) => ({ ...prevStatus, [id]: true }));
+    if (response !== null) {
+      setIsFirstAnswer(false);
+      fetchAnswer();
+      setRemoteApiConfig({
+        method: "get",
+        url: `/inquiry/search?page=1`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
     }
-  }, [responseAnswer]);
-
-  useEffect(() => {
-    if (responseReply !== null) {
-      setIsAnswerCompleted((prevStatus) => ({ ...prevStatus, [id]: true }));
-    }
-  }, [responseReply]);
+  }, [response]);
 
   const getTypeIcon = (type) => {
     switch (type) {
@@ -103,16 +94,7 @@ const InquiryManagementThread = ({ data }) => {
 
   const appendFilesToFormData = useCallback(
     (_files) => {
-      if (!isAnswerCompleted[threadId]) {
-        debugger;
-        setAnswerFiles(_files);
-      } else {
-        setReplyAnswerFiles((prevFiles) => {
-          let newFiles = [...prevFiles];
-          newFiles = _files ? [...newFiles, _files] : [...newFiles, ""];
-          return newFiles;
-        });
-      }
+      setAnswerFiles(_files);
     },
     [isAnswerCompleted, threadId]
   );
@@ -125,10 +107,6 @@ const InquiryManagementThread = ({ data }) => {
     setAnswer(e.target.value);
   };
 
-  const onReplyAnswerChange = (e) => {
-    setReplyAnswer(e.target.value);
-  };
-
   const onSubmitAnswer = useCallback(
     (e) => {
       e.preventDefault();
@@ -139,14 +117,16 @@ const InquiryManagementThread = ({ data }) => {
       }
 
       const formData = new FormData();
+      formData.append("type", type);
+      formData.append("title", threadTitle);
       formData.append("content", answer);
       answerFiles?.forEach((file) => {
         formData.append("files", file);
       });
 
-      setApiConfigAnswer({
+      setApiConfig({
         method: "post",
-        url: `/inquiry/${id}?page=1`,
+        url: `/inquiry/${threadId}?page=1`,
         headers: {
           sessionId: cookies.sessionId,
           "Content-Type": "multipart/form-data"
@@ -154,49 +134,10 @@ const InquiryManagementThread = ({ data }) => {
         data: formData
       });
 
-      // 등록 성공 시
-      updateAnswerStatus(id, true);
+      answerRef.current.value = "";
+      setKey(Date.now());
     },
     [threadId, updateAnswerStatus]
-  );
-
-  const onSubmitReplyAnswer = useCallback(
-    (e) => {
-      e.preventDefault();
-
-      if (replyAnswer === "") {
-        alert("답변을 입력하세요");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("content", replyAnswer);
-      replyAnswerFiles?.forEach((file) => {
-        formData.append("files", file);
-      });
-
-      setApiConfigReply({
-        method: "post",
-        url: `/inquiry/${id}?page=1`,
-        headers: {
-          sessionId: cookies.sessionId,
-          "Content-Type": "multipart/form-data"
-        },
-        data: formData
-      });
-
-      // fetchData(apiConfig);
-
-      // 호출 성공 시
-      setReplyAnswers((prevReplyAnswers) => [
-        ...prevReplyAnswers,
-        { text: replyAnswer, file: replyAnswerFiles }
-      ]);
-
-      replyAnswerRef.current.value = "";
-      setReplyAnswerFiles([]);
-    },
-    [replyAnswer, replyAnswerFiles]
   );
 
   return (
@@ -241,128 +182,103 @@ const InquiryManagementThread = ({ data }) => {
         </AnswerInputFieldWrapper>
       </QuestionWrapper>
 
+      {list?.slice(1).map((item, idx) => {
+        if (!item.isAnswer) {
+          return (
+            <QuestionWrapper key={idx}>
+              <div>
+                <QnAText>Q.</QnAText>
+              </div>
+              <AnswerInputFieldWrapper>
+                <ContentWrapper>
+                  <div>
+                    <ContentText>{item?.content}</ContentText>
+                  </div>
+                  <div>
+                    {item?.file?.length > 0 &&
+                      item?.file?.map((f, idx) => (
+                        <AttachedImg
+                          key={idx}
+                          src={f}
+                          width="fit-content"
+                          height="auto"
+                        />
+                      ))}
+                  </div>
+                  <SubTextWrapper row="end" col="center">
+                    <div>
+                      <StyledIcon icon={faClock} />
+                      <SubText>{formatDateToTimestamp(item?.createdAt)}</SubText>
+                    </div>
+                  </SubTextWrapper>
+                </ContentWrapper>
+              </AnswerInputFieldWrapper>
+            </QuestionWrapper>
+          );
+        } else {
+          return (
+            <AnswerWrapper key={idx}>
+              <div>
+                <QnAText>A.</QnAText>
+              </div>
+              <AnswerInputFieldWrapper>
+                <Width100 marginTop="10px">
+                  <AnswerText>{item?.content}</AnswerText>
+                </Width100>
+                <AttachedImgWrapper>
+                  {item?.file?.length > 0 &&
+                    item?.file?.map((file, idx) => (
+                      <AttachedImg key={idx} src={file} alt="첨부파일" />
+                    ))}
+                </AttachedImgWrapper>
+                <SubTextWrapper row="end" col="center">
+                  <div>
+                    <StyledIcon icon={faClock} />
+                    <SubText>{formatDateToTimestamp(item?.createdAt)}</SubText>
+                  </div>
+                </SubTextWrapper>
+              </AnswerInputFieldWrapper>
+            </AnswerWrapper>
+          );
+        }
+      })}
+
       {/* 답변 */}
       <AnswerWrapper>
         <div>
           <QnAText>A.</QnAText>
         </div>
-        {!isAnswerCompleted[threadId] ? (
-          <AnswerInputFieldWrapper>
-            <StyledTextarea placeholder="답변을 입력하세요." onChange={onAnswerChange} />
-            <AttachmentWrapper row="between" col="center">
-              <Width100>
-                <ImageFileUpload
-                  width="7rem"
-                  height="2.9rem"
-                  mode={1}
-                  appendFilesToFormData={appendFilesToFormData}
-                />
-              </Width100>
-            </AttachmentWrapper>
-            <ButtonWrapper row="end">
-              <SaveButton width="7rem" onClick={onSubmitAnswer}>
-                저장
-              </SaveButton>
-            </ButtonWrapper>
-          </AnswerInputFieldWrapper>
-        ) : (
-          <AnswerInputFieldWrapper>
-            <Width100 marginTop="10px">
-              <AnswerText>{answer}</AnswerText>
+        <AnswerInputFieldWrapper>
+          <StyledTextarea
+            placeholder="답변을 입력하세요."
+            onChange={onAnswerChange}
+            ref={answerRef}
+          />
+          <AttachmentWrapper row="between" col="center">
+            <Width100>
+              <ImageFileUpload
+                key={key}
+                width="7rem"
+                height="2.9rem"
+                mode={1}
+                appendFilesToFormData={appendFilesToFormData}
+              />
             </Width100>
-            <AttachedImgWrapper>
-              {answerFiles.length > 0 &&
-                answerFiles?.map((file, idx) => (
-                  <AttachedImg key={idx} src={file} alt="첨부파일" />
-                ))}
-            </AttachedImgWrapper>
-
-            {/* 작성 시간 */}
-            <SubTextWrapper row="end" col="center">
-              <div>
-                <StyledIcon icon={faClock} />
-                <SubText>{updatedAt}</SubText>
-              </div>
-            </SubTextWrapper>
-          </AnswerInputFieldWrapper>
-        )}
+          </AttachmentWrapper>
+          <ButtonWrapper row="end">
+            <SaveButton width="7rem" onClick={onSubmitAnswer}>
+              저장
+            </SaveButton>
+          </ButtonWrapper>
+        </AnswerInputFieldWrapper>
       </AnswerWrapper>
-      {isAnswerCompleted[threadId] && replyAnswers.length <= 0 && (
-        <div>
-          <InputWrapper col="center">
-            <StyledInput
-              type="text"
-              placeholder="추가 답변을 입력하세요."
-              onChange={(e) => onReplyAnswerChange(e)}
-              ref={replyAnswerRef}
-            />
-            <ReplySubmitButton value="전송" onClick={(e) => onSubmitReplyAnswer(e)}>
-              <SubmitIcon icon={faLocationArrow} />
-            </ReplySubmitButton>
-          </InputWrapper>
-          <AttachmentWrapper row="between" col="center" marginTop="5px">
-            <Width100>
-              <ImageFileUpload
-                width="7rem"
-                height="2.9rem"
-                mode={1}
-                appendFilesToFormData={appendFilesToFormData}
-              />
-            </Width100>
-          </AttachmentWrapper>
-        </div>
-      )}
-      {isAnswerCompleted[threadId] &&
-        replyAnswers.length > 0 &&
-        replyAnswers?.map((_replyAnswer, idx) => (
-          <AnswerWrapper key={idx}>
-            <div>
-              <QnAText>A.</QnAText>
-            </div>
-            <Width100 marginTop="10px">
-              <AnswerText>{_replyAnswer.text}</AnswerText>
-              {_replyAnswer.file.length > 0 &&
-                _replyAnswer.file?.map((file, idx) => (
-                  <AttachedImgWrapper key={idx}>
-                    <AttachedImg src={file} alt="첨부파일" />
-                  </AttachedImgWrapper>
-                ))}
-            </Width100>
-          </AnswerWrapper>
-        ))}
-      {isAnswerCompleted[threadId] && replyAnswers.length > 0 && (
-        <FlexWrapper dir="col">
-          <InputWrapper col="center">
-            <StyledInput
-              type="text"
-              placeholder="추가 답변을 입력하세요."
-              onChange={(e) => onReplyAnswerChange(e)}
-              ref={replyAnswerRef}
-            />
-            <ReplySubmitButton value="전송" onClick={(e) => onSubmitReplyAnswer(e)}>
-              <SubmitIcon icon={faLocationArrow} />
-            </ReplySubmitButton>
-          </InputWrapper>
-          <AttachmentWrapper dir="col" row="between" col="center" height="none">
-            <Width100>
-              <ImageFileUpload
-                width="7rem"
-                height="2.9rem"
-                mode={1}
-                appendFilesToFormData={appendFilesToFormData}
-              />
-            </Width100>
-          </AttachmentWrapper>
-        </FlexWrapper>
-      )}
     </ThreadWrapper>
   );
 };
 
 InquiryManagementThread.propTypes = {
   data: PropTypes.object,
-  isAnswerCompleted: PropTypes.bool,
-  setIsAnswerCompleted: PropTypes.func
+  fetchAnswer: PropTypes.func
 };
 
 const ThreadWrapper = styled.div`
@@ -475,7 +391,7 @@ const StyledTextarea = styled.textarea`
   background-color: transparent;
   border: 1px solid #ccc;
   width: 100%;
-  height: 12.5rem;
+  height: ${({ height }) => height || "12.5rem"};
   margin-top: 0.5rem;
   padding: 10px 12px;
   font-size: ${({ theme }) => theme.fontSize.xxs};

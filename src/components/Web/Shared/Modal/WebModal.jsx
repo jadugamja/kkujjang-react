@@ -24,7 +24,7 @@ const WebModal = ({
   setIsOpen,
   hasButton,
   isVan,
-  isWithdrawal,
+  isWithdrawal = false,
   handleWithdrawal,
   children
 }) => {

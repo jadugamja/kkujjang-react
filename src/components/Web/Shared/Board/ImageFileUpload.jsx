@@ -105,7 +105,7 @@ const ImageFileUpload = ({ appendFilesToFormData, width, height, mode = 0 }) => 
         ref={inputRef}
         name="images"
         onChange={onSelectFile}
-        accept="image/*"
+        accept="image/jpg, image/jpeg, image/png, image/bmp, image/webp"
       />
     </ImageFileUploadWrapper>
   );

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -8,9 +8,19 @@ import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
+import Modal from "../Shared/GameModal";
 
 const WaitingPlayerList = () => {
   const playerList = useRecoilValue(waitingPlayerListState);
+  const [userId, setUserId] = useState(null);
+  const [modalType, setModalType] = useState("profile");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onPlayerClick = (userId) => {
+    setModalType("profile");
+    setUserId(userId);
+    setIsModalOpen(true);
+  };
 
   return (
     <GridBox items="4" gap="10px" margin="10px 4px 6px">
@@ -19,6 +29,7 @@ const WaitingPlayerList = () => {
           key={player.userId}
           type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}
           row="between"
+          onClick={() => onPlayerClick(player.userId)}
         >
           <Player avatarUrl={avatarUrl} nickname={player.nickname} level={player.level} />
           <StatusBox dir="col" row="start">
@@ -28,6 +39,15 @@ const WaitingPlayerList = () => {
           </StatusBox>
         </PlayerWrapper>
       ))}
+      {isModalOpen && (
+        <Modal
+          type={modalType}
+          setType={setModalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          userId={userId}
+        />
+      )}
     </GridBox>
   );
 };
@@ -43,6 +63,10 @@ const PlayerWrapper = styled(FlexBox)`
   }};
   border: 2px solid rgb(107 107 107 / 26%);
   border-radius: 7px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const StatusBox = styled(FlexBox)`

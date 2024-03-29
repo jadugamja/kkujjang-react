@@ -18,7 +18,6 @@ import {
   initialCharacterState,
   isMyTurnState,
   thisTurnLeftTimeState,
-  thisRoundLeftTimeState,
   currentRoundState,
   currentPointsState,
   isWordFailState
@@ -27,15 +26,12 @@ import { sendMessage } from "@/services/socket";
 
 const WordInput = ({ roundCount, roundTime }) => {
   const randomWord = useRecoilValue(randomWordState);
-  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
+  const initialCharacter = useRecoilValue(initialCharacterState);
   const isMyTurn = useRecoilValue(isMyTurnState);
+  const isFail = useRecoilValue(isWordFailState);
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
-  const thisRoundLeftTime = useRecoilValue(thisRoundLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
   const [inputWord, setInputWord] = useState("");
-  const [isFail, setIsFail] = useRecoilState(isWordFailState);
-
-  const setCurrPoints = useSetRecoilState(currentPointsState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
@@ -72,8 +68,7 @@ const WordInput = ({ roundCount, roundTime }) => {
             <DisplayWord>{initialCharacter}</DisplayWord>
           )}
         </DisplayWordWrapper>
-        {/* 변경 必 */}
-        <TimerBar type="turn" totalTime={roundTime / 10} />
+        <TimerBar type="turn" totalTime={roundTime} />
         <TimerBar type="round" totalTime={roundTime} />
       </WordTimerInfo>
       {isMyTurn && (

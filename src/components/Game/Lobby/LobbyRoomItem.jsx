@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -30,6 +31,7 @@ const LobbyRoomItem = ({
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setCookie] = useCookies(["userId"]);
   const navigate = useNavigate();
 
   const onEnterRoom = (roomId) => {
@@ -58,6 +60,9 @@ const LobbyRoomItem = ({
       () => {
         loadRoom((room) => {
           setRoomInfo(room);
+          setCookie("userId", room.userList[room.userList.length - 1].userId, {
+            path: "/"
+          });
           setUser((prev) => ({
             userId: room.userList[room.userList.length - 1].userId,
             ...prev

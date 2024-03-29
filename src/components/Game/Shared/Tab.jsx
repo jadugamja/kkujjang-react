@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useSetRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -100,6 +101,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
   const setRoomInfo = useSetRecoilState(roomInfoState);
   const setUser = useSetRecoilState(userInfoState);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setCookie] = useCookies(["userId"]);
   const navigate = useNavigate();
 
   const onCreateRoom = useCallback(() => {
@@ -125,6 +127,9 @@ export const Tab = ({ children, type, rooms, onClick }) => {
         () => {
           loadRoom((room) => {
             setRoomInfo(room);
+            setCookie("userId", room.userList[room.userList.length - 1].userId, {
+              path: "/"
+            });
             setUser((prev) => ({
               userId: room.userList[room.userList.length - 1].userId,
               ...prev

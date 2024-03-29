@@ -28,7 +28,9 @@ import {
   Tr,
   TdLabel,
   TdContent,
-  ButtonWrapper
+  ButtonWrapper,
+  Label,
+  Textarea
 } from "./GameModalStyle";
 import leftArrow from "@/assets/images/left-arrow.png";
 import rightArrow from "@/assets/images/right-arrow.png";
@@ -44,12 +46,15 @@ import {
 import useAxios from "@/hooks/useAxios";
 import { updateCurrentUserAvatar } from "@/services/user";
 import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
+import { getPlayerInfoByUserId } from "../../../services/user";
 
 const GameModal = ({
   type,
+  setType,
   isOpen,
   setIsOpen,
   setIsPlaying,
+  userId,
   roomId,
   setIsDataFetched,
   height = "",
@@ -64,15 +69,16 @@ const GameModal = ({
 
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
   const [fxCurrVolume, setFxCurrVolume] = useRecoilState(fxVolumeState);
+  const [user, setUser] = useRecoilState(userInfoState);
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [password, setPassword] = useState("");
   const [isCorrectPassword, setIsCorrectPassword] = useState(true);
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
-  const [user, setUser] = useRecoilState(userInfoState);
-  const userId = useRecoilValue(userNameState);
+  const [modalMessage, setModalMessage] = useState("");
+  // const userId = useRecoilValue(userNameState);
 
-  const [, setCookie] = useCookies(["userId"]);
+  const [cookies, setCookie] = useCookies(["sessionId", "userId"]);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -82,8 +88,9 @@ const GameModal = ({
     case "alert":
       titleText = "경고";
       break;
-    case "input":
-      height = "18.75rem";
+    case "alarm":
+      titleText = "안내";
+      height = "14rem";
       break;
     case "avatar":
       titleText = "아바타 설정하기";
@@ -98,7 +105,11 @@ const GameModal = ({
       break;
     case "profile":
       titleText = "프로필";
-      height !== "" ? "14rem" : height;
+      height = "14rem";
+      break;
+    case "report":
+      titleText = "신고하기";
+      height = "29.9rem";
       break;
     case "setting":
       titleText = "환경설정";
@@ -130,6 +141,21 @@ const GameModal = ({
     "fx1",
     "fx2"
   ];
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      if (type === "report") {
+        setType("alarm");
+        setModalMessage("신고가 등록되었습니다.");
+      }
+    }
+  }, [response]);
 
   useEffect(() => {
     if (type === "room" && !roomId) {
@@ -199,9 +225,29 @@ const GameModal = ({
     }
   };
 
-  const navigate = useNavigate();
+  // ====== report ======
+  const onReportSubmit = (e) => {
+    e.preventDefault();
+
+    setApiConfig({
+      method: "POST",
+      url: "/report",
+      headers: {
+        sessionId: cookies.sessionId
+      },
+      data: {
+        nickname: user.nickname,
+        isOffensive: e.target.isOffensive.checked,
+        isPoorManner: e.target.isPoorManner.checked,
+        isCheating: e.target.isCheating.checked,
+        note: e.target.note.value,
+        reporteeId: cookies.userId
+      }
+    });
+  };
 
   // ====== room ======
+  const navigate = useNavigate();
   const onValidateChange = (e) => {
     const t = e.target;
     let v = parseInt(t.value);
@@ -269,6 +315,9 @@ const GameModal = ({
       authorization,
       () => {
         setIsOpen(false);
+        setCookie("userId", room.userList[room.userList.length - 1].userId, {
+          path: "/"
+        });
         navigate(`/game/${roomId}`);
       },
       (error) => {
@@ -349,7 +398,7 @@ const GameModal = ({
             <form onSubmit={onValidateSubmit}>
               <Table>
                 <Tbody>
-                  <Tr>
+                  <Tr col="center">
                     <TdLabel>
                       <GameModalMessage>방 제목</GameModalMessage>
                     </TdLabel>
@@ -367,14 +416,14 @@ const GameModal = ({
                     </TdContent>
                   </Tr>
                   {isTitleEmpty && (
-                    <Tr>
+                    <Tr col="center">
                       <TdLabel />
                       <TdContent>
                         <ValidationMessage message="제목을 입력하세요." fontSize="14px" />
                       </TdContent>
                     </Tr>
                   )}
-                  <Tr>
+                  <Tr col="center">
                     <TdLabel>
                       <GameModalMessage>비밀번호</GameModalMessage>
                     </TdLabel>
@@ -391,7 +440,7 @@ const GameModal = ({
                       />
                     </TdContent>
                   </Tr>
-                  <Tr>
+                  <Tr col="center">
                     <TdLabel>
                       <GameModalMessage>플레이어 수</GameModalMessage>
                     </TdLabel>
@@ -407,7 +456,7 @@ const GameModal = ({
                       />
                     </TdContent>
                   </Tr>
-                  <Tr>
+                  <Tr col="center">
                     <TdLabel>
                       <GameModalMessage>라운드 수</GameModalMessage>
                     </TdLabel>
@@ -423,7 +472,7 @@ const GameModal = ({
                       />
                     </TdContent>
                   </Tr>
-                  <Tr>
+                  <Tr col="center">
                     <TdLabel>
                       <GameModalMessage>라운드 시간</GameModalMessage>
                     </TdLabel>
@@ -475,13 +524,72 @@ const GameModal = ({
 
           {/* 프로필 modal */}
           {type === "profile" && (
-            <GameModalBody top="0" marginTop="8px">
-              <Profile type="modal" />
-              <ButtonWrapper row="end" col="center" margin="6px 0">
-                <GameModalButton onClick={(e) => onValidateChange(e)}>
-                  수정
-                </GameModalButton>
+            <GameModalBody top="0" padding="0 14px">
+              <Profile type="modal" userId={userId} />
+              <ButtonWrapper row="end" col="center" margin="0px 0px 13px">
+                {userId !== cookies.userId ? (
+                  <GameModalButton onClick={() => setType("report")}>
+                    신고
+                  </GameModalButton>
+                ) : (
+                  <GameModalButton onClick={(e) => onValidateChange(e)}>
+                    수정
+                  </GameModalButton>
+                )}
               </ButtonWrapper>
+            </GameModalBody>
+          )}
+
+          {/* 신고 modal */}
+          {type === "report" && (
+            <GameModalBody top="0" padding="0 14px">
+              <form onSubmit={(e) => onReportSubmit(e)}>
+                <Table margin="1rem 0">
+                  <Tbody>
+                    <Tr>
+                      <TdLabel>
+                        <GameModalMessage>신고 대상</GameModalMessage>
+                      </TdLabel>
+                      <TdContent row="end" color="#fff" fontSize="19px">
+                        {user?.nickname}
+                      </TdContent>
+                    </Tr>
+                    <Tr dir="col" row="start" col="start">
+                      <TdLabel>
+                        <GameModalMessage>신고 사유</GameModalMessage>
+                      </TdLabel>
+                      <TdContent dir="col" color="#fff" fontSize="17px">
+                        <Label htmlFor="isOffensive" margin="5px 0">
+                          <input type="checkbox" id="isOffensive" value="isOffensive" />
+                          공격적인 언어 사용 (도배, 욕설, 음담패설, 혐오 표현 사용 등)
+                        </Label>
+                        <Label htmlFor="isPoorManner">
+                          <input type="checkbox" id="isPoorManner" value="isPoorManner" />
+                          비매너 행위 (고의적인 게임 진행 방해, 스토킹, 시스템 악용 등)
+                        </Label>
+                        <Label htmlFor="isCheating">
+                          <input type="checkbox" id="isCheating" value="isCheating" />
+                          사기 행위 (계정/현금 거래/상업 광고/사기 및 사칭)
+                        </Label>
+                        <Label htmlFor="note">
+                          - 기타 (하단 입력란에 신고 사유를 입력하세요.)
+                        </Label>
+                        <Textarea
+                          margin="0"
+                          height="5.4rem"
+                          fontSize="15px"
+                          id="note"
+                          name="note"
+                          placeholder="신고하게 된 계기를 자세하게 입력해주세요."
+                        />
+                      </TdContent>
+                    </Tr>
+                  </Tbody>
+                </Table>
+                <ButtonWrapper row="end" col="center" margin="0">
+                  <GameModalButton type="submit">신고</GameModalButton>
+                </ButtonWrapper>
+              </form>
             </GameModalBody>
           )}
 
@@ -493,6 +601,18 @@ const GameModal = ({
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
                 {children}
+              </GameModalMessage>
+              <ButtonWrapper row="center" col="center" margin="30px 0px 32px">
+                <GameModalButton onClick={() => setIsOpen(false)}>확인</GameModalButton>
+              </ButtonWrapper>
+            </GameModalBody>
+          )}
+
+          {/* 안내 modal */}
+          {type === "alarm" && (
+            <GameModalBody top="43px">
+              <GameModalMessage fontSize="20px" fontWeight="500">
+                {modalMessage}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="30px 0px 32px">
                 <GameModalButton onClick={() => setIsOpen(false)}>확인</GameModalButton>
@@ -514,11 +634,11 @@ const GameModal = ({
 
           {/* 게임 결과 modal */}
           {type === "result" && (
-            <GameModalBody>
+            <GameModalBody row="between">
               <Table>
                 <Tbody>
                   {children?.map(({ userId, score }, idx) => (
-                    <Tr key={idx} bgColor="#fff">
+                    <Tr key={idx} bgColor="#fff" col="center">
                       <TdLabel width="2.5rem" textAlign="center">
                         {idx + 1}
                       </TdLabel>
@@ -530,7 +650,7 @@ const GameModal = ({
                   ))}
                 </Tbody>
               </Table>
-              <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
+              <ButtonWrapper row="center" col="center" margin="10px 0px 45px">
                 <GameModalButton
                   onClick={() => {
                     loadRoom();
@@ -572,10 +692,11 @@ const GameModal = ({
 GameModal.propTypes = {
   type: PropTypes.oneOf([
     "alert",
-    "input",
+    "alarm",
     "password",
     "room",
     "profile",
+    "report",
     "setting",
     "help",
     "exit",
@@ -583,9 +704,11 @@ GameModal.propTypes = {
     "error",
     "result"
   ]),
+  setType: PropTypes.func,
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func,
   setIsPlaying: PropTypes.func,
+  userId: PropTypes.number,
   roomId: PropTypes.string,
   setIsDataFetched: PropTypes.func,
   height: PropTypes.string,

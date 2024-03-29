@@ -47,7 +47,7 @@ const InquiryManagementThread = ({ data, fetchAnswer }) => {
   useEffect(() => {
     if (response !== null) {
       setIsFirstAnswer(false);
-      fetchAnswer();
+      fetchAnswer(); // 등록 성공 시 조회 API 호출
       setRemoteApiConfig({
         method: "get",
         url: `/inquiry/search?page=1`,
@@ -379,10 +379,6 @@ const AnswerWrapper = styled(FlexBox)`
   }
 `;
 
-const FlexWrapper = styled(FlexBox)`
-  margin-top: 1rem;
-`;
-
 const AnswerInputFieldWrapper = styled.div`
   width: 100%;
 `;
@@ -426,37 +422,7 @@ const AttachedImg = styled.img`
   max-width: 100%;
 `;
 
-const InputWrapper = styled(FlexBox)`
-  width: 100%;
-  margin-top: 1rem;
-`;
-const StyledInput = styled(Input)`
-  width: calc(100% - 3.75rem);
-  height: 3rem;
-  margin: 0;
-  background-color: transparent;
-  font-size: ${({ theme }) => theme.fontSize.xxxs};
-  font-weight: 400;
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.gray500};
-  }
-`;
-
-const ReplySubmitButton = styled.button`
-  flex: 1;
-  height: 3rem;
-  background-color: transparent;
-  border: 1px solid #ccc;
-`;
-
-const SubmitIcon = styled(FontAwesomeIcon)`
-  font-size: ${({ theme }) => theme.fontSize.xxs};
-  transform: rotate(43deg);
-`;
-
 // ========== //Answer ==========
-
 const ButtonWrapper = styled(FlexBox)`
   margin-top: 1rem;
 `;

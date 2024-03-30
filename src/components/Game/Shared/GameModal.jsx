@@ -230,7 +230,7 @@ const GameModal = ({
     e.preventDefault();
 
     setApiConfig({
-      method: "POST",
+      method: "post",
       url: "/report",
       headers: {
         sessionId: cookies.sessionId

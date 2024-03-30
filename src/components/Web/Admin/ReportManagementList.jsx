@@ -14,12 +14,20 @@ import useAxios from "@/hooks/useAxios";
 const ReportManagementList = ({ type, onSideOpen }) => {
   const [cookies] = useCookies(["sessionId"]);
   const [data, setData] = useState([]);
-  const [selectedFilterOptions, setSelectedFilterOptions] = useState({});
+  const [selectedFilterOptions, setSelectedFilterOptions] = useState({
+    createdAt: "latest",
+    types: {
+      isOffensive: 1,
+      isPoorManner: 1,
+      isCheating: 1
+    },
+    is_handled: 0
+  });
   const [currPage, setCurrPage] = useState(1);
-  const [lastPageIdx, setLastPageIdx] = useState(25);
+  const [lastPageIdx, setLastPageIdx] = useState(1);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/report/search?page=${currPage}`,
+    url: `/report/search?page=${currPage}&order=latest&isOffensive=1&isPoorManner=1&isCheating=1&is_handled=0`,
     headers: {
       sessionId: cookies.sessionId
     }

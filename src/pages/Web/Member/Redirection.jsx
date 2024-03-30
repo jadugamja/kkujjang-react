@@ -15,10 +15,10 @@ const Redirection = () => {
     method: "get",
     url: `/user/oauth/kakao?code=${code}`
   });
-  const { response, error, loading, fetchData } = useAxios(apiConfig);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === cookie ===
-  const [cookies, setCookie] = useCookies(["sessionId"]);
+  const [, setCookie] = useCookies(["sessionId"]);
 
   // === navigate ===
   const navigate = useNavigate();

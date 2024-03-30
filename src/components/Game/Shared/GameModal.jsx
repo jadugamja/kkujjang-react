@@ -87,6 +87,7 @@ const GameModal = ({
   switch (type) {
     case "alert":
       titleText = "경고";
+      height !== "" ? height : "14rem";
       break;
     case "alarm":
       titleText = "안내";
@@ -125,7 +126,7 @@ const GameModal = ({
       break;
     case "error":
       titleText = "경고";
-      height !== "" ? "18rem" : height;
+      height !== "" ? height : "18rem";
       break;
   }
 
@@ -602,7 +603,7 @@ const GameModal = ({
               <GameModalMessage fontSize="20px" fontWeight="500">
                 {children}
               </GameModalMessage>
-              <ButtonWrapper row="center" col="center" margin="30px 0px 32px">
+              <ButtonWrapper row="center" col="center" margin="40px 0px 0px">
                 <GameModalButton onClick={() => setIsOpen(false)}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>

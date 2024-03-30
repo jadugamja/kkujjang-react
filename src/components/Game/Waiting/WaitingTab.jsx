@@ -73,6 +73,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={roomId}
+          height={modalType === "alert" && "14rem"}
         >
           {modalMessage}
         </Modal>

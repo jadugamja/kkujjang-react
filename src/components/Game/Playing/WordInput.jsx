@@ -7,7 +7,6 @@ import { FlexBox } from "@/styles/FlexStyle";
 import { blink } from "@/styles/CommonStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
-
 import {
   playingPlayerListState,
   playingPlayerState,

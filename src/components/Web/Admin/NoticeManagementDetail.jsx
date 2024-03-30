@@ -27,6 +27,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const [editImages, setEditImages] = useState([]);
   const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
   const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
+  const [modalMessage, setModalMessage] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
@@ -56,8 +57,13 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
       } else {
         setIsEditMode(false);
       }
+    } else {
+      if (error) {
+        setModalMessage(error);
+        setIsOpenModal(true);
+      }
     }
-  }, [response]);
+  }, [response, error]);
 
   const onClickEditModeOn = () => {
     setEditTitle(title);
@@ -153,7 +159,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
       </ContentWrapper>
       <ButtonWrapper row="end">
         <Button type="smallTransparent" message="수정" onClick={onClickEditModeOn} />
-        <Button type="smallGray" message="삭제" onClick={deleteNotice} />
+        <Button type="smallGray" message="삭제" onClick={onClickDeleteItem} />
       </ButtonWrapper>
     </>
   );
@@ -199,22 +205,21 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   );
 
   // 삭제
-  const deleteNotice = () => {
+  const onClickDeleteItem = () => {
+    setModalMessage("게시물을 삭제하시겠습니까?");
     setIsOpenModal(true);
   };
 
   const onDeleteNotice = () => {
-    setApiConfig({
-      method: "delete",
-      url: `/notice/${id}`,
-      headers: {
-        sessionId: cookies.sessionId
-      }
-    });
-    setIsOpenModal(false);
-  };
-
-  const onErrorClick = () => {
+    if (modalMessage.includes("삭제")) {
+      setApiConfig({
+        method: "delete",
+        url: `/notice/${id}`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
+    }
     setIsOpenModal(false);
   };
 
@@ -222,18 +227,18 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     <>
       {loading ? (
         <center>Loading...</center>
-      ) : error ? (
-        <Modal setIsOpen={setIsOpenModal} onClick={onErrorClick} hasButton={true}>
-          {error}
-        </Modal>
       ) : (
         <>
           <DetailWrapper key={id}>
             {isEditMode ? renderUpdateView() : renderDetailView()}
           </DetailWrapper>
           {isOpenModal && (
-            <Modal setIsOpen={setIsOpenModal} onClick={onDeleteNotice} hasButton={true}>
-              게시물을 삭제하시겠습니까?
+            <Modal
+              setIsOpen={setIsOpenModal}
+              onClick={error ? () => setIsOpenModal(false) : onDeleteNotice}
+              hasButton={true}
+            >
+              {modalMessage}
             </Modal>
           )}
         </>

@@ -27,7 +27,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   const [lastPageIdx, setLastPageIdx] = useState(1);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
-    url: `/report/search?page=${currPage}&order=latest&isOffensive=1&isPoorManner=1&isCheating=1&is_handled=0`,
+    url: `/report/search?page=${currPage}`,
     headers: {
       sessionId: cookies.sessionId
     }

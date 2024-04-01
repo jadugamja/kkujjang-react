@@ -19,7 +19,7 @@ import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
 import useAxios from "@/hooks/useAxios";
 
-const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
+const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }) => {
   const { id, title, content, created_at, views, files } = data;
   const [cookies] = useCookies(["sessionId"]);
   const [editTitle, setEditTitle] = useState(title);
@@ -44,19 +44,21 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 
   useEffect(() => {
     if (response !== null) {
-      // 삭제
       if (apiConfig.method === "delete") {
+        // 삭제
         setIsActiveSideContentType(0);
-        setRemoteApiConfig({
-          method: "get",
-          url: "/notice/list?page=1",
-          headers: {
-            sessionId: cookies.sessionId
-          }
-        });
-      } else {
+      } else if (apiConfig.method === "put") {
+        // 수정
         setIsEditMode(false);
+        fetchDetail();
       }
+      setRemoteApiConfig({
+        method: "get",
+        url: "/notice/list?page=1",
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
     } else {
       if (error) {
         setModalMessage(error);
@@ -250,7 +252,8 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 NoticeManagementDetail.propTypes = {
   data: PropTypes.object,
   isEditMode: PropTypes.bool,
-  setIsEditMode: PropTypes.func
+  setIsEditMode: PropTypes.func,
+  fetchDetail: PropTypes.func
 };
 
 const DetailWrapper = styled.div`

@@ -88,6 +88,7 @@ const NoticeManagement = () => {
               data={detailData}
               isEditMode={isEditMode}
               setIsEditMode={setIsEditMode}
+              fetchDetail={fetchData}
             />
           </Box>
         );

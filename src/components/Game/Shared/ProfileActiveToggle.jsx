@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import useAxios from "../../../hooks/useAxios";
-import { itemIdState } from "@/recoil/boardState";
+import useAxios from "@/hooks/useAxios";
+import { itemIdState, remoteApiConfigState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
 import Modal from "@/components/Web/Shared/Modal/WebModal";
 
-const ProfileActiveToggle = ({ isActiveAccount }) => {
-  // const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
-  // const isActiveAccount = accountStates[userId];
+const ProfileActiveToggle = ({ isActive, setIsActive }) => {
   const id = useRecoilValue(itemIdState);
-  const [isBannedUser, setIsBannedUser] = useState(isActiveAccount);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -25,33 +23,60 @@ const ProfileActiveToggle = ({ isActiveAccount }) => {
 
   useEffect(() => {
     if (response !== null) {
+      setIsActive(!isActive);
+      setRemoteApiConfig({
+        method: "get",
+        url: "/user/search",
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
       setIsModalOpen(false);
-      // setIsBannedUser(response.result.isBanned);
     }
   }, [response]);
 
   const onActiveToggle = (bannedDays, bannedReason) => {
-    setApiConfig({
-      method: "put",
-      url: "/ban",
-      headers: { sessionId: cookies.sessionId },
-      data: {
-        userId: id,
-        bannedDays: bannedDays,
-        bannedReason: bannedReason
-      }
-    });
+    if (!isActive) {
+      setApiConfig({
+        method: "put",
+        url: "/ban",
+        headers: { sessionId: cookies.sessionId },
+        data: {
+          userId: id,
+          bannedDays: 0,
+          bannedReason: "reactivate account"
+        }
+      });
+    } else {
+      setApiConfig({
+        method: "put",
+        url: "/ban",
+        headers: { sessionId: cookies.sessionId },
+        data: {
+          userId: id,
+          bannedDays: bannedDays,
+          bannedReason: bannedReason
+        }
+      });
+    }
   };
 
   return (
     <>
       {isModalOpen && (
-        <Modal isBan={true} onClick={onActiveToggle} setIsOpen={setIsModalOpen} />
+        <Modal
+          isBan={isActive}
+          hasButton={!isActive}
+          onClick={onActiveToggle}
+          setIsOpen={setIsModalOpen}
+        >
+          {!isActive && "계정을 활성화시키겠습니까?"}
+        </Modal>
       )}
       <ActiveToggle
         col="center"
-        row={isActiveAccount ? "end" : "start"}
-        active={isActiveAccount}
+        row={isActive ? "end" : "start"}
+        active={isActive}
         onClick={() => setIsModalOpen(true)}
       >
         <ActiveCircle />
@@ -61,7 +86,8 @@ const ProfileActiveToggle = ({ isActiveAccount }) => {
 };
 
 ProfileActiveToggle.propTypes = {
-  isActiveAccount: PropTypes.bool
+  isActive: PropTypes.bool,
+  setIsActive: PropTypes.func
 };
 
 const ActiveToggle = styled(FlexBox)`

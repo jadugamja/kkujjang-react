@@ -32,7 +32,6 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
-    setCurrPage(1);
     // setSearchKeyword("");
     setApiConfig({
       method: "get",
@@ -62,7 +61,7 @@ const UserManagementList = ({ type, onSideOpen }) => {
 
   // 페이지 변경, 검색 시
   useEffect(() => {
-    if (data?.length === 0 || searchKeyword === "") {
+    if (data?.length === 0) {
       return;
     }
 

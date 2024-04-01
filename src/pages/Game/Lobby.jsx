@@ -39,7 +39,6 @@ const Lobby = () => {
   const [modalType, setModalType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [socket, setSocket] = useState();
 
   const location = useLocation();
   const path = location.pathname;

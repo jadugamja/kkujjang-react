@@ -11,7 +11,7 @@ import ProfileActiveToggle from "../../Game/Shared/ProfileActiveToggle";
 const UserManagementDetail = ({ data }) => {
   const id = useRecoilValue(itemIdState);
   const accountStates = useRecoilValue(isActiveAccountState);
-  const isActiveAccount = accountStates[data?.id];
+  // const isActiveAccount = accountStates[data?.id];
 
   return (
     <DetailWrapper>
@@ -39,7 +39,7 @@ const UserManagementDetail = ({ data }) => {
           <Tr>
             <TdLabel>계정 활성화 여부</TdLabel>
             <TdContent>
-              <ProfileActiveToggle isActive={!data?.isBanned} />
+              <ProfileActiveToggle isActiveAccount={!data?.isBanned} />
             </TdContent>
           </Tr>
           {data?.isBanned && (
@@ -47,7 +47,7 @@ const UserManagementDetail = ({ data }) => {
               {/* 비활성화 기간 데이터 필요
               <Tr>
                 <TdLabel>- 비활성화 기간</TdLabel>
-                <TdContent>{data?.bannedPeriod}</TdContent>
+                <TdContent>{data?.bannedDays}</TdContent>
               </Tr> */}
               <Tr>
                 <TdLabel>- 비활성화 사유</TdLabel>

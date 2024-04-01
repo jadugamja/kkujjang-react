@@ -197,7 +197,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                     if (key === "isBanned")
                       return (
                         <TdCenter key={key} paddingLeft={isHome ? "1rem" : "2rem"}>
-                          <ProfileActiveToggle isActive={!value} />
+                          <ProfileActiveToggle isActiveAccount={!value} />
                         </TdCenter>
                       );
                     if (key === "needAnswer")

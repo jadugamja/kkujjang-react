@@ -1,41 +1,67 @@
-import { useRecoilState } from "recoil";
+import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { useRecoilValue, useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { isActiveAccountState } from "@/recoil/userState";
+import useAxios from "../../../hooks/useAxios";
+import { itemIdState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
+import Modal from "@/components/Web/Shared/Modal/WebModal";
 
-const ProfileActiveToggle = ({ isActive }) => {
+const ProfileActiveToggle = ({ isActiveAccount }) => {
   // const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
   // const isActiveAccount = accountStates[userId];
-  const isActiveAccount = isActive;
+  const id = useRecoilValue(itemIdState);
+  const [isBannedUser, setIsBannedUser] = useState(isActiveAccount);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+  const [cookies] = useCookies(["sessionId"]);
 
-  const onActiveToggle = () => {
-    if (isActiveAccount) {
-      // 임시
-      alert("계정을 비활성화하시겠습니까?");
-    } else {
-      // 임시
-      alert("계정을 활성화시키겠습니까?");
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setIsModalOpen(false);
+      // setIsBannedUser(response.result.isBanned);
     }
-    setAccountStates((oldState) => ({ ...oldState, [userId]: !isActiveAccount }));
+  }, [response]);
+
+  const onActiveToggle = (bannedDays, bannedReason) => {
+    setApiConfig({
+      method: "put",
+      url: "/ban",
+      headers: { sessionId: cookies.sessionId },
+      data: {
+        userId: id,
+        bannedDays: bannedDays,
+        bannedReason: bannedReason
+      }
+    });
   };
 
   return (
-    <ActiveToggle
-      col="center"
-      row={isActiveAccount ? "end" : "start"}
-      active={isActiveAccount}
-      onClick={onActiveToggle}
-    >
-      <ActiveCircle />
-    </ActiveToggle>
+    <>
+      {isModalOpen && (
+        <Modal isBan={true} onClick={onActiveToggle} setIsOpen={setIsModalOpen} />
+      )}
+      <ActiveToggle
+        col="center"
+        row={isActiveAccount ? "end" : "start"}
+        active={isActiveAccount}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <ActiveCircle />
+      </ActiveToggle>
+    </>
   );
 };
 
 ProfileActiveToggle.propTypes = {
-  isActive: PropTypes.bool
-  // userId: PropTypes.oneOfType[(PropTypes.number, PropTypes.string)]
+  isActiveAccount: PropTypes.bool
 };
 
 const ActiveToggle = styled(FlexBox)`

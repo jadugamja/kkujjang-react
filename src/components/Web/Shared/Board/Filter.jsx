@@ -124,10 +124,10 @@ const getFilterItemText = (key, item) => {
       switch (item) {
         case "isOffensive":
           return <span>{"공격적인 언어 사용"}</span>;
-        case "isCheating":
-          return <span>{"사기 행위"}</span>;
         case "isPoorManner":
           return <span>{"비매너 행위"}</span>;
+        case "isCheating":
+          return <span>{"사기 행위"}</span>;
         default:
           return "";
       }

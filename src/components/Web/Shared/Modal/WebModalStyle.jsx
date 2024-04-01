@@ -52,40 +52,46 @@ export const ButtonContainer = styled(FlexBox)`
   height: ${(props) => props.height || "fit-content"};
 `;
 
-export const VanWrapper = styled.div`
+export const BanWrapper = styled.div`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
 `;
 
-export const VanInputWrapper = styled(FlexBox)`
+export const BanInputWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
 `;
 
-export const VanInput = styled.input`
+export const BanInput = styled.input`
   width: ${(props) => props.width || "20.688rem"};
   height: ${(props) => props.height || "3.313rem"};
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 16px;
 `;
 
-export const VanTextAreaWrapper = styled(FlexBox)`
+export const BanTextAreaWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
 `;
 
-export const VanTextArea = styled.textarea`
+export const BanTextArea = styled.textarea`
   width: ${(props) => props.width || "20.688rem"};
   height: ${(props) => props.height || "10.375rem"};
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 16px;
 `;
 
-export const VanButtonWrapper = styled(FlexBox)`
+export const BanButtonWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "26.853rem"};
   height: ${(props) => props.height || "fit-content"};
   padding-top: 20px;
 `;
 
-export const VanButton = styled.button`
+export const BanButton = styled.button`
   width: ${(props) => props.width || "7rem"};
-  height: ${(props) => props.width || "3.625rem"};
+  height: ${(props) => props.height || "3.625rem"};
   background-color: ${({ theme }) => theme.colors.gray100};
   border: 1px solid ${({ theme }) => theme.colors.gray500};
   color: ${({ theme }) => theme.colors.gray600};

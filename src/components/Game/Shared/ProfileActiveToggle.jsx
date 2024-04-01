@@ -1,41 +1,93 @@
-import { useRecoilState } from "recoil";
+import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { isActiveAccountState } from "@/recoil/userState";
+import useAxios from "@/hooks/useAxios";
+import { itemIdState, remoteApiConfigState } from "@/recoil/boardState";
 import { FlexBox } from "@/styles/FlexStyle";
+import Modal from "@/components/Web/Shared/Modal/WebModal";
 
-const ProfileActiveToggle = ({ isActive }) => {
-  // const [accountStates, setAccountStates] = useRecoilState(isActiveAccountState);
-  // const isActiveAccount = accountStates[userId];
-  const isActiveAccount = isActive;
+const ProfileActiveToggle = ({ isActive, setIsActive }) => {
+  const id = useRecoilValue(itemIdState);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+  const [cookies] = useCookies(["sessionId"]);
 
-  const onActiveToggle = () => {
-    if (isActiveAccount) {
-      // 임시
-      alert("계정을 비활성화하시겠습니까?");
-    } else {
-      // 임시
-      alert("계정을 활성화시키겠습니까?");
+  useEffect(() => {
+    fetchData();
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (response !== null) {
+      setIsActive(!isActive);
+      setRemoteApiConfig({
+        method: "get",
+        url: "/user/search",
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
+      setIsModalOpen(false);
     }
-    setAccountStates((oldState) => ({ ...oldState, [userId]: !isActiveAccount }));
+  }, [response]);
+
+  const onActiveToggle = (bannedDays, bannedReason) => {
+    if (!isActive) {
+      setApiConfig({
+        method: "put",
+        url: "/ban",
+        headers: { sessionId: cookies.sessionId },
+        data: {
+          userId: id,
+          bannedDays: 0,
+          bannedReason: "reactivate account"
+        }
+      });
+    } else {
+      setApiConfig({
+        method: "put",
+        url: "/ban",
+        headers: { sessionId: cookies.sessionId },
+        data: {
+          userId: id,
+          bannedDays: bannedDays,
+          bannedReason: bannedReason
+        }
+      });
+    }
   };
 
   return (
-    <ActiveToggle
-      col="center"
-      row={isActiveAccount ? "end" : "start"}
-      active={isActiveAccount}
-      onClick={onActiveToggle}
-    >
-      <ActiveCircle />
-    </ActiveToggle>
+    <>
+      {isModalOpen && (
+        <Modal
+          isBan={isActive}
+          hasButton={!isActive}
+          onClick={onActiveToggle}
+          setIsOpen={setIsModalOpen}
+        >
+          {!isActive && "계정을 활성화시키겠습니까?"}
+        </Modal>
+      )}
+      <ActiveToggle
+        col="center"
+        row={isActive ? "end" : "start"}
+        active={isActive}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <ActiveCircle />
+      </ActiveToggle>
+    </>
   );
 };
 
 ProfileActiveToggle.propTypes = {
-  isActive: PropTypes.bool
-  // userId: PropTypes.oneOfType[(PropTypes.number, PropTypes.string)]
+  isActive: PropTypes.bool,
+  setIsActive: PropTypes.func
 };
 
 const ActiveToggle = styled(FlexBox)`

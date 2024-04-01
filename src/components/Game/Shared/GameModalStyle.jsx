@@ -40,7 +40,8 @@ export const GameModalBody = styled(FlexBox)`
   top: ${({ top }) => top || "26px"};
   flex-direction: column;
   width: 100%;
-  padding: 10px 14px;
+  margin: ${({ margin }) => margin};
+  padding: ${({ padding }) => padding || "10px 14px"};
   flex-grow: 1;
 
   & > * + * {
@@ -74,8 +75,8 @@ export const GameModalLongMessage = styled.textarea.attrs({ readonly: true })`
   font-weight: 500;
   color: #fff4e3;
   margin: 0;
-  border: 0;
   padding: 0 15px;
+  border: 0;
 `;
 
 export const ButtonWrapper = styled(FlexBox)`
@@ -152,7 +153,7 @@ export const ExitMiniCircle = styled.button`
 export const Table = styled.table`
   max-width: 100%;
   width: 100%;
-  margin: 1.3rem 0;
+  margin: ${({ margin }) => margin || "1.3rem 0"};
 `;
 
 export const Tbody = styled.tbody`
@@ -161,7 +162,7 @@ export const Tbody = styled.tbody`
   }
 `;
 
-export const Tr = styled(FlexBox).attrs({ as: "tr", col: "center" })`
+export const Tr = styled(FlexBox).attrs({ as: "tr" })`
   background-color: ${({ bgColor }) => bgColor || "transparent"};
 `;
 
@@ -175,4 +176,21 @@ export const TdContent = styled(FlexBox).attrs({ as: "td" })`
   padding: ${({ padding }) => padding};
   flex-basis: ${({ flexBasis }) => flexBasis};
   flex-grow: ${({ flexGrow }) => flexGrow || 1};
+  font-size: ${({ fontSize }) => fontSize};
+  color: ${({ color }) => color};
+
+  & > * + * {
+    margin-bottom: 10px;
+  }
+`;
+
+export const Textarea = styled.textarea`
+  width: 100%;
+  height: ${({ height }) => height};
+  padding: 4px 5px;
+  font-size: ${({ fontSize }) => fontSize};
+`;
+
+export const Label = styled.label`
+  margin: ${({ margin }) => margin};
 `;

@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue } from "recoil";
-
-import { itemIdState } from "@/recoil/boardState";
-import { isActiveAccountState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import ProfileActiveToggle from "../../Game/Shared/ProfileActiveToggle";
 
-const UserManagementDetail = ({ data }) => {
-  const id = useRecoilValue(itemIdState);
-  const accountStates = useRecoilValue(isActiveAccountState);
-  const isActiveAccount = accountStates[data?.id];
+const UserManagementDetail = ({ data, fetchUser }) => {
+  const [isActiveAccount, setIsActiveAccount] = useState(!data?.isBanned);
+
+  useEffect(() => {
+    fetchUser();
+  }, [isActiveAccount]);
 
   return (
     <DetailWrapper>
@@ -39,16 +37,20 @@ const UserManagementDetail = ({ data }) => {
           <Tr>
             <TdLabel>계정 활성화 여부</TdLabel>
             <TdContent>
-              <ProfileActiveToggle isActive={!data?.isBanned} />
+              <ProfileActiveToggle
+                isActive={!data?.isBanned}
+                setIsActive={setIsActiveAccount}
+              />
             </TdContent>
           </Tr>
           {data?.isBanned && (
             <>
-              {/* 비활성화 기간 데이터 필요
+              {/*
               <Tr>
                 <TdLabel>- 비활성화 기간</TdLabel>
-                <TdContent>{data?.bannedPeriod}</TdContent>
-              </Tr> */}
+                <TdContent>{data?.bannedDays}</TdContent>
+              </Tr> 
+              */}
               <Tr>
                 <TdLabel>- 비활성화 사유</TdLabel>
                 <TdContent>{data?.bannedReason}</TdContent>
@@ -62,7 +64,8 @@ const UserManagementDetail = ({ data }) => {
 };
 
 UserManagementDetail.propTypes = {
-  data: PropTypes.object
+  data: PropTypes.object,
+  fetchUser: PropTypes.func
 };
 
 const DetailWrapper = styled.div`

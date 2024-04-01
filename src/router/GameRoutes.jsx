@@ -1,6 +1,6 @@
 import { lazy, useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { initSocket, disconnectSocket } from "../services/socket";
+import { initSocket, disconnectSocket, onBanned } from "../services/socket";
 
 const Lobby = lazy(() => import("@/pages/Game/Lobby"));
 const GameRoom = lazy(() => import("@/pages/Game/GameRoom"));
@@ -17,6 +17,10 @@ const GameRoute = () => {
         return;
       }
     );
+
+    onBanned((bannedData) => {
+      setError(bannedData);
+    });
 
     return () => disconnectSocket();
   }, []);

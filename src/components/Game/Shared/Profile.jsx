@@ -37,7 +37,7 @@ const accessories = [
   "fx2"
 ];
 
-const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
+const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => {
   const [user, setUser] = useRecoilState(userInfoState);
   const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -47,10 +47,10 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [avatarImage, setAvatarImage] = useState(null);
-  const [cookies] = useCookies(["sessionId"]);
+  const [cookies] = useCookies(["sessionId", "userId"]);
   const { response, loading, error, fetchData } = useAxios({
     method: "get",
-    url: "/user/me",
+    url: `/user/${!userId ? "me" : userId}`,
     headers: { sessionId: cookies.sessionId }
   });
 
@@ -58,7 +58,7 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
   //   if (user) {
   //     setProfile({
   //       ...profile,
-  //       avatarUrl: user.avatarUrl
+  //       avatarUrl: user.avatarUrl1
   //     });
   //   }
   // }, [user]);
@@ -99,7 +99,7 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
               avatar={avatar}
               item={accessories[profile.avatarUrl]}
               setAvatarImage={setAvatarImage}
-              width="6rem"
+              width="7rem"
             />
             <ProfileInfoWrapper dir="col" row="center">
               {isIncludingKey
@@ -110,7 +110,7 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
                     </ProfileInfoField>
                   ))
                 : Object.entries(profile)
-                    .filter(([key]) => ["nickname", "level"].includes(key))
+                    .filter(([key]) => ["nickname", "level", "winRate"].includes(key))
                     ?.map(([key, [title, value]], idx) => (
                       <ProfileInfo key={idx}>
                         {key === "nickname" ? value : `${title} ${value}`}
@@ -178,6 +178,7 @@ const Profile = ({ type = "default", isAdmin, profileInfos = init }) => {
 
 Profile.propTypes = {
   type: PropTypes.string,
+  userId: PropTypes.number,
   isAdmin: PropTypes.bool,
   profileInfos: PropTypes.object
 };

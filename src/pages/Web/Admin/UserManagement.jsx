@@ -71,12 +71,10 @@ const UserManagement = () => {
         <Main type="admin" row="between">
           <ListWrapper row="between">
             <UserManagementList onSideOpen={onSideOpen} />
-            {isActiveSideContentType === 1 ? (
+            {isActiveSideContentType === 1 && (
               <Box>
-                <UserManagementDetail data={userData} />
+                <UserManagementDetail data={userData} fetchUser={fetchData} />
               </Box>
-            ) : (
-              ""
             )}
           </ListWrapper>
         </Main>

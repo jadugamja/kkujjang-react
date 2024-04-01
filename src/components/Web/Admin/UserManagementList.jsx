@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -11,9 +11,11 @@ import Pagination from "../Shared/Board/Pagination";
 import { FlexBox } from "@/styles/FlexStyle";
 import { Box } from "../../Game/Shared/Layout";
 import { isActiveAccountState } from "@/recoil/userState";
+import { remoteApiConfigState } from "@/recoil/boardState";
 import useAxios from "@/hooks/useAxios";
 
 const UserManagementList = ({ type, onSideOpen }) => {
+  const remoteApiConfig = useRecoilValue(remoteApiConfigState);
   const [cookies] = useCookies(["sessionId"]);
   const [data, setData] = useState([]);
   const [currPage, setCurrPage] = useState(1);
@@ -32,7 +34,6 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const { response, loading, error, fetchData } = useAxios(apiConfig);
 
   useEffect(() => {
-    setCurrPage(1);
     // setSearchKeyword("");
     setApiConfig({
       method: "get",
@@ -42,6 +43,15 @@ const UserManagementList = ({ type, onSideOpen }) => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (remoteApiConfig !== null) {
+      setApiConfig({
+        ...remoteApiConfig,
+        url: `/user/search?page=${currPage}`
+      });
+    }
+  }, [remoteApiConfig]);
 
   useEffect(() => {
     if (response !== null) {
@@ -60,9 +70,9 @@ const UserManagementList = ({ type, onSideOpen }) => {
     fetchData();
   }, [apiConfig]);
 
-  // 페이지 변경, 검색 시
+  // 페이지 변경, 검색, 밴 여부 체크박스 클릭 시
   useEffect(() => {
-    if (data?.length === 0 || searchKeyword === "") {
+    if (data?.length === 0) {
       return;
     }
 
@@ -73,20 +83,15 @@ const UserManagementList = ({ type, onSideOpen }) => {
       queryString = `?page=${currPage}`;
     }
 
+    if (showBanned) {
+      queryString += "&isBanned=1";
+    }
+
     setApiConfig({
       ...apiConfig,
       url: `/user/search${queryString}`
     });
-  }, [currPage, searchKeyword]);
-
-  // 밴 여부 체크박스 클릭 제어
-  useEffect(() => {
-    if (showBanned) {
-      setFilteredData(data.filter((user) => user.isBanned));
-    } else {
-      setFilteredData(data);
-    }
-  }, [showBanned, data]);
+  }, [currPage, searchKeyword, showBanned]);
 
   return (
     <>
@@ -110,7 +115,7 @@ const UserManagementList = ({ type, onSideOpen }) => {
             <ManagementList
               isHome={false}
               title="user"
-              data={filteredData}
+              data={data}
               onSideOpen={onSideOpen}
             />
             <Pagination

@@ -11,23 +11,31 @@ const TimerBar = ({ type, totalTime }) => {
   const [thisTurnLeftTime, setThisTurnLeftTime] = useRecoilState(thisTurnLeftTimeState);
   const [thisRoundLeftTime, setThisRoundLeftTime] =
     useRecoilState(thisRoundLeftTimeState);
+  const [width, setWidth] = useState(0);
+  const secRef = useRef(0);
 
   useEffect(() => {
     onTimer((data) => {
-      const { personalTimeLeft, roundTimeLeft } = data;
-      const personalTimeLeftSec = personalTimeLeft / 1000;
-      const roundTimeLeftSec = roundTimeLeft / 1000;
+      const { personalTimeLimit, personalTimeLeft, roundTimeLeft } = data;
 
-      if (personalTimeLeftSec < 0) {
+      if (personalTimeLeft < 0) {
         setThisTurnLeftTime(0);
-      } else if (roundTimeLeftSec < 0) {
+      } else if (roundTimeLeft < 0) {
         setThisRoundLeftTime(0);
       }
-      setThisTurnLeftTime(personalTimeLeftSec);
-      setThisRoundLeftTime(roundTimeLeftSec);
-      setTotalTurnTime(personalTimeLeftSec);
+      setTotalTurnTime(personalTimeLimit);
+      setThisTurnLeftTime(personalTimeLeft);
+      setThisRoundLeftTime(roundTimeLeft);
     });
   }, []);
+
+  useEffect(() => {
+    const leftTime = type === "turn" ? thisTurnLeftTime : thisRoundLeftTime;
+    const newWidth =
+      leftTime > 0 ? (leftTime / (type === "turn" ? totalTurnTime : totalTime)) * 100 : 0;
+    setWidth(newWidth);
+    secRef.current = Math.round(leftTime / 100) / 10;
+  }, [totalTurnTime, thisTurnLeftTime, thisRoundLeftTime]);
 
   const getBgColor = (type, name) => {
     switch (type) {
@@ -38,26 +46,20 @@ const TimerBar = ({ type, totalTime }) => {
     }
   };
 
-  const leftTime = type === "turn" ? thisTurnLeftTime : thisRoundLeftTime;
-  const width =
-    leftTime > 0
-      ? (leftTime / (type === "ture" ? totalTurnTime : totalTime / 1000)) * 100
-      : 0;
-  const sec = Math.round(leftTime * 10) / 10;
   const outerColor = React.useMemo(() => getBgColor(type, "outer"), [type]);
   const innerColor = React.useMemo(() => getBgColor(type, "inner"), [type]);
 
   return (
     <ProgressBarWrapper bgColor={outerColor}>
       <ProgressBar width={width} bgColor={innerColor} row="end" col="center">
-        <TimeLeftText>{`${sec}초`}</TimeLeftText>
+        <TimeLeftText>{`${secRef.current}초`}</TimeLeftText>
       </ProgressBar>
     </ProgressBarWrapper>
   );
 };
 
 TimerBar.propTypes = {
-  type: PropTypes.string,
+  type: PropTypes.oneOf(["turn", "round"]),
   totalTime: PropTypes.number
 };
 

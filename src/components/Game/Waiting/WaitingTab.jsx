@@ -4,17 +4,11 @@ import PropTypes from "prop-types";
 
 import { gameStart, switchReadyState } from "@/services/socket";
 import { roomIdState } from "@/recoil/roomState";
-import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
+import { waitingPlayerListState } from "@/recoil/userState";
 import { userNameState } from "@/recoil/userState";
 import { SpacingWrapper } from "../Shared/Layout";
 import { MainTab, Tab } from "../Shared/Tab";
 import Modal from "../Shared/GameModal";
-import {
-  randomWordState,
-  initialCharacterState,
-  currentRoundState,
-  myTurnPlayerIndexState
-} from "../../../recoil/gameState";
 
 const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const [modalType, setModalType] = useState("");
@@ -23,15 +17,17 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const [isReady, setIsReady] = useState(false);
   const userName = useRecoilValue(userNameState);
   const setRoomId = useSetRecoilState(roomIdState);
-  const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
-  const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
-  const setRandomWord = useSetRecoilState(randomWordState);
-  const setInitialCharacter = useSetRecoilState(initialCharacterState);
-  const setCurrRound = useSetRecoilState(currentRoundState);
-  // const setMyTurnPlayerIndex = useSetRecoilState(myTurnPlayerIndexState);
+  const [waitingPlayerList, setWaitingPlayerList] =
+    useRecoilState(waitingPlayerListState);
 
   const onStartGame = () => {
-    gameStart();
+    if (waitingPlayerList.length < 2) {
+      setModalType("alert");
+      setModalMessage("2명 이상의 플레이어가 필요합니다.");
+      setIsModalOpen(true);
+    } else {
+      gameStart();
+    }
   };
 
   const onUpdateRoomConfig = () => {
@@ -77,6 +73,7 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={roomId}
+          height={modalType === "alert" && "14rem"}
         >
           {modalMessage}
         </Modal>

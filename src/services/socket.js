@@ -345,6 +345,13 @@ export const disconnectSocket = () => {
   }
 };
 
+export const onBanned = (callBack) => {
+  client.on("banned", (bannedData) => {
+    console.log("[log] bannedData: ", bannedData);
+    callBack(bannedData);
+  });
+};
+
 export const onError = (callBack) => {
   client.on("error", (error) => {
     console.trace(`[Error]: ${error}`);

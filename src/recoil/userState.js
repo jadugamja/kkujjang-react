@@ -44,15 +44,6 @@ export const waitingPlayerListState = atom({
   default: []
 });
 
-// 대기실 플레이어의 대기 상태만 추출
-// export const waitingPlayerReadyListState = selector({
-//   key: "waitingPlayerReadyListState",
-//   get: ({ get }) => {
-//     const playerList = get(waitingPlayerListState);
-//     return playerList.map((player) => player.isReady);
-//   }
-// });
-
 // 대기실 플레이어의 상태
 export const waitingPlayerState = atom({
   key: "waitingPlayerState",

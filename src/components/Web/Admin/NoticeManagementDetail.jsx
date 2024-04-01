@@ -19,7 +19,7 @@ import Button from "../Shared/Buttons/Button";
 import Modal from "../Shared/Modal/WebModal";
 import useAxios from "@/hooks/useAxios";
 
-const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
+const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }) => {
   const { id, title, content, created_at, views, files } = data;
   const [cookies] = useCookies(["sessionId"]);
   const [editTitle, setEditTitle] = useState(title);
@@ -27,6 +27,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   const [editImages, setEditImages] = useState([]);
   const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
   const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
+  const [modalMessage, setModalMessage] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
@@ -43,21 +44,28 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 
   useEffect(() => {
     if (response !== null) {
-      // 삭제
       if (apiConfig.method === "delete") {
+        // 삭제
         setIsActiveSideContentType(0);
-        setRemoteApiConfig({
-          method: "get",
-          url: "/notice/list?page=1",
-          headers: {
-            sessionId: cookies.sessionId
-          }
-        });
-      } else {
+      } else if (apiConfig.method === "put") {
+        // 수정
         setIsEditMode(false);
+        fetchDetail();
+      }
+      setRemoteApiConfig({
+        method: "get",
+        url: "/notice/list?page=1",
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
+    } else {
+      if (error) {
+        setModalMessage(error);
+        setIsOpenModal(true);
       }
     }
-  }, [response]);
+  }, [response, error]);
 
   const onClickEditModeOn = () => {
     setEditTitle(title);
@@ -153,7 +161,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
       </ContentWrapper>
       <ButtonWrapper row="end">
         <Button type="smallTransparent" message="수정" onClick={onClickEditModeOn} />
-        <Button type="smallGray" message="삭제" onClick={deleteNotice} />
+        <Button type="smallGray" message="삭제" onClick={onClickDeleteItem} />
       </ButtonWrapper>
     </>
   );
@@ -199,22 +207,21 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
   );
 
   // 삭제
-  const deleteNotice = () => {
+  const onClickDeleteItem = () => {
+    setModalMessage("게시물을 삭제하시겠습니까?");
     setIsOpenModal(true);
   };
 
   const onDeleteNotice = () => {
-    setApiConfig({
-      method: "delete",
-      url: `/notice/${id}`,
-      headers: {
-        sessionId: cookies.sessionId
-      }
-    });
-    setIsOpenModal(false);
-  };
-
-  const onErrorClick = () => {
+    if (modalMessage.includes("삭제")) {
+      setApiConfig({
+        method: "delete",
+        url: `/notice/${id}`,
+        headers: {
+          sessionId: cookies.sessionId
+        }
+      });
+    }
     setIsOpenModal(false);
   };
 
@@ -222,18 +229,18 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
     <>
       {loading ? (
         <center>Loading...</center>
-      ) : error ? (
-        <Modal setIsOpen={setIsOpenModal} onClick={onErrorClick} hasButton={true}>
-          {error}
-        </Modal>
       ) : (
         <>
           <DetailWrapper key={id}>
             {isEditMode ? renderUpdateView() : renderDetailView()}
           </DetailWrapper>
           {isOpenModal && (
-            <Modal setIsOpen={setIsOpenModal} onClick={onDeleteNotice} hasButton={true}>
-              게시물을 삭제하시겠습니까?
+            <Modal
+              setIsOpen={setIsOpenModal}
+              onClick={error ? () => setIsOpenModal(false) : onDeleteNotice}
+              hasButton={true}
+            >
+              {modalMessage}
             </Modal>
           )}
         </>
@@ -245,7 +252,8 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode }) => {
 NoticeManagementDetail.propTypes = {
   data: PropTypes.object,
   isEditMode: PropTypes.bool,
-  setIsEditMode: PropTypes.func
+  setIsEditMode: PropTypes.func,
+  fetchDetail: PropTypes.func
 };
 
 const DetailWrapper = styled.div`

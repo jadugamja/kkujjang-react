@@ -43,10 +43,10 @@ const ReportManagement = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const { isOffensive, isCheating, isPoorManner, ...rest } = response;
+      const { isOffensive, isCheating, isPoorManner, note, ...rest } = response;
       setReportData({
         ...rest,
-        types: { isOffensive, isCheating, isPoorManner }
+        types: { isOffensive, isCheating, isPoorManner, note }
       });
     }
   }, [response]);

@@ -5,10 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FlexBox from "@/styles/FlexStyle";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import ChatItem from "../../Game/Shared/ChatItem";
+import { formatDateToTimestamp } from "@/services/date";
 
 const ReportManagementDetailTable = ({ data, type }) => {
   if (!data) {
-    return <div>Loading...</div>; // or return an error message
+    return <div>Loading...</div>;
   }
 
   return (
@@ -36,20 +37,22 @@ const ReportManagementDetailTable = ({ data, type }) => {
             <TableCell>
               <TableCellLabel>신고 사유</TableCellLabel>
               <TableCellContent>
-                {Object.entries(data?.types)
-                  ?.filter(([key, value]) => value === true)
-                  ?.map(
-                    ([key, value]) =>
-                      (key === "isOffensive" && "공격적인 언어 사용") ||
-                      (key === "isCheating" && "부정행위") ||
-                      (key === "isPoorManner" && "비매너 행위")
-                  )
-                  .join(", ")}
+                {[
+                  ...Object.entries(data?.types)
+                    ?.filter(([_key, _value]) => _value === true)
+                    ?.map(
+                      ([_key, _value]) =>
+                        (_key === "isOffensive" && "공격적인 언어 사용") ||
+                        (_key === "isCheating" && "사기 행위") ||
+                        (_key === "isPoorManner" && "비매너 행위")
+                    ),
+                  types.note && `기타: ${types.note}`
+                ].join(", ")}
               </TableCellContent>
             </TableCell>
             <TableCell>
               <TableCellLabel>게임방 ID</TableCellLabel>
-              <TableCellContent>yyyyMMd-0001</TableCellContent>
+              <TableCellContent>{data?.roomId}</TableCellContent>
             </TableCell>
           </TableRow>
         </>
@@ -89,7 +92,12 @@ const ReportManagementDetailTable = ({ data, type }) => {
           <TableRow type={type}>
             <ChatItemWrapper dir="col">
               {data?.map((chat, i) => (
-                <ChatItem key={i} nickname={chat?.nickname} message={chat?.content} />
+                <ChatItem
+                  key={i}
+                  nickname={chat?.nickname}
+                  message={chat?.content}
+                  createdAt={formatDateToTimestamp(chat?.createdAt)}
+                />
               ))}
             </ChatItemWrapper>
           </TableRow>

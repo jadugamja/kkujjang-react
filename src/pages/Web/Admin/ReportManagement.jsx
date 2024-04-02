@@ -48,39 +48,21 @@ const ReportManagement = () => {
         ...rest,
         types: { isOffensive, isCheating, isPoorManner }
       });
-      setIsActiveSideContentType(1);
-      setItemId(response.id);
     }
   }, [response]);
 
+  useEffect(() => {
+    if (reportData !== null) {
+      setIsActiveSideContentType(1);
+    }
+  }, [reportData]);
+
   const onSideOpen = (id) => {
-    // 신고 상세 조회 api 호출 (report/:reportId)
     setApiConfig({
       method: "get",
       url: `/report/${id}`,
       headers: { sessionId: cookies.sessionId }
     });
-
-    const reportRes = {
-      id: 5,
-      isOffensive: true,
-      isCheating: false,
-      isPoorManner: true,
-      note: "욕설 사용",
-      createdAt: "yyyy-MM-dd hh:mm:ss",
-      reporterId: 5,
-      reporterNickname: "someNickname#5",
-      reporteeId: 4,
-      reporteeNickname: "someNickname#4"
-    };
-
-    const { isOffensive, isCheating, isPoorManner, ...rest } = reportRes;
-    setReportData({
-      ...rest,
-      types: { isOffensive, isCheating, isPoorManner }
-    });
-    setIsActiveSideContentType(1);
-    setItemId(id);
   };
 
   return (

@@ -15,6 +15,7 @@ import { remoteApiConfigState } from "@/recoil/boardState";
 import useAxios from "@/hooks/useAxios";
 
 const UserManagementList = ({ type, onSideOpen }) => {
+  const setAccountStates = useSetRecoilState(isActiveAccountState);
   const remoteApiConfig = useRecoilValue(remoteApiConfigState);
   const [cookies] = useCookies(["sessionId"]);
   const [data, setData] = useState([]);
@@ -22,8 +23,6 @@ const UserManagementList = ({ type, onSideOpen }) => {
   const [lastPageIdx, setLastPageIdx] = useState(30);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [showBanned, setShowBanned] = useState(false);
-  const [filteredData, setFilteredData] = useState([]);
-  const setAccountStates = useSetRecoilState(isActiveAccountState);
   const [apiConfig, setApiConfig] = useState({
     method: "get",
     url: `/user/search?page=${currPage}`,

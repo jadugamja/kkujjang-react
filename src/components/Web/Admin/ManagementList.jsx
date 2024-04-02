@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import ProfileActiveToggle from "@/components/Game/Shared/ProfileActiveToggle";
-import { isActiveAccountState } from "@/recoil/userState";
-import { isAnswerCompletedState, itemIdState } from "@/recoil/boardState";
-import { type } from "@testing-library/user-event/dist/type";
+import { itemIdState, selectedBoardItemIdState } from "@/recoil/boardState";
 
 const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
-  // 전역 상태로 id 관리
-  const setItemId = useSetRecoilState(itemIdState);
-  const isAnswerCompleted = useRecoilValue(isAnswerCompletedState);
-  const isActiveAccount = useRecoilValue(isActiveAccountState);
+  const [selectedId, setSelectedId] = useRecoilState(selectedBoardItemIdState);
+  const setItemId = useSetRecoilState(itemIdState); // 게시물 id
   const [header, setHeader] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
 
   const getTitleText = (title) => {
     switch (title) {
@@ -38,36 +33,42 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
       ?.filter((key) => key !== "id")
       ?.map((key, idx) => {
         switch (key) {
-          case "reporterNickname":
-            return <Th key={idx}>신고자</Th>;
           case "type":
             return (
               <ThLeft key={idx} width="6.5rem">{`${getTitleText(title)} 유형`}</ThLeft>
             );
+          case "reporteeNickname":
+            return <Th key={idx}>피신고자</Th>;
           case "types":
             return (
-              <ThLeft width={isHome ? "9.5rem" : "10.5rem"}>{`${getTitleText(
+              <ThLeft key={idx} width={isHome ? "9.5rem" : "10.5rem"}>{`${getTitleText(
                 title
               )} 사유`}</ThLeft>
             );
+          case "reporterNickname":
+            return <Th key={idx}>신고자</Th>;
           case "title":
             return (
               <ThLeft key={idx}>
                 {title !== "notice" ? `${getTitleText(title)} 제목` : "제목"}
               </ThLeft>
             );
-          case "reporteeNickname":
-            return <Th key={idx}>피신고자</Th>;
           case "createdAt":
             return (
               <Th key={idx} width="7rem">
-                {title === "report" ? "신고 날짜" : "작성일"}
+                {title === "report" ? "신고일" : "작성일"}
               </Th>
             );
           case "created_at":
             return (
               <Th key={idx} width="7rem">
                 작성일
+              </Th>
+            );
+          case "isHandled":
+            return (
+              <Th key={idx} width="3.3rem">
+                처리 여부
               </Th>
             );
           case "author":
@@ -78,10 +79,6 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                 조회수
               </Th>
             );
-          case "reporterId":
-            return <Th key={idx}>신고자</Th>;
-          case "reporteeId":
-            return <Th key={idx}>피신고자</Th>;
           case "nickname":
             return (
               <Th key={idx} width={title === "user" && "6rem"}>
@@ -97,7 +94,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
           case "needAnswer":
             return (
               <Th key={idx} width="5.5rem">
-                답변여부
+                답변 여부
               </Th>
             );
           case "isBanned":
@@ -178,20 +175,30 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                     if (key === "types")
                       return (
                         <TdLeft key={key}>
-                          {Object.entries(value)
-                            ?.filter(([_key, _value]) => _value === true)
-                            .map(
-                              ([_key, _value]) =>
-                                (_key === "isOffensive" && "공격적인 언어 사용") ||
-                                (_key === "isCheating" && "부정행위") ||
-                                (_key === "isPoorManner" && "비매너 행위")
-                            )
-                            .join(", ")}
+                          {[
+                            ...Object.entries(value)
+                              .filter(([_key, _value]) => _value === true)
+                              .map(
+                                ([_key, _value]) =>
+                                  (_key === "isOffensive" && "공격적인 언어 사용") ||
+                                  (_key === "isCheating" && "사기 행위") ||
+                                  (_key === "isPoorManner" && "비매너 행위")
+                              ),
+                            value.note && `기타: ${value.note}`
+                          ].join(", ")}
                         </TdLeft>
                       );
                     if (key === "title") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "createdAt")
+                      return (
+                        <TdCenter key={key}>
+                          {title === "report" ? value.substr(2, 8) : value.substr(0, 10)}
+                        </TdCenter>
+                      );
+                    if (key === "created_at")
                       return <TdCenter key={key}>{value.substr(0, 10)}</TdCenter>;
+                    if (key === "isHandled")
+                      return <TdCenter key={key}>{value ? "YES" : "NO"}</TdCenter>;
                     if (key === "username") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "nickname") return <TdLeft key={key}>{value}</TdLeft>;
                     if (key === "isBanned")

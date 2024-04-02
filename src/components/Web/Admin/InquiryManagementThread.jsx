@@ -17,7 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 import ImageFileUpload from "../Shared/Board/ImageFileUpload";
-import { Input } from "../Shared/Form/InputFieldStyle";
+import Modal from "../Shared/Modal/WebModal";
 import useAxios from "@/hooks/useAxios";
 import { formatDateToTimestamp } from "@/services/date";
 
@@ -32,6 +32,7 @@ const InquiryManagementThread = ({ data, fetchAnswer }) => {
   );
   const [answer, setAnswer] = useState("");
   const [answerFiles, setAnswerFiles] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const [key, setKey] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
@@ -112,7 +113,7 @@ const InquiryManagementThread = ({ data, fetchAnswer }) => {
       e.preventDefault();
 
       if (answer === "") {
-        alert("답변을 입력하세요");
+        setIsModalOpen(true);
         return;
       }
 
@@ -142,6 +143,15 @@ const InquiryManagementThread = ({ data, fetchAnswer }) => {
 
   return (
     <ThreadWrapper>
+      {isModalOpen && (
+        <Modal
+          hasButton={true}
+          setIsOpen={setIsModalOpen}
+          onClick={() => setIsModalOpen(false)}
+        >
+          답변을 입력하세요
+        </Modal>
+      )}
       <TypeBar col="center">
         <ServiceTypeIcon icon={getTypeIcon(type)} />
         <span>{getTypeName(type)}</span>
@@ -243,7 +253,7 @@ const InquiryManagementThread = ({ data, fetchAnswer }) => {
         }
       })}
 
-      {/* 답변 */}
+      {/* 답변 입력 */}
       <AnswerWrapper>
         <div>
           <QnAText>A.</QnAText>

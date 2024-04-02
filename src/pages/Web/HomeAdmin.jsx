@@ -11,13 +11,19 @@ import { FlexBox } from "@/styles/FlexStyle";
 import { Main } from "@/components/Game/Shared/Layout";
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";
 import { isAnswerCompletedState } from "@/recoil/boardState";
-import { itemIdState } from "@/recoil/boardState";
+import { itemIdState, selectedBoardItemIdState } from "@/recoil/boardState";
+import { useEffect } from "react";
 
 const HomeAdmin = () => {
   const setItemId = useSetRecoilState(itemIdState);
+  const setSelectedBoardItemId = useSetRecoilState(selectedBoardItemIdState);
   const [isAnswerCompleted, setIsAnswerCompleted] =
     useRecoilState(isAnswerCompletedState);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSelectedBoardItemId(null);
+  }, []);
 
   const onSideOpen = (page, id) => {
     setItemId(id);

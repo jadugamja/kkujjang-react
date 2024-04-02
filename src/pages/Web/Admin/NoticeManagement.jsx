@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
-import { itemIdState } from "@/recoil/boardState";
+import { itemIdState, selectedBoardItemIdState } from "@/recoil/boardState";
 import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
 import { Box } from "../../../components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
@@ -22,6 +22,7 @@ const NoticeManagement = () => {
     isActiveSideContentTypeState
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
+  const setSelectedBoardItemId = useSetRecoilState(selectedBoardItemIdState);
   const [isEditMode, setIsEditMode] = useState(false);
   const [detailData, setDetailData] = useState({});
   const [apiConfig, setApiConfig] = useState(null);
@@ -76,6 +77,7 @@ const NoticeManagement = () => {
   };
 
   const onCreateOpen = () => {
+    setSelectedBoardItemId(null);
     setIsActiveSideContentType(2);
   };
 

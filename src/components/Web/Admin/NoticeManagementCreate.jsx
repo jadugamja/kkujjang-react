@@ -10,6 +10,7 @@ import { remoteApiConfigState } from "@/recoil/boardState";
 import useAxios from "@/hooks/useAxios";
 import FlexBox from "@/styles/FlexStyle";
 import { Input } from "../Shared/Form/InputFieldStyle";
+import Modal from "../Shared/Modal/WebModal";
 import { SmallDarkButton } from "../Shared/Buttons/ButtonStyle";
 import { POST_TITLE_REGEX } from "@/services/regexp";
 
@@ -22,10 +23,11 @@ const NoticeManagementCreate = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
-
-  const editorRef = useRef(null);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
+  const editorRef = useRef(null);
 
   // 텍스트 에디터 옵션
   const modules = {
@@ -55,8 +57,13 @@ const NoticeManagementCreate = () => {
           sessionId: cookies.sessionId
         }
       });
+    } else {
+      if (error) {
+        setModalMessage(error);
+        setIsModalOpen(true);
+      }
     }
-  }, [response]);
+  }, [response, error]);
 
   useEffect(() => {
     const handleImage = () => {
@@ -76,14 +83,16 @@ const NoticeManagementCreate = () => {
 
             // 파일 크기 제한
             if (file.size > 1024 * 1024 * 5) {
-              alert("파일당 5MB를 초과할 수 없습니다.");
+              setModalMessage("파일당 5MB를 초과할 수 없습니다.");
+              setIsModalOpen(true);
               return;
             }
 
             // 이미지 개수 제한
             let images = document.querySelectorAll("img");
             if (images.length > MAX_IMAGE_COUNT) {
-              alert(`최대 ${MAX_IMAGE_COUNT}개의 이미지만 첨부할 수 있습니다.`);
+              setModalMessage(`최대 ${MAX_IMAGE_COUNT}개의 이미지만 첨부할 수 있습니다.`);
+              setIsModalOpen(true);
               return;
             }
             // 이미지 추가
@@ -162,7 +171,8 @@ const NoticeManagementCreate = () => {
     });
 
     if (!POST_TITLE_REGEX.test(title)) {
-      alert("제목을 올바르게 입력하세요.");
+      setModalMessage("제목을 올바르게 입력하세요.");
+      setIsModalOpen(true);
       return;
     }
 
@@ -180,10 +190,17 @@ const NoticeManagementCreate = () => {
     <>
       {loading ? (
         <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
       ) : (
         <NoticeCreateForm>
+          {isModalOpen && (
+            <Modal
+              hasButton={true}
+              setIsOpen={setIsModalOpen}
+              onClick={() => setIsModalOpen(false)}
+            >
+              {modalMessage}
+            </Modal>
+          )}
           <TitleInput
             type="text"
             name="title"

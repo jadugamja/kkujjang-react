@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -7,19 +8,19 @@ import ReportManagementDetailTable from "./ReportManagementDetailTable";
 import useAxios from "@/hooks/useAxios";
 
 const ReportManagementDetail = ({ data }) => {
+  const [cookies] = useCookies(["sessionId"]);
   const [gameroomData, setGameroomData] = useState({});
   const [gameroomChatData, setGameroomChatData] = useState();
   // 임시
-  const roomId = 1;
   const {
     response: roomRes,
     loading: roomLoading,
     error: roomErr
   } = useAxios({
     method: "get",
-    url: `/room/${roomId}`,
+    url: `/room/${data?.roomId}`,
     headers: {
-      sessionId: "sessionId"
+      sessionId: cookies.sessionId
     }
   });
   const {
@@ -28,9 +29,9 @@ const ReportManagementDetail = ({ data }) => {
     error: chatErr
   } = useAxios({
     method: "get",
-    url: `/chat/search?roomId=${roomId}`,
+    url: `/chat/search?roomId=${data?.roomId}`,
     headers: {
-      sessionId: "sessionId"
+      sessionId: cookies.sessionId
     }
   });
 

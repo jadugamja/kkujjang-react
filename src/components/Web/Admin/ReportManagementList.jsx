@@ -21,7 +21,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       isPoorManner: 1,
       isCheating: 1
     },
-    is_handled: 0
+    isHandled: 0
   });
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(1);
@@ -52,7 +52,33 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
-      setData(response.result.list);
+      setData(
+        response.result.list?.map(
+          ({
+            id,
+            reporterNickname,
+            isCheating,
+            isOffensive,
+            isPoorManner,
+            note,
+            reporteeNickname,
+            createdAt,
+            isHandled
+          }) => ({
+            id,
+            reporteeNickname,
+            types: {
+              isCheating,
+              isOffensive,
+              isPoorManner,
+              note
+            },
+            reporterNickname,
+            createdAt,
+            isHandled
+          })
+        )
+      );
     } else {
       setLastPageIdx(1);
       setData([]);

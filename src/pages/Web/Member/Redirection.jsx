@@ -1,29 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
 
+// ===== recoil & module import =====
+import { userInfoState } from "@/recoil/userState";
+import { getCurrentUserInfo } from "../../../services/user";
+
 // ===== component =====
 const Redirection = () => {
   const code = new URL(window.location.href).searchParams.get("code"); // 인가코드 가져오기
 
+  // === ref ===
+  const isDataFetched = useRef(false);
+
   // === state ===
+  const setUser = useSetRecoilState(userInfoState);
+
   // === 카카오 로그인 api ===
   const [apiConfig, setApiConfig] = useState({
     method: "get",
     url: `/user/oauth/kakao?code=${code}`
   });
-  // === 서버 세션 삭제 api ===
-  // const [apiConfig, setApiConfig] = useState({
-  //   method: "get",
-  //   url: `/redisFLUSHALL`
-  // });
+
   const { response, error, loading, fetchData } = useAxios(apiConfig, false);
 
   // === cookie ===
-  const [, setCookie] = useCookies(["sessionId"]);
+  const [cookies, setCookie] = useCookies(["sessionId"]);
 
   // === navigate ===
   const navigate = useNavigate();
@@ -34,51 +40,35 @@ const Redirection = () => {
 
   // === 카카오 로그인 api ===
   useEffect(() => {
-    // reponse로 seeionId가 옴
-    // status 에 따른 분기점
-
-    if (response) {
+    if (response !== null) {
       const userRole = response.authorityLevel === 100 ? "admin" : "member";
       const expires = new Date();
       expires.setTime(expires.getTime() + 7200 * 1000);
       setCookie("sessionId", response.sessionId, { path: "/", expires });
       setCookie("userRole", userRole, { path: "/", expires });
-      navigate(`/`);
-    }
 
-    // if (response !== null) {
-    //   setCookie("sessionId", response.sessionId);
-    //   navigate(`/`);
-    // }
+      if (!isDataFetched.current) getUserInfo();
+      navigate("/");
+    } else if (error) {
+      navigate(`/member/login`);
+    }
   }, [response, error]);
 
-  if (response !== null) {
-    const userRole = response.authorityLevel === 100 ? "admin" : "member";
-    const expires = new Date();
-    expires.setTime(expires.getTime() + 7200 * 1000);
-    setCookie("sessionId", response.sessionId, { path: "/", expires });
-    setCookie("userRole", userRole, { path: "/", expires });
-    navigate(`/`);
-  } else {
-    navigate(`/member/login`);
-  }
+  const getUserInfo = useCallback(async () => {
+    const userInfo = await getCurrentUserInfo();
 
-  // === 서버 세션 삭제 api ===
-  // useEffect(() => {
-  //   console.log(response);
-
-  //   if (response !== null) {
-  //     navigate(`/`);
-  //   } else if (error) {
-  //     console.log(error);
-  //     navigate(`/member/login`);
-  //   } else {
-  //     navigate(`/member/login`);
-  //   }
-  // }, [response, error]);
+    if (userInfo !== null) {
+      setCookie("userId", userInfo.nickname.split("#")[1], { path: "/" });
+      const updatedUserInfo = {
+        role: cookies.userRole,
+        ...userInfo
+      };
+      setUser(updatedUserInfo);
+      isDataFetched.current = true;
+    }
+  }, []);
 
   return <div>카카오 로그인 중...</div>;
-  // return <div>서버 세션 삭제 중...</div>;
 };
 
 export default Redirection;

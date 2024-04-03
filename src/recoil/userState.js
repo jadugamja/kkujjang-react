@@ -5,15 +5,6 @@ export const userInfoState = atom({
   default: null // e.g., { username: "username", nickname: "nickname", role: "admin", level: 1, winRate: 0.0, exp: 0, avatarUrl: "" }
 });
 
-// userState -> username만 추출
-export const userNameState = selector({
-  key: "userNameState",
-  get: ({ get }) => {
-    const user = get(userInfoState);
-    return user?.username;
-  }
-});
-
 // userState -> avatarUrl만 추출
 export const avatarUrlState = selector({
   key: "avatarUrlState",

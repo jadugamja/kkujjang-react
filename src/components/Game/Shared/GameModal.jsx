@@ -4,7 +4,7 @@ import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
-import { userInfoState, userNameState, waitingPlayerListState } from "@/recoil/userState";
+import { userInfoState, waitingPlayerListState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
@@ -76,7 +76,6 @@ const GameModal = ({
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
   const [modalMessage, setModalMessage] = useState("");
-  // const userId = useRecoilValue(userNameState);
 
   const [cookies, setCookie] = useCookies(["sessionId", "userId"]);
   const [apiConfig, setApiConfig] = useState(null);
@@ -315,11 +314,18 @@ const GameModal = ({
     joinRoom(
       authorization,
       () => {
-        setIsOpen(false);
-        setCookie("userId", room.userList[room.userList.length - 1].userId, {
-          path: "/"
+        loadRoom((room) => {
+          setRoomNumber(room.roomNumber);
+          setRoomId(room.id);
+          setRoomInfo(room);
+          setCookie("userId", room.userList[room.userList.length - 1].userId, {
+            path: "/"
+          });
+          setUser((prev) => ({
+            userId: room.userList[room.userList.length - 1].userId,
+            ...prev
+          }));
         });
-        navigate(`/game/${roomId}`);
       },
       (error) => {
         console.log(`[Error]: ${error}`);

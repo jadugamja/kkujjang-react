@@ -161,6 +161,7 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
               type="profile"
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
+              userId={cookies.userId}
               height="14rem"
             />
           ) : null}

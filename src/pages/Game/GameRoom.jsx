@@ -3,7 +3,7 @@ import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { userInfoState, userNameState } from "@/recoil/userState";
+import { userInfoState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { MainContentWrapper, Wrapper } from "@/components/Game/Shared/Layout";
@@ -35,7 +35,6 @@ import {
 } from "../../recoil/gameState";
 
 const GameRoom = () => {
-  const userName = useRecoilValue(userNameState);
   const user = useRecoilValue(userInfoState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =

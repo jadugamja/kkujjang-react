@@ -29,7 +29,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
       sessionId: cookies.sessionId
     }
   });
-  const { response, loading, error, fetchData } = useAxios(apiConfig);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   useEffect(() => {
     if (apiConfig !== null) {

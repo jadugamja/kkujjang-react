@@ -66,7 +66,6 @@ const NoticeManagement = () => {
   }, [response]);
 
   const onDetailOpen = (id) => {
-    setIsActiveSideContentType(2);
     setApiConfig({
       method: "get",
       url: `/notice/${id}`,

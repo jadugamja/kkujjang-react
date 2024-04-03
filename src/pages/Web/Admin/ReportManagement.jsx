@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 
+import useAxios from "@/hooks/useAxios";
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { itemIdState } from "@/recoil/boardState";
-import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
-import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
-import Header from "@/components/Web/Shared/Layout/Header";
 import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
 import { Box } from "@/components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import useAxios from "@/hooks/useAxios";
+import Header from "@/components/Web/Shared/Layout/Header";
+import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
+import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
 
 const ReportManagement = () => {
   const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
@@ -26,7 +26,6 @@ const ReportManagement = () => {
     if (itemId === null) {
       setIsActiveSideContentType(0);
     } else {
-      setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
         url: `/report/${itemId}`,

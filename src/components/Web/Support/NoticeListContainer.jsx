@@ -45,7 +45,9 @@ const NoticeListContainer = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
+    if (apiConfig !== null) {
+      fetchData();
+    }
   }, [apiConfig]);
 
   useEffect(() => {

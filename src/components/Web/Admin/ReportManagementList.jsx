@@ -32,7 +32,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       sessionId: cookies.sessionId
     }
   });
-  const { response, loading, error, fetchData } = useAxios(apiConfig);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   // 필터 key 데이터 추출
   const filterKeys = ["createdAt", "types"];
@@ -46,7 +46,9 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   });
 
   useEffect(() => {
-    fetchData();
+    if (apiConfig !== null) {
+      fetchData();
+    }
   }, [apiConfig]);
 
   useEffect(() => {

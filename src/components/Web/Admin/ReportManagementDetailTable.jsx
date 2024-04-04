@@ -111,7 +111,7 @@ const ReportManagementDetailTable = ({ data, type }) => {
                       {Object.entries(log)
                         .filter(([key]) => key !== "type")
                         .map(([key, value]) =>
-                          !key.includes("At") ? (
+                          key !== "createdAt" ? (
                             <span key={key}>{value}</span>
                           ) : (
                             <span key={key}>{formatDateToTimestamp(value)}</span>

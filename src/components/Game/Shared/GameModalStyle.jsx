@@ -123,16 +123,17 @@ export const GameModalInput = styled.input`
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "3rem"};
   margin-bottom: ${(props) => props.marginBottom || null};
-  padding: 10px;
+  padding: ${({ padding }) => padding || "10px"};
   border: 0;
   background-color: ${({ bgColor }) => bgColor || "#e5e5e5"};
+  color: ${({ color }) => color};
   font-size: ${({ fontSize }) => fontSize || "16px"};
 `;
 
 export const ArrowIconImage = styled.img`
-  width: ${(props) => props.width || "42px"};
+  width: ${(props) => props.width || "35px"};
   height: ${(props) => props.width || "48px"};
-  margin: 0 22px;
+  margin: ${(props) => props.margin};
 
   &:hover {
     cursor: pointer;

@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
 import avatar from "@/assets/images/avatar.png";
+import leftArrow from "@/assets/images/left-arrow.png";
+import rightArrow from "@/assets/images/right-arrow.png";
 import { FlexBox } from "@/styles/FlexStyle";
 import useAxios from "@/hooks/useAxios";
 import { userInfoState } from "@/recoil/userState";
 import Player from "./Player";
-import ProfileActiveToggle from "./ProfileActiveToggle";
 import GameModal from "./GameModal";
+import { ArrowIconImage, GameModalInput } from "./GameModalStyle";
 import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
+import { NICKNAME_REGEX } from "../../../services/regexp";
 
 const init = {
   avatarUrl: avatar,
@@ -37,15 +40,14 @@ const accessories = [
   "fx2"
 ];
 
-const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => {
-  const [user, setUser] = useRecoilState(userInfoState);
+const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) => {
+  const setUser = useSetRecoilState(userInfoState);
   const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);
-  const [isActiveAccount, setIsActiveAccount] = useState(
-    profileInfos.isBanned === "true"
-  );
+  const [modalType, setModalType] = useState("profile");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currAvatar, setCurrAvatar] = useState(0);
   const [avatarImage, setAvatarImage] = useState(null);
   const [cookies] = useCookies(["sessionId", "userId"]);
   const { response, loading, error, fetchData } = useAxios({
@@ -84,6 +86,28 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
     }
   }, [response]);
 
+  const onNicknameChange = (e) => {
+    if (!NICKNAME_REGEX.test(e.target.value)) return;
+
+    setProfile({
+      ...profile,
+      nickname: ["닉네임", e.target.value]
+    });
+    setUser((prev) => ({ ...prev, nickname: e.target.value }));
+  };
+
+  const onSwitchAvatarClick = (dir) => {
+    let index;
+    if (dir === "left") {
+      index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
+    } else if (dir === "right") {
+      index = (currAvatar + 1) % accessories.length;
+    }
+
+    setCurrAvatar(index);
+    setUser((prev) => ({ ...prev, avatarUrl: index }));
+  };
+
   return (
     <>
       {isPlaying ? (
@@ -95,15 +119,33 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
       ) : type === "modal" ? (
         <ProfileWrapper type={type} dir="col">
           <ProfileUpperWrapper type={type}>
-            <AvatarCanvas
-              avatar={avatar}
-              item={accessories[profile.avatarUrl]}
-              setAvatarImage={setAvatarImage}
-              width="7rem"
-            />
-            <ProfileInfoWrapper dir="col" row="center">
+            {isEditMode ? (
+              <FlexBox col="center">
+                <ArrowIconImage
+                  src={leftArrow}
+                  onClick={() => onSwitchAvatarClick("left")}
+                />
+                <AvatarCanvas
+                  avatar={avatar}
+                  item={accessories[currAvatar]}
+                  setAvatarImage={setAvatarImage}
+                />
+                <ArrowIconImage
+                  src={rightArrow}
+                  onClick={() => onSwitchAvatarClick("right")}
+                />
+              </FlexBox>
+            ) : (
+              <AvatarCanvas
+                avatar={avatar}
+                item={accessories[profile.avatarUrl]}
+                setAvatarImage={setAvatarImage}
+                width="7rem"
+              />
+            )}
+            <ProfileInfoWrapper dir="col" row="center" marginLeft={isEditMode && "16px"}>
               {isIncludingKey
-                ? Object.entries(profile)?.map(([key, [title, value]], idx) => (
+                ? Object.entries(profile)?.map(([key, [title, value]]) => (
                     <ProfileInfoField row="between" key={key}>
                       <ProfileInfoKey>{title}</ProfileInfoKey>
                       <ProfileInfo>{value}</ProfileInfo>
@@ -111,10 +153,29 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
                   ))
                 : Object.entries(profile)
                     .filter(([key]) => ["nickname", "level", "winRate"].includes(key))
-                    ?.map(([key, [title, value]], idx) => (
-                      <ProfileInfo key={idx}>
-                        {key === "nickname" ? value : `${title} ${value}`}
-                      </ProfileInfo>
+                    ?.map(([key, [title, value]]) => (
+                      <div key={key}>
+                        <span>{key !== "nickname" && title}</span>
+                        {isEditMode && key === "nickname" ? (
+                          <GameModalInput
+                            type="text"
+                            value={value.replace(/#[\s\S]*$/, "")}
+                            onChange={(e) => onNicknameChange(e)}
+                            height="1.5rem"
+                            padding="0"
+                            bgColor="transparent"
+                            color="#fff"
+                            fontSize="20px"
+                          />
+                        ) : (
+                          <ProfileInfo
+                            margin={key !== "nickname" && "0 0 0 15px"}
+                            fontSize={key === "nickname" && "20px"}
+                          >
+                            {value}
+                          </ProfileInfo>
+                        )}
+                      </div>
                     ))}
             </ProfileInfoWrapper>
           </ProfileUpperWrapper>
@@ -123,7 +184,12 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
         <>
           <ProfileWrapper dir="col">
             <TitleBar type="profile" />
-            <ProfileUpperWrapper onClick={() => setIsModalOpen(true)}>
+            <ProfileUpperWrapper
+              onClick={() => {
+                setModalType("profile");
+                setIsModalOpen(true);
+              }}
+            >
               <AvatarCanvas
                 avatar={avatar}
                 item={accessories[profile.avatarUrl]}
@@ -156,19 +222,14 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
               </ExpWrapper>
             )}
           </ProfileWrapper>
-          {isModalOpen ? (
+          {isModalOpen && (
             <GameModal
-              type="profile"
+              type={modalType}
+              setType={setModalType}
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
               userId={cookies.userId}
               height="14rem"
-            />
-          ) : null}
-          {isAdmin && (
-            <ProfileActiveToggle
-              isActiveAccount={isActiveAccount}
-              setIsActiveAccount={setIsActiveAccount}
             />
           )}
         </>
@@ -180,8 +241,8 @@ const Profile = ({ type = "default", userId, isAdmin, profileInfos = init }) => 
 Profile.propTypes = {
   type: PropTypes.string,
   userId: PropTypes.number,
-  isAdmin: PropTypes.bool,
-  profileInfos: PropTypes.object
+  profileInfos: PropTypes.object,
+  isEditMode: PropTypes.bool
 };
 
 const ProfileWrapper = styled(FlexBox)`
@@ -203,7 +264,7 @@ const ProfileUpperWrapper = styled(FlexBox)`
 `;
 
 const ProfileInfoWrapper = styled(FlexBox)`
-  margin-left: 10px;
+  margin-left: ${({ marginLeft }) => marginLeft || "10px"};
 `;
 
 const ProfileInfoField = styled(FlexBox)`
@@ -212,7 +273,10 @@ const ProfileInfoField = styled(FlexBox)`
 
 const ProfileInfoKey = styled.span``;
 
-const ProfileInfo = styled.span``;
+const ProfileInfo = styled.span`
+  margin: ${({ margin }) => margin};
+  font-size: ${({ fontSize }) => fontSize};
+`;
 
 const AvatarImage = styled(FlexBox).attrs({
   as: "img"

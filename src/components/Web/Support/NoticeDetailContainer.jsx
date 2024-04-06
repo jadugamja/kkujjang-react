@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 
+import { formatDateToTimestamp } from "@/services/date";
 import createdAtIcon from "@/assets/images/clock.png";
 import viewsIcon from "@/assets/images/views.png";
 
@@ -98,7 +99,7 @@ const NoticeDetailContainer = () => {
               <NoticeDeatalFlexBox col="center">
                 <NoticeDetailImage src={createdAtIcon} marginRight="10px" />
                 <NoticeDetailText color="#A7A7A7" fontSize="20px">
-                  {detailData.created_at}
+                  {formatDateToTimestamp(detailData.created_at)}
                 </NoticeDetailText>
               </NoticeDeatalFlexBox>
 

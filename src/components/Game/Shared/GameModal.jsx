@@ -364,12 +364,9 @@ const GameModal = ({
           {/* 아바타 설정 modal */}
           {type === "avatar" && (
             <GameModalBody top="0" marginTop="0">
-              {/*
-              // 첫 방문 사용자일 경우
               <ButtonWrapper row="start" col="center" margin="9px 0 0">
                 <GameModalMessage fontSize="22px">캐릭터</GameModalMessage>
               </ButtonWrapper>
-             */}
               <ButtonWrapper row="center" col="center" margin="0">
                 <ArrowIconImage src={leftArrow} onClick={onAvatarLeftClick} />
                 <AvatarCanvas

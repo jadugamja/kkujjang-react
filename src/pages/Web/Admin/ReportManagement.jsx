@@ -18,7 +18,7 @@ const ReportManagement = () => {
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
   const [cookies] = useCookies(["sessionId"]);
-  const [reportData, setReportData] = useState();
+  const [reportData, setReportData] = useState(null);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -42,7 +42,7 @@ const ReportManagement = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const { isOffensive, isCheating, isPoorManner, note, ...rest } = response;
+      const { isOffensive, isCheating, isPoorManner, note, ...rest } = response.result;
       setReportData({
         ...rest,
         types: { isOffensive, isCheating, isPoorManner, note }

@@ -35,7 +35,9 @@ const ReportManagementDetailTable = ({ data, type }) => {
             </TableCell>
             <TableCell>
               <TableCellLabel>신고 시각</TableCellLabel>
-              <TableCellContent>{data?.createdAt}</TableCellContent>
+              <TableCellContent>
+                {formatDateToTimestamp(data?.createdAt)}
+              </TableCellContent>
             </TableCell>
             <TableCell>
               <TableCellLabel>신고 사유</TableCellLabel>
@@ -49,7 +51,7 @@ const ReportManagementDetailTable = ({ data, type }) => {
                         (_key === "isCheating" && "사기 행위") ||
                         (_key === "isPoorManner" && "비매너 행위")
                     ),
-                  types.note && `기타: ${types.note}`
+                  data?.types.note && `기타: ${data?.types.note}`
                 ].join(", ")}
               </TableCellContent>
             </TableCell>

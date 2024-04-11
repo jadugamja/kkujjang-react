@@ -17,6 +17,7 @@ const ReportManagementDetail = ({ data }) => {
     error: roomErr
   } = useAxios({
     method: "get",
+    // url: `/room/4f2856cd-55c2-4840-bcf2-b5ef067044ef`,
     url: `/room/${data?.roomId}`,
     headers: {
       sessionId: cookies.sessionId
@@ -28,6 +29,7 @@ const ReportManagementDetail = ({ data }) => {
     error: chatErr
   } = useAxios({
     method: "get",
+    // url: "/chat?roomId=4f2856cd-55c2-4840-bcf2-b5ef067044ef",
     url: `/chat?roomId=${data?.roomId}`,
     headers: {
       sessionId: cookies.sessionId

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import PropTypes from "prop-types";
 
+import { formatDateToTimestamp } from "@/services/date";
 import createdAtIcon from "@/assets/images/clock.png";
 import viewsIcon from "@/assets/images/views.png";
 
@@ -65,6 +66,8 @@ const BoardItem = ({ boardType, data, onClick }) => {
     <AnswerText isTrue={bool}>{bool ? "YES" : "NO"}</AnswerText>
   );
 
+  const returnCreatedAt = (data) => data.createdAt || data.created_at;
+
   return (
     <>
       {boardType === "notice" ? (
@@ -87,7 +90,7 @@ const BoardItem = ({ boardType, data, onClick }) => {
                   marginRight="10px"
                 />
                 <FlexBoardText color="#A7A7A7" fontSize="18px">
-                  {data.created_at}
+                  {formatDateToTimestamp(returnCreatedAt(data))}
                 </FlexBoardText>
               </BoardItemWrapper>
               <BoardItemWrapper col="center">

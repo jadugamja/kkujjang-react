@@ -6,6 +6,9 @@ import { FlexBox } from "@/styles/FlexStyle";
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
 
+// ===== service import =====
+import { POST_SEARCH_WORD_REGEX } from "../../../services/regexp";
+
 // ===== components import =====
 import BoardTitle from "@/components/Web/Shared/Board/BoardTitle";
 import SearchBar from "@/components/Web/Shared/Board/SearchBar";
@@ -52,8 +55,15 @@ const NoticeListContainer = () => {
 
   useEffect(() => {
     if (response !== null) {
-      setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
-      setListData(response.list);
+      if (apiConfig.url.includes("/search?q=")) {
+        setLastPageIdx(1);
+        setListData(response.result);
+        console.log(response.result);
+      } else {
+        setLastPageIdx(response.lastPage === 0 ? 1 : response.lastPage);
+        setListData(response.list);
+        console.log(response.list);
+      }
     } else {
       setLastPageIdx(1);
       setListData([]);
@@ -62,17 +72,12 @@ const NoticeListContainer = () => {
 
   // 페이지 변경, 검색 시 호출
   useEffect(() => {
-    if (searchKeyword !== "") {
-      setApiConfig({
-        ...apiConfig,
-        url: `/notice/search?q=${searchKeyword}&page=${currPage}`
-      });
-    } else {
-      setApiConfig({
-        ...apiConfig,
-        url: `/notice/list?page=${currPage}`
-      });
-    }
+    if (searchKeyword === "" || !POST_SEARCH_WORD_REGEX.test(searchKeyword)) return;
+
+    setApiConfig({
+      ...apiConfig,
+      url: `/notice/search?q=${searchKeyword}&page=${currPage}`
+    });
   }, [currPage, searchKeyword]);
 
   const onDetailOpen = (noticeId) => {

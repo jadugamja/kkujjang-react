@@ -15,7 +15,7 @@ import GameModal from "./GameModal";
 import { ArrowIconImage, GameModalInput } from "./GameModalStyle";
 import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
-import { NICKNAME_REGEX } from "../../../services/regexp";
+import { NICKNAME_REGEX } from "@/services/regexp";
 
 const init = {
   avatarUrl: avatar,

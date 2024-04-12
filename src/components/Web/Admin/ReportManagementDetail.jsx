@@ -6,35 +6,46 @@ import styled from "styled-components";
 import FlexBox from "@/styles/FlexStyle";
 import ReportManagementDetailTable from "./ReportManagementDetailTable";
 import useAxios from "@/hooks/useAxios";
+import { getPlayerInfoByUserId } from "@/services/user";
 
 const ReportManagementDetail = ({ data }) => {
   const [cookies] = useCookies(["sessionId"]);
-  const [gameroomData, setGameroomData] = useState({});
-  const [gameroomChatData, setGameroomChatData] = useState();
-  const {
-    response: roomRes,
-    loading: roomLoading,
-    error: roomErr
-  } = useAxios({
+  const [gameroomData, setGameroomData] = useState(null);
+  const [gameroomChatData, setGameroomChatData] = useState(null);
+  const roomApiConfig = {
     method: "get",
-    // url: `/room/4f2856cd-55c2-4840-bcf2-b5ef067044ef`,
     url: `/room/${data?.roomId}`,
     headers: {
       sessionId: cookies.sessionId
     }
-  });
-  const {
-    response: chatRes,
-    loading: chatLoading,
-    error: chatErr
-  } = useAxios({
+  };
+  const chatApiConfig = {
     method: "get",
-    // url: "/chat?roomId=4f2856cd-55c2-4840-bcf2-b5ef067044ef",
     url: `/chat?roomId=${data?.roomId}`,
     headers: {
       sessionId: cookies.sessionId
     }
-  });
+  };
+
+  const {
+    response: roomRes,
+    loading: roomLoading,
+    error: roomErr,
+    fetchData: fetchRoomData
+  } = useAxios(roomApiConfig, false);
+  const {
+    response: chatRes,
+    loading: chatLoading,
+    error: chatErr,
+    fetchData: fetchChatData
+  } = useAxios(chatApiConfig, false);
+
+  useEffect(() => {
+    if (data?.roomId) {
+      fetchRoomData();
+      fetchChatData();
+    }
+  }, [data]);
 
   useEffect(() => {
     if (roomRes !== null) {
@@ -44,9 +55,26 @@ const ReportManagementDetail = ({ data }) => {
 
   useEffect(() => {
     if (chatRes !== null) {
-      setGameroomChatData(chatRes.result);
+      const fetchNicknamesAndSetChatData = async () => {
+        const updatedChatRes = await Promise.all(
+          chatRes.reverse().map(async (chat) => {
+            const { userId, message, createdAt } = chat;
+            const nickname = await getNicknameByUserId(userId);
+            return { nickname, message, createdAt };
+          })
+        );
+
+        setGameroomChatData(updatedChatRes);
+      };
+
+      fetchNicknamesAndSetChatData();
     }
   }, [chatRes]);
+
+  const getNicknameByUserId = async (userId) => {
+    const userInfo = await getPlayerInfoByUserId(userId);
+    return userInfo.nickname;
+  };
 
   return (
     <DetailWrapper dir="col">
@@ -59,7 +87,10 @@ const ReportManagementDetail = ({ data }) => {
         </Box>
       </UpperBoxWrapper>
       <Box>
-        <ReportManagementDetailTable type="chat" data={gameroomChatData} />
+        <ReportManagementDetailTable
+          type="chat"
+          data={chatErr ? chatErr : gameroomChatData}
+        />
       </Box>
     </DetailWrapper>
   );

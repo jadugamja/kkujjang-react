@@ -8,7 +8,7 @@ import { faAngleDown, faTriangleExclamation } from "@fortawesome/free-solid-svg-
 import ChatItem from "../../Game/Shared/ChatItem";
 import { formatDateToTimestamp } from "@/services/date";
 
-const ReportManagementDetailTable = ({ data, type }) => {
+const ReportManagementDetailTable = ({ type, data }) => {
   const [isLogsOpen, setIsLogsOpen] = useState(false);
 
   if (!data) {
@@ -23,7 +23,7 @@ const ReportManagementDetailTable = ({ data, type }) => {
             <IconWrapper row="center" col="center">
               <WarningIcon icon={faTriangleExclamation} />
             </IconWrapper>
-            <TextWrapper dir="col">
+            <TextWrapper>
               <span>{data?.reporteeNickname}</span>
               <span>{`(${data?.reporteeId})`}</span>
             </TextWrapper>
@@ -86,7 +86,7 @@ const ReportManagementDetailTable = ({ data, type }) => {
                 종료 시각
               </TableCellLabel>
               <TableCellContent col="center">
-                {formatDateToTimestamp(data?.expiredAt)}
+                {!data?.expiredAt ? "" : formatDateToTimestamp(data?.expiredAt)}
               </TableCellContent>
             </TableCell>
             <TableCell type={type} onClick={() => setIsLogsOpen(!isLogsOpen)} clickable>
@@ -135,14 +135,18 @@ const ReportManagementDetailTable = ({ data, type }) => {
           </SkyBlueTableHead>
           <TableRow type={type}>
             <ChatItemWrapper dir="col">
-              {data?.map((chat, i) => (
-                <ChatItem
-                  key={i}
-                  nickname={chat?.nickname}
-                  message={chat?.content}
-                  createdAt={formatDateToTimestamp(chat?.createdAt)}
-                />
-              ))}
+              {Array.isArray(data) ? (
+                data?.map((chat, i) => (
+                  <ChatItem
+                    key={i}
+                    nickname={chat?.nickname}
+                    message={chat?.message}
+                    createdAt={formatDateToTimestamp(chat?.createdAt)}
+                  />
+                ))
+              ) : (
+                <ChatItem message={data} />
+              )}
             </ChatItemWrapper>
           </TableRow>
         </>
@@ -152,8 +156,8 @@ const ReportManagementDetailTable = ({ data, type }) => {
 };
 
 ReportManagementDetailTable.propTypes = {
-  data: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  type: PropTypes.string
+  type: PropTypes.string,
+  data: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
 };
 
 const Table = styled(FlexBox)`

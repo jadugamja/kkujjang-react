@@ -57,6 +57,7 @@ const ReportManagement = () => {
   }, [reportData]);
 
   const onSideOpen = (id) => {
+    setItemId(id);
     setApiConfig({
       method: "get",
       url: `/report/${id}`,

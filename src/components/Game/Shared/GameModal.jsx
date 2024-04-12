@@ -4,7 +4,7 @@ import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
-import { userInfoState, userNameState, waitingPlayerListState } from "@/recoil/userState";
+import { userInfoState, waitingPlayerListState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 import VolumeControl from "./VolumeControl";
@@ -75,8 +75,8 @@ const GameModal = ({
   const [isCorrectPassword, setIsCorrectPassword] = useState(true);
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
+  const [isProfileEditMode, setIsProfileEditMode] = useState(null);
   const [modalMessage, setModalMessage] = useState("");
-  // const userId = useRecoilValue(userNameState);
 
   const [cookies, setCookie] = useCookies(["sessionId", "userId"]);
   const [apiConfig, setApiConfig] = useState(null);
@@ -105,8 +105,8 @@ const GameModal = ({
       height = "28.3rem";
       break;
     case "profile":
-      titleText = "프로필";
-      height = "14rem";
+      titleText = !isProfileEditMode ? "프로필" : "프로필 수정";
+      height = "15rem";
       break;
     case "report":
       titleText = "신고하기";
@@ -144,6 +144,18 @@ const GameModal = ({
   ];
 
   useEffect(() => {
+    if (type === "room" && !roomId) {
+      setRoomInfo({
+        title: "",
+        password: "",
+        maxUserCount: 8,
+        maxRound: 5,
+        roundTimeLimit: 90000
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     if (apiConfig !== null) {
       fetchData();
     }
@@ -157,18 +169,6 @@ const GameModal = ({
       }
     }
   }, [response]);
-
-  useEffect(() => {
-    if (type === "room" && !roomId) {
-      setRoomInfo({
-        title: "",
-        password: "",
-        maxUserCount: 8,
-        maxRound: 5,
-        roundTimeLimit: 90000
-      });
-    }
-  }, []);
 
   // roomInfo -> roomInfoList
   useEffect(() => {
@@ -207,21 +207,25 @@ const GameModal = ({
   }, [roomId, roomInfo?.id]);
 
   // ====== avatar ======
-  const onAvatarLeftClick = () => {
-    const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
-    setCurrAvatar(index);
-  };
+  // const onAvatarLeftClick = () => {
+  //   const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
+  //   setCurrAvatar(index);
+  // };
 
-  const onAvatarRightClick = () => {
-    const index = (currAvatar + 1) % accessories.length;
-    setCurrAvatar(index);
-  };
+  // const onAvatarRightClick = () => {
+  //   const index = (currAvatar + 1) % accessories.length;
+  //   setCurrAvatar(index);
+  // };
 
   const onConfirmAvatarUrl = async () => {
-    const res = await updateCurrentUserAvatar(currAvatar, user.nickname);
+    const res = await updateCurrentUserAvatar(user.avatarUrl, user.nickname);
 
     if (res) {
-      setUser((prev) => ({ ...prev, avatarUrl: avatarImage }));
+      setUser((prev) => ({
+        ...prev,
+        avatarUrl: user.avatarUrl,
+        nickname: user.nickname
+      }));
       setIsOpen(false);
     }
   };
@@ -242,7 +246,7 @@ const GameModal = ({
         isPoorManner: e.target.isPoorManner.checked,
         isCheating: e.target.isCheating.checked,
         note: e.target.note.value,
-        reporteeId: cookies.userId
+        reporteeId: userId
       }
     });
   };
@@ -315,11 +319,18 @@ const GameModal = ({
     joinRoom(
       authorization,
       () => {
-        setIsOpen(false);
-        setCookie("userId", room.userList[room.userList.length - 1].userId, {
-          path: "/"
+        loadRoom((room) => {
+          setRoomNumber(room.roomNumber);
+          setRoomId(room.id);
+          setRoomInfo(room);
+          setCookie("userId", room.userList[room.userList.length - 1].userId, {
+            path: "/"
+          });
+          setUser((prev) => ({
+            userId: room.userList[room.userList.length - 1].userId,
+            ...prev
+          }));
         });
-        navigate(`/game/${roomId}`);
       },
       (error) => {
         console.log(`[Error]: ${error}`);
@@ -345,7 +356,7 @@ const GameModal = ({
         <GameModalContent dir="col" col="center" height={height}>
           <GameModalHeader row={titleText !== "" ? "between" : "end"} col="center">
             {titleText !== "" && <span>{titleText}</span>}
-            {!["avatar", "result", "error"].includes(type) && (
+            {!["result", "error"].includes(type) && (
               <ExitMiniCircle onClick={() => setIsOpen(false)} />
             )}
           </GameModalHeader>
@@ -526,16 +537,18 @@ const GameModal = ({
           {/* 프로필 modal */}
           {type === "profile" && (
             <GameModalBody top="0" padding="0 14px">
-              <Profile type="modal" userId={userId} />
-              <ButtonWrapper row="end" col="center" margin="0px 0px 13px">
+              <Profile type="modal" userId={userId} isEditMode={isProfileEditMode} />
+              <ButtonWrapper row="end" col="center" margin="0px 0px 18px">
                 {userId !== cookies.userId ? (
                   <GameModalButton onClick={() => setType("report")}>
                     신고
                   </GameModalButton>
-                ) : (
-                  <GameModalButton onClick={(e) => onValidateChange(e)}>
+                ) : !isProfileEditMode ? (
+                  <GameModalButton onClick={() => setIsProfileEditMode(true)}>
                     수정
                   </GameModalButton>
+                ) : (
+                  <GameModalButton onClick={onConfirmAvatarUrl}>저장</GameModalButton>
                 )}
               </ButtonWrapper>
             </GameModalBody>

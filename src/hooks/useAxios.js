@@ -16,6 +16,7 @@ const useAxios = (config, executeOnMount = true) => {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await instance.request(config);
       setResponse(res.data);

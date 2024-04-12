@@ -1,127 +1,80 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import FlexBox from "@/styles/FlexStyle";
 import ReportManagementDetailTable from "./ReportManagementDetailTable";
 import useAxios from "@/hooks/useAxios";
+import { getPlayerInfoByUserId } from "@/services/user";
 
 const ReportManagementDetail = ({ data }) => {
-  const [gameroomData, setGameroomData] = useState({});
-  const [gameroomChatData, setGameroomChatData] = useState();
-  // 임시
-  const roomId = 1;
+  const [cookies] = useCookies(["sessionId"]);
+  const [gameroomData, setGameroomData] = useState(null);
+  const [gameroomChatData, setGameroomChatData] = useState(null);
+  const roomApiConfig = {
+    method: "get",
+    url: `/room/${data?.roomId}`,
+    headers: {
+      sessionId: cookies.sessionId
+    }
+  };
+  const chatApiConfig = {
+    method: "get",
+    url: `/chat?roomId=${data?.roomId}`,
+    headers: {
+      sessionId: cookies.sessionId
+    }
+  };
+
   const {
     response: roomRes,
     loading: roomLoading,
-    error: roomErr
-  } = useAxios({
-    method: "get",
-    url: `/room/${roomId}`,
-    headers: {
-      sessionId: "sessionId"
-    }
-  });
+    error: roomErr,
+    fetchData: fetchRoomData
+  } = useAxios(roomApiConfig, false);
   const {
     response: chatRes,
     loading: chatLoading,
-    error: chatErr
-  } = useAxios({
-    method: "get",
-    url: `/chat/search?roomId=${roomId}`,
-    headers: {
-      sessionId: "sessionId"
+    error: chatErr,
+    fetchData: fetchChatData
+  } = useAxios(chatApiConfig, false);
+
+  useEffect(() => {
+    if (data?.roomId) {
+      fetchRoomData();
+      fetchChatData();
     }
-  });
+  }, [data]);
 
   useEffect(() => {
     if (roomRes !== null) {
-      const { roomId, createdAt, expiredAt } = roomRes;
-      setGameroomData({ roomId, createdAt, expiredAt });
+      setGameroomData(roomRes);
     }
   }, [roomRes]);
 
   useEffect(() => {
     if (chatRes !== null) {
-      setGameroomChatData(chatRes);
+      const fetchNicknamesAndSetChatData = async () => {
+        const updatedChatRes = await Promise.all(
+          chatRes.reverse().map(async (chat) => {
+            const { userId, message, createdAt } = chat;
+            const nickname = await getNicknameByUserId(userId);
+            return { nickname, message, createdAt };
+          })
+        );
+
+        setGameroomChatData(updatedChatRes);
+      };
+
+      fetchNicknamesAndSetChatData();
     }
   }, [chatRes]);
 
-  useEffect(() => {
-    // 신고 게임방 로그 조회 api 호출 (room/:roomId)
-    const roomRes = {
-      roomId: "fd3a5ebc-9043-4fd9-9ccf-62db80a5dd3c",
-      users: [
-        {
-          id: 5,
-          nickname: "김스테이지어스#5"
-        },
-        {
-          id: 3,
-          nickname: "김스테이지어스#3"
-        }
-      ],
-      createdAt: "2024-01-01 10:30:44",
-      expiredAt: "2024-01-01 18:30:44",
-      history: [
-        {
-          keyword: "리어카",
-          createdAt: "yyyy-MM-dd hh:mm:ss"
-        }
-      ]
-    };
-
-    const { roomId, createdAt, expiredAt } = roomRes;
-    setGameroomData({ roomId, createdAt, expiredAt });
-
-    // 신고 게임방 채팅 내역 조회 api 호출 (chat/search)
-    const chatRes = [
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 11111"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 2222"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 333"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 444"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 555"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 6666"
-      },
-      {
-        username: 3,
-        nickname: "김스테이지어스#3",
-        createdAt: "yyyy-MM-dd hh:mm:ss",
-        content: "채팅 테스트 777"
-      }
-    ];
-
-    setGameroomChatData(chatRes);
-  }, []);
+  const getNicknameByUserId = async (userId) => {
+    const userInfo = await getPlayerInfoByUserId(userId);
+    return userInfo.nickname;
+  };
 
   return (
     <DetailWrapper dir="col">
@@ -134,7 +87,10 @@ const ReportManagementDetail = ({ data }) => {
         </Box>
       </UpperBoxWrapper>
       <Box>
-        <ReportManagementDetailTable type="chat" data={gameroomChatData} />
+        <ReportManagementDetailTable
+          type="chat"
+          data={chatErr ? chatErr : gameroomChatData}
+        />
       </Box>
     </DetailWrapper>
   );

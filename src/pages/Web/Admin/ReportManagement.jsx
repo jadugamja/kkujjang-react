@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 
+import useAxios from "@/hooks/useAxios";
 import { isActiveSideContentTypeState } from "@/recoil/displayState";
 import { itemIdState } from "@/recoil/boardState";
-import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
-import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
-import Header from "@/components/Web/Shared/Layout/Header";
 import { FlexBox as ListWrapper } from "@/styles/FlexStyle";
 import { Box } from "@/components/Game/Shared/Layout";
 import { ContentWrapper, WideContent, Main } from "@/styles/CommonStyle";
-import useAxios from "@/hooks/useAxios";
+import Header from "@/components/Web/Shared/Layout/Header";
+import ReportManagementList from "@/components/Web/Admin/ReportManagementList";
+import ReportManagementDetail from "@/components/Web/Admin/ReportManagementDetail";
 
 const ReportManagement = () => {
   const [isAcitveSideContentType, setIsActiveSideContentType] = useRecoilState(
@@ -18,7 +18,7 @@ const ReportManagement = () => {
   );
   const [itemId, setItemId] = useRecoilState(itemIdState);
   const [cookies] = useCookies(["sessionId"]);
-  const [reportData, setReportData] = useState();
+  const [reportData, setReportData] = useState(null);
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
@@ -26,7 +26,6 @@ const ReportManagement = () => {
     if (itemId === null) {
       setIsActiveSideContentType(0);
     } else {
-      setIsActiveSideContentType(1);
       setApiConfig({
         method: "get",
         url: `/report/${itemId}`,
@@ -43,44 +42,27 @@ const ReportManagement = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const { isOffensive, isCheating, isPoorManner, ...rest } = response;
+      const { isOffensive, isCheating, isPoorManner, note, ...rest } = response.result;
       setReportData({
         ...rest,
-        types: { isOffensive, isCheating, isPoorManner }
+        types: { isOffensive, isCheating, isPoorManner, note }
       });
-      setIsActiveSideContentType(1);
-      setItemId(response.id);
     }
   }, [response]);
 
+  useEffect(() => {
+    if (reportData !== null) {
+      setIsActiveSideContentType(1);
+    }
+  }, [reportData]);
+
   const onSideOpen = (id) => {
-    // 신고 상세 조회 api 호출 (report/:reportId)
+    setItemId(id);
     setApiConfig({
       method: "get",
       url: `/report/${id}`,
       headers: { sessionId: cookies.sessionId }
     });
-
-    const reportRes = {
-      id: 5,
-      isOffensive: true,
-      isCheating: false,
-      isPoorManner: true,
-      note: "욕설 사용",
-      createdAt: "yyyy-MM-dd hh:mm:ss",
-      reporterId: 5,
-      reporterNickname: "someNickname#5",
-      reporteeId: 4,
-      reporteeNickname: "someNickname#4"
-    };
-
-    const { isOffensive, isCheating, isPoorManner, ...rest } = reportRes;
-    setReportData({
-      ...rest,
-      types: { isOffensive, isCheating, isPoorManner }
-    });
-    setIsActiveSideContentType(1);
-    setItemId(id);
   };
 
   return (

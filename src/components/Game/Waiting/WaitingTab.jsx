@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { gameStart, switchReadyState } from "@/services/socket";
 import { roomIdState } from "@/recoil/roomState";
 import { waitingPlayerListState } from "@/recoil/userState";
-import { userNameState } from "@/recoil/userState";
 import { SpacingWrapper } from "../Shared/Layout";
 import { MainTab, Tab } from "../Shared/Tab";
 import Modal from "../Shared/GameModal";
@@ -15,7 +14,6 @@ const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const userName = useRecoilValue(userNameState);
   const setRoomId = useSetRecoilState(roomIdState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);

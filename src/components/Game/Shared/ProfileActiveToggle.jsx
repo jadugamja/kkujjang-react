@@ -18,7 +18,9 @@ const ProfileActiveToggle = ({ isActive, setIsActive }) => {
   const [cookies] = useCookies(["sessionId"]);
 
   useEffect(() => {
-    fetchData();
+    if (apiConfig !== null) {
+      fetchData();
+    }
   }, [apiConfig]);
 
   useEffect(() => {

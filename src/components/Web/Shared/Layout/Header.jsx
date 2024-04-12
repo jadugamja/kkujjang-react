@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -17,17 +18,16 @@ const Header = ({ type = "default" }) => {
   const setUser = useSetRecoilState(userInfoState);
   const [headerBgColor, setHeaderBgColor] = useState("transparent");
   const [headerShadow, setHeaderShadow] = useState();
+  const navigate = useNavigate();
   const [cookies, , removeCookie] = useCookies(["sessionId"]);
-  const { response, loading, error, fetchData } = useAxios(
-    {
-      method: "get",
-      url: "/user/signout",
-      headers: {
-        sessionId: cookies.sessionId
-      }
-    },
-    false
-  );
+  const [apiConfig, setApiConfig] = useState(null);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
+
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
 
   useEffect(() => {
     if (response !== null) {
@@ -36,6 +36,7 @@ const Header = ({ type = "default" }) => {
       if (cookies?.userRole) {
         removeCookie("userRole", { path: "/" });
       }
+      navigate("/");
     }
   }, [response]);
 
@@ -71,7 +72,17 @@ const Header = ({ type = "default" }) => {
                 게임시작
               </GameButton>
             </Link>
-            <LogoutButton onClick={() => fetchData()}>
+            <LogoutButton
+              onClick={() =>
+                setApiConfig({
+                  method: "get",
+                  url: "/user/signout",
+                  headers: {
+                    sessionId: cookies.sessionId
+                  }
+                })
+              }
+            >
               <LogoutIcon icon={faSignOut} />
             </LogoutButton>
           </ButtonWrapper>

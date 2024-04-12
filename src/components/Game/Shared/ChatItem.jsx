@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import FlexBox from "@/styles/FlexStyle";
 
-const ChatItem = ({ nickname, message }) => {
+const ChatItem = ({ nickname, message, createdAt }) => {
   return (
     <ChatContent>
       <NickName row="start" col="center">
@@ -12,6 +12,11 @@ const ChatItem = ({ nickname, message }) => {
       <Message col="center">
         <span>{message}</span>
       </Message>
+      {createdAt && (
+        <Message marginLeft="auto">
+          <span>{createdAt}</span>
+        </Message>
+      )}
     </ChatContent>
   );
 };
@@ -31,11 +36,13 @@ const NickName = styled(FlexBox)`
 
 const Message = styled(FlexBox)`
   height: inherit;
+  margin-left: ${({ marginLeft }) => marginLeft};
 `;
 
 ChatItem.propTypes = {
   nickname: PropTypes.string,
-  message: PropTypes.string
+  message: PropTypes.string,
+  createdAt: PropTypes.string
 };
 
 export default ChatItem;

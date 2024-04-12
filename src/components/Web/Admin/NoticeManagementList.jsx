@@ -29,7 +29,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
       sessionId: cookies.sessionId
     }
   });
-  const { response, loading, error, fetchData } = useAxios(apiConfig);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   useEffect(() => {
     if (apiConfig !== null) {
@@ -48,7 +48,7 @@ const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
       if (apiConfig.url.includes("/search?q=")) {
         setLastPageIdx(1);
         setListData(
-          response.result?.map(({ content, created_at, views, ...rest }) => ({
+          response.list?.map(({ content, created_at, views, ...rest }) => ({
             ...rest,
             created_at: created_at.split("T")[0],
             views: views

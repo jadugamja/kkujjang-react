@@ -21,7 +21,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       isPoorManner: 1,
       isCheating: 1
     },
-    is_handled: 0
+    isHandled: 0
   });
   const [currPage, setCurrPage] = useState(1);
   const [lastPageIdx, setLastPageIdx] = useState(1);
@@ -32,7 +32,7 @@ const ReportManagementList = ({ type, onSideOpen }) => {
       sessionId: cookies.sessionId
     }
   });
-  const { response, loading, error, fetchData } = useAxios(apiConfig);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   // 필터 key 데이터 추출
   const filterKeys = ["createdAt", "types"];
@@ -46,13 +46,41 @@ const ReportManagementList = ({ type, onSideOpen }) => {
   });
 
   useEffect(() => {
-    fetchData();
+    if (apiConfig !== null) {
+      fetchData();
+    }
   }, [apiConfig]);
 
   useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
-      setData(response.result.list);
+      setData(
+        response.result.list?.map(
+          ({
+            id,
+            reporterNickname,
+            isCheating,
+            isOffensive,
+            isPoorManner,
+            note,
+            reporteeNickname,
+            createdAt,
+            isHandled
+          }) => ({
+            id,
+            reporteeNickname,
+            types: {
+              isCheating,
+              isOffensive,
+              isPoorManner,
+              note
+            },
+            reporterNickname,
+            createdAt,
+            isHandled
+          })
+        )
+      );
     } else {
       setLastPageIdx(1);
       setData([]);

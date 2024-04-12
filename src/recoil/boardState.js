@@ -15,3 +15,8 @@ export const remoteApiConfigState = atom({
   key: "remoteApiConfigState",
   default: null
 });
+
+export const selectedBoardItemIdState = atom({
+  key: "selectedBoardItemIdState",
+  default: null
+});

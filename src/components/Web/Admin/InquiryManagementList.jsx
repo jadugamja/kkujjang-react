@@ -29,7 +29,7 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
       sessionId: cookies.sessionId
     }
   });
-  const { response, loading, error, fetchData } = useAxios(apiConfig);
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   // 필터 key 데이터 추출
   const filterKeys = ["type", "needAnswer"];
@@ -53,19 +53,16 @@ const InquiryManagementList = ({ type, onThreadOpen }) => {
 
   useEffect(() => {
     if (remoteApiConfig !== null) {
-      setApiConfig(remoteApiConfig);
+      setApiConfig({
+        ...remoteApiConfig,
+        url: `/inquiry/search?page=${currPage}`
+      });
     }
   }, [remoteApiConfig]);
 
   useEffect(() => {
     if (response !== null) {
       setLastPageIdx(response.result.lastPage === 0 ? 1 : response.result.lastPage);
-      // setIsAnswerCompleted(
-      //   response.result.list?.reduce(
-      //     (acc, item) => ({ ...acc, [item.id]: !item.needAnswer }),
-      //     {}
-      //   )
-      // );
       setListData(
         response.result.list?.map(
           ({ updatedAt, createdAt, id, type, title, needAnswer }) => ({

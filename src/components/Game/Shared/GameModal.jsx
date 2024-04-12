@@ -246,7 +246,7 @@ const GameModal = ({
         isPoorManner: e.target.isPoorManner.checked,
         isCheating: e.target.isCheating.checked,
         note: e.target.note.value,
-        reporteeId: cookies.userId
+        reporteeId: userId
       }
     });
   };

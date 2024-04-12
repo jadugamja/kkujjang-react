@@ -15,7 +15,8 @@ import GameModal from "./GameModal";
 import { ArrowIconImage, GameModalInput } from "./GameModalStyle";
 import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
-import { NICKNAME_REGEX } from "@/services/regexp";
+import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
+import { NICKNAME_REGEX } from "../../../services/regexp";
 
 const init = {
   avatarUrl: avatar,
@@ -45,6 +46,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
   const [profile, setProfile] = useState(profileInfos);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isIncludingKey, setIsIncludingKey] = useState(false);
+  const [isWrongNickname, setIsWrongNickname] = useState(false);
   const [modalType, setModalType] = useState("profile");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currAvatar, setCurrAvatar] = useState(0);
@@ -68,12 +70,13 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
   useEffect(() => {
     if (response !== null) {
       const data = response.result;
+      const avatarAccessory = accessories[data.avatarAccessoryIndex];
       setProfile({
         nickname: ["닉네임", data.nickname],
         level: ["레벨", data.level],
         winRate: ["승률", data.winRate],
         exp: ["경험치", data.exp],
-        avatarUrl: data.avatarAccessoryIndex
+        avatarUrl: avatarAccessory
       });
       setUser((prev) => ({
         ...prev,
@@ -81,19 +84,27 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
         level: data.level,
         winRate: data.winRate,
         exp: data.exp,
-        avatarUrl: data.avatarAccessoryIndex
+        avatarUrl: avatarAccessory
       }));
     }
   }, [response]);
 
   const onNicknameChange = (e) => {
-    if (!NICKNAME_REGEX.test(e.target.value)) return;
-
     setProfile({
       ...profile,
       nickname: ["닉네임", e.target.value]
     });
     setUser((prev) => ({ ...prev, nickname: e.target.value }));
+  };
+
+  const onNicknameBlur = (e) => {
+    if (!NICKNAME_REGEX.test(e.target.value)) {
+      setUser((prev) => ({ ...prev, nickname: "" }));
+      setIsWrongNickname(true);
+      return;
+    } else {
+      setIsWrongNickname(false);
+    }
   };
 
   const onSwitchAvatarClick = (dir) => {
@@ -138,7 +149,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
             ) : (
               <AvatarCanvas
                 avatar={avatar}
-                item={accessories[profile.avatarUrl]}
+                item={profile.avatarUrl}
                 setAvatarImage={setAvatarImage}
                 width="7rem"
               />
@@ -157,16 +168,26 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
                       <div key={key}>
                         <span>{key !== "nickname" && title}</span>
                         {isEditMode && key === "nickname" ? (
-                          <GameModalInput
-                            type="text"
-                            value={value.replace(/#[\s\S]*$/, "")}
-                            onChange={(e) => onNicknameChange(e)}
-                            height="1.5rem"
-                            padding="0"
-                            bgColor="transparent"
-                            color="#fff"
-                            fontSize="20px"
-                          />
+                          <>
+                            <GameModalInput
+                              type="text"
+                              value={value.replace(/#[\s\S]*$/, "")}
+                              onChange={onNicknameChange}
+                              onBlur={onNicknameBlur}
+                              height="1.5rem"
+                              padding="0"
+                              bgColor="transparent"
+                              color="#fff"
+                              fontSize="20px"
+                            />
+                            {isWrongNickname && (
+                              <ValidationMessage
+                                message="잘못된 닉네임입니다."
+                                fontSize="14px"
+                                margin="0"
+                              />
+                            )}
+                          </>
                         ) : (
                           <ProfileInfo
                             margin={key !== "nickname" && "0 0 0 15px"}
@@ -192,7 +213,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
             >
               <AvatarCanvas
                 avatar={avatar}
-                item={accessories[profile.avatarUrl]}
+                item={profile.avatarUrl}
                 setAvatarImage={setAvatarImage}
                 width="5.4rem"
               />

@@ -114,7 +114,7 @@ const GameModal = ({
       break;
     case "setting":
       titleText = "환경설정";
-      height = "20rem";
+      height = "19rem";
       break;
     case "help":
       titleText = "도움말";
@@ -206,18 +206,9 @@ const GameModal = ({
     }
   }, [roomId, roomInfo?.id]);
 
-  // ====== avatar ======
-  // const onAvatarLeftClick = () => {
-  //   const index = currAvatar > 0 ? currAvatar - 1 : accessories.length - 1;
-  //   setCurrAvatar(index);
-  // };
-
-  // const onAvatarRightClick = () => {
-  //   const index = (currAvatar + 1) % accessories.length;
-  //   setCurrAvatar(index);
-  // };
-
   const onConfirmAvatarUrl = async () => {
+    if (user.nickname === "" || user.avatarUrl === "") return;
+
     const res = await updateCurrentUserAvatar(user.avatarUrl, user.nickname);
 
     if (res) {
@@ -347,6 +338,12 @@ const GameModal = ({
       setIsOpen(false);
       navigate("/game");
     });
+  };
+
+  const onSaveVolume = () => {
+    localStorage.setItem("bgVolume", bgCurrVolume.toString());
+    localStorage.setItem("fxVolume", fxCurrVolume.toString());
+    setIsOpen(false);
   };
 
   return (
@@ -527,9 +524,7 @@ const GameModal = ({
                 setCurrVolume={setFxCurrVolume}
               />
               <ButtonWrapper row="center" col="center" margin="30px 0px 20px">
-                <GameModalButton onClick={(e) => onValidateChange(e)}>
-                  저장
-                </GameModalButton>
+                <GameModalButton onClick={onSaveVolume}>저장</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}

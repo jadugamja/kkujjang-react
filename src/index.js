@@ -7,6 +7,7 @@ import { ThemeProvider } from "styled-components";
 import { webTheme, gameTheme } from "./styles/theme";
 import GlobalStyle from "./styles/GlobalStyle";
 import App from "./App";
+import Audio from "./components/Game/Shared/Audio";
 
 const ThemedApp = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const ThemedApp = () => {
   return (
     <ThemeProvider theme={isGame ? gameTheme : webTheme}>
       <GlobalStyle />
+      <Audio />
       <App />
     </ThemeProvider>
   );

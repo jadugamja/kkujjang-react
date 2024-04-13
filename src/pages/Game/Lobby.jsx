@@ -22,8 +22,6 @@ import {
   SpacingWrapper
 } from "@/components/Game/Shared/Layout";
 import {
-  initSocket,
-  disconnectSocket,
   loadRoomList,
   onLoadNewRoom,
   onDestroyRoom,
@@ -84,16 +82,6 @@ const Lobby = () => {
     }
 
     isMounted = true;
-  }, []);
-
-  useEffect(() => {
-    const storedRoomInfoList = localStorage.getItem("roomInfoList");
-    const bgVolume = localStorage.getItem("bgVolume");
-    const fxVolume = localStorage.getItem("fxVolume");
-
-    // 볼륨 조절
-    // Audio.volume = bgVolume
-    // Audio.volume = fxVolume
   }, []);
 
   const getUserInfo = useCallback(async () => {

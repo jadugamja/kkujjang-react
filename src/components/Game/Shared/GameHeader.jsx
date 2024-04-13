@@ -17,10 +17,9 @@ const GameHeader = ({ nickname = "" }) => {
           type="error"
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
-          height="17.625rem"
+          height="14rem"
         >
-          홈으로 이동하면 진행 중인 게임이 저장되지 않을 수 있습니다. <br />
-          그래도 계속하시겠습니까?
+          홈으로 이동하시겠습니까?
         </Modal>
       )}
       <Link onClick={() => setIsModalOpen(true)}>

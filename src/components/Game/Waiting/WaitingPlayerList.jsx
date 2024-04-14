@@ -9,9 +9,13 @@ import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
 import avatarUrl from "@/assets/images/avatar.png";
 import Modal from "../Shared/GameModal";
+import { useCookies } from "react-cookie";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const WaitingPlayerList = () => {
   const playerList = useRecoilValue(waitingPlayerListState);
+  const [cookies] = useCookies(["userId"]);
   const [userId, setUserId] = useState(null);
   const [modalType, setModalType] = useState("profile");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +35,20 @@ const WaitingPlayerList = () => {
           row="between"
           onClick={() => onPlayerClick(player.userId)}
         >
+          {cookies && cookies.userId === player.userId && (
+            <StatusBox
+              position="absolute"
+              margin="8px 6px"
+              padding="4px"
+              border="1px solid #522"
+              borderRadius="50%"
+            >
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ fontSize: "12px", color: "#522" }}
+              />
+            </StatusBox>
+          )}
           <Player avatarUrl={avatarUrl} nickname={player.nickname} level={player.level} />
           <StatusBox dir="col" row="start">
             <StatusText type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}>
@@ -70,7 +88,11 @@ const PlayerWrapper = styled(FlexBox)`
 `;
 
 const StatusBox = styled(FlexBox)`
-  margin: 10px 14px;
+  position: ${({ position }) => position};
+  margin: ${({ margin }) => margin || "10px 14px"};
+  padding: ${({ padding }) => padding};
+  border: ${({ border }) => border};
+  border-radius: ${({ borderRadius }) => borderRadius};
 `;
 
 const StatusText = styled.span`

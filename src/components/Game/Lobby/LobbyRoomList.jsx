@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import FlexBox from "@/styles/FlexStyle";
@@ -8,8 +8,6 @@ import LobbyRoomItem from "./LobbyRoomItem";
 const LobbyRoomList = ({ rooms }) => {
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [showOpenRoom, setShowOpenRoom] = useState(false);
-
-  useEffect(() => {}, []);
 
   return (
     <RoomListWrapper dir="col">

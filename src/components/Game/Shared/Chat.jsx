@@ -1,32 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import {
-  initialCharacterState,
-  thisTurnLeftTimeState,
-  myTurnPlayerIndexState,
-  isWordFailState,
-  balloonMessageState
-} from "@/recoil/gameState";
-import { userInfoState } from "@/recoil/userState";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
+import { balloonMessageState } from "@/recoil/gameState";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 import ChatItem from "./ChatItem";
-import { loadRoom, receiveMessage, sendMessage } from "../../../services/socket";
+import { receiveMessage, sendMessage } from "@/services/socket";
 import { getPlayerInfoByUserId } from "@/services/user";
-import { waitingPlayerListState } from "../../../recoil/userState";
 
 const Chat = ({ isPlaying, size = "default" }) => {
-  const userInfo = useRecoilValue(userInfoState);
-  // const [myTurn, setMyTurn] = useRecoilState(myTurnPlayerIndexState);
-  const playerList = useRecoilValue(waitingPlayerListState);
-  const leftTime = useRecoilValue(thisTurnLeftTimeState);
-  const [initialCharacter, setInitialCharacter] = useRecoilState(initialCharacterState);
-  const setIsFail = useSetRecoilState(isWordFailState);
-
   const [toMessage, setToMessage] = useState("");
   const setBalloonMessage = useSetRecoilState(balloonMessageState);
   const [chats, setChats] = useState([]);

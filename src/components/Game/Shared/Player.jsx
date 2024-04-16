@@ -24,7 +24,7 @@ Player.propTypes = {
 
 const PlayerWrapper = styled(FlexBox)`
   width: ${({ type }) => type !== "play" && "9rem"};
-  height: ${({ type }) => (type === "play" ? "9.75rem" : "10.75rem")};
+  height: ${({ type }) => (type === "play" ? "9.75rem" : "11.2rem")};
 `;
 
 const AvatarImage = styled(FlexBox).attrs({

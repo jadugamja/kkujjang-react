@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -17,6 +17,8 @@ import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 import { NICKNAME_REGEX } from "../../../services/regexp";
+import { remoteApiConfigState } from "@//recoil/boardState"
+
 
 const init = {
   avatarUrl: avatar,
@@ -52,20 +54,25 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
   const [currAvatar, setCurrAvatar] = useState(0);
   const [avatarImage, setAvatarImage] = useState(null);
   const [cookies] = useCookies(["sessionId", "userId"]);
-  const { response, loading, error, fetchData } = useAxios({
+  const [apiConfig, setApiConfig] = useState({
     method: "get",
     url: `/user/${!userId ? "me" : userId}`,
     headers: { sessionId: cookies.sessionId }
-  });
+  })
+  const remoteApiConfig = useRecoilValue(remoteApiConfigState)
+  const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setProfile({
-  //       ...profile,
-  //       avatarUrl: user.avatarUrl1
-  //     });
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (apiConfig !== null) {
+      fetchData();
+    }
+  }, [apiConfig]);
+
+  useEffect(() => {
+    if (remoteApiConfig !== null) {
+      setApiConfig(remoteApiConfig);
+    }
+  }, [remoteApiConfig]);
 
   useEffect(() => {
     if (response !== null) {

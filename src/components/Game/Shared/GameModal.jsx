@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { userInfoState, waitingPlayerListState } from "@/recoil/userState";
 import { roomIdState, roomInfoListState, roomInfoState } from "@/recoil/roomState";
 import { bgVolumeState, fxVolumeState } from "@/recoil/soundState";
+import { remoteApiConfigState } from "@/recoil/boardState";
 import VolumeControl from "./VolumeControl";
 import Profile from "./Profile";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
@@ -44,9 +45,8 @@ import {
   loadRoom
 } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
-import { updateCurrentUserAvatar } from "@/services/user";
-import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
-import { getPlayerInfoByUserId } from "../../../services/user";
+import { getPlayerInfoByUserId, updateCurrentUserAvatar } from "@/services/user";
+import { NICKNAME_REGEX, SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
 
 const GameModal = ({
   type,
@@ -65,6 +65,7 @@ const GameModal = ({
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const setRoomId = useSetRecoilState(roomIdState);
   const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
+  const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
   const [roomNumber, setRoomNumber] = useState(null);
 
   const [bgCurrVolume, setBgCurrVolume] = useRecoilState(bgVolumeState);
@@ -207,7 +208,7 @@ const GameModal = ({
   }, [roomId, roomInfo?.id]);
 
   const onConfirmAvatarUrl = async () => {
-    if (user.nickname === "" || user.avatarUrl === "") return;
+    if (user.nickname === "" || user.avatarUrl === "" || !NICKNAME_REGEX.test(user.nickname)) return;
 
     const res = await updateCurrentUserAvatar(user.avatarUrl, user.nickname);
 
@@ -217,6 +218,11 @@ const GameModal = ({
         avatarUrl: user.avatarUrl,
         nickname: user.nickname
       }));
+      setRemoteApiConfig({
+        method: "get",
+        url: "/user/me",
+        headers: { sessionId: cookies.sessionId }
+      })
       setIsOpen(false);
     }
   };

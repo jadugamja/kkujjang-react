@@ -12,8 +12,8 @@ import Pagination from "../Shared/Board/Pagination";
 import { Box } from "@/components/Game/Shared/Layout";
 import { FlexBox } from "@/styles/FlexStyle";
 import useAxios from "@/hooks/useAxios";
-import { remoteApiConfigState } from "../../../recoil/boardState";
-import { POST_SEARCH_WORD_REGEX } from "../../../services/regexp";
+import { remoteApiConfigState } from "@/recoil/boardState";
+import { POST_SEARCH_WORD_REGEX } from "@/services/regexp";
 
 const NoticeManagementList = ({ type, onDetailOpen, onCreateOpen }) => {
   const remoteApiConfig = useRecoilValue(remoteApiConfigState);

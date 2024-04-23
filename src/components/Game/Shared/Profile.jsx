@@ -17,7 +17,7 @@ import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 import { NICKNAME_REGEX } from "../../../services/regexp";
-import { remoteApiConfigState } from "@//recoil/boardState";
+import { remoteApiConfigState } from "@/recoil/boardState";
 
 const init = {
   avatarUrl: avatar,

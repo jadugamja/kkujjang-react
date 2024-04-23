@@ -17,8 +17,7 @@ import TitleBar from "./TitleBar";
 import AvatarCanvas from "./AvatarCanvas";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
 import { NICKNAME_REGEX } from "../../../services/regexp";
-import { remoteApiConfigState } from "@//recoil/boardState"
-
+import { remoteApiConfigState } from "@/recoil/boardState";
 
 const init = {
   avatarUrl: avatar,
@@ -58,8 +57,8 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
     method: "get",
     url: `/user/${!userId ? "me" : userId}`,
     headers: { sessionId: cookies.sessionId }
-  })
-  const remoteApiConfig = useRecoilValue(remoteApiConfigState)
+  });
+  const remoteApiConfig = useRecoilValue(remoteApiConfigState);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
   useEffect(() => {
@@ -77,22 +76,22 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
   useEffect(() => {
     if (response !== null) {
       const data = response.result;
-      const avatarAccessory = accessories[data.avatarAccessoryIndex];
       setProfile({
         nickname: ["닉네임", data.nickname],
         level: ["레벨", data.level],
         winRate: ["승률", data.winRate],
         exp: ["경험치", data.exp],
-        avatarUrl: avatarAccessory
+        avatarUrl: data.avatarAccessoryIndex
       });
       setUser((prev) => ({
         ...prev,
-        nickname: data.nickname,
+        nickname: data.nickname?.split("#")[0],
         level: data.level,
         winRate: data.winRate,
         exp: data.exp,
-        avatarUrl: avatarAccessory
+        avatarUrl: data.avatarAccessoryIndex
       }));
+      setCurrAvatar(data.avatarAccessoryIndex);
     }
   }, [response]);
 
@@ -123,6 +122,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
     }
 
     setCurrAvatar(index);
+    setProfile((prev) => ({ ...prev, avatarUrl: index }));
     setUser((prev) => ({ ...prev, avatarUrl: index }));
   };
 
@@ -145,7 +145,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
                 />
                 <AvatarCanvas
                   avatar={avatar}
-                  item={accessories[currAvatar]}
+                  item={accessories[profile.avatarUrl]}
                   setAvatarImage={setAvatarImage}
                 />
                 <ArrowIconImage
@@ -156,7 +156,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
             ) : (
               <AvatarCanvas
                 avatar={avatar}
-                item={profile.avatarUrl}
+                item={accessories[profile.avatarUrl]}
                 setAvatarImage={setAvatarImage}
                 width="7rem"
               />
@@ -220,7 +220,7 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
             >
               <AvatarCanvas
                 avatar={avatar}
-                item={profile.avatarUrl}
+                item={accessories[profile.avatarUrl]}
                 setAvatarImage={setAvatarImage}
                 width="5.4rem"
               />

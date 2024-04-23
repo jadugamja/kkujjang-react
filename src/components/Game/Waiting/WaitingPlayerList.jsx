@@ -38,7 +38,7 @@ const WaitingPlayerList = () => {
           {cookies && cookies.userId === player.userId && (
             <StatusBox
               position="absolute"
-              margin="8px 6px"
+              margin="8px 5px"
               padding="4px"
               border="1px solid #522"
               borderRadius="50%"

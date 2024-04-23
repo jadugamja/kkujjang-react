@@ -8,7 +8,7 @@ import { SOCKET_URL } from "@/services/const";
 
 import { roomInfoState } from "@/recoil/roomState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
+import { ContentWrapper, WideContent, Box } from "@/styles/CommonStyle";
 import Ranking from "@/components/Game/Lobby/Ranking";
 import Profile from "@/components/Game/Shared/Profile";
 import LobbyRoomList from "@/components/Game/Lobby/LobbyRoomList";
@@ -19,7 +19,8 @@ import Modal from "@/components/Game/Shared/GameModal";
 import {
   SideContentWrapper,
   MainContentWrapper,
-  SpacingWrapper
+  SpacingWrapper,
+  Main
 } from "@/components/Game/Shared/Layout";
 import {
   loadRoomList,
@@ -105,9 +106,9 @@ const Lobby = () => {
           {modalType === "error" && errorMessage}
         </Modal>
       )}
-      <WideContent dir="col">
+      <WideContent dir="col" row="center">
         <GameHeader />
-        <Main>
+        <Main width="100%">
           <Box>
             <SideContentWrapper dir="col">
               <Tab type="ranking">랭킹</Tab>

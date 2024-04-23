@@ -8,9 +8,7 @@ const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
   // transports: ["websocket"],
   reconnection: false,
-  sid: cookies.get("sessionId"),
   extraHeaders: {
-    // "my-header": "1234"
     sessionId: cookies.get("sessionId")
   }
 });

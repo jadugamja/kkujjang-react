@@ -53,6 +53,10 @@ export const LevelBadge = styled(FlexBox).attrs({
   font-weight: 700;
 `;
 
-const NicknameText = styled.span``;
+const NicknameText = styled.span`
+  overflow: hidden;
+  white-space: nowrap;
+  word-break: break-all;
+`;
 
 export default Player;

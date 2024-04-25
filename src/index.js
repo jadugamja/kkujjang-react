@@ -26,7 +26,7 @@ const ThemedApp = () => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <RecoilRoot>
     <CookiesProvider>
-      <Router basename={PUBLIC_URL}>
+      <Router>
         <ThemedApp />
       </Router>
     </CookiesProvider>

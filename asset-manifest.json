@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/kkujjang-react/static/js/main.f48d6e91.js",
+    "main.js": "/kkujjang-react/static/js/main.822bafa4.js",
     "static/js/319.8c63544a.chunk.js": "/kkujjang-react/static/js/319.8c63544a.chunk.js",
     "static/js/436.a8c23592.chunk.js": "/kkujjang-react/static/js/436.a8c23592.chunk.js",
     "static/js/126.28784c47.chunk.js": "/kkujjang-react/static/js/126.28784c47.chunk.js",
@@ -37,7 +37,7 @@
     "static/media/acc_sunglasses.svg": "/kkujjang-react/static/media/acc_sunglasses.9d0f9e2922985517b556693492b7f3c6.svg",
     "static/media/acc_bandage.svg": "/kkujjang-react/static/media/acc_bandage.c95d91931ee72b27de6e7f37bd3c27fc.svg",
     "index.html": "/kkujjang-react/index.html",
-    "main.f48d6e91.js.map": "/kkujjang-react/static/js/main.f48d6e91.js.map",
+    "main.822bafa4.js.map": "/kkujjang-react/static/js/main.822bafa4.js.map",
     "319.8c63544a.chunk.js.map": "/kkujjang-react/static/js/319.8c63544a.chunk.js.map",
     "436.a8c23592.chunk.js.map": "/kkujjang-react/static/js/436.a8c23592.chunk.js.map",
     "126.28784c47.chunk.js.map": "/kkujjang-react/static/js/126.28784c47.chunk.js.map",
@@ -65,6 +65,6 @@
     "277.8a1f9272.chunk.js.map": "/kkujjang-react/static/js/277.8a1f9272.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.f48d6e91.js"
+    "static/js/main.822bafa4.js"
   ]
 }

@@ -5,6 +5,7 @@ export const FlexBox = styled.div`
   flex-direction: ${({ dir }) => setFlexDirection(dir)};
   justify-content: ${({ row }) => setJustifyContent(row)};
   align-items: ${({ col }) => setAlignItems(col)};
+
   position: ${({ position }) => position};
   top: ${({ top }) => top};
   bottom: ${({ bottom }) => bottom};

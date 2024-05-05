@@ -35,12 +35,12 @@ const HomeUser = () => {
     <ContentWrapper row="center" col="center">
       <WideContent dir="col">
         <Header type={!isAuthenticated ? "guest" : "clearTab"} />
-        <FlexBox as="main" dir="col" height="100%" margin="7.5rem 0 0" padding="10px">
+        <FlexBox as="main" dir="col" height="100%" margin="7.5rem 0 0" padding="0 2rem">
           {/* upper */}
           <FlexBox
             height="25rem"
             padding="10px"
-            margin="30px 0 5px"
+            margin="1.5rem 0 0"
             row="end"
             col="center"
           >

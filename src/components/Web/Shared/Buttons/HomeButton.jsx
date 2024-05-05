@@ -7,11 +7,12 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket, faComment } from "@fortawesome/free-solid-svg-icons";
 import FlexBox from "@/styles/FlexStyle";
-import { Wrapper, Span } from "../../../Game/Shared/Layout";
+import { Span } from "../../../Game/Shared/Layout";
 import { LevelBadge } from "../../../Game/Shared/Player";
 import { KAKAO_LOGIN_LINK } from "@/services/const";
 import { userInfoState } from "@/recoil/userState";
 import useAxios from "@/hooks/useAxios";
+import { Container } from "@/styles/StyledComponents";
 
 const HomeButton = ({ type }) => {
   const [user, setUser] = useRecoilState(userInfoState);
@@ -38,7 +39,14 @@ const HomeButton = ({ type }) => {
   }, [response]);
 
   return (
-    <Wrapper dir="col" width="19.75rem" height="14rem" margin="0 72px 0 0">
+    <Container
+      $display="flex"
+      $dir="col"
+      $height="14rem"
+      $width="19.75rem"
+      $margin="1rem 6rem 0 0"
+      $alignSelf="center"
+    >
       {type === "guest" ? (
         <>
           <Link to="/member/login" flex="1">
@@ -131,7 +139,7 @@ const HomeButton = ({ type }) => {
           </FlexBox>
         </>
       )}
-    </Wrapper>
+    </Container>
   );
 };
 
@@ -144,6 +152,9 @@ const Link = styled(RouterLink)`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
   flex: ${({ flex }) => flex};
+
+  &:hover {
+  }
 `;
 
 export default HomeButton;

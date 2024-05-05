@@ -8,7 +8,6 @@ import { webTheme, gameTheme } from "./styles/theme";
 import GlobalStyle from "./styles/GlobalStyle";
 import App from "./App";
 import Audio from "./components/Game/Shared/Audio";
-import { PUBLIC_URL } from "./services/const";
 
 const ThemedApp = () => {
   const location = useLocation();
@@ -26,7 +25,7 @@ const ThemedApp = () => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <RecoilRoot>
     <CookiesProvider>
-      <Router basename={PUBLIC_URL}>
+      <Router>
         <ThemedApp />
       </Router>
     </CookiesProvider>

@@ -11,10 +11,27 @@ const GridBox = styled.div`
   grid-template-rows: ${({ rows }) => setGridTemplateRows(rows)};
   grid-gap: ${({ gap }) => setGridGap(gap)};
   grid-auto-flow: ${({ flow }) => setGridAutoFlow(flow)};
-  margin: ${({ margin }) => margin || "0"};
-  padding: ${({ padding }) => padding || "0"};
+
   justify-content: ${({ row }) => setJustifyContent(row)};
   align-items: ${({ col }) => setAlignItems(col)};
+
+  position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  bottom: ${({ bottom }) => bottom};
+  left: ${({ left }) => left};
+  right: ${({ right }) => right};
+
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+
+  margin: ${({ margin }) => margin};
+  padding: ${({ padding }) => padding};
+
+  z-index: ${({ zIndex }) => zIndex};
+
+  background-color: ${({ bgColor }) => bgColor};
+  border-top: ${({ borderTop }) => borderTop};
+  border-bottom: ${({ borderBottom }) => borderBottom};
 `;
 
 const setGridTemplateColumns = (cols) => {

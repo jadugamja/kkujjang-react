@@ -12,11 +12,6 @@ export const blink = keyframes`
   }
 `;
 
-// 숨겨진 요소
-export const Hidden = styled.div`
-  display: none;
-`;
-
 // 웹 페이지 그라데이션 영역
 export const Gradation = styled.div`
   position: absolute;

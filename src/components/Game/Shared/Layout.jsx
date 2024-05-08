@@ -22,26 +22,6 @@ export const Box = styled.div`
   overflow-y: ${({ overflowY }) => overflowY};
 `;
 
-export const Main = styled.main`
-  position: ${({ position }) => position};
-  top: ${({ top }) => top};
-  bottom: ${({ bottom }) => bottom};
-  left: ${({ left }) => left};
-  right: ${({ right }) => right};
-  max-width: ${({ maxWidth }) => maxWidth};
-  width: ${({ width }) => width};
-  height: ${({ height }) => height};
-  margin: ${({ margin }) => margin};
-  padding: ${({ padding }) => padding};
-  background-color: ${({ bgColor }) => bgColor};
-  border-top: ${({ borderTop }) => borderTop};
-  border-right: ${({ borderRight }) => borderRight};
-  border-bottom: ${({ borderBottom }) => borderBottom};
-  border-left: ${({ borderLeft }) => borderLeft};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  z-index: ${({ zIndex }) => zIndex};
-`;
-
 export const Wrapper = styled(FlexBox)`
   position: ${({ position }) => position};
   top: ${({ top }) => top};
@@ -61,6 +41,8 @@ export const Wrapper = styled(FlexBox)`
   border-radius: ${({ borderRadius }) => borderRadius};
   z-index: ${({ zIndex }) => zIndex};
 `;
+
+export const Main = Wrapper.withComponent("main");
 
 export const SpacingWrapper = styled(FlexBox)`
   & > * + * {

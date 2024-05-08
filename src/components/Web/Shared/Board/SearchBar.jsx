@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { FlexBox } from "@/styles/FlexStyle";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { POST_SEARCH_WORD_REGEX } from "../../../../services/regexp";
+import { POST_SEARCH_WORD_REGEX } from "@/services/regexp";
 
-const SearchBar = ({ searchType, setSearchKeyword }) => {
+const SearchBar = ({ $width, searchType, setSearchKeyword }) => {
   const keywordRef = useRef();
 
   const sendKeyword = (e) => {
@@ -20,7 +20,7 @@ const SearchBar = ({ searchType, setSearchKeyword }) => {
   };
 
   return (
-    <SearchInputWrapper col="center" field={searchType}>
+    <SearchInputWrapper col="center" field={searchType} $width={$width}>
       <SearchTypeInput type="text" readOnly value={searchType} />
       <SearchKeywordInput
         type="text"
@@ -39,6 +39,7 @@ const SearchBar = ({ searchType, setSearchKeyword }) => {
 };
 
 SearchBar.propTypes = {
+  $width: PropTypes.string,
   searchType: PropTypes.string,
   setSearchKeyword: PropTypes.func
 };
@@ -46,7 +47,7 @@ SearchBar.propTypes = {
 const SearchInputWrapper = styled(FlexBox)`
   border: 2px solid ${({ theme }) => theme.colors.gray200};
   border-radius: 10px;
-  width: 18.5rem;
+  width: ${({ $width }) => $width || "18.5rem"};
   height: ${(props) => props.height || "3.2rem"};
 `;
 

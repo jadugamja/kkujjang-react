@@ -123,7 +123,7 @@ const HeaderContent = styled(FlexBox).attrs(({ type }) => ({
         : type === "admin-detail"
           ? "6.5rem"
           : "7.5rem"};
-  padding: ${({ type }) => (type === "admin" ? "0 60px" : "0 30px")};
+  padding: ${({ type }) => (type === "admin" ? "0 60px" : "0 2rem")};
 `;
 
 // 로고 이미지 사이즈 조정

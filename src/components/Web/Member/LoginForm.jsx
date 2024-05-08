@@ -62,6 +62,7 @@ const LoginForm = () => {
     }
   }, [response, error]);
 
+  // 로그인
   const handleLogin = () => {
     const id = idRef.current.value;
     const password = passwordRef.current.value;
@@ -112,58 +113,64 @@ const LoginForm = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
-          <LoginFormFlexContainer dir="col" marginTop="4rem">
-            <FormTitle type="login"></FormTitle>
+        <LoginFormFlexContainer
+          as="form"
+          dir="col"
+          marginTop="4rem"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+        >
+          <FormTitle type="login"></FormTitle>
 
-            {/* 아이디 input */}
-            <LoginFormFlexContainer marginBottom="12px">
-              <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
-            </LoginFormFlexContainer>
+          {/* 아이디 input */}
+          <LoginFormFlexContainer marginBottom="12px">
+            <InputField name="id" isLoginForm={true} inputRef={idRef}></InputField>
+          </LoginFormFlexContainer>
 
-            {/* 비밀번호 input */}
-            <LoginFormFlexContainer marginBottom="12px">
-              <InputField
-                name="password"
-                isLoginForm={true}
-                inputRef={passwordRef}
-              ></InputField>
-            </LoginFormFlexContainer>
+          {/* 비밀번호 input */}
+          <LoginFormFlexContainer marginBottom="12px">
+            <InputField
+              name="password"
+              isLoginForm={true}
+              inputRef={passwordRef}
+            ></InputField>
+          </LoginFormFlexContainer>
 
-            {/* 경고 문구 */}
-            {loginError && <ValidationMessage message={loginError} />}
+          {/* 경고 문구 */}
+          {loginError && <ValidationMessage message={loginError} />}
 
-            {/* 로그인 button */}
-            <LoginFormFlexContainer marginTop="18px" marginBottom="6px">
-              <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
-            </LoginFormFlexContainer>
+          {/* 로그인 button */}
+          <LoginFormFlexContainer marginTop="18px" marginBottom="6px">
+            <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
+          </LoginFormFlexContainer>
 
-            {/* Link button */}
-            <LoginFormFlexContainer row="between" marginBottom="20px">
-              <LoginFormFlexContainer width="fit-content">
-                <Link to="/member/find?type=id">
-                  <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
-                </Link>
-                <Link to="/member/find?type=pw">
-                  <LinkSpan>비밀번호 찾기</LinkSpan>
-                </Link>
-              </LoginFormFlexContainer>
-              <Link to="/member/join">
-                <LinkSpan color="#413014">회원가입</LinkSpan>
+          {/* Link button */}
+          <LoginFormFlexContainer row="between" marginBottom="20px">
+            <LoginFormFlexContainer width="fit-content">
+              <Link to="/member/find?type=id">
+                <LinkSpan marginRight="24px">아이디 찾기</LinkSpan>
+              </Link>
+              <Link to="/member/find?type=pw">
+                <LinkSpan>비밀번호 찾기</LinkSpan>
               </Link>
             </LoginFormFlexContainer>
-
-            {/* 카카오 로그인 button */}
-            <KakaoLoginButton onClick={handleKakaoLogin}>
-              <LoginFormFlexContainer col="center">
-                <KakaoIconImage src={KakaoIcon} />
-                <LinkSpan color="#413014" fontSize="20px" fontWeight="700">
-                  카카오 계정으로 로그인하기
-                </LinkSpan>
-              </LoginFormFlexContainer>
-            </KakaoLoginButton>
+            <Link to="/member/join">
+              <LinkSpan color="#413014">회원가입</LinkSpan>
+            </Link>
           </LoginFormFlexContainer>
-        </>
+
+          {/* 카카오 로그인 button */}
+          <KakaoLoginButton onClick={handleKakaoLogin}>
+            <LoginFormFlexContainer col="center">
+              <KakaoIconImage src={KakaoIcon} />
+              <LinkSpan color="#413014" fontSize="20px" fontWeight="700">
+                카카오 계정으로 로그인하기
+              </LinkSpan>
+            </LoginFormFlexContainer>
+          </KakaoLoginButton>
+        </LoginFormFlexContainer>
       )}
     </>
   );

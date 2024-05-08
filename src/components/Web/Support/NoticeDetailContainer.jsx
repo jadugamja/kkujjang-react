@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { FlexBox } from "@/styles/FlexStyle";
+import ReactQuill from "react-quill";
 
-import { formatDateToTimestamp } from "@/services/date";
 import createdAtIcon from "@/assets/images/clock.png";
 import viewsIcon from "@/assets/images/views.png";
+import { FlexBox } from "@/styles/FlexStyle";
+import { formatDateToTimestamp } from "@/services/date";
 
 // ===== hooks import =====
 import useAxios from "@/hooks/useAxios";
@@ -34,6 +35,10 @@ const NoticeDetailBox = styled.div`
   margin-bottom: ${(props) => props.marginBottom || null};
   margin-left: ${(props) => props.marginLeft || null};
   margin-right: ${(props) => props.marginRight || null};
+
+  & .ql-container.ql-snow {
+    border: 0;
+  }
 `;
 
 const NoticeDetailText = styled.p`
@@ -55,7 +60,6 @@ const NoticeDetailContainer = () => {
 
   // === state ===
   const [detailData, setDetailData] = useState([]);
-  // (api 관련)
   const [apiConfig, setApiConfig] = useState({
     method: "get",
     url: `/notice/${noticeId}`
@@ -73,6 +77,24 @@ const NoticeDetailContainer = () => {
 
   useEffect(() => {
     if (response !== null) {
+      let result = response.result;
+      if (result.files && result.files.length > 0) {
+        let content = result.content;
+        let fileIndex = 0;
+
+        content = content.replace(/<img src=\"\"/g, (match) => {
+          if (fileIndex < result.files.length) {
+            let newImg = `<img src="${result.files[fileIndex]}"`;
+            fileIndex++;
+            return newImg;
+          } else {
+            return match;
+          }
+        });
+
+        result.content = content;
+      }
+
       setDetailData(response.result);
     } else {
       setDetailData([]);
@@ -88,24 +110,18 @@ const NoticeDetailContainer = () => {
       <NoticeDetailBox width="75rem" marginLeft="auto" marginRight="auto">
         <BoardTitle type="notice" />
         <NoticeDetailBox borderTop="5px solid #C2C2C2" borderBottom="5px solid #C2C2C2">
-          {/* 공지 헤더 */}
           <NoticeDeatalFlexBox dir="col">
             {/* 공지 제목 */}
             <NoticeDetailBox marginTop="15px" marginBottom="10px">
               <NoticeDetailText>{detailData.title}</NoticeDetailText>
             </NoticeDetailBox>
-
-            {/* 공지 관련 정보 */}
-            <NoticeDeatalFlexBox width="400px" marginBottom="15px">
-              {/* 게시 날짜 */}
-              <NoticeDeatalFlexBox col="center">
+            <NoticeDeatalFlexBox width="100%" marginBottom="15px">
+              <NoticeDeatalFlexBox col="center" width="46%">
                 <NoticeDetailImage src={createdAtIcon} marginRight="10px" />
                 <NoticeDetailText color="#A7A7A7" fontSize="20px">
                   {formatDateToTimestamp(detailData.created_at)}
                 </NoticeDetailText>
               </NoticeDeatalFlexBox>
-
-              {/* 조회수 */}
               <NoticeDeatalFlexBox col="center">
                 <NoticeDetailImage src={viewsIcon} marginRight="10px" />
                 <NoticeDetailText color="#A7A7A7" fontSize="20px">
@@ -117,19 +133,18 @@ const NoticeDetailContainer = () => {
 
           {/* 공지 본문 */}
           <NoticeDeatalFlexBox
-            borderTop="1px solid #C2C2C2"
+            borderTop="1px saolid #C2C2C2"
             dir="col"
             marginBottom="10px"
           >
-            <NoticeDetailBox dir="col" height="390px" marginTop="15px">
-              <div>{detailData.content}</div>
-              {detailData.files && (
-                <>
-                  {detailData.files?.map((file, index) => (
-                    <img key={index} src={file} />
-                  ))}
-                </>
-              )}
+            <NoticeDetailBox dir="col" height="390px">
+              <ReactQuill
+                style={{ height: "23.7rem" }}
+                theme="snow"
+                value={detailData?.content}
+                readOnly={true}
+                modules={{ toolbar: false }}
+              />
             </NoticeDetailBox>
             <NoticeDeatalFlexBox row="end">
               <Button type="smallGray" message="목록" onClick={handleMoveList} />

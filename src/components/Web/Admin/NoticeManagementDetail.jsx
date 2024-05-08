@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -90,7 +90,8 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }
       [{ header: [] }],
       ["bold", "italic", "underline", "strike", "code-block"],
       [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "image"],
+      ["link"],
+      // ["link", "image"],
       [{ align: [] }, { color: [] }, { background: [] }],
       ["clean"]
     ]

@@ -24,6 +24,7 @@ export const Hr = BaseBox.withComponent("hr");
 export const H1 = BaseBox.withComponent("h1");
 export const H2 = BaseBox.withComponent("h2");
 export const H3 = BaseBox.withComponent("h3");
+export const H4 = BaseBox.withComponent("h4");
 export const Ul = BaseBox.withComponent("ul");
 export const Li = BaseBox.withComponent("li");
 export const Anchor = BaseBox.withComponent("a");

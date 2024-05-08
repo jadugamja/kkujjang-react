@@ -5,41 +5,41 @@ const GlobalStyle = createGlobalStyle`
   // 노토 산스
   @font-face {
     font-family: 'Noto Sans KR';
-    src: url('/fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
+    src: url('fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
     font-weight: 100 900;
   }
 
   // 프리텐다드
   @font-face {
     font-family: 'Pretendard Variable';
-    src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+    src: url('fonts/PretendardVariable.woff2') format('woff2-variations');
     font-weight: 100 900;
   }
 
   // 구기체
   @font-face {
     font-family: 'Gugi';
-    src: url('/fonts/Gugi-Regular.ttf');
+    src: url('fonts/Gugi-Regular.ttf');
     font-weight: 400;
   }
 
   // 던전앤파이터 비트비트체
   @font-face {
     font-family: 'DNFBitBitv2';
-    src: url('/fonts/DNFBitBitv2.otf');
+    src: url('fonts/DNFBitBitv2.otf');
     font-weight: 100 900;
   }
 
   // 배달의민족 한나체
   @font-face {
     font-family: 'Hanna';
-    src: url('/fonts/BMHANNA_11yrs_ttf.ttf');
+    src: url('fonts/BMHANNA_11yrs_ttf.ttf');
   }
 
   // 배달의민족 한나체 Air
   @font-face {
     font-family: 'BMHANNAAir';
-    src: url('/fonts/BMHANNAAir_ttf.ttf');
+    src: url('fonts/BMHANNAAir_ttf.ttf');
     font-weight: normal;
     font-style: normal;
   }
@@ -47,19 +47,19 @@ const GlobalStyle = createGlobalStyle`
   // Alfa Slab One
   @font-face {
     font-family: 'AlfaSlabOne';
-    src: url('/fonts/AlfaSlabOne-Regular.ttf');
+    src: url('fonts/AlfaSlabOne-Regular.ttf');
   }
 
   // Zen Dots
   @font-face {
     font-family: 'ZenDots';
-    src: url('/fonts/ZenDots-Regular.ttf');
+    src: url('fonts/ZenDots-Regular.ttf');
   }
 
   // Poller One
   @font-face {
     font-family: 'PollerOne';
-    src: url('/fonts/PollerOne-Regular.ttf');
+    src: url('fonts/PollerOne-Regular.ttf');
   }
 
   * {
@@ -125,6 +125,10 @@ const GlobalStyle = createGlobalStyle`
   .ql-snow .ql-editor .ql-syntax {
     font-family: "Consolas";
     font-size: 16px;
+  }
+
+  .ql-clipboard {
+    display: none !important;
   }
 `;
 

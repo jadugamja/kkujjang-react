@@ -1,12 +1,34 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import { FlexBox } from "@/styles/FlexStyle";
+import AvatarCanvas from "./AvatarCanvas";
+import avatarUrl from "@/assets/images/avatar.png";
 
-const Player = ({ type = "wait", avatarUrl, nickname, level }) => {
+const accessories = [
+  "",
+  "emo1",
+  "emo2",
+  "eye1",
+  "eye2",
+  "eye3",
+  "head1",
+  "head2",
+  "fx1",
+  "fx2"
+];
+
+const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
+  const [avatarImage, setAvatarImage] = useState(null);
+
   return (
     <PlayerWrapper type={type} dir="col" row="center" col="center">
-      <AvatarImage type={type} src={avatarUrl} />
+      <AvatarCanvas
+        avatar={avatarUrl}
+        item={accessories[avatarAccessoryIndex]}
+        setAvatarImage={setAvatarImage}
+      />
       <PlayerInfoWrapper col="center">
         <LevelBadge>{level}</LevelBadge>
         <NicknameText>{nickname}</NicknameText>
@@ -17,7 +39,7 @@ const Player = ({ type = "wait", avatarUrl, nickname, level }) => {
 
 Player.propTypes = {
   type: PropTypes.string,
-  avatarUrl: PropTypes.string,
+  avatarAccessoryIndex: PropTypes.string,
   nickname: PropTypes.string,
   level: PropTypes.number
 };

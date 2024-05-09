@@ -9,7 +9,8 @@ import viewsIcon from "@/assets/images/views.png";
 
 // ===== style ======
 const BoardItemWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "fit-content"};
+  flex: ${(props) => props.flex};
+  width: ${(props) => props.width};
   height: ${(props) => props.height || "fit-content"};
   margin-top: ${(props) => props.marginTop || null};
   margin-bottom: ${(props) => props.marginBottom || null};
@@ -34,6 +35,14 @@ const FlexBoardText = styled(BoardItemText)`
   margin-left: ${(props) => props.marginLeft || null};
   margin-right: ${(props) => props.marginRight || null};
   font-weight: ${(props) => props.fontWeight || null};
+
+  ${({ clickable }) =>
+    clickable &&
+    `
+      &:hover {
+        cursor: pointer;
+      }
+  `}
 `;
 
 const AnswerText = styled.p`
@@ -71,146 +80,139 @@ const BoardItem = ({ boardType, data, onClick }) => {
   return (
     <>
       {boardType === "notice" ? (
-        <>
-          <BoardItemWrapper
-            row="between"
-            col="center"
-            width="100%"
-            height="40px"
-            marginBottom="10px"
-            onClick={onClick}
-          >
-            <FlexBoardText fontSize="20px">{data.title}</FlexBoardText>
-            <BoardItemWrapper row="between" width="13.5rem">
-              <BoardItemWrapper col="center">
-                <BoardItemImage
-                  width="20px"
-                  height="20px"
-                  src={createdAtIcon}
-                  marginRight="10px"
-                />
-                <FlexBoardText color="#A7A7A7" fontSize="18px">
-                  {formatDateToTimestamp(returnCreatedAt(data))}
-                </FlexBoardText>
-              </BoardItemWrapper>
-              <BoardItemWrapper col="center">
-                <BoardItemImage
-                  width="20px"
-                  height="20px"
-                  src={viewsIcon}
-                  marginRight="10px"
-                />
-                <FlexBoardText color="#A7A7A7" fontSize="18px">
-                  {data.views}
-                </FlexBoardText>
-              </BoardItemWrapper>
+        <BoardItemWrapper
+          row="between"
+          col="center"
+          width="100%"
+          height="40px"
+          marginBottom="10px"
+        >
+          <FlexBoardText fontSize="20px" clickable onClick={onClick}>
+            {data.title}
+          </FlexBoardText>
+          <BoardItemWrapper row="between" flex="0 0 18%">
+            <BoardItemWrapper col="center">
+              <BoardItemImage
+                width="20px"
+                height="20px"
+                src={createdAtIcon}
+                marginRight="10px"
+              />
+              <FlexBoardText color="#A7A7A7" fontSize="18px">
+                {formatDateToTimestamp(returnCreatedAt(data)).split(" ")[0]}
+              </FlexBoardText>
+            </BoardItemWrapper>
+            <BoardItemWrapper col="center">
+              <BoardItemImage
+                width="20px"
+                height="20px"
+                src={viewsIcon}
+                marginRight="10px"
+              />
+              <FlexBoardText color="#A7A7A7" fontSize="18px">
+                {data.views}
+              </FlexBoardText>
             </BoardItemWrapper>
           </BoardItemWrapper>
-        </>
+        </BoardItemWrapper>
       ) : (
         <>
           {
-            <>
-              <BoardItemWrapper
-                width="100%"
-                row="between"
-                col="center"
-                borderTop="1px solid #C2C2C2"
-                onClick={onClick}
-              >
-                {boardType === "header" && (
-                  <>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <BoardTd>
-                            <FlexBoardText
-                              margin="7px"
-                              marginLeft="15px"
-                              fontWeight="700"
-                              fontSize="22px"
-                            >
-                              문의 유형
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd width="700px">
-                            <FlexBoardText
-                              margin="7px"
-                              marginLeft="15px"
-                              fontWeight="700"
-                              fontSize="22px"
-                            >
-                              문의 제목
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd align="right" width="200px">
-                            <FlexBoardText
-                              margin="7px"
-                              marginLeft="50px"
-                              fontWeight="700"
-                              fontSize="22px"
-                            >
-                              작성일
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd align="right" width="180px">
-                            <FlexBoardText
-                              margin="7px"
-                              marginRight="15px"
-                              fontWeight="700"
-                              fontSize="22px"
-                              width="180px"
-                            >
-                              답변 유무
-                            </FlexBoardText>
-                          </BoardTd>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </>
-                )}
-                {boardType === "inquiry" && (
-                  <>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <BoardTd>
-                            <FlexBoardText
-                              margin="7px"
-                              marginLeft="15px"
-                              fontSize="20px"
-                              width="130px"
-                            >
-                              {getTypeName(data.type)}
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd width="700px">
-                            <FlexBoardText margin="7px" fontSize="22px">
-                              {data.title}
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd>
-                            <FlexBoardText margin="7px" fontSize="20px" width="120px">
-                              {data.createdAt}
-                            </FlexBoardText>
-                          </BoardTd>
-                          <BoardTd align="right" width="180px">
-                            <FlexBoardText
-                              margin="7px"
-                              fontWeight="700"
-                              fontSize="20px"
-                              width="120px"
-                            >
-                              {getNeedsAnswer(data.needsAnswer)}
-                            </FlexBoardText>
-                          </BoardTd>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </>
-                )}
-              </BoardItemWrapper>
-            </>
+            <BoardItemWrapper
+              width="100%"
+              row="between"
+              col="center"
+              borderTop="1px solid #C2C2C2"
+              onClick={onClick}
+            >
+              {boardType === "header" && (
+                <table>
+                  <tbody>
+                    <tr>
+                      <BoardTd>
+                        <FlexBoardText
+                          margin="7px"
+                          marginLeft="15px"
+                          fontWeight="700"
+                          fontSize="22px"
+                        >
+                          문의 유형
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd width="700px">
+                        <FlexBoardText
+                          margin="7px"
+                          marginLeft="15px"
+                          fontWeight="700"
+                          fontSize="22px"
+                        >
+                          문의 제목
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd align="right" width="200px">
+                        <FlexBoardText
+                          margin="7px"
+                          marginLeft="50px"
+                          fontWeight="700"
+                          fontSize="22px"
+                        >
+                          작성일
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd align="right" width="180px">
+                        <FlexBoardText
+                          margin="7px"
+                          marginRight="15px"
+                          fontWeight="700"
+                          fontSize="22px"
+                          width="180px"
+                        >
+                          답변 유무
+                        </FlexBoardText>
+                      </BoardTd>
+                    </tr>
+                  </tbody>
+                </table>
+              )}
+              {boardType === "inquiry" && (
+                <table>
+                  <tbody>
+                    <tr>
+                      <BoardTd>
+                        <FlexBoardText
+                          margin="7px"
+                          marginLeft="15px"
+                          fontSize="20px"
+                          width="130px"
+                        >
+                          {getTypeName(data.type)}
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd width="700px">
+                        <FlexBoardText margin="7px" fontSize="22px">
+                          {data.title}
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd>
+                        <FlexBoardText margin="7px" fontSize="20px" width="120px">
+                          {data.createdAt}
+                        </FlexBoardText>
+                      </BoardTd>
+                      <BoardTd align="right" width="180px">
+                        <FlexBoardText
+                          margin="7px"
+                          fontWeight="700"
+                          fontSize="20px"
+                          width="120px"
+                        >
+                          {getNeedsAnswer(data.needsAnswer)}
+                        </FlexBoardText>
+                      </BoardTd>
+                    </tr>
+                  </tbody>
+                </table>
+              )}
+            </BoardItemWrapper>
           }
         </>
       )}
@@ -224,11 +226,5 @@ BoardItem.propTypes = {
   data: PropTypes.object,
   onClick: PropTypes.func
 };
-
-// title: PropTypes.string,
-// createdAt: PropTypes.string,
-// views: PropTypes.string,
-// type: PropTypes.number,
-// needAnswer: PropTypes.bool
 
 export default BoardItem;

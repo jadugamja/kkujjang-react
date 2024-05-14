@@ -5,7 +5,6 @@ import styled, { keyframes } from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
-import avatarUrl from "@/assets/images/avatar.png";
 import { TotalScore, TurnScore } from "../Shared/Score";
 import { playingPlayerListState } from "@/recoil/userState";
 import { balloonMessageState } from "@/recoil/gameState";
@@ -58,7 +57,7 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
           )}
           <Player
             type="play"
-            avatarUrl={avatarUrl}
+            avatarAccessoryIndex={player.avatarAccessoryIndex}
             nickname={player.nickname}
             level={player.level}
           />
@@ -78,7 +77,7 @@ const PlayerWrapper = styled(FlexBox)`
   position: relative;
   width: 8.3rem;
   height: 12rem;
-  padding: 12px 10px;
+  padding: 6px 10px;
   background-color: ${({ myTurn, defeated }) =>
     defeated ? "#f0f0f0" : myTurn ? "#DDFFDD" : "#f0f0f0"};
   border: ${({ myTurn, defeated }) =>

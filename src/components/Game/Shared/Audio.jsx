@@ -38,6 +38,12 @@ const Audio = () => {
     }
   }, [bgVolume]);
 
+  // useEffect(() => {
+  //   if (audioPlay && audioRef.current && audioRef.current.paused) {
+  //     onPlayAudio();
+  //   }
+  // }, [audioPlay]);
+
   const onPlayAudio = () => {
     if (audioRef.current) {
       const savedBgVolume = localStorage.getItem("bgVolume");

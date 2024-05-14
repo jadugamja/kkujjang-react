@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Cookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 

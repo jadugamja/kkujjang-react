@@ -7,11 +7,7 @@ import { FlexBox } from "@/styles/FlexStyle";
 import { blink } from "@/styles/CommonStyle";
 import { GameModalInput as Input } from "../Shared/GameModalStyle";
 import TimerBar from "../Shared/TimerBar";
-import {
-  playingPlayerListState,
-  playingPlayerState,
-  syncPlayingPlayerToListState
-} from "@/recoil/userState";
+import { playingPlayerState, syncPlayingPlayerToListState } from "@/recoil/userState";
 import {
   randomWordState,
   initialCharacterState,
@@ -31,7 +27,6 @@ const WordInput = ({ roundCount, roundTime }) => {
   const thisTurnLeftTime = useRecoilValue(thisTurnLeftTimeState);
   const [currRound, setCurrRound] = useRecoilState(currentRoundState);
   const [inputWord, setInputWord] = useState("");
-  const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [player, setPlayer] = useRecoilState(playingPlayerState);
   const syncPlayerList = useSetRecoilState(syncPlayingPlayerToListState);
 

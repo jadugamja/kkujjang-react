@@ -28,8 +28,9 @@ const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
         avatar={avatarUrl}
         item={accessories[avatarAccessoryIndex]}
         setAvatarImage={setAvatarImage}
+        width={type === "play" ? "6.75rem" : "7.5rem"}
       />
-      <PlayerInfoWrapper col="center">
+      <PlayerInfoWrapper col="center" type={type}>
         <LevelBadge>{level}</LevelBadge>
         <NicknameText>{nickname}</NicknameText>
       </PlayerInfoWrapper>
@@ -39,7 +40,7 @@ const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
 
 Player.propTypes = {
   type: PropTypes.string,
-  avatarAccessoryIndex: PropTypes.string,
+  avatarAccessoryIndex: PropTypes.number,
   nickname: PropTypes.string,
   level: PropTypes.number
 };
@@ -49,16 +50,9 @@ const PlayerWrapper = styled(FlexBox)`
   height: ${({ type }) => (type === "play" ? "9.75rem" : "11.2rem")};
 `;
 
-const AvatarImage = styled(FlexBox).attrs({
-  as: "img"
-})`
-  width: ${({ type }) => (type === "play" ? "6.75rem" : "7.25rem")};
-  height: ${({ type }) => type === "play" && "auto"};
-`;
-
 const PlayerInfoWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "7.5rem"};
-  margin-top: 7px;
+  margin-top: ${({ type }) => (type === "play" ? "0" : "7px")};
   font-size: ${(props) => props.size || "16px"};
 `;
 

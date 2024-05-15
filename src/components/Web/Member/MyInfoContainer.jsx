@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 import { FlexBox } from "@/styles/FlexStyle";
 
 // ===== hooks import =====
@@ -10,9 +9,9 @@ import useAxios from "@/hooks/useAxios";
 
 // ===== components import ======
 import Button from "@/components/Web/Shared/Buttons/Button";
-import Avartar from "@/assets/images/avatar.png";
 import WebModal from "@/components/Web/Shared/Modal/WebModal";
-import { faL, faWon } from "@fortawesome/free-solid-svg-icons";
+import Avatar from "@/assets/images/avatar.png";
+import AvatarCanvas from "@/components/Game/Shared/AvatarCanvas";
 
 // ===== style ======
 const InfoFlexBox = styled(FlexBox)`
@@ -26,7 +25,6 @@ const InfoBox = styled.div`
   margin-left: ${(props) => props.marginLeft || null};
   margin-right: ${(props) => props.marginRight || null};
 `;
-const InfoImg = styled.img``;
 const InfoLinkButton = styled.a`
   width: ${(props) => props.width || "fit-content"};
   color: ${(props) => props.color || "#929292"};
@@ -51,6 +49,19 @@ const Table = styled.table`
   margin-left: ${(props) => props.marginLeft || "0"};
 `;
 
+const accessories = [
+  "",
+  "emo1",
+  "emo2",
+  "eye1",
+  "eye2",
+  "eye3",
+  "head1",
+  "head2",
+  "fx1",
+  "fx2"
+];
+
 // ===== component ======
 const MyInfoContainer = () => {
   // === ref ===
@@ -61,9 +72,10 @@ const MyInfoContainer = () => {
 
   // === state ===
   const [editMode, setEditMode] = useState(false); // 수정 버튼 클릭됐는지 state
-  const [userData, setUserData] = useState([]); // 백엔드 state
   const [nickname, setNickname] = useState(""); // 닉네임 state
   const [avatarAccessoryIndex, setAvatarAccessoryIndex] = useState(""); // 아바타 인덱스 state
+  const [userData, setUserData] = useState([]);
+  const [avatarImage, setAvatarImage] = useState(null);
   // (modal 관련)
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 변경 실패 modal state
   const [message, setMessage] = useState(""); // 닉네임 modal 의 message 설정 state
@@ -90,10 +102,11 @@ const MyInfoContainer = () => {
   useEffect(() => {
     if (response !== null) {
       if (apiConfig?.url.startsWith("/user/me")) {
+        const data = response.result;
         // 프로필 조회 성공 시
-        setUserData(response.result);
-        setNickname(response.result.nickname);
-        setAvatarAccessoryIndex(response.result.avatarAccessoryIndex);
+        setUserData(data);
+        setNickname(data.nickname);
+        setAvatarAccessoryIndex(data.avatarAccessoryIndex);
       } else if (apiConfig?.url.startsWith("/user")) {
         if (apiConfig?.method === "delete") {
           // 회원 탈퇴 성공 시
@@ -138,11 +151,12 @@ const MyInfoContainer = () => {
   // 확인 버튼 눌렀을 때
   const handleClickSaveButton = () => {
     const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
+    const editNickname = nickname.split("#")[0];
 
-    if (nickname.trim() === "") {
+    if (editNickname.trim() === "") {
       setNicknameModalOpen(true);
       setMessage("닉네임을 입력해 주세요.");
-    } else if (!ninknameRegex.test(nickname)) {
+    } else if (!ninknameRegex.test(editNickname)) {
       setNicknameModalOpen(true);
       setMessage("닉네임을 확인해 주세요.");
     } else {
@@ -156,7 +170,7 @@ const MyInfoContainer = () => {
       headers: { sessionId: cookies.sessionId },
       data: {
         avatarAccessoryIndex: avatarAccessoryIndex,
-        nickname: nickname
+        nickname: editNickname
       }
     });
   };
@@ -166,11 +180,9 @@ const MyInfoContainer = () => {
     const ninknameRegex = /^[a-zA-Z0-9가-힣]{1,15}$/;
 
     if (nickname.trim() === "") {
-      console.log("닉네임 변경 1");
       setNicknameModalOpen(true);
       setMessage("닉네임을 입력해 주세요.");
     } else if (!ninknameRegex.test(nickname)) {
-      console.log("닉네임 변경 2");
       setNicknameModalOpen(true);
       setMessage("닉네임을 확인해 주세요.");
     } else {
@@ -180,7 +192,6 @@ const MyInfoContainer = () => {
 
   // 탈퇴 버튼 눌렀을 때
   const handleClickWithdrawal = () => {
-    // 탈퇴 확인 modal 띄우기
     setWithdrawalModalOpen(true);
   };
 
@@ -218,7 +229,7 @@ const MyInfoContainer = () => {
   return (
     <>
       {nicknameModalOpen && (
-        <WebModal onClick={handleModalOpen} hasButton={true}>
+        <WebModal onClick={handleModalOpen} hasButton={true} setIsOpen={handleModalOpen}>
           {message}
         </WebModal>
       )}
@@ -229,13 +240,14 @@ const MyInfoContainer = () => {
           handleWithdrawal={handleWithdrawal}
           hasButton={true}
           isWithdrawal={true}
+          setIsOpen={handleWithdrawal}
         >
           정말 탈퇴하시겠습니까?
         </WebModal>
       )}
 
       {failModalOpen && (
-        <WebModal onClick={handleModal} hasButton={true}>
+        <WebModal onClick={handleModal} hasButton={true} setIsOpen={handleModal}>
           요청이 올바르지 않습니다.
         </WebModal>
       )}
@@ -244,7 +256,12 @@ const MyInfoContainer = () => {
         <InfoFlexBox>
           {/* 아바타 img */}
           <InfoBox border="1px solid #000000">
-            <InfoImg src={Avartar} />
+            <AvatarCanvas
+              avatar={Avatar}
+              item={accessories[avatarAccessoryIndex]}
+              setAvatarImage={setAvatarImage}
+              width="12rem"
+            />
           </InfoBox>
 
           <Table marginLeft="80px">
@@ -259,7 +276,7 @@ const MyInfoContainer = () => {
                     {editMode ? (
                       <InfoInput
                         type="text"
-                        value={nickname}
+                        value={nickname.split("#")[0]}
                         onChange={handleInputChange}
                         ref={inputRef}
                         placeholder="1~15자의 영어, 한글, 숫자만 입력 가능"
@@ -328,7 +345,5 @@ const MyInfoContainer = () => {
     </>
   );
 };
-
-MyInfoContainer.propTypes = {};
 
 export default MyInfoContainer;

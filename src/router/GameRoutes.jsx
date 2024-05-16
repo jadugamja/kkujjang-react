@@ -14,14 +14,11 @@ const GameRoute = () => {
 
   useEffect(() => {
     setAudioPlay(true);
-    initSocket(
-      () => {},
-      (error) => {
-        setError(error);
-        setIsModalOpen(true);
-        return;
-      }
-    );
+    initSocket((error) => {
+      setError(error);
+      setIsModalOpen(true);
+      return;
+    });
 
     onBanned((bannedData) => {
       setError(bannedData);

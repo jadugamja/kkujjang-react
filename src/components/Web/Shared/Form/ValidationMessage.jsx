@@ -3,7 +3,13 @@ import PropTypes from "prop-types";
 
 import { ValidationMessageWrapper, ValidationMessageP } from "./ValidationMessageStyle";
 
-const ValidationMessage = ({ message, fontSize, fontWeight, color, margin }) => {
+const ValidationMessage = ({
+  message,
+  fontSize = undefined,
+  fontWeight,
+  color,
+  margin
+}) => {
   return (
     <ValidationMessageWrapper>
       <ValidationMessageP

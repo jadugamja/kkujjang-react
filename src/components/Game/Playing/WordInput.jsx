@@ -49,7 +49,7 @@ const WordInput = ({ roundCount, roundTime }) => {
     <WordInputWrapper dir="col" col="center">
       <FirstWordWrapper row="center" col="center">
         {randomWord?.split("").map((char, i) => (
-          <FirstWordSpan key={i} type={i === currRound && "this"}>
+          <FirstWordSpan key={i} type={i === currRound ? "this" : undefined}>
             {char}
           </FirstWordSpan>
         ))}

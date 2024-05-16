@@ -14,10 +14,9 @@ const client = io(SOCKET_URL, {
 });
 
 // ====== 소켓 초기화 ======
-export const initSocket = (callBack, errorCallBack) => {
+export const initSocket = (errorCallBack) => {
   client.on("connect", () => {
     console.log("[log] Connect to the Server...");
-    callBack();
   });
 
   client.on("error", (error) => {
@@ -335,11 +334,8 @@ export const onGameEnd = (callBack) => {
 
 // ====== 소켓 연결 종료 ======
 export const disconnectSocket = () => {
-  debugger;
   if (client.connected) {
     client.disconnect("[log] Disconnected from the Server...");
-    // 재연결 시도
-    // setTimeout(initSocket, 1000);
   }
 };
 

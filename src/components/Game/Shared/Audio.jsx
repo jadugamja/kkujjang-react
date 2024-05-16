@@ -1,12 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useLocation } from "react-router-dom";
 import { audioPlayState, bgVolumeState, fxVolumeState } from "@/recoil/soundState";
 
 const bgm = "/audio/game_background_sound.mp3";
 
 const Audio = () => {
-  const location = useLocation();
   const audioPlay = useRecoilValue(audioPlayState);
   const [bgVolume, setBgVolume] = useRecoilState(bgVolumeState);
   const [fxVolume, setFxVolume] = useRecoilState(fxVolumeState);

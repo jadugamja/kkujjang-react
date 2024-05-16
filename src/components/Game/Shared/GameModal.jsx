@@ -288,6 +288,7 @@ const GameModal = ({
     }
 
     if (roomInfoList.some((room) => room.id === roomId)) {
+      // 방 설정 변경
       let { title, password, maxUserCount, maxRound, roundTimeLimit } = roomInfo;
       password = password || "";
       changeRoomConfig(
@@ -303,6 +304,7 @@ const GameModal = ({
         )
       );
     } else {
+      // 방 생성
       createRoom(roomInfo, () => {
         loadRoom((room) => {
           setRoomNumber(room.roomNumber);

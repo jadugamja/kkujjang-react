@@ -86,16 +86,16 @@ const NoticeListContainer = () => {
 
   return (
     <>
-      <NoticeListBox width="75rem" marginLeft="auto" marginRight="auto">
+      <NoticeListBox width="100%">
         <BoardTitle type="notice" />
-        <NoticeWrapper row="end" marginBottom="25px" marginRight="56px">
+        <NoticeWrapper row="end" marginBottom="25px" marginRight="2.25rem">
           <SearchBar
             searchType="제목"
             setSearchKeyword={setSearchKeyword}
-            $width="24.5rem"
+            $width="26.5rem"
           />
         </NoticeWrapper>
-        <NoticeListBox width="100%" height="fit-content" padding="10px 72px">
+        <NoticeListBox width="100%" height="fit-content" padding="0.625rem 2.625rem">
           {listData?.map((listData, index) => (
             <BoardItem
               boardType="notice"

@@ -1,13 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
+import { Container as LinkWrapper } from "@/styles/StyledComponents";
 import { FlexBox } from "@/styles/FlexStyle";
+import { userInfoState } from "@/recoil/userState";
 
 const HeaderTab = ({ type = "default" }) => {
   const location = useLocation();
+  const user = useRecoilValue(userInfoState);
+  const isAuthenticated = user != null;
+
   const [clickedTab, setClickedTab] = useState(false);
   const tabsRef = useRef([React.createRef(), React.createRef(), React.createRef()]);
 
@@ -30,34 +36,51 @@ const HeaderTab = ({ type = "default" }) => {
   return (
     <TabWrapper
       align="flex-end"
-      width="20rem"
-      row={type === "guest" ? "end" : "between"}
+      width={!isAuthenticated ? "13rem" : "20rem"}
+      row="end"
       onClick={handleClick}
     >
       {type === "clearTab" || type === "detail" ? (
-        <>
-          <BottomLink to="/notice/list">
-            <SpringTab type={type} ref={tabsRef.current[0]} clicked={clickedTab === 0}>
-              공지
-            </SpringTab>
-          </BottomLink>
-          <BottomLink to="/inquiry/list">
-            <SpringTab type={type} ref={tabsRef.current[1]} clicked={clickedTab === 1}>
-              1:1 문의
-            </SpringTab>
-          </BottomLink>
-          <BottomLink to="/member/myInfo">
-            <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
-              내 정보
-            </SpringTab>
-          </BottomLink>
-        </>
+        !isAuthenticated ? (
+          <LinkWrapper $display="flex" $row="between" $width="100%">
+            <BottomLink to="/notice/list">
+              <SpringTab type={type} ref={tabsRef.current[0]} clicked={clickedTab === 0}>
+                공지
+              </SpringTab>
+            </BottomLink>
+            <BottomLink to="/member/login">
+              <SpringTab type="clearTab" $padding="0.75rem 0 0">
+                로그인
+              </SpringTab>
+            </BottomLink>
+          </LinkWrapper>
+        ) : (
+          <LinkWrapper $display="flex" $row="between" $width="100%">
+            <BottomLink to="/notice/list">
+              <SpringTab type={type} ref={tabsRef.current[0]} clicked={clickedTab === 0}>
+                공지
+              </SpringTab>
+            </BottomLink>
+            <BottomLink to="/inquiry/list">
+              <SpringTab type={type} ref={tabsRef.current[1]} clicked={clickedTab === 1}>
+                1:1 문의
+              </SpringTab>
+            </BottomLink>
+            <BottomLink to="/member/myInfo">
+              <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
+                내 정보
+              </SpringTab>
+            </BottomLink>
+          </LinkWrapper>
+        )
       ) : (
-        <BottomLink to="/member/join">
-          <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
-            회원가입
-          </SpringTab>
-        </BottomLink>
+        <LinkWrapper>
+          <BottomLink to="/member/join">
+            <SpringTab type={type} ref={tabsRef.current[2]} clicked={clickedTab === 2}>
+              회원가입
+            </SpringTab>
+          </BottomLink>
+        </LinkWrapper>
       )}
     </TabWrapper>
   );
@@ -87,6 +110,7 @@ const SpringTab = styled(FlexBox).attrs({ row: "center", col: "center" })`
   }};
   border-radius: 15px 15px 0 0;
   padding-top: ${({ type }) => (type === "clearTab" ? "0" : "14px")};
+  padding: ${({ $padding }) => $padding};
   font-family: "Noto Sans KR";
   font-weight: 600;
   font-size: 19px;

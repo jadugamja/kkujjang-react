@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { useNavigate } from "react-router-dom";
 
-import { userInfoState } from "../../recoil/userState";
+import { userInfoState } from "@/recoil/userState";
 import useAxios from "@/hooks/useAxios";
 import FlexBox from "@/styles/FlexStyle";
 import { ContentWrapper, WideContent } from "@/styles/CommonStyle";

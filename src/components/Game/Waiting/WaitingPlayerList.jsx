@@ -49,7 +49,11 @@ const WaitingPlayerList = () => {
               />
             </StatusBox>
           )}
-          <Player avatarUrl={avatarUrl} nickname={player.nickname} level={player.level} />
+          <Player
+            avatarAccessoryIndex={player.avatarAccessoryIndex}
+            nickname={player.nickname}
+            level={player.level}
+          />
           <StatusBox dir="col" row="start">
             <StatusText type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}>
               {player.isHost ? "방장" : player.isReady ? "준비" : "대기"}

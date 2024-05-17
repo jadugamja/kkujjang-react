@@ -318,11 +318,7 @@ const MyInfoContainer = () => {
           </Table>
         </InfoFlexBox>
         <InfoFlexBox col="center" row="between" width="1000px">
-          {/* Link 버튼 */}
-          {/* <Link to="/member/out"> */}
           <InfoLinkButton onClick={handleClickWithdrawal}>회원 탈퇴</InfoLinkButton>
-          {/* </Link> */}
-
           {/* 버튼 */}
           {editMode ? (
             <>

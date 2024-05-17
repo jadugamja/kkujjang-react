@@ -208,7 +208,12 @@ const GameModal = ({
   }, [roomId, roomInfo?.id]);
 
   const onConfirmAvatarUrl = async () => {
-    if (user.nickname === "" || user.avatarUrl === "" || !NICKNAME_REGEX.test(user.nickname)) return;
+    if (
+      user.nickname === "" ||
+      user.avatarUrl === "" ||
+      !NICKNAME_REGEX.test(user.nickname)
+    )
+      return;
 
     const res = await updateCurrentUserAvatar(user.avatarUrl, user.nickname);
 
@@ -222,7 +227,7 @@ const GameModal = ({
         method: "get",
         url: "/user/me",
         headers: { sessionId: cookies.sessionId }
-      })
+      });
       setIsOpen(false);
     }
   };
@@ -283,6 +288,7 @@ const GameModal = ({
     }
 
     if (roomInfoList.some((room) => room.id === roomId)) {
+      // 방 설정 변경
       let { title, password, maxUserCount, maxRound, roundTimeLimit } = roomInfo;
       password = password || "";
       changeRoomConfig(
@@ -298,6 +304,7 @@ const GameModal = ({
         )
       );
     } else {
+      // 방 생성
       createRoom(roomInfo, () => {
         loadRoom((room) => {
           setRoomNumber(room.roomNumber);
@@ -668,7 +675,10 @@ const GameModal = ({
               <ButtonWrapper row="center" col="center" margin="10px 0px 45px">
                 <GameModalButton
                   onClick={() => {
-                    loadRoom();
+                    loadRoom((room) => {
+                      setRoomInfo(room);
+                      waitingPlayerListState(room.userList);
+                    });
                     setIsOpen(false);
                     setIsPlaying(false);
                     // 모든 플레이어의 isReady: false로...

@@ -1,13 +1,36 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import { FlexBox } from "@/styles/FlexStyle";
+import AvatarCanvas from "./AvatarCanvas";
+import avatarUrl from "@/assets/images/avatar.png";
 
-const Player = ({ type = "wait", avatarUrl, nickname, level }) => {
+const accessories = [
+  "",
+  "emo1",
+  "emo2",
+  "eye1",
+  "eye2",
+  "eye3",
+  "head1",
+  "head2",
+  "fx1",
+  "fx2"
+];
+
+const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
+  const [avatarImage, setAvatarImage] = useState(null);
+
   return (
     <PlayerWrapper type={type} dir="col" row="center" col="center">
-      <AvatarImage type={type} src={avatarUrl} />
-      <PlayerInfoWrapper col="center">
+      <AvatarCanvas
+        avatar={avatarUrl}
+        item={accessories[avatarAccessoryIndex]}
+        setAvatarImage={setAvatarImage}
+        width={type === "play" ? "6.75rem" : "7.5rem"}
+      />
+      <PlayerInfoWrapper col="center" type={type}>
         <LevelBadge>{level}</LevelBadge>
         <NicknameText>{nickname}</NicknameText>
       </PlayerInfoWrapper>
@@ -17,7 +40,7 @@ const Player = ({ type = "wait", avatarUrl, nickname, level }) => {
 
 Player.propTypes = {
   type: PropTypes.string,
-  avatarUrl: PropTypes.string,
+  avatarAccessoryIndex: PropTypes.number,
   nickname: PropTypes.string,
   level: PropTypes.number
 };
@@ -27,16 +50,9 @@ const PlayerWrapper = styled(FlexBox)`
   height: ${({ type }) => (type === "play" ? "9.75rem" : "11.2rem")};
 `;
 
-const AvatarImage = styled(FlexBox).attrs({
-  as: "img"
-})`
-  width: ${({ type }) => (type === "play" ? "6.75rem" : "7.25rem")};
-  height: ${({ type }) => type === "play" && "auto"};
-`;
-
 const PlayerInfoWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "7.5rem"};
-  margin-top: 7px;
+  margin-top: ${({ type }) => (type === "play" ? "0" : "7px")};
   font-size: ${(props) => props.size || "16px"};
 `;
 

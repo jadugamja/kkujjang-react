@@ -6,14 +6,14 @@ import PropTypes from "prop-types";
 const BoardTitleWrapper = styled.div`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
+  margin: 4rem 0px 0.625rem 2.5rem;
 `;
 
-const BoardTitleText = styled.p`
+const BoardTitleText = styled.span`
   color: ${(props) => props.color || "#828282"};
   font-family: "Gugi";
   font-size: ${(props) => props.fontSize || "30px"};
   font-weight: ${(props) => props.fontWeight || "500"};
-  margin: 53px 0px 0 64px;
 `;
 
 // ===== component ======

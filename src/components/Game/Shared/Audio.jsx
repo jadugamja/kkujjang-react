@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { audioPlayState, bgVolumeState, fxVolumeState } from "@/recoil/soundState";
+import { PUBLIC_URL } from "@/services/const";
 
-const bgm = "/audio/game_background_sound.mp3";
+const bgm = `${PUBLIC_URL}/audio/game_background_sound.mp3`;
 
 const Audio = () => {
   const audioPlay = useRecoilValue(audioPlayState);

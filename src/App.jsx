@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 const Home = lazy(() => import("./pages/Web/Home"));
 const Signup = lazy(() => import("./pages/Web/Member/Signup"));
 const Find = lazy(() => import("./pages/Web/Member/Find"));
+const ChangePw = lazy(() => import("./pages/Web/Member/ChangePw"));
 const Login = lazy(() => import("./pages/Web/Member/Login"));
 const Redirection = lazy(() => import("./pages/Web/Member/Redirection"));
 const MyInfo = lazy(() => import("./pages/Web/Member/MyInfo"));
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="member/find" element={<Find />} />
             <Route path="member/login" element={<Login />} />
             <Route path="member/myInfo" element={<MyInfo />} />
+            <Route path="member/change-pw" element={<ChangePw />} />
             <Route path="member/kakao" element={<Redirection />} />
 
             <Route path="inquiry/list" element={<InquiryList />} />

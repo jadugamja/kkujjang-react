@@ -36,6 +36,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false); // 전화번호 인증 성공 여부
+  const [isDisabled, setIsDisabled] = useState(false);
 
   // (api 관련)
   const [apiConfig, setApiConfig] = useState(null);
@@ -74,6 +75,9 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
 
   // 입력칸
   const handleChange = (e) => {
+    setIsDisabled(false);
+    setValidMessage("");
+
     const refIndex = numbersRef.findIndex((ref) => ref.current === e.target);
     // 공백 및 숫자 이외의 문자 제거
     e.target.value = e.target.value.replace(/\s|\D/g, "");
@@ -117,7 +121,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
       }
     });
 
-    e.target.disabled = true;
+    setIsDisabled(true);
   };
 
   /*
@@ -183,7 +187,10 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
                 </SuccessBox>
               </>
             ) : (
-              <SmallTransparentButton onClick={(e) => sendPhoneNumber(e)}>
+              <SmallTransparentButton
+                disabled={isDisabled}
+                onClick={(e) => sendPhoneNumber(e)}
+              >
                 인증 요청
               </SmallTransparentButton>
             )}
@@ -202,7 +209,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
         </Label>
       </ItemWrapper>
       <>
-        {!isVerifying && isSentPhoneNumber && (
+        {!isVerifying && isSentPhoneNumber && isDisabled && (
           <ItemWrapper marginBottom="20px">
             <Label>
               인증

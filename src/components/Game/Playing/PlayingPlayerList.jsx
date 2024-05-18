@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
+import { Container as Me } from "@/styles/StyledComponents";
 import Player from "../Shared/Player";
 import { TotalScore, TurnScore } from "../Shared/Score";
 import { playingPlayerListState } from "@/recoil/userState";
-import { balloonMessageState } from "@/recoil/gameState";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
+  const [cookies] = useCookies(["userId"]);
   const playerList = useRecoilValue(playingPlayerListState);
   const balloonMessage = useRecoilValue(balloonMessageState);
   const [isDefeated, setIsDefeated] = useState(false);
@@ -54,6 +59,24 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
             <StyledBalloon>
               <span>{balloonMessage.message}</span>
             </StyledBalloon>
+          )}
+          {cookies && cookies.userId === player.id && (
+            <Me
+              $position="absolute"
+              $left="8px"
+              $display="flex"
+              $row="center"
+              $col="center"
+              $margin="1px 0"
+              $padding="5px"
+              $border="1px solid #522"
+              $borderRadius="50%"
+            >
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ fontSize: "12px", color: "#522" }}
+              />
+            </Me>
           )}
           <Player
             type="play"

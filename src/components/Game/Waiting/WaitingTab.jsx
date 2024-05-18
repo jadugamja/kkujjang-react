@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import PropTypes from "prop-types";
 
 import { gameStart, switchReadyState } from "@/services/socket";
@@ -9,23 +9,16 @@ import { SpacingWrapper } from "../Shared/Layout";
 import { MainTab, Tab } from "../Shared/Tab";
 import Modal from "../Shared/GameModal";
 
-const WaitingTab = ({ isHost, roomId, setIsPlaying }) => {
+const WaitingTab = ({ isHost, roomId }) => {
   const [modalType, setModalType] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const setRoomId = useSetRecoilState(roomIdState);
-  const [waitingPlayerList, setWaitingPlayerList] =
-    useRecoilState(waitingPlayerListState);
+  const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
 
   const onStartGame = () => {
-    if (waitingPlayerList.length < 2) {
-      setModalType("alert");
-      setModalMessage("2명 이상의 플레이어가 필요합니다.");
-      setIsModalOpen(true);
-    } else {
-      gameStart();
-    }
+    gameStart();
   };
 
   const onUpdateRoomConfig = () => {
@@ -84,8 +77,7 @@ WaitingTab.propTypes = {
   isHost: PropTypes.bool,
   isReady: PropTypes.bool,
   setIsReady: PropTypes.func,
-  roomId: PropTypes.string,
-  setIsPlaying: PropTypes.func
+  roomId: PropTypes.string
 };
 
 export default WaitingTab;

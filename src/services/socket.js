@@ -6,7 +6,6 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
-  // transports: ["websocket"],
   reconnection: false,
   extraHeaders: {
     sessionId: cookies.get("sessionId")
@@ -16,7 +15,7 @@ const client = io(SOCKET_URL, {
 // ====== 소켓 초기화 ======
 export const initSocket = (errorCallBack) => {
   client.on("connect", () => {
-    console.log("[log] Connect to the Server...");
+    console.log(`[log] Connect to the Server...`);
   });
 
   client.on("error", (error) => {
@@ -78,7 +77,6 @@ export const createRoom = (roomData, callBack) => {
     callBack();
   });
 
-  client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
   });

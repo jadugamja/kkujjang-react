@@ -197,8 +197,8 @@ const Profile = ({ type = "default", userId, profileInfos = init, isEditMode }) 
                           </>
                         ) : (
                           <ProfileInfo
-                            margin={key !== "nickname" && "0 0 0 15px"}
-                            fontSize={key === "nickname" && "20px"}
+                            margin={key !== "nickname" ? "0 0 0 15px" : "0"}
+                            fontSize={key === "nickname" ? "20px" : undefined}
                           >
                             {value}
                           </ProfileInfo>
@@ -304,13 +304,6 @@ const ProfileInfoKey = styled.span``;
 const ProfileInfo = styled.span`
   margin: ${({ margin }) => margin};
   font-size: ${({ fontSize }) => fontSize};
-`;
-
-const AvatarImage = styled(FlexBox).attrs({
-  as: "img"
-})`
-  width: ${(props) => (props.type === "player" ? "7.75rem" : "5.3rem")};
-  height: ${(props) => (props.type === "player" ? "auto" : "")};
 `;
 
 // ============ Exp ============

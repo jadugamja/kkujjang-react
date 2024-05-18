@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { useRecoilValue } from "recoil";
-import PropTypes from "prop-types";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { waitingPlayerListState } from "@/recoil/userState";
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
 import Player from "../Shared/Player";
-import avatarUrl from "@/assets/images/avatar.png";
 import Modal from "../Shared/GameModal";
-import { useCookies } from "react-cookie";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const WaitingPlayerList = () => {
-  const playerList = useRecoilValue(waitingPlayerListState);
   const [cookies] = useCookies(["userId"]);
+  const playerList = useRecoilValue(waitingPlayerListState);
   const [userId, setUserId] = useState(null);
   const [modalType, setModalType] = useState("profile");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +26,7 @@ const WaitingPlayerList = () => {
 
   return (
     <GridBox items="4" gap="10px" margin="10px 4px 6px">
-      {playerList?.map((player, idx) => (
+      {playerList?.map((player) => (
         <PlayerWrapper
           key={player.userId}
           type={player.isHost ? "host" : player.isReady ? "ready" : "wait"}

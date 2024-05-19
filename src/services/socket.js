@@ -6,7 +6,6 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
-  // transports: ["websocket"],
   reconnection: false,
   extraHeaders: {
     sessionId: cookies.get("sessionId")
@@ -16,7 +15,7 @@ const client = io(SOCKET_URL, {
 // ====== 소켓 초기화 ======
 export const initSocket = (errorCallBack) => {
   client.on("connect", () => {
-    console.log("[log] Connect to the Server...");
+    console.log(`[log] Connect to the Server...`);
   });
 
   client.on("error", (error) => {
@@ -69,18 +68,24 @@ export const onUpdateRoomConfig = (callBack) => {
 };
 
 // ====== 방 생성 ======
-export const createRoom = (roomData, callBack) => {
+export const createRoom = (roomData, callBack, errorCallBack) => {
   client.emit("create room", roomData);
+
+  // 소켓 서버 무응답 대처
+  let timeout = setTimeout(() => {
+    errorCallBack(new Error("서버와의 연결 시간이 초과되었습니다."));
+  }, 2000);
 
   client.off("complete create room");
   client.on("complete create room", () => {
+    clearTimeout(timeout);
     console.log("[log] complete create room...");
     callBack();
   });
 
-  client.off("error");
   client.on("error", (error) => {
-    console.error(`[Error]: ${error}`);
+    clearTimeout(timeout);
+    errorCallBack(error);
   });
 };
 
@@ -162,14 +167,21 @@ export const onLoadRoom = (callBack, errorCallBack) => {
 export const leaveRoom = (callBack, errorCallBack) => {
   client.emit("leave room");
 
+  // 소켓 서버 무응답 대처
+  let timeout = setTimeout(() => {
+    errorCallBack(new Error("서버와의 연결 시간이 초과되었습니다."));
+  }, 2000);
+
   client.off("complete leave room");
   client.on("complete leave room", () => {
+    clearTimeout(timeout);
     console.log("[log] complete leave room... ");
     callBack();
   });
 
   client.off("error");
   client.on("error", (error) => {
+    clearTimeout(timeout);
     console.error(`[Error]: ${error}`);
     if (errorCallBack) errorCallBack(error);
   });

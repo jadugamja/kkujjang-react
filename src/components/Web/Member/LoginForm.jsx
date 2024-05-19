@@ -17,7 +17,7 @@ import FormTitle from "@/components/Web/Shared/Form/FormTitle";
 import InputField from "@/components/Web/Shared/Form/InputField";
 import Button from "@/components/Web/Shared/Buttons/Button";
 import ValidationMessage from "@/components/Web/Shared/Form/ValidationMessage";
-import { getCurrentUserInfo } from "../../../services/user";
+import { getCurrentUserInfo } from "@/services/user";
 
 // ===== component ======
 const LoginForm = () => {
@@ -143,7 +143,7 @@ const LoginForm = () => {
 
           {/* 로그인 button */}
           <LoginFormFlexContainer marginTop="18px" marginBottom="6px">
-            <Button type="bigBrown" message="로그인" onClick={handleLogin}></Button>
+            <Button type="bigBrown" message="로그인"></Button>
           </LoginFormFlexContainer>
 
           {/* Link button */}

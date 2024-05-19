@@ -1,17 +1,10 @@
-import styled from "styled-components";
-import { FlexBox } from "@/styles/FlexStyle";
+import { Container as TabWrapper } from "@/styles/StyledComponents";
 import { Tab } from "@/components/Game/Shared/Tab";
 
 const PlayingTab = () => (
-  <TabWrapper>
+  <TabWrapper $display="flex" $horizontalGap="5px">
     <Tab type="playing">게임중</Tab>
   </TabWrapper>
 );
-
-const TabWrapper = styled(FlexBox)`
-  & > * + * {
-    margin-left: 5px;
-  }
-`;
 
 export default PlayingTab;

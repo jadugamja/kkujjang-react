@@ -56,7 +56,6 @@ const GameModal = ({
   setIsPlaying,
   userId,
   roomId,
-  setIsDataFetched,
   height = "",
   children
 }) => {
@@ -77,6 +76,8 @@ const GameModal = ({
   const [avatarImage, setAvatarImage] = useState(null);
   const [currAvatar, setCurrAvatar] = useState(0);
   const [isProfileEditMode, setIsProfileEditMode] = useState(null);
+
+  const [errorSource, setErrorSource] = useState(null);
   const [modalMessage, setModalMessage] = useState("");
 
   const [cookies, setCookie] = useCookies(["sessionId", "userId"]);
@@ -103,7 +104,7 @@ const GameModal = ({
       break;
     case "room":
       titleText = !roomId ? "방 만들기" : "방 설정";
-      height = "28.3rem";
+      height = "28rem";
       break;
     case "profile":
       titleText = !isProfileEditMode ? "프로필" : "프로필 수정";
@@ -126,7 +127,7 @@ const GameModal = ({
       height = "20rem";
       break;
     case "error":
-      titleText = "경고";
+      titleText = children.includes("홈") ? "경고" : "오류";
       height !== "" ? height : "18rem";
       break;
   }
@@ -305,15 +306,25 @@ const GameModal = ({
       );
     } else {
       // 방 생성
-      createRoom(roomInfo, () => {
-        loadRoom((room) => {
-          setRoomNumber(room.roomNumber);
-          setRoomId(room.id);
-          setRoomInfo(room);
-          setCookie("userId", room.roomOwnerUserId, { path: "/" });
-          setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
-        });
-      });
+      createRoom(
+        roomInfo,
+        () => {
+          loadRoom((room) => {
+            setRoomNumber(room.roomNumber);
+            setRoomId(room.id);
+            setRoomInfo(room);
+            setCookie("userId", room.roomOwnerUserId, { path: "/" });
+            setUser((prev) => ({ userId: room.roomOwnerUserId, ...prev }));
+          });
+        },
+        (err) => {
+          setType("error");
+          let message = err.message;
+          if (message.startsWith("Error")) message = message.slice(7);
+          setModalMessage(message);
+          setErrorSource("room");
+        }
+      );
     }
   };
 
@@ -346,17 +357,36 @@ const GameModal = ({
 
   // ====== exit ======
   const onExitRoom = () => {
-    leaveRoom(() => {
-      setWaitingPlayerList(null);
-      setIsOpen(false);
-      navigate("/game");
-    });
+    leaveRoom(
+      () => {
+        setWaitingPlayerList(null);
+        setIsOpen(false);
+        navigate("/game");
+      },
+      (err) => {
+        setType("error");
+        let message = err.message;
+        if (message.startsWith("Error")) message = message.slice(7);
+        setModalMessage(message);
+        setErrorSource("room");
+      }
+    );
   };
 
   const onSaveVolume = () => {
     localStorage.setItem("bgVolume", bgCurrVolume.toString());
     localStorage.setItem("fxVolume", fxCurrVolume.toString());
     setIsOpen(false);
+  };
+
+  // ====== error ======
+  const onErrorHandler = () => {
+    setIsOpen(false);
+    if (errorSource === "room") {
+      navigate("/game");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -694,17 +724,10 @@ const GameModal = ({
           {type === "error" && (
             <GameModalBody top="43px">
               <GameModalMessage fontSize="20px" fontWeight="500">
-                {children}
+                {modalMessage ? modalMessage : children}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
-                <GameModalButton
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate("/");
-                  }}
-                >
-                  확인
-                </GameModalButton>
+                <GameModalButton onClick={onErrorHandler}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}
@@ -735,7 +758,6 @@ GameModal.propTypes = {
   setIsPlaying: PropTypes.func,
   userId: PropTypes.number,
   roomId: PropTypes.string,
-  setIsDataFetched: PropTypes.func,
   height: PropTypes.string,
   children: PropTypes.node
 };

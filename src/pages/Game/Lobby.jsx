@@ -1,10 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useState, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import { useLocation } from "react-router-dom";
-import { avatarUrlState } from "../../recoil/userState";
-import io from "socket.io-client";
-import { Cookies } from "react-cookie";
-import { SOCKET_URL } from "@/services/const";
 
 import { roomInfoState } from "@/recoil/roomState";
 import GameHeader from "@/components/Game/Shared/GameHeader";
@@ -30,7 +26,6 @@ import {
   onUpdateRoomConfig,
   onError
 } from "@/services/socket";
-import { getCurrentUserInfo } from "@/services/user";
 
 const Lobby = () => {
   const [rooms, setRooms] = useState([]);
@@ -83,15 +78,6 @@ const Lobby = () => {
     }
 
     isMounted = true;
-  }, []);
-
-  const getUserInfo = useCallback(async () => {
-    const userInfo = await getCurrentUserInfo();
-    debugger;
-    if (userInfo.avatarUrl === null) {
-      setModalType(null);
-      setIsModalOpen(false);
-    }
   }, []);
 
   return (

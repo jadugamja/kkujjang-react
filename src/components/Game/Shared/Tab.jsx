@@ -100,11 +100,13 @@ MainTab.propTypes = {
 export const Tab = ({ children, type, rooms, onClick }) => {
   const setRoomInfo = useSetRecoilState(roomInfoState);
   const setUser = useSetRecoilState(userInfoState);
+  const [modalType, setModalType] = useState(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [, setCookie] = useCookies(["userId"]);
   const navigate = useNavigate();
 
   const onCreateRoom = useCallback(() => {
+    setModalType("room");
     setIsModalOpen(true);
   }, []);
 
@@ -117,6 +119,7 @@ export const Tab = ({ children, type, rooms, onClick }) => {
     );
 
     if (availableRooms.length === 0) {
+      setModalType("alert");
       setIsModalOpen(true);
     } else {
       const pickedRoom =
@@ -138,14 +141,13 @@ export const Tab = ({ children, type, rooms, onClick }) => {
           });
         },
         (error) => {
-          // setModalType("error");
-          // setModalMessage(error);
+          setModalType("error");
+          setModalMessage(error.message);
         }
       );
 
       onUserJoinRoom((userId) => {
         // 방에 참가한 사용자의 userId를 배열에 추가
-        debugger;
         console.log(userId);
       });
       // setRoomId(pickedRoom.id);
@@ -174,7 +176,8 @@ export const Tab = ({ children, type, rooms, onClick }) => {
       </StyledTab>
       {isModalOpen ? (
         <Modal
-          type={TAB_TEXTS[type].type}
+          type={modalType || TAB_TEXTS[type].type}
+          setType={setModalType}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           height={TAB_TEXTS[type]?.height}

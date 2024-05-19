@@ -64,6 +64,7 @@ const getIcon = (type) => {
 };
 
 export const Button = ({ type, location }) => {
+  const [modalType, setModalType] = useState(type);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getMessage = (type) => {
@@ -80,7 +81,13 @@ export const Button = ({ type, location }) => {
         <StyledButtonIcon type={type} icon={getIcon(type)} />
       </StyledSmallButton>
       {isModalOpen ? (
-        <Modal type={type} isOpen={isModalOpen} setIsOpen={setIsModalOpen} height="14rem">
+        <Modal
+          type={modalType}
+          setType={setModalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          height="14rem"
+        >
           {getMessage(type)}
         </Modal>
       ) : null}

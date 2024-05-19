@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Spinner from "./components/Web/Shared/Layout/Spinner";
+import Loader from "./components/Web/Shared/Layout/Loader";
 
 const Home = lazy(() => import("./pages/Web/Home"));
 const Signup = lazy(() => import("./pages/Web/Member/Signup"));
@@ -23,7 +23,7 @@ const GameRoutes = lazy(() => import("./router/GameRoutes"));
 
 const App = () => {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={<Loader />}>
       <Routes>
         <Route exact path="/" element={<Home />}>
           <Route path="member/join" element={<Signup />} />

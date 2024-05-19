@@ -73,8 +73,8 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
     }
   }, [response]);
 
-  // 입력칸
-  const handleChange = (e) => {
+  // 전화번호 입력칸
+  const handlePhoneNumberChange = (e) => {
     setIsDisabled(false);
     setValidMessage("");
 
@@ -96,6 +96,12 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
     if (refIndex === 2 && e.target.value.length > 4) {
       e.target.value = e.target.value.slice(0, 4);
     }
+  };
+
+  // 인증번호 입력칸
+  const handleVerificationCodeChange = (e) => {
+    // 공백 및 숫자 이외의 문자 제거
+    e.target.value = e.target.value.replace(/\s|\D/g, "");
 
     if (verificationRef.current === e.target && e.target.value.length > 6) {
       e.target.value = e.target.value.slice(0, 6);
@@ -170,7 +176,11 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
         <Label width="100%">
           전화번호
           <ItemWrapper row="between" col="center" marginTop="5px">
-            <InputFieldsWrapper row="between" col="center" onChange={handleChange}>
+            <InputFieldsWrapper
+              row="between"
+              col="center"
+              onChange={handlePhoneNumberChange}
+            >
               <PhoneNumberInput type="text" placeholder="010" ref={numbersRef[0]} />
               <Seperator>-</Seperator>
               <PhoneNumberInput type="text" placeholder="1234" ref={numbersRef[1]} />
@@ -217,7 +227,7 @@ const PhoneNumberAuth = ({ onVerificationResult }) => {
                 row="start"
                 col="center"
                 marginTop="5px"
-                onChange={handleChange}
+                onChange={handleVerificationCodeChange}
               >
                 <VerificationInput
                   type="text"

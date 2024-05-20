@@ -297,6 +297,13 @@ const GameModal = ({
         (room) => {
           setRoomInfo(room);
           setIsOpen(false);
+        },
+        (err) => {
+          setType("error");
+          let message = err.message;
+          if (message?.startsWith("Error")) message = message.slice(7);
+          setModalMessage(message ? message : err);
+          setErrorSource("room");
         }
       );
       setRoomInfoList((prev) =>
@@ -320,8 +327,8 @@ const GameModal = ({
         (err) => {
           setType("error");
           let message = err.message;
-          if (message.startsWith("Error")) message = message.slice(7);
-          setModalMessage(message);
+          if (message?.startsWith("Error")) message = message.slice(7);
+          setModalMessage(message ? message : err);
           setErrorSource("room");
         }
       );
@@ -366,8 +373,8 @@ const GameModal = ({
       (err) => {
         setType("error");
         let message = err.message;
-        if (message.startsWith("Error")) message = message.slice(7);
-        setModalMessage(message);
+        if (message?.startsWith("Error")) message = message.slice(7);
+        setModalMessage(message ? message : err);
         setErrorSource("room");
       }
     );

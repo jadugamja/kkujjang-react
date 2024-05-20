@@ -6,6 +6,7 @@ const cookies = new Cookies();
 
 const client = io(SOCKET_URL, {
   path: "/game/socket.io/",
+  // transports: ["websocket"],
   reconnection: false,
   extraHeaders: {
     sessionId: cookies.get("sessionId")
@@ -90,13 +91,24 @@ export const createRoom = (roomData, callBack, errorCallBack) => {
 };
 
 // ====== 방 수정 ======
-export const changeRoomConfig = (roomData, callBack) => {
+export const changeRoomConfig = (roomData, callBack, errorCallBack) => {
   client.emit("change room config", roomData);
+
+  // 소켓 서버 무응답 대처
+  let timeout = setTimeout(() => {
+    errorCallBack(new Error("서버와의 연결 시간이 초과되었습니다."));
+  }, 2000);
 
   client.off("complete change room config");
   client.on("complete change room config", (room) => {
+    clearTimeout(timeout);
     console.log("[log] complete change room config: ", room);
     callBack(room);
+  });
+
+  client.on("error", (error) => {
+    clearTimeout(timeout);
+    errorCallBack(error);
   });
 };
 
@@ -229,7 +241,7 @@ export const onSwitchReadyState = (callBack) => {
 };
 
 // ====== 게임 시작 ======
-export const gameStart = () => {
+export const gameStart = (errorCallBack) => {
   client.emit("game start");
 };
 

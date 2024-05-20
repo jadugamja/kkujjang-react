@@ -28,16 +28,16 @@ const GameRoute = () => {
         setIsModalOpen(true);
         return;
       });
-    }
 
-    return () => {
-      setAudioPlay(false);
-      disconnectSocket();
-    };
+      return () => {
+        setAudioPlay(false);
+        disconnectSocket();
+      };
+    }
   }, [location]);
 
   return (
-    <Routes>
+    <>
       {isModalOpen && (
         <Modal
           type="error"
@@ -48,9 +48,11 @@ const GameRoute = () => {
           {errorMessage}
         </Modal>
       )}
-      <Route path="/" element={<Lobby />} />
-      <Route path=":roomId" element={<GameRoom />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<Lobby />} />
+        <Route path=":roomId" element={<GameRoom />} />
+      </Routes>
+    </>
   );
 };
 

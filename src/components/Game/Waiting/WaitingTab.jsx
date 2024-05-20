@@ -18,7 +18,12 @@ const WaitingTab = ({ isHost, roomId }) => {
   const setWaitingPlayerList = useSetRecoilState(waitingPlayerListState);
 
   const onStartGame = () => {
-    gameStart();
+    gameStart((err) => {
+      setModalType("error");
+      let message = err.message;
+      if (message.startsWith("Error")) message = message.slice(7);
+      setModalMessage(message);
+    });
   };
 
   const onUpdateRoomConfig = () => {
@@ -61,6 +66,7 @@ const WaitingTab = ({ isHost, roomId }) => {
       {isModalOpen ? (
         <Modal
           type={modalType}
+          setType={setModalType}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={roomId}

@@ -19,7 +19,7 @@ export const GameModalContent = styled(FlexBox)`
   left: 50%;
   transform: translate(-50%, -50%);
   width: ${(props) => props.width || "26rem"};
-  height: ${(props) => props.height || "15.625rem"};
+  height: ${(props) => props.height || "14.8rem"};
   border-radius: ${(props) => props.borderRadius || "10px"};
   background-color: #23282d;
   z-index: 11;

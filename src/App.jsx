@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
-import ErrorBoundary from "./components/ErrorBoundary";
 import Loader from "./components/Web/Shared/Layout/Loader";
 
 const Home = lazy(() => import("./pages/Web/Home"));
@@ -43,11 +42,7 @@ const App = () => {
           <Route path="admin/report" element={<ReportManagement />} />
           <Route path="admin/user" element={<UserManagement />} />
         </Route>
-        <Route
-          path="/game/*"
-          element={<GameRoutes />}
-          errorElement={<ErrorBoundary path="/game" />}
-        />
+        <Route path="/game/*" element={<GameRoutes />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

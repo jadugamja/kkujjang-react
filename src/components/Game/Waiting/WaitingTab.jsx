@@ -61,6 +61,7 @@ const WaitingTab = ({ isHost, roomId }) => {
       {isModalOpen ? (
         <Modal
           type={modalType}
+          setType={setModalType}
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
           roomId={roomId}

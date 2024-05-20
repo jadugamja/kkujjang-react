@@ -241,7 +241,7 @@ export const onSwitchReadyState = (callBack) => {
 };
 
 // ====== 게임 시작 ======
-export const gameStart = (errorCallBack) => {
+export const gameStart = () => {
   client.emit("game start");
 };
 

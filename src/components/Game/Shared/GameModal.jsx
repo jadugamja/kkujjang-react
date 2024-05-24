@@ -127,7 +127,7 @@ const GameModal = ({
       height = "20rem";
       break;
     case "error":
-      titleText = children.includes("홈") ? "경고" : "오류";
+      titleText = children.toString().includes("홈") ? "경고" : "오류";
       height !== "" ? height : "18rem";
       break;
   }
@@ -714,11 +714,10 @@ const GameModal = ({
                   onClick={() => {
                     loadRoom((room) => {
                       setRoomInfo(room);
-                      waitingPlayerListState(room.userList);
+                      setWaitingPlayerList(room.userList);
                     });
                     setIsOpen(false);
                     setIsPlaying(false);
-                    // 모든 플레이어의 isReady: false로...
                   }}
                 >
                   확인

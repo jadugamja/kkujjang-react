@@ -15,26 +15,26 @@ const GameRoute = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (location.pathname.startsWith("/game")) {
-      setAudioPlay(true);
-      initSocket((error) => {
-        setErrorMessage(error);
-        setIsModalOpen(true);
-        return;
-      });
+    setAudioPlay(true);
+    initSocket((error) => {
+      let message = error.message;
+      if (message?.startsWith("Error")) message = message.slice(7);
+      setErrorMessage(message ? message : error);
+      setIsModalOpen(true);
+      return;
+    });
 
-      onBanned((bannedData) => {
-        setErrorMessage(bannedData);
-        setIsModalOpen(true);
-        return;
-      });
+    onBanned((bannedData) => {
+      setErrorMessage(bannedData);
+      setIsModalOpen(true);
+      return;
+    });
 
-      return () => {
-        setAudioPlay(false);
-        disconnectSocket();
-      };
-    }
-  }, [location]);
+    return () => {
+      setAudioPlay(false);
+      disconnectSocket();
+    };
+  }, []);
 
   return (
     <>

@@ -12,8 +12,6 @@ import PlayingTab from "@/components/Game/Playing/PlayingTab";
 import WaitingContainer from "@/components/Game/Waiting/WaitingContainer";
 import PlayingContainer from "@/components/Game/Playing/PlayingContainer";
 import {
-  initSocket,
-  disconnectSocket,
   loadRoom,
   onLoadRoom,
   onChangeRoomConfig,
@@ -71,7 +69,6 @@ const GameRoom = () => {
   let isMounted = false;
 
   useEffect(() => {
-    //   if (isMounted) return;
     setWaitingPlayerList(roomInfo?.userList);
     setIsPlaying(roomInfo?.state === "playing" ? true : false);
 

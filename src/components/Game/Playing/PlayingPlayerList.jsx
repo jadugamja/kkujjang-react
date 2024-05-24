@@ -5,12 +5,13 @@ import PropTypes from "prop-types";
 import styled, { keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { Container as Me } from "@/styles/StyledComponents";
 import { FlexBox } from "@/styles/FlexStyle";
 import GridBox from "@/styles/GridStyle";
-import { Container as Me } from "@/styles/StyledComponents";
 import Player from "../Shared/Player";
 import { TotalScore, TurnScore } from "../Shared/Score";
 import { playingPlayerListState } from "@/recoil/userState";
+import { balloonMessageState } from "@/recoil/gameState";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
@@ -35,15 +36,16 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
     }
   }, [defeatedPlayerIndex]);
 
-  useEffect(() => {
-    if (balloonMessage !== null) {
-      setIsBalloonShown(true);
-      const timer = setTimeout(() => {
-        setIsBalloonShown(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [balloonMessage]);
+  // 말풍선 임시 주석 처리
+  // useEffect(() => {
+  //   if (balloonMessage !== null) {
+  //     setIsBalloonShown(true);
+  //     const timer = setTimeout(() => {
+  //       setIsBalloonShown(false);
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [balloonMessage]);
 
   return (
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
@@ -55,11 +57,11 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
           myTurn={player.myTurn}
           defeated={isDefeated[idx]}
         >
-          {isBalloonShown && balloonMessage.userId === player.id && (
+          {/*isBalloonShown && balloonMessage.userId === player.id && (
             <StyledBalloon>
               <span>{balloonMessage.message}</span>
             </StyledBalloon>
-          )}
+          )*/}
           {cookies && cookies.userId === player.id && (
             <Me
               $position="absolute"

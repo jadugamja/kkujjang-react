@@ -8,6 +8,7 @@ import { itemIdState, selectedBoardItemIdState } from "@/recoil/boardState";
 
 const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
   const [selectedId, setSelectedId] = useRecoilState(selectedBoardItemIdState);
+  const [isActiveUser, setIsActiveUser] = useState(true);
   const setItemId = useSetRecoilState(itemIdState); // 게시물 id
   const [header, setHeader] = useState([]);
 
@@ -204,7 +205,7 @@ const ManagementList = ({ isHome, title, data = [], onSideOpen }) => {
                     if (key === "isBanned")
                       return (
                         <TdCenter key={key} paddingLeft={isHome ? "1rem" : "2rem"}>
-                          <ProfileActiveToggle isActive={!value} />
+                          <ProfileActiveToggle isActive={!value} setIsActive={setIsActiveUser} />
                         </TdCenter>
                       );
                     if (key === "needAnswer")

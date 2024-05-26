@@ -1,9 +1,9 @@
-import React from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import WebModal from "./Web/Shared/Modal/WebModal";
 import GameModal from "./Game/Shared/GameModal";
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, isOpen: false };

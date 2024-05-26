@@ -4,14 +4,18 @@ import { SOCKET_URL } from "./const";
 
 const cookies = new Cookies();
 
-const client = io(SOCKET_URL, {
-  path: "/game/socket.io/",
-  // transports: ["websocket"],
-  reconnection: false,
-  extraHeaders: {
-    sessionId: cookies.get("sessionId")
-  }
-});
+const connectSocket = () => {
+  return io(SOCKET_URL, {
+    path: "/game/socket.io/",
+    // transports: ["websocket"],
+    reconnection: false,
+    extraHeaders: {
+      sessionId: cookies.get("sessionId")
+    }
+  });
+};
+
+const client = connectSocket();
 
 // ====== 소켓 초기화 ======
 export const initSocket = (errorCallBack) => {
@@ -19,7 +23,13 @@ export const initSocket = (errorCallBack) => {
     console.log(`[log] Connect to the Server...`);
   });
 
+  // 소켓 서버 무응답 대처
+  // let timeout = setTimeout(() => {
+  //   errorCallBack(new Error("서버와의 연결이 끊어졌습니다."));
+  // }, 2000);
+
   client.on("error", (error) => {
+    // clearTimeout(timeout);
     console.error(`[Error]: ${error}`);
     if (!!errorCallBack) errorCallBack(error);
   });
@@ -359,7 +369,9 @@ export const onGameEnd = (callBack) => {
 // ====== 소켓 연결 종료 ======
 export const disconnectSocket = () => {
   if (client.connected) {
-    client.disconnect("[log] Disconnected from the Server...");
+    client.disconnect(() => {
+      console.log("[log] Disconnected from the Server...");
+    });
   }
 };
 

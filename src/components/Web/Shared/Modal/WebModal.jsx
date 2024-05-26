@@ -9,17 +9,17 @@ import {
   ModalContent,
   ModalMessage,
   BanWrapper,
-  BanInputWrapper,
   BanInput,
-  BanTextAreaWrapper,
   BanTextArea,
   BanButtonWrapper,
   BanButton,
   ButtonContainer
 } from "./WebModalStyle";
+import { Container as ContentWrapper } from "@/styles/StyledComponents";
 import Button from "../Buttons/Button.jsx";
 import { SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
-import { POST_TITLE_REGEX } from "../../../../services/regexp.js";
+import { POST_TITLE_REGEX } from "@/services/regexp.js";
+import ValidationMessage from "../Form/ValidationMessage.jsx";
 
 const WebModal = ({
   onClick,
@@ -30,6 +30,7 @@ const WebModal = ({
   handleWithdrawal,
   children
 }) => {
+  const [isEmptyMessage, setIsEmptyMessage] = useState(false);
   const [bannedDays, setBannedDays] = useState(1);
   const [bannedReason, setBannedReason] = useState("");
 
@@ -56,6 +57,12 @@ const WebModal = ({
 
       setBannedDays(v);
     } else if (t.type === "textarea") {
+      if (v.length !== 0) {
+        setIsEmptyMessage(false);
+      } else {
+        setIsEmptyMessage(true);
+      }
+
       if (v.length > t.maxLength || !POST_TITLE_REGEX.test(v)) {
         return;
       }
@@ -64,17 +71,30 @@ const WebModal = ({
     }
   };
 
+  const onValidateSubmit = (e) => {
+    e.preventDefault();
+
+    if (bannedReason.length === 0 && !isEmptyMessage) {
+      setIsEmptyMessage(true);
+      return;
+    } else {
+      onClick(bannedDays, bannedReason);
+    }
+  };
+
   return (
     <>
       <ModalBackground onClick={() => setIsOpen(false)}></ModalBackground>
-      <ModalWrapper>
+      <ModalWrapper width={isBan ? "30rem" : "26rem"}>
         <ModalHeader row="end" col="center">
           <ExitMiniCircle onClick={() => setIsOpen(false)}></ExitMiniCircle>
         </ModalHeader>
         <ModalContent dir="col" row="center" col="center" height={isBan && "25.438rem"}>
           {hasButton && (
             <>
-              <ModalMessage>{children}</ModalMessage>
+              <ContentWrapper $display="flex" $col="center" $height="6.25rem">
+                <ModalMessage>{children}</ModalMessage>
+              </ContentWrapper>
               {isWithdrawal ? (
                 <ButtonContainer row="evenly">
                   <Button
@@ -96,9 +116,9 @@ const WebModal = ({
             </>
           )}
           {isBan && (
-            <BanWrapper col="center">
-              <BanInputWrapper>
-                <ModalMessage paddingRight="15px">밴 일수</ModalMessage>
+            <BanWrapper col="center" onSubmit={onValidateSubmit}>
+              <ContentWrapper $display="flex" $row="between" $col="center">
+                <ModalMessage>밴 일수</ModalMessage>
                 <BanInput
                   type="number"
                   min={1}
@@ -107,22 +127,23 @@ const WebModal = ({
                   value={bannedDays}
                   onChange={onValidateChange}
                 />
-              </BanInputWrapper>
-              <BanTextAreaWrapper>
-                <ModalMessage paddingRight="15px">밴 사유</ModalMessage>
+              </ContentWrapper>
+              <ContentWrapper $display="flex" $row="between" $margin="1.25rem 0 0">
+                <ModalMessage>밴 사유</ModalMessage>
                 <BanTextArea
                   maxLength={100}
                   value={bannedReason}
                   onChange={onValidateChange}
                 />
-              </BanTextAreaWrapper>
+              </ContentWrapper>
+              {isEmptyMessage && (
+                <ValidationMessage
+                  margin="0.625rem 0 0 6.25rem"
+                  message="밴 사유를 입력해주세요."
+                />
+              )}
               <BanButtonWrapper row="center">
-                <BanButton
-                  onClick={() => onClick(bannedDays, bannedReason)}
-                  width="11rem"
-                >
-                  사용자 비활성화
-                </BanButton>
+                <BanButton width="11rem">사용자 비활성화</BanButton>
               </BanButtonWrapper>
             </BanWrapper>
           )}

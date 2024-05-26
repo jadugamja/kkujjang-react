@@ -20,10 +20,11 @@ import Modal from "../Shared/Modal/WebModal";
 import useAxios from "@/hooks/useAxios";
 
 const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }) => {
-  const { id, title, content, created_at, views, files } = data;
+  let { id, title, content, created_at, views, files } = data;
   const [cookies] = useCookies(["sessionId"]);
+  const [detailedContent, setDetailedContent] = useState(null);
   const [editTitle, setEditTitle] = useState(title);
-  const [editContent, setEditContent] = useState(content);
+  const [editContent, setEditContent] = useState(detailedContent);
   const [editImages, setEditImages] = useState([]);
   const setIsActiveSideContentType = useSetRecoilState(isActiveSideContentTypeState);
   const setRemoteApiConfig = useSetRecoilState(remoteApiConfigState);
@@ -35,6 +36,23 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }
   const contentRef = useRef();
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (files && files.length > 0) {
+      let fileIndex = 0;
+
+      content = content.replace(/<img src=\"\"/g, (match) => {
+        if (fileIndex < files.length) {
+          let newImg = `<img src="${files[fileIndex]}"`;
+          fileIndex++;
+          return newImg;
+        } else {
+          return match;
+        }
+      });
+    }
+    setDetailedContent(content);
+  }, [data]);
 
   useEffect(() => {
     if (apiConfig !== null) {
@@ -122,18 +140,6 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }
     });
   };
 
-  // 서버에서 받은 데이터의 이미지 url을 img src 속성에 적용 (수정 예정)
-  useEffect(() => {
-    if (contentRef.current) {
-      const imgElements = contentRef.current.querySelectorAll("img");
-      imgElements.forEach((img, index) => {
-        if (files !== null && files[index]) {
-          img.src = files[index];
-        }
-      });
-    }
-  }, [content, files]);
-
   const renderDetailView = () => (
     <>
       <HeaderTextWrapper dir="col">
@@ -155,7 +161,7 @@ const NoticeManagementDetail = ({ data, isEditMode, setIsEditMode, fetchDetail }
         <ReactQuill
           style={{ height: "32rem" }}
           theme="snow"
-          value={content}
+          value={detailedContent}
           readOnly={true}
           modules={{ toolbar: false }}
         />

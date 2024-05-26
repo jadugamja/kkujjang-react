@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState, useSetRecoilState, useRecoilValue } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
@@ -45,7 +45,7 @@ import {
   loadRoom
 } from "@/services/socket";
 import useAxios from "@/hooks/useAxios";
-import { getPlayerInfoByUserId, updateCurrentUserAvatar } from "@/services/user";
+import { updateCurrentUserAvatar } from "@/services/user";
 import { NICKNAME_REGEX, SPECIAL_CHARACTERS_REGEX } from "@/services/regexp";
 
 const GameModal = ({
@@ -84,6 +84,9 @@ const GameModal = ({
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
+  // router
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   let titleText = "";
 
   switch (type) {
@@ -127,7 +130,7 @@ const GameModal = ({
       height = "20rem";
       break;
     case "error":
-      titleText = children.toString().includes("홈") ? "경고" : "오류";
+      titleText = "오류";
       height !== "" ? height : "18rem";
       break;
   }
@@ -255,7 +258,6 @@ const GameModal = ({
   };
 
   // ====== room ======
-  const navigate = useNavigate();
   const onValidateChange = (e) => {
     const t = e.target;
     let v = parseInt(t.value);
@@ -363,21 +365,26 @@ const GameModal = ({
   };
 
   // ====== exit ======
-  const onExitRoom = () => {
-    leaveRoom(
-      () => {
-        setWaitingPlayerList(null);
-        setIsOpen(false);
-        navigate("/game");
-      },
-      (err) => {
-        setType("error");
-        let message = err.message;
-        if (message?.startsWith("Error")) message = message.slice(7);
-        setModalMessage(message ? message : err);
-        setErrorSource("room");
-      }
-    );
+  const onExitRouteBack = () => {
+    if (pathname !== "/game") {
+      leaveRoom(
+        () => {
+          setWaitingPlayerList(null);
+          setIsOpen(false);
+          navigate("/game");
+        },
+        (err) => {
+          setType("error");
+          let message = err.message;
+          if (message?.startsWith("Error")) message = message.slice(7);
+          setModalMessage(message ? message : err);
+          setErrorSource("room");
+        }
+      );
+    } else {
+      setIsOpen(false);
+      navigate("/");
+    }
   };
 
   const onSaveVolume = () => {
@@ -686,7 +693,7 @@ const GameModal = ({
                 {children}
               </GameModalMessage>
               <ButtonWrapper row="center" col="center" margin="50px 0px 32px">
-                <GameModalButton onClick={onExitRoom}>확인</GameModalButton>
+                <GameModalButton onClick={onExitRouteBack}>확인</GameModalButton>
               </ButtonWrapper>
             </GameModalBody>
           )}

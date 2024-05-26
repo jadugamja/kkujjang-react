@@ -105,6 +105,10 @@ const GlobalStyle = createGlobalStyle`
     padding-inline-start: 0;
   }
   
+  p {
+    margin: 0;
+  }
+
   a {
     color: inherit;
     text-decoration: none;

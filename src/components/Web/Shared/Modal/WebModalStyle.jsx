@@ -33,18 +33,17 @@ export const ModalHeader = styled(FlexBox)`
 
 export const ModalContent = styled(FlexBox)`
   width: 100%;
-  height: ${(props) => props.height || "17rem"};
+  height: ${(props) => props.height || "15rem"};
+  padding: 0 15px;
   background-color: #fefefe;
 `;
 
 export const ModalMessage = styled.p`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
-  font-size: ${({ theme }) => theme.fontSize.m};
+  font-size: ${({ theme }) => theme.fontSize.xxs};
   font-weight: 700;
-  margin: 0;
-  padding-bottom: 50px;
-  padding-right: ${(props) => props.paddingRight || null};
+  margin: ${(props) => props.margin};
 `;
 
 export const ButtonContainer = styled(FlexBox)`
@@ -52,12 +51,7 @@ export const ButtonContainer = styled(FlexBox)`
   height: ${(props) => props.height || "fit-content"};
 `;
 
-export const BanWrapper = styled.div`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "fit-content"};
-`;
-
-export const BanInputWrapper = styled(FlexBox)`
+export const BanWrapper = styled.form`
   width: ${(props) => props.width || "fit-content"};
   height: ${(props) => props.height || "fit-content"};
 `;
@@ -68,11 +62,6 @@ export const BanInput = styled.input`
   border: 1px solid #ccc;
   padding: 10px;
   font-size: 16px;
-`;
-
-export const BanTextAreaWrapper = styled(FlexBox)`
-  width: ${(props) => props.width || "fit-content"};
-  height: ${(props) => props.height || "fit-content"};
 `;
 
 export const BanTextArea = styled.textarea`
@@ -86,7 +75,7 @@ export const BanTextArea = styled.textarea`
 export const BanButtonWrapper = styled(FlexBox)`
   width: ${(props) => props.width || "26.853rem"};
   height: ${(props) => props.height || "fit-content"};
-  padding-top: 20px;
+  margin-top: 1.875rem;
 `;
 
 export const BanButton = styled.button`
@@ -95,7 +84,7 @@ export const BanButton = styled.button`
   background-color: ${({ theme }) => theme.colors.gray100};
   border: 1px solid ${({ theme }) => theme.colors.gray500};
   color: ${({ theme }) => theme.colors.gray600};
-  font-size: ${({ theme }) => theme.fontSize.s};
+  font-size: ${({ theme }) => theme.fontSize.xxs};
   font-weight: 700;
 
   &:hover {

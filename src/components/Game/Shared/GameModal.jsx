@@ -84,6 +84,9 @@ const GameModal = ({
   const [apiConfig, setApiConfig] = useState(null);
   const { response, loading, error, fetchData } = useAxios(apiConfig, false);
 
+  // router
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   let titleText = "";
 
   switch (type) {
@@ -255,7 +258,6 @@ const GameModal = ({
   };
 
   // ====== room ======
-  const navigate = useNavigate();
   const onValidateChange = (e) => {
     const t = e.target;
     let v = parseInt(t.value);
@@ -364,10 +366,7 @@ const GameModal = ({
 
   // ====== exit ======
   const onExitRouteBack = () => {
-    const { pathname } = useLocation();
-
-    debugger;
-    if (pathname === "/game") {
+    if (pathname !== "/game") {
       leaveRoom(
         () => {
           setWaitingPlayerList(null);

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 
@@ -12,7 +12,8 @@ import { getCurrentUserInfo } from "../../services/user";
 
 const Home = () => {
   const location = useLocation();
-  const [cookies] = useCookies(["sessionId", "userRole"]);
+  const navigate = useNavigate();
+  const [cookies, , removeCookie] = useCookies(["sessionId", "userRole"]);
   const [user, setUser] = useRecoilState(userInfoState);
 
   useEffect(() => {
@@ -26,8 +27,19 @@ const Home = () => {
   }, [cookies?.sessionId]);
 
   const getUserInfo = async () => {
-    const userInfo = await getCurrentUserInfo();
-    if (userInfo) setUser({ ...userInfo, role: cookies.userRole });
+    try {
+      const userInfo = await getCurrentUserInfo();
+      if (userInfo) setUser({ ...userInfo, role: cookies.userRole });
+    } catch (err) {
+      logout();
+    }
+  };
+
+  const logout = () => {
+    removeCookie("sessionId", { path: "/" });
+    removeCookie("userRole", { path: "/" });
+    setUser(null);
+    navigate("/");
   };
 
   return (

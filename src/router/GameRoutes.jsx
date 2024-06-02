@@ -34,10 +34,9 @@ const GameRoute = () => {
 
     onBanned((bannedData) => {
       setErrorMessage(
-        `
-        활동이 정지된 회원입니다.
-        비활성화 사유: ${bannedData.bannedReason}
-        비활성화 기간: ${bannedData.bannedDays}`
+        `사용이 금지된 회원입니다.
+        금지 사유: ${bannedData.bannedReason}
+        금지 기간: ${bannedData.bannedDays}`
       );
       setIsModalOpen(true);
 

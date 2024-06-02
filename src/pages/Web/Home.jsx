@@ -31,6 +31,7 @@ const Home = () => {
       const userInfo = await getCurrentUserInfo();
       if (userInfo) setUser({ ...userInfo, role: cookies.userRole });
     } catch (err) {
+      console.error(err);
       logout();
     }
   };

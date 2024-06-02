@@ -1,18 +1,26 @@
 import { lazy, useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { initSocket, disconnectSocket, onBanned } from "../services/socket";
 import Modal from "../components/Game/Shared/GameModal";
 import { audioPlayState } from "../recoil/soundState";
+import { useCookies } from "react-cookie";
 
 const Lobby = lazy(() => import("@/pages/Game/Lobby"));
 const GameRoom = lazy(() => import("@/pages/Game/GameRoom"));
 
 const GameRoute = () => {
-  const location = useLocation();
+  const [, , removeCookie] = useCookies(["sessionId"]);
+  const navigate = useNavigate();
+
   const setAudioPlay = useSetRecoilState(audioPlayState);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const logout = () => {
+    removeCookie("sessionId", { path: "/" });
+    navigate("/");
+  };
 
   useEffect(() => {
     setAudioPlay(true);
@@ -25,8 +33,13 @@ const GameRoute = () => {
     });
 
     onBanned((bannedData) => {
-      setErrorMessage(bannedData);
+      setErrorMessage(
+        `사용이 금지된 회원입니다.
+        금지 사유: ${bannedData.bannedReason}
+        금지 기간: ${bannedData.bannedDays}`
+      );
       setIsModalOpen(true);
+
       return;
     });
 
@@ -36,15 +49,15 @@ const GameRoute = () => {
     };
   }, []);
 
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+    logout();
+  };
+
   return (
     <>
       {isModalOpen && (
-        <Modal
-          type="error"
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
-          height="14rem"
-        >
+        <Modal type="error" isOpen={isModalOpen} setIsOpen={onCloseModal} height="16rem">
           {errorMessage}
         </Modal>
       )}

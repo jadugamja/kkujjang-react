@@ -89,7 +89,12 @@ const WebModal = ({
         <ModalHeader row="end" col="center">
           <ExitMiniCircle onClick={() => setIsOpen(false)}></ExitMiniCircle>
         </ModalHeader>
-        <ModalContent dir="col" row="center" col="center" height={isBan && "25.438rem"}>
+        <ModalContent
+          dir="col"
+          row="center"
+          col="center"
+          height={isBan ? "25.438rem" : "15rem"}
+        >
           {hasButton && (
             <>
               <ContentWrapper $display="flex" $col="center" $height="6.25rem">

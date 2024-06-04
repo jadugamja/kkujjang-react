@@ -1,10 +1,12 @@
 import { lazy, useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { useCookies } from "react-cookie";
+
 import { initSocket, disconnectSocket, onBanned } from "../services/socket";
 import Modal from "../components/Game/Shared/GameModal";
 import { audioPlayState } from "../recoil/soundState";
-import { useCookies } from "react-cookie";
+import { hadVisitedState } from "../recoil/gameState";
 
 const Lobby = lazy(() => import("@/pages/Game/Lobby"));
 const GameRoom = lazy(() => import("@/pages/Game/GameRoom"));
@@ -14,11 +16,15 @@ const GameRoute = () => {
   const navigate = useNavigate();
 
   const setAudioPlay = useSetRecoilState(audioPlayState);
+  const [hadVisited, setHadVisited] = useRecoilState(hadVisitedState);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    if (hadVisited) window.location.reload();
+
     setAudioPlay(true);
+
     initSocket((error) => {
       let message = error.message;
       if (message?.startsWith("Error")) message = message.slice(7);
@@ -37,6 +43,8 @@ const GameRoute = () => {
 
       return;
     });
+
+    setHadVisited(true);
 
     return () => {
       setAudioPlay(false);

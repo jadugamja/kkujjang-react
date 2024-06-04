@@ -49,47 +49,55 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
 
   return (
     <GridBox items="8" gap="10px" flow="col" row="between" col="center" margin="5px 10px">
-      {playerList?.map((player, idx) => (
-        <PlayerWrapper
-          key={player.id}
-          dir="col"
-          col="center"
-          myTurn={player.myTurn}
-          defeated={isDefeated[idx]}
-        >
-          {/*isBalloonShown && balloonMessage.userId === player.id && (
+      {playerList?.map((player, idx) => {
+        const currPlayerIndex = playerList.findIndex((p) => p.myTurn);
+        const prevPlayerIndex =
+          (currPlayerIndex - 1 + playerList.length) % playerList.length;
+        return (
+          <PlayerWrapper
+            key={player.id}
+            dir="col"
+            col="center"
+            myTurn={player.myTurn}
+            defeated={isDefeated[idx]}
+          >
+            {/*isBalloonShown && balloonMessage.userId === player.id && (
             <StyledBalloon>
               <span>{balloonMessage.message}</span>
             </StyledBalloon>
           )*/}
-          {cookies && cookies.userId === player.id && (
-            <Me
-              $position="absolute"
-              $left="8px"
-              $display="flex"
-              $row="center"
-              $col="center"
-              $margin="1px 0"
-              $padding="5px"
-              $border="1px solid #522"
-              $borderRadius="50%"
-            >
-              <FontAwesomeIcon
-                icon={faStar}
-                style={{ fontSize: "12px", color: "#522" }}
-              />
-            </Me>
-          )}
-          <Player
-            type="play"
-            avatarAccessoryIndex={player.avatarAccessoryIndex}
-            nickname={player.nickname}
-            level={player.level}
-          />
-          {player.myTurn && <TurnScore />}
-          <TotalScore>{String(player?.score).padStart(5, "0")}</TotalScore>
-        </PlayerWrapper>
-      ))}
+            {cookies && cookies.userId === player.id && (
+              <Me
+                $position="absolute"
+                $left="8px"
+                $display="flex"
+                $row="center"
+                $col="center"
+                $margin="1px 0"
+                $padding="5px"
+                $border="1px solid #522"
+                $borderRadius="50%"
+              >
+                <FontAwesomeIcon
+                  icon={faStar}
+                  style={{ fontSize: "12px", color: "#522" }}
+                />
+              </Me>
+            )}
+            <Player
+              type="play"
+              avatarAccessoryIndex={player.avatarAccessoryIndex}
+              nickname={player.nickname}
+              level={player.level}
+            />
+            {idx ===
+              (defeatedPlayerIndex !== null ? defeatedPlayerIndex : prevPlayerIndex) && (
+              <TurnScore />
+            )}
+            <TotalScore>{String(player?.score).padStart(5, "0")}</TotalScore>
+          </PlayerWrapper>
+        );
+      })}
     </GridBox>
   );
 };

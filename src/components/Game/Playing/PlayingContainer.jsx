@@ -3,7 +3,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 
-import { playingPlayerListState, playingPlayerState } from "@/recoil/userState";
+import { playingPlayerListState } from "@/recoil/userState";
 import {
   randomWordState,
   initialCharacterState,
@@ -33,7 +33,6 @@ import GameModal from "../Shared/GameModal";
 import { getPlayerInfoByUserId } from "@/services/user";
 
 const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
-  const [player, setPlayer] = useRecoilState(playingPlayerState);
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [randomWord, setRandomWord] = useRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
@@ -50,13 +49,13 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   const [modalType, setModalType] = useState("error");
   const [modalChildren, setModalChildren] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cookie] = useCookies(["userId"]);
+  const [cookies] = useCookies(["userId"]);
 
   const isLastRoundRef = useRef(false);
 
   useEffect(() => {
     // 방장이 라운드 시작 요청
-    if (roomInfo?.roomOwnerUserId === cookie.userId && !isLastRoundRef.current) {
+    if (roomInfo?.roomOwnerUserId === cookies.userId && !isLastRoundRef.current) {
       roundStart();
     }
 
@@ -73,7 +72,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       }
       setInitialCharacter(gameStatus.wordStartsWith);
       setCurrRound(gameStatus.currentRound);
-      setIsMyTurn(gameStatus.currentTurnUserId === cookie.userId);
+      setIsMyTurn(gameStatus.currentTurnUserId === cookies.userId);
       if (gameStatus.currentRound + 1 === gameStatus.maxRound) {
         isLastRoundRef.current = true;
       }
@@ -82,7 +81,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       }
 
       // 현재 차례인 플레이어가 턴 시작 요청
-      if (gameStatus.currentTurnUserId === cookie.userId) {
+      if (gameStatus.currentTurnUserId === cookies.userId) {
         turnStart();
       }
     });
@@ -135,12 +134,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
       // 득점 저장
       setCurrPoints(scoreDelta);
-      setPlayer((prev) => {
-        return {
-          ...prev,
-          score: prev.score + scoreDelta
-        };
-      });
       setPlayerList((prevList) => {
         const newList = [...prevList];
         let _player = { ...newList[userIndex] };
@@ -240,7 +233,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       })
     );
 
-    setIsMyTurn(playerList[nextPlayerIndex].id === cookie.userId);
+    setIsMyTurn(playerList[nextPlayerIndex].id === cookies.userId);
 
     if (!isRoundEnd) {
       turnStart();

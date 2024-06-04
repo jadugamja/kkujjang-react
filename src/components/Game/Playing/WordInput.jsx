@@ -14,7 +14,6 @@ import {
   isMyTurnState,
   thisTurnLeftTimeState,
   currentRoundState,
-  currentPointsState,
   isWordFailState
 } from "@/recoil/gameState";
 import { sendMessage } from "@/services/socket";

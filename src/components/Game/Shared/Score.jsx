@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Wrapper } from "./Layout";
@@ -17,7 +17,7 @@ export const TurnScore = () => {
       if (currPoints > 0) setPointType("score");
       else if (currPoints < 0) setPointType("penalty");
 
-      const disappered = setTimeout(() => {
+      const disappeared = setTimeout(() => {
         setCurrPoints(0);
       }, 1500);
 
@@ -33,7 +33,7 @@ export const TurnScore = () => {
         );
         setPlayerList(updatedPlayerList);
       }
-      return () => clearTimeout(disappered);
+      return () => clearTimeout(disappeared);
     }
   }, [currPoints]);
 

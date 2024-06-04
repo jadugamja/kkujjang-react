@@ -17,8 +17,8 @@ const loading = keyframes`
 `;
 
 const Dot = styled(BaseBox)`
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   animation: ${loading} 1.2s linear infinite;
   background-color: rgb(64 75 59);
@@ -29,7 +29,7 @@ const Dot = styled(BaseBox)`
 
   &:nth-child(2) {
     animation-delay: 0.2s;
-    margin: 0 14px;
+    margin: 0 10px;
   }
 
   &:nth-child(3) {

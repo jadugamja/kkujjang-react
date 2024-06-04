@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { userInfoState } from "@/recoil/userState";
 import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
 import { MainContentWrapper, Wrapper } from "@/components/Game/Shared/Layout";
@@ -11,8 +9,11 @@ import WaitingTab from "@/components/Game/Waiting/WaitingTab";
 import PlayingTab from "@/components/Game/Playing/PlayingTab";
 import WaitingContainer from "@/components/Game/Waiting/WaitingContainer";
 import PlayingContainer from "@/components/Game/Playing/PlayingContainer";
+import Modal from "@/components/Game/Shared/GameModal";
+import { userInfoState, waitingPlayerListState } from "@/recoil/userState";
+import { roomInfoState } from "@/recoil/roomState";
+import { currentRoundState, randomWordState } from "@/recoil/gameState";
 import {
-  loadRoom,
   onLoadRoom,
   onChangeRoomConfig,
   onChangeRoomOwner,
@@ -20,27 +21,16 @@ import {
   onUserLeaveRoom,
   onSwitchReadyState,
   onGameStart
-} from "../../services/socket";
-import { waitingPlayerListState, playingPlayerListState } from "@/recoil/userState";
-import { roomInfoState } from "@/recoil/roomState";
-import Modal from "../../components/Game/Shared/GameModal";
+} from "@/services/socket";
 import { getPlayerInfoByUserId } from "@/services/user";
-import {
-  currentRoundState,
-  randomWordState,
-  initialCharacterState
-} from "../../recoil/gameState";
 
 const GameRoom = () => {
   const user = useRecoilValue(userInfoState);
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  const [playingPlayerList, setPlayingPlayerList] =
-    useRecoilState(playingPlayerListState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setRandomWord = useSetRecoilState(randomWordState);
-  const setInitialCharacter = useSetRecoilState(initialCharacterState);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [modalType, setModalType] = useState(null);
@@ -49,9 +39,6 @@ const GameRoom = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
 
   let newOwnerIndex = null;
-
-  // 경로의 roomId값 추출
-  const { roomId } = useParams();
 
   // useEffect(() => {
   //   setWaitingPlayerList(roomInfo?.userList);
@@ -70,6 +57,14 @@ const GameRoom = () => {
 
   useEffect(() => {
     setWaitingPlayerList(roomInfo?.userList);
+
+    setWaitingPlayerList((prev) => {
+      const updatedList = prev?.map((player, idx) => {
+        return { isHost: idx === roomInfo?.roomOwnerUserIndex, ...player };
+      });
+      return updatedList;
+    });
+
     setIsPlaying(roomInfo?.state === "playing" ? true : false);
 
     // 방 설정 변경
@@ -95,7 +90,7 @@ const GameRoom = () => {
     // 타 플레이어 퇴장 알림
     onUserLeaveRoom((roomStatus) => {
       const { userList, currentUserCount } = roomStatus;
-      setRoomInfo((prev) => ({ ...prev, currentUserCount }));
+      setRoomInfo((prev) => ({ ...prev, userList }));
       setIsDataFetched(false);
       setWaitingPlayerList((prev) =>
         prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
@@ -103,8 +98,8 @@ const GameRoom = () => {
 
       if (newOwnerIndex !== null) {
         setWaitingPlayerList((prev) => {
-          const updatedList = prev.map((user, idx) => {
-            return { ...user, isHost: idx === newOwnerIndex };
+          const updatedList = prev.map((player, idx) => {
+            return { ...player, isHost: idx === newOwnerIndex };
           });
           return updatedList;
         });
@@ -114,12 +109,6 @@ const GameRoom = () => {
 
     // 방장 변경
     onChangeRoomOwner((newOwnerIdx) => {
-      // setWaitingPlayerList((prev) => {
-      //   const updatedList = prev.map((user, idx) => {
-      //     return { ...user, isHost: idx === newOwnerIdx };
-      //   });
-      //   return updatedList;
-      // });
       newOwnerIndex = newOwnerIdx;
     });
 
@@ -182,8 +171,7 @@ const GameRoom = () => {
         const updatedPlayerList = await Promise.all(
           waitingPlayerList.map(async (user, idx) => {
             const response = await getPlayerInfoByUserId(user.userId);
-            const isHost = roomInfo.roomOwnerUserId === user.userId;
-            // const isHost = idx === 0;
+            const isHost = idx === roomInfo?.roomOwnerUserIndex;
             return { ...user, isHost, ...response };
           })
         );
@@ -194,34 +182,19 @@ const GameRoom = () => {
     }
   }, [waitingPlayerList]);
 
-  // // Add Playing Players Info
-  // useEffect(() => {
-  //   const fetchAllUsers = async () => {
-  //     const updatedPlayerList = await Promise.all(
-  //       playingPlayerList.map(async (user) => {
-  //         const response = await getWaitingPlayerInfoByUserId(user.id);
-  //         if (!response) {
-  //           console.error(`Cannot get user info by userId: ${user.id}`);
-  //         }
-  //         return { ...user, ...response };
-  //       })
-  //     );
-  //     return updatedPlayerList.filter(Boolean);
-  //   };
-
-  //   if (playingPlayerList && playingPlayerList?.length !== 0 && !isDataFetched2) {
-  //     fetchAllUsers().then((updatedPlayerList) => {
-  //       setPlayingPlayerList(updatedPlayerList);
-  //       setIsDataFetched2(true);
-  //     });
-  //   }
-  // }, [playingPlayerList]);
-
   const getUserInfoByUserId = async (userId) => {
     const userInfo = await getPlayerInfoByUserId(userId);
-    return setWaitingPlayerList((prev) => {
+    return setWaitingPlayerList((prev, idx) => {
       if (prev.some((user) => user.userId === userId)) return prev;
-      return [...prev, { userId, isHost: false, isReady: false, ...userInfo }];
+      return [
+        ...prev,
+        {
+          userId,
+          isHost: idx === roomInfo?.roomOwnerUserIndex,
+          isReady: false,
+          ...userInfo
+        }
+      ];
     });
   };
 

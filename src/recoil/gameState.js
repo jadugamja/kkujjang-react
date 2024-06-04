@@ -66,3 +66,9 @@ export const balloonMessageState = atom({
   key: "balloonMessageState",
   default: null
 });
+
+// 게임 방문했던 적이 있는지 여부
+export const hadVisitedState = atom({
+  key: "hadVisitedState",
+  default: false
+});

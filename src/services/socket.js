@@ -15,7 +15,7 @@ const connectSocket = () => {
   });
 };
 
-const client = connectSocket();
+let client = connectSocket();
 
 // ====== 소켓 초기화 ======
 export const initSocket = (errorCallBack) => {
@@ -23,13 +23,7 @@ export const initSocket = (errorCallBack) => {
     console.log(`[log] Connect to the Server...`);
   });
 
-  // 소켓 서버 무응답 대처
-  // let timeout = setTimeout(() => {
-  //   errorCallBack(new Error("서버와의 연결이 끊어졌습니다."));
-  // }, 2000);
-
   client.on("error", (error) => {
-    // clearTimeout(timeout);
     console.error(`[Error]: ${error}`);
     if (!!errorCallBack) errorCallBack(error);
   });

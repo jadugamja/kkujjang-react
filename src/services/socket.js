@@ -24,7 +24,6 @@ export const initSocket = (errorCallBack) => {
   });
 
   client.on("error", (error) => {
-    // clearTimeout(timeout);
     console.error(`[Error]: ${error}`);
     if (!!errorCallBack) errorCallBack(error);
   });

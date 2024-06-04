@@ -17,11 +17,6 @@ const GameRoute = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const logout = () => {
-    removeCookie("sessionId", { path: "/" });
-    navigate("/");
-  };
-
   useEffect(() => {
     setAudioPlay(true);
     initSocket((error) => {
@@ -52,6 +47,11 @@ const GameRoute = () => {
   const onCloseModal = () => {
     setIsModalOpen(false);
     logout();
+  };
+
+  const logout = () => {
+    removeCookie("sessionId", { path: "/" });
+    navigate("/");
   };
 
   return (

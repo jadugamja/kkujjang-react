@@ -1,4 +1,4 @@
-import { atom, selector, selectorFamily } from "recoil";
+import { atom, selector } from "recoil";
 
 export const userInfoState = atom({
   key: "userInfoState",
@@ -19,15 +19,6 @@ export const isActiveAccountState = atom({
   key: "isActiveAccountState",
   default: true
 });
-
-// read-only
-// export const isActiveAccountState = selector({
-//   key: "isActiveAccountState",
-//   get: ({ get }) => {
-//     const user = get(userInfoState);
-//     return user.isActive;
-//   }
-// });
 
 // 대기실 플레이어들의 상태 목록
 export const waitingPlayerListState = atom({
@@ -57,23 +48,6 @@ export const playingPlayerState = atom({
     myTurn: false,
     score: 0
   }
-
-  // get:
-  //   () =>
-  //   ({ get }) => {
-  //     const user = get(userInfoState);
-  //     return {
-  //       ...user,
-  //       myTurn: false,
-  //       roundScore: [],
-  //       totalScore: 0
-  //     };
-  //   },
-  // set:
-  //   () =>
-  //   ({ set }, newValue) => {
-  //     set(playingPlayerState(), newValue);
-  //   }
 });
 
 // 인게임 플레이어 -> 인게임 플레이어들 목록 동기화

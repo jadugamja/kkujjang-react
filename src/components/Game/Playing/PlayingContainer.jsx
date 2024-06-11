@@ -61,11 +61,11 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
     onRoundStart((gameStatus) => {
       if (gameStatus.currentRound === 0) {
-        const updatedPlayerList = gameStatus.usersSequence.map((user, idx) => ({
-          id: user.userId,
-          score: user.score,
+        const updatedPlayerList = gameStatus.usersSequence.map((player, idx) => ({
+          id: player.userId,
+          score: player.score,
           myTurn: idx === gameStatus.currentTurnUserIndex,
-          ...user
+          ...player
         }));
         setPlayerList(updatedPlayerList);
         if (!randomWord) setRandomWord(gameStatus.roundWord);
@@ -92,7 +92,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       },
       (error) => {
         setModalType("error");
-        setModalChildren(error);
+        setModalChildren(error?.message);
         setIsModalOpen(true);
       }
     );

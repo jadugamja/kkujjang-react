@@ -38,7 +38,8 @@ const GameRoom = () => {
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
-  const setPlayingPlayerList = useSetRecoilState(playingPlayerListState);
+  const [playingPlayerList, setPlayingPlayerList] =
+    useRecoilState(playingPlayerListState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setRandomWord = useSetRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
@@ -112,10 +113,17 @@ const GameRoom = () => {
     // 게임 시작
     onGameStart(
       (room) => {
+        if (playingPlayerList.length !== 0) {
+          const newPlayerList = room.usersSequence.map((player) => ({
+            ...player,
+            score: 0
+          }));
+          setPlayingPlayerList(newPlayerList);
+        }
+        setCurrPoints(0);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);
         setInitialCharacter(room.roundWord[0]);
-        setCurrPoints(0);
         setIsPlaying(true);
       },
       (error) => {

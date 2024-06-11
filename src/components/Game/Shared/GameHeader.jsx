@@ -7,6 +7,7 @@ import gameLogo from "@/assets/images/logo-game.png";
 import Modal from "./GameModal";
 
 const GameHeader = ({ nickname = "" }) => {
+  const [modalType, setModalType] = useState("exit");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -22,7 +23,13 @@ const GameHeader = ({ nickname = "" }) => {
       $zIndex="10"
     >
       {isModalOpen && (
-        <Modal type="exit" isOpen={isModalOpen} setIsOpen={setIsModalOpen} height="14rem">
+        <Modal
+          type={modalType}
+          setType={setModalType}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          height="14rem"
+        >
           홈으로 이동하시겠습니까?
         </Modal>
       )}

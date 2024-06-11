@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { ContentWrapper, WideContent, Main, Box } from "@/styles/CommonStyle";
+import { ContentWrapper, WideContent, Box } from "@/styles/CommonStyle";
 import GameHeader from "@/components/Game/Shared/GameHeader";
-import { MainContentWrapper, Wrapper } from "@/components/Game/Shared/Layout";
+import { MainContentWrapper, Wrapper, Main } from "@/components/Game/Shared/Layout";
 import { Button } from "@/components/Game/Shared/Button";
 import WaitingTab from "@/components/Game/Waiting/WaitingTab";
 import PlayingTab from "@/components/Game/Playing/PlayingTab";
 import WaitingContainer from "@/components/Game/Waiting/WaitingContainer";
 import PlayingContainer from "@/components/Game/Playing/PlayingContainer";
 import Modal from "@/components/Game/Shared/GameModal";
-import { userInfoState, waitingPlayerListState } from "@/recoil/userState";
+import {
+  userInfoState,
+  waitingPlayerListState,
+  playingPlayerListState
+} from "@/recoil/userState";
 import { roomInfoState } from "@/recoil/roomState";
-import { currentRoundState, randomWordState } from "@/recoil/gameState";
+import {
+  currentRoundState,
+  randomWordState,
+  initialCharacterState,
+  currentPointsState
+} from "@/recoil/gameState";
 import {
   onLoadRoom,
   onChangeRoomConfig,
@@ -29,8 +38,12 @@ const GameRoom = () => {
   const [roomInfo, setRoomInfo] = useRecoilState(roomInfoState);
   const [waitingPlayerList, setWaitingPlayerList] =
     useRecoilState(waitingPlayerListState);
+  const [playingPlayerList, setPlayingPlayerList] =
+    useRecoilState(playingPlayerListState);
   const setCurrRound = useSetRecoilState(currentRoundState);
   const setRandomWord = useSetRecoilState(randomWordState);
+  const setInitialCharacter = useSetRecoilState(initialCharacterState);
+  const setCurrPoints = useSetRecoilState(currentPointsState);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [modalType, setModalType] = useState(null);
@@ -39,21 +52,6 @@ const GameRoom = () => {
   const [isDataFetched, setIsDataFetched] = useState(false);
 
   let newOwnerIndex = null;
-
-  // useEffect(() => {
-  //   setWaitingPlayerList(roomInfo?.userList);
-  //   setIsPlaying(roomInfo?.state === "playing" ? true : false);
-  // }, [roomInfo]);
-
-  // useEffect(() => {
-  //   initSocket((error) => {
-  //     setErrorMessage(error);
-  //     setIsModalOpen(true);
-  //   });
-
-  //   return () => disconnectSocket();
-  // }, []);
-  let isMounted = false;
 
   useEffect(() => {
     setWaitingPlayerList(roomInfo?.userList);
@@ -115,8 +113,17 @@ const GameRoom = () => {
     // 게임 시작
     onGameStart(
       (room) => {
+        if (playingPlayerList.length !== 0) {
+          const newPlayerList = room.usersSequence.map((player) => ({
+            ...player,
+            score: 0
+          }));
+          setPlayingPlayerList(newPlayerList);
+        }
+        setCurrPoints(0);
         setCurrRound(room.currentRound);
         setRandomWord(room.roundWord);
+        setInitialCharacter(room.roundWord[0]);
         setIsPlaying(true);
       },
       (error) => {
@@ -142,8 +149,6 @@ const GameRoom = () => {
     //     setWaitingPlayerList((prev) => [...prev, user]);
     //   });
     // });
-
-    //   isMounted = true;
   }, []);
 
   useEffect(() => {
@@ -211,9 +216,9 @@ const GameRoom = () => {
           {errorMessage}
         </Modal>
       )}
-      <WideContent dir="col">
+      <WideContent dir="col" row="center">
         <GameHeader />
-        <Main>
+        <Main width="100%">
           <Box bgColor={isPlaying && "#000"}>
             <MainContentWrapper dir="col">
               <Wrapper row="between" col="end">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Container as Me } from "@/styles/StyledComponents";
@@ -14,22 +14,24 @@ import { playingPlayerListState } from "@/recoil/userState";
 import { balloonMessageState } from "@/recoil/gameState";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
-const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
+const PlayingPlayerList = ({ defeatedPlayerIndex, setDefeatedPlayerIndex }) => {
   const [cookies] = useCookies(["userId"]);
   const playerList = useRecoilValue(playingPlayerListState);
-  const balloonMessage = useRecoilValue(balloonMessageState);
-  const [isDefeated, setIsDefeated] = useState(false);
-  const [isBalloonShown, setIsBalloonShown] = useState(false);
+  const [playerListDefeated, setPlayerListDefeated] = useState([]);
+  // const [isBalloonShown, setIsBalloonShown] = useState(false);
+  // const balloonMessage = useRecoilValue(balloonMessageState);
 
   useEffect(() => {
     if (defeatedPlayerIndex !== null) {
-      const defeatedPlayers = playerList.map(
-        (player, idx) => idx === defeatedPlayerIndex
-      );
-      setIsDefeated(defeatedPlayers);
+      const defeatedPlayers = playerList.map((_, idx) => idx === defeatedPlayerIndex);
+      setPlayerListDefeated(defeatedPlayers);
 
       const timer = setTimeout(() => {
-        setIsDefeated(defeatedPlayers.fill(false));
+        setPlayerListDefeated((prevState) =>
+          prevState.map((_, idx) => idx === defeatedPlayerIndex && false)
+        );
+        // 초기화
+        setDefeatedPlayerIndex(null);
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -59,13 +61,15 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
             dir="col"
             col="center"
             myTurn={player.myTurn}
-            defeated={isDefeated[idx]}
+            defeated={playerListDefeated[idx]}
           >
-            {/*isBalloonShown && balloonMessage.userId === player.id && (
-            <StyledBalloon>
-              <span>{balloonMessage.message}</span>
-            </StyledBalloon>
-          )*/}
+            {/*isBalloonShown && balloonMessage.userId === player.id && 
+              (
+                <StyledBalloon>
+                  <span>{balloonMessage.message}</span>
+                </StyledBalloon>
+              )
+            */}
             {cookies && cookies.userId === player.id && (
               <Me
                 $position="absolute"
@@ -86,14 +90,14 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
             )}
             <Player
               type="play"
+              defeated={playerListDefeated[idx]}
               avatarAccessoryIndex={player.avatarAccessoryIndex}
               nickname={player.nickname}
               level={player.level}
             />
-            {idx ===
-              (defeatedPlayerIndex !== null ? defeatedPlayerIndex : prevPlayerIndex) && (
-              <TurnScore />
-            )}
+            {(playerListDefeated[idx] !== null
+              ? playerListDefeated[idx]
+              : idx === prevPlayerIndex) && <TurnScore />}
             <TotalScore>{String(player?.score).padStart(5, "0")}</TotalScore>
           </PlayerWrapper>
         );
@@ -103,8 +107,14 @@ const PlayingPlayerList = ({ defeatedPlayerIndex }) => {
 };
 
 PlayingPlayerList.propTypes = {
-  defeatedPlayerIndex: PropTypes.number
+  defeatedPlayerIndex: PropTypes.number,
+  setDefeatedPlayerIndex: PropTypes.func
 };
+
+const fadeOut = keyframes`
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+`;
 
 const PlayerWrapper = styled(FlexBox)`
   position: relative;
@@ -119,11 +129,6 @@ const PlayerWrapper = styled(FlexBox)`
   transform: ${({ myTurn }) => myTurn && "translateY(-15px)"};
 `;
 
-const fadeOut = keyframes`
-  0% { opacity: 1; }
-  100% { opacity: 0; }
-`;
-
 const StyledBalloon = styled.div`
   position: absolute;
   top: -29px;
@@ -133,7 +138,9 @@ const StyledBalloon = styled.div`
   border: 1px solid #a3a3a3;
   border-radius: 9px;
   padding: 3px 5px;
-  animation: ${fadeOut} 3s linear;
+  animation: ${css`
+    ${fadeOut} 3s linear
+  `};
 
   &::before,
   &::after {

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { FlexBox } from "@/styles/FlexStyle";
 import AvatarCanvas from "./AvatarCanvas";
 import avatarUrl from "@/assets/images/avatar.png";
+import avatarDefeatedUrl from "@/assets/images/avatar_defeated.svg";
 
 const accessories = [
   "",
@@ -19,14 +20,20 @@ const accessories = [
   "fx2"
 ];
 
-const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
+const Player = ({
+  type = "wait",
+  defeated = false,
+  avatarAccessoryIndex,
+  nickname,
+  level
+}) => {
   const [avatarImage, setAvatarImage] = useState(null);
 
   return (
     <PlayerWrapper type={type} dir="col" row="center" col="center">
       <AvatarCanvas
-        avatar={avatarUrl}
-        item={accessories[avatarAccessoryIndex]}
+        avatar={defeated ? avatarDefeatedUrl : avatarUrl}
+        item={defeated ? accessories[0] : accessories[avatarAccessoryIndex]}
         setAvatarImage={setAvatarImage}
         width={type === "play" ? "6.75rem" : "7.5rem"}
       />
@@ -40,6 +47,7 @@ const Player = ({ type = "wait", avatarAccessoryIndex, nickname, level }) => {
 
 Player.propTypes = {
   type: PropTypes.string,
+  defeated: PropTypes.bool,
   avatarAccessoryIndex: PropTypes.number,
   nickname: PropTypes.string,
   level: PropTypes.number

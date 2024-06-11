@@ -89,9 +89,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
     onTurnStart(
       (gameStatus) => {
         setTurnCount(gameStatus.turnElapsed);
-        if (defeatedPlayerIndex !== null) {
-          setDefeatedPlayerIndex(null);
-        }
       },
       (error) => {
         setModalType("error");
@@ -163,7 +160,6 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       const currentPlayerIndex = playerList.findIndex((player) => player.myTurn);
 
       if (defeatedUser && defeatedUserIndex === currentPlayerIndex) {
-        setIsRoundEnd(true);
         setDefeatedPlayerIndex(defeatedUserIndex);
         setCurrPoints(scoreDelta);
         setPlayerList((prevList) => {
@@ -173,6 +169,8 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
           newList[defeatedUserIndex] = _player;
           return newList;
         });
+        setIsRoundEnd(true);
+
         if (!isLastRoundRef.current) {
           roundStart();
         }
@@ -191,12 +189,12 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       const updatedPlayerList = await Promise.all(
-        playerList.map(async (user) => {
-          const response = await getPlayerInfoByUserId(user.id);
+        playerList.map(async (player) => {
+          const response = await getPlayerInfoByUserId(player.id);
           if (!response) {
-            console.error(`Cannot get user info by userId: ${user.id}`);
+            console.error(`Cannot get user info by userId: ${player.id}`);
           }
-          return { ...user, ...response };
+          return { ...player, ...response };
         })
       );
       return updatedPlayerList.filter(Boolean);
@@ -233,7 +231,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       })
     );
 
-    setIsMyTurn(playerList[nextPlayerIndex].id === cookies.userId);
+    setIsMyTurn(playerList[nextPlayerIndex]?.id === cookies.userId);
 
     if (!isRoundEnd) {
       turnStart();
@@ -255,7 +253,10 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       <UpperWrapper dir="col" type="play">
         <TitleBar type="room" info={roomInfo} />
         <WordInput roundCount={roomInfo?.maxRound} roundTime={roomInfo?.roundTimeLimit} />
-        <PlayingPlayerList defeatedPlayerIndex={defeatedPlayerIndex} />
+        <PlayingPlayerList
+          defeatedPlayerIndex={defeatedPlayerIndex}
+          setDefeatedPlayerIndex={setDefeatedPlayerIndex}
+        />
       </UpperWrapper>
       <Wrapper>
         <Chat size="big" />

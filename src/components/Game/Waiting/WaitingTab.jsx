@@ -28,15 +28,23 @@ const WaitingTab = ({ isHost, roomId }) => {
   };
 
   const onReadyToggle = () => {
-    switchReadyState(!isReady, (data) => {
-      const { index, state } = data;
-      setIsReady(state);
-      setWaitingPlayerList((prevList) => {
-        return prevList?.map((player, idx) =>
-          idx === index ? { ...player, isReady: state } : player
-        );
-      });
-    });
+    switchReadyState(
+      !isReady,
+      (data) => {
+        const { index, state } = data;
+        setIsReady(state);
+        setWaitingPlayerList((prevList) => {
+          return prevList?.map((player, idx) =>
+            idx === index ? { ...player, isReady: state } : player
+          );
+        });
+      },
+      (error) => {
+        setModalType("alert");
+        setModalMessage(error);
+        setIsModalOpen(true);
+      }
+    );
   };
 
   return (

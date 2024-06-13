@@ -221,7 +221,7 @@ export const onChangeRoomOwner = (callBack) => {
 };
 
 // ====== 준비 요청 ======
-export const switchReadyState = (newState, callBack) => {
+export const switchReadyState = (newState, callBack, errorCallBack) => {
   client.emit("switch ready state", newState);
 
   client.off("complete switch ready state");
@@ -233,7 +233,7 @@ export const switchReadyState = (newState, callBack) => {
   client.off("error");
   client.on("error", (error) => {
     console.error(`[Error]: ${error}`);
-    if (errorCallBack) errorCallBack(error);
+    if (!!errorCallBack) errorCallBack(error);
   });
 };
 

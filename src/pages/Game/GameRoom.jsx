@@ -73,6 +73,7 @@ const GameRoom = () => {
     // 타 플레이어 입장 알림
     onUserJoinRoom((userId) => {
       getUserInfoByUserId(userId);
+      setRoomInfo((prev) => ({ ...prev, currentUserCount: prev.currentUserCount + 1 }));
     });
 
     // 타 플레이어 준비 여부 알림
@@ -88,7 +89,7 @@ const GameRoom = () => {
     // 타 플레이어 퇴장 알림
     onUserLeaveRoom((roomStatus) => {
       const { userList, currentUserCount } = roomStatus;
-      setRoomInfo((prev) => ({ ...prev, userList }));
+      setRoomInfo((prev) => ({ ...prev, userList, currentUserCount }));
       setIsDataFetched(false);
       setWaitingPlayerList((prev) =>
         prev.filter((user) => userList.some(({ userId }) => userId === user.userId))
@@ -158,6 +159,13 @@ const GameRoom = () => {
         (room) => {
           setRoomInfo(room);
           setWaitingPlayerList(room.userList);
+          if (playingPlayerList.length !== 0) {
+            const newPlayerList = playingPlayerList.map((player) => ({
+              ...player,
+              score: 0
+            }));
+            setPlayingPlayerList(newPlayerList);
+          }
         },
         (error) => {
           setModalType("alert");
@@ -241,7 +249,11 @@ const GameRoom = () => {
                 </div>
               </Wrapper>
               {isPlaying ? (
-                <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
+                <PlayingContainer
+                  roomInfo={roomInfo}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                />
               ) : (
                 <WaitingContainer roomInfo={roomInfo} />
               )}

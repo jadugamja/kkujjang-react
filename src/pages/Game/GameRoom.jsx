@@ -159,6 +159,13 @@ const GameRoom = () => {
         (room) => {
           setRoomInfo(room);
           setWaitingPlayerList(room.userList);
+          if (playingPlayerList.length !== 0) {
+            const newPlayerList = playingPlayerList.map((player) => ({
+              ...player,
+              score: 0
+            }));
+            setPlayingPlayerList(newPlayerList);
+          }
         },
         (error) => {
           setModalType("alert");
@@ -242,7 +249,11 @@ const GameRoom = () => {
                 </div>
               </Wrapper>
               {isPlaying ? (
-                <PlayingContainer roomInfo={roomInfo} setIsPlaying={setIsPlaying} />
+                <PlayingContainer
+                  roomInfo={roomInfo}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                />
               ) : (
                 <WaitingContainer roomInfo={roomInfo} />
               )}

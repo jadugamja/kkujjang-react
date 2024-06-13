@@ -32,7 +32,7 @@ import PlayingPlayerList from "./PlayingPlayerList";
 import GameModal from "../Shared/GameModal";
 import { getPlayerInfoByUserId } from "@/services/user";
 
-const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
+const PlayingContainer = ({ roomInfo, isPlaying, setIsPlaying }) => {
   const [playerList, setPlayerList] = useRecoilState(playingPlayerListState);
   const [randomWord, setRandomWord] = useRecoilState(randomWordState);
   const setInitialCharacter = useSetRecoilState(initialCharacterState);
@@ -200,7 +200,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
       return updatedPlayerList.filter(Boolean);
     };
 
-    if (playerList && playerList?.length !== 0 && !isDataFetched) {
+    if (playerList && playerList?.length !== 0 && !isDataFetched && isPlaying) {
       fetchAllUsers().then((updatedPlayerList) => {
         setPlayerList(updatedPlayerList);
         setIsDataFetched(true);
@@ -267,6 +267,7 @@ const PlayingContainer = ({ roomInfo, setIsPlaying }) => {
 
 PlayingContainer.propTypes = {
   roomInfo: PropTypes.object,
+  isPlaying: PropTypes.bool,
   setIsPlaying: PropTypes.func
 };
 

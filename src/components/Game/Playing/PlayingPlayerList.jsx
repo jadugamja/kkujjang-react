@@ -57,7 +57,7 @@ const PlayingPlayerList = ({ defeatedPlayerIndex, setDefeatedPlayerIndex }) => {
           (currPlayerIndex - 1 + playerList.length) % playerList.length;
         return (
           <PlayerWrapper
-            key={player.id}
+            key={idx}
             dir="col"
             col="center"
             myTurn={player.myTurn}
